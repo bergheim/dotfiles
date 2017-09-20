@@ -13,6 +13,13 @@ set $right l
 set $down j
 set $left h
 
+# colors
+set $bg-color #2f343f
+set $inactive-bg-color #2f343f
+set $text-color #f3f4f5
+set $inactive-text-color $676e7d
+set $urgent-bg-color #e53935
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -44,8 +51,9 @@ bindsym $mod+Shift+q kill
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+d exec --no-startup-id rofi -show run
-bindsym $mod+Shift+d exec --no-startup-id rofi -show ssh
+bindsym $mod+d exec rofi -show run -lines 5 -eh 2 -width 100 -padding 800 -bw 0
+bindsym $mod+Shift+d exec --no-startup-id rofi -show run
+
 
 # change focus
 bindsym $mod+$left focus left
@@ -163,12 +171,6 @@ bindsym $mod+r mode "resize"
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
 
-# set $bg-color #2f343f
-# set $inactive-bg-color #2f343f
-# set $text-color #f3f4f5
-# set $inactive-text-color $676e7d
-# set $urgent-bg-color #e53935
-
 # # class                 border              backgr.             text               indicator child_border
 # client.focused          $bg-color           $bg-color           $text-color        #2e9ef4   #285577
 # client.unfocused        $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #292d2e   #222222
@@ -198,7 +200,7 @@ bar {
 }
 
 new_window pixel 0
-hide_edge_borders both
+hide_edge_borders smart
 bindsym $alt+b border toggle
 
 # {{{ automatically put clients on specific workspaces
@@ -215,6 +217,7 @@ assign [class="^Chromium$"] $ws5
 exec telegram-desktop
 exec firefox
 exec chromium
+exec compton -f
 # }}}
 
 # dont tile popups
