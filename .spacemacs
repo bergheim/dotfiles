@@ -29,32 +29,45 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(javascript
+   '(
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      helm
-     ;; auto-completion
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t)
      ;; better-defaults
      emacs-lisp
      git
-     ;; markdown
-     org
+     markdown
+     (org :variables
+          org-enable-bootstrap-support t)
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
      ;; spell-checking
-     ;; syntax-checking
+     syntax-checking
      version-control
+     ranger
      restclient
+     colors
+     elm
+     react
+     javascript
+     typescript
+     java
+     semantic
+     spotify
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(
+                                      editorconfig
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -134,7 +147,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 16
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -346,6 +359,142 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (setq-default evil-escape-key-sequence "jk")
+  (setq-default evil-escape-excluded-states '(visual))
+  ;; (setq-default evil-escape-excluded-major-modes '(magit))
+  (setq evil-escape-excluded-major-modes '(dired-mode neotree-mode evil-visual-mode magit-mode magit))
+  ;; dont try to line up tabs
+  (setq-default evil-shift-round nil)
+  ;; yank from cursor till end of line
+  (setq-default evil-want-Y-yank-to-eol nil)
+
+  ;; ignore jshint. TODO is this used?
+  (setq-default javascript-jshint nil)
+
+  ;; if we are in text mode, i prefer to have linebreaks added automatically
+  (add-hook 'text-mode-hook 'auto-fill-mode)
+
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+  ;; use local eslint from node_modules before global
+  ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+  (defun my/use-eslint-from-node-modules ()
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (eslint (and root
+                        (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                          root))))
+      (when (and eslint (file-executable-p eslint))
+        (setq-local flycheck-javascript-eslint-executable eslint))))
+
+  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+
+  (if (spacemacs/system-is-mac)
+      (setq mac-command-modifier 'meta
+            mac-option-modifier  'none)
+    ;; TODO should probably check if this exists
+    (setq eclim-eclipse-dirs "/Applications/Eclipse.app/Contents/Eclipse"
+          eclim-executable "/Applications/Eclipse.app/Contents/Eclipse/eclim"))
+
+
+  ;; always respect editorconfig files
+  (editorconfig-mode 1)
+
+  ;; because the default is impractical
+  (setq smerge-command-prefix "\C-cv")
+
+  ;; tabs vs spaces, i give up..
+  (setq-default tab-width 2)
+  (setq-default
+   sh-basic-offset tab-width
+   sh-indentation tab-width
+   )
+
+
+  (with-eval-after-load 'org
+    (setq org-deadline-warning-days 14)
+    (global-set-key (kbd "C-c c") 'org-capture)
+    (setq org-directory "~/org/")
+    (setq org-agenda-files (quote ("~/org")))
+    (setq org-default-notes-file "~/org/notes.org")
+    (setq org-todo-keywords
+          '((sequence
+             "TODO(t)"
+             "INPROGRESS(i)"
+             "WAITING(w)"
+             "SOMEDAY(.)"
+             "|" "DONE(x!)" "CANCELLED(c@)")
+            (sequence "NEXT(n)"
+                      "|" "DONE(x!)" "CANCLELLED(c@)")
+            (sequence "MEET(m)" "|" "COMPLETE(x)")
+            (sequence "BUG(b)" "|" "FIXED(f)")
+            (sequence "READ(r)" "|" "DONE(x!)")
+            (sequence "TODELEGATE(-)" "DELEGATED(d)" "COMPLETE(x)")))
+
+    (setq org-agenda-start-on-weekday 1)
+
+    ;; (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+
+    ;; (setq org-capture-templates
+    ;; 	(quote (("t" "todo" entry (file "~/dev/org/TODO.org")
+    ;; 						"* TODO %?\n%T\n" :clock-in t :clock-resume t)
+    ;; 					 ("r" "respond" entry (file org-default-notes-file)
+    ;;              "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n" :clock-in t :clock-resume t :immediate-finish t)
+    ;; 					 ("n" "note" entry (file org-default-notes-file)
+    ;;              "* %? :NOTE:\n%T\n" :clock-in t :clock-resume t)
+    ;; 					 ("j" "Journal" entry (file+datetree "~/dev/org/journal.org")
+    ;;              "* %?\n%T\n" :clock-in t :clock-resume t)
+    ;; 					 ("m" "Meeting" entry (file org-default-notes-file)
+    ;;              "* MEETING with %? :MEETING:\n%T" :clock-in t :clock-resume t))))
+
+    ;; (setq org-icalendar-combined-agenda-file "~/Dropbox/Public/hsph.ics")
+    ;; (setq org-icalendar-alarm-time 60)
+    ;; (setq org-agenda-default-appointment-duration 60)
+    ;; (setq org-agenda-skip-scheduled-if-done t)
+
+    ;; Needs terminal-notifier (brew install terminal-notifier)
+    ;; (defun notify-osx (title message)
+    ;; 	(call-process "terminal-notifier"
+    ;; 		nil 0 nil
+    ;; 		"-group" "Emacs"
+    ;; 		"-title" title
+    ;; 		"-sender" "org.gnu.Emacs"
+    ;; 		"-message" message))
+
+    ;; (defvar roryk-org-sync-timer nil)
+
+    ;; (defvar roryk-org-sync-secs (* 60 20))
+
+    ;; (defun roryk-org-sync ()
+    ;; 	(org-icalendar-combine-agenda-files)
+    ;; 	(notify-osx "Emacs (org-mode)" "iCal sync completed."))
+
+    ;; (defun roryk-org-sync-start ()
+    ;; 	"Start automated org-mode syncing"
+    ;; 	(interactive)
+    ;; 	(setq roryk-org-sync-timer
+    ;; 		(run-with-idle-timer roryk-org-sync-secs t
+    ;; 			'roryk-org-sync)))
+
+    ;; (defun roryk-org-sync-stop ()
+    ;; 	"Stop automated org-mode syncing"
+    ;; 	(interactive)
+    ;; 	(cancel-timer roryk-org-sync-timer))
+
+    ;; (roryk-org-sync-start)
+
+    ;; ;; Set to the location of your Org files on your local system
+    ;; (setq org-directory "~/Documents/Org")
+    ;; ;; Set to the name of the file where new notes will be stored
+    ;; (setq org-mobile-inbox-for-pull "~/Documents/Org/inbox.org")
+    ;; ;; Set to <your Dropbox root directory>/MobileOrg.
+    ;; (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+
+    )
+
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -376,7 +525,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (web-beautify livid-mode skewer-mode json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc impatient-mode simple-httpd helm-gtags ggtags flycheck company-tern dash-functional tern company coffee-mode add-node-modules-path ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (web-mode tide typescript-mode tagedit stickyfunc-enhance srefactor spotify slim-mode scss-mode sass-mode ranger rainbow-mode rainbow-identifiers pug-mode ox-twbs mmm-mode meghanada markdown-toc markdown-mode less-css-mode impatient-mode helm-spotify multi helm-css-scss helm-company helm-c-yasnippet haml-mode gradle-mode gh-md fuzzy flycheck-pos-tip pos-tip flycheck-elm flycheck ensime sbt-mode scala-mode emmet-mode elm-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-restclient know-your-http-well company-emacs-eclim eclim company color-identifiers-mode auto-yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
