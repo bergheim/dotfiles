@@ -169,13 +169,13 @@ bindsym $mod+Shift+s sticky toggle
 # set $inactive-text-color $676e7d
 # set $urgent-bg-color #e53935
 
-# # class                 border  backgr. text    indicator child_border
-# client.focused          #4c7899 #285577 #ffffff #2e9ef4   #285577
-# client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
-# client.unfocused        #333333 #222222 #888888 #292d2e   #222222
-# client.urgent           #2f343a #900000 #ffffff #900000   #900000
-# client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+# # class                 border              backgr.             text               indicator child_border
+# client.focused          $bg-color           $bg-color           $text-color        #2e9ef4   #285577
+# client.unfocused        $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #292d2e   #222222
+# client.focused_inactive $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #484e50   #5f676a
+# client.urgent           $urgent-bg-color    $urgent-bg-color    $text-color        #900000   #900000
 
+# client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 # client.background       #ffffff
 
 # Start i3bar to display a workspace bar (plus the system information i3status
@@ -186,16 +186,20 @@ bar {
   workspace_buttons yes
   tray_output       none
     colors {
-        background #000000
-        statusline #ffffff
+        # background $bg-color
+        # statusline #ffffff
 
-        focused_workspace  #ffffff #285577
-        active_workspace   #ffffff #333333
-        inactive_workspace #888888 #222222
-        urgent_workspace   #ffffff #900000
+        # #                   border              background          text
+        # focused_workspace   $bg-color           $bg-color           $text-color
+        # active_workspace    $bg-color           $bg-color           $text-color
+        # inactive_workspace  $inactive-bg-color  $inactive-bg-color  $inactive-text-color
+        # urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
     }
-     # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 }
+
+new_window pixel 0
+hide_edge_borders both
+bindsym $alt+b border toggle
 
 # {{{ automatically put clients on specific workspaces
 assign [class="^Firefox$"] $ws1
