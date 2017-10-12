@@ -96,12 +96,13 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
 
-  (add-to-list 'tramp-methods
-               '("yadm"
-                 (tramp-login-program "yadm")
-                 (tramp-login-args (("enter")))
-                 (tramp-remote-shell "/bin/sh")
-                 (tramp-remote-shell-args ("-c"))))
+  ;; FIXME: not working
+  ;; (add-to-list 'tramp-methods
+  ;;              '("yadm"
+  ;;                (tramp-login-program "yadm")
+  ;;                (tramp-login-args (("enter")))
+  ;;                (tramp-remote-shell "/bin/sh")
+  ;;                (tramp-remote-shell-args ("-c"))))
 
   (setq-default
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
