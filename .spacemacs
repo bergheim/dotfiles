@@ -60,6 +60,13 @@ This function should only modify configuration layer settings."
      java
      semantic
      spotify
+     (themes-megapack :packages
+                      badwolf-theme
+                      material-theme
+                      molokai-theme
+                      monokai-theme
+                      seti-theme
+                      zenburn-theme)
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
