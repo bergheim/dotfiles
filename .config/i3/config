@@ -2,8 +2,6 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
-exec --no-startup-id feh --bg-fill ~/Downloads/trees.jpg
-
 set $mod Mod4
 set $alt Mod1
 
@@ -12,13 +10,6 @@ set $up k
 set $right l
 set $down j
 set $left h
-
-# colors
-set $bg-color #2f343f
-set $inactive-bg-color #2f343f
-set $text-color #f3f4f5
-set $inactive-text-color $676e7d
-set $urgent-bg-color #e53935
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -45,6 +36,9 @@ bindsym $alt+Return exec i3-sensible-terminal
 # kill focused window
 bindsym $mod+Shift+q kill
 
+# lock the screen
+bindsym $mod+Shift+x exec $HOME/.bin/scripts/lock.sh
+
 # start dmenu (a program launcher)
 # bindsym $mod+d exec dmenu_run
 # There also is the (new) i3-dmenu-desktop which only displays applications
@@ -53,7 +47,6 @@ bindsym $mod+Shift+q kill
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 bindsym $mod+d exec rofi -show run -lines 5 -eh 2 -width 100 -padding 800 -bw 0
 bindsym $mod+Shift+d exec --no-startup-id rofi -show run
-
 
 # change focus
 bindsym $mod+$left focus left
@@ -100,7 +93,18 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-bindsym $mod+a focus parent
+bindsym $mod+p focus parent
+
+# switch to next/prev workspace
+# bindsym $sup+Right workspace next
+# bindsym $sup+Left  workspace prev
+bindsym $mod+t    workspace back_and_forth
+
+# jump to urgent window
+bindsym $mod+a [urgent=latest] focus
+
+# toggle between two monitors
+bindsym $mod+x focus output left
 
 # focus the child container
 #bindsym $mod+d focus child
@@ -140,8 +144,10 @@ bindsym $mod+$alt+0 move container to workspace 10
 bindsym $mod+n move workspace to output right
 
 # next/previous workspace
-bindsym $mod+Tab workspace next
-bindsym $mod+Shift+Tab workspace prev
+# bindsym $mod+Tab workspace next
+# bindsym $mod+Shift+Tab workspace prev
+# list open windows to switch to
+bindsym $mod+Tab exec rofi -show window
 # Hit $mod-X twice, go back
 workspace_auto_back_and_forth yes
 
@@ -171,35 +177,74 @@ bindsym $mod+r mode "resize"
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
 
-# # class                 border              backgr.             text               indicator child_border
-# client.focused          $bg-color           $bg-color           $text-color        #2e9ef4   #285577
-# client.unfocused        $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #292d2e   #222222
-# client.focused_inactive $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #484e50   #5f676a
-# client.urgent           $urgent-bg-color    $urgent-bg-color    $text-color        #900000   #900000
+set $keyboard_layout Keyboard Layout: (n) Norwegian, (e) US English
+mode "$keyboard_layout" {
+  bindsym n exec --no-startup-id setxkbmap no ,mode "default"
+  bindsym e exec --no-startup-id setxkbmap us ,mode "default"
 
-# client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
-# client.background       #ffffff
+  # back to normal: Enter or Escape
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+bindsym $mod+shift+Z mode "$keyboard_layout"
+
+# colors
+#set $bg-color #2f343f
+#set $inactive-bg-color #2f343f
+#set $text-color #f3f4f5
+#set $inactive-text-color $676e7d
+#set $urgent-bg-color #e53935
+#
+## class                 border              backgr.             text               indicator child_border
+#client.focused          $bg-color           $bg-color           $text-color        #2e9ef4   #285577
+#client.unfocused        $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #292d2e   #222222
+#client.focused_inactive $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #484e50   #5f676a
+#client.urgent           $urgent-bg-color    $urgent-bg-color    $text-color        #900000   #900000
+#
+#client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+#client.background       #ffffff
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
+
+# class                 border  bground text    indicator child_border
+client.focused          #4C7899 #285577 #FFFFFF #2E9EF4   #285577
+client.focused_inactive #333333 #5F676A #FFFFFF #484E50   #5F676A
+client.unfocused        #333333 #222222 #888888 #292D2E   #222222
+client.urgent           #2F343A #900000 #FFFFFF #900000   #900000
+client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
+
+client.background       #FFFFFF
 bar {
-  status_command i3status
+  status_command i3blocks
   position          top
   workspace_buttons yes
   tray_output       none
-    colors {
-        # background $bg-color
-        # statusline #ffffff
+#    colors {
+#        background $bg-color
+#        statusline #ffffff
+#
+#        #                   border              background          text
+#        focused_workspace   $bg-color           $bg-color           $text-color
+#        active_workspace    $bg-color           $bg-color           $text-color
+#        inactive_workspace  $inactive-bg-color  $inactive-bg-color  $inactive-text-color
+#        urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
+#    }
+  colors {
+    background #000000
+    statusline #cccccc
+    separator  #666666
 
-        # #                   border              background          text
-        # focused_workspace   $bg-color           $bg-color           $text-color
-        # active_workspace    $bg-color           $bg-color           $text-color
-        # inactive_workspace  $inactive-bg-color  $inactive-bg-color  $inactive-text-color
-        # urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
-    }
+    focused_workspace  #4C7899 #285577 #FFFFFF
+    active_workspace   #333333 #222222 #FFFFFF
+    inactive_workspace #333333 #222222 #888888
+    urgent_workspace   #2F343A #900000 #FFFFFF
+    binding_mode       #2F343A #900000 #FFFFFF
+  }
 }
 
-new_window pixel 0
+
+#new_window pixel 0
 hide_edge_borders smart
 bindsym $alt+b border toggle
 
@@ -214,6 +259,9 @@ assign [class="^Chromium$"] $ws5
 # exec volumeicon
 # exec dropboxd
 # exec $jabber
+
+exec --no-startup-id feh --bg-fill ~/Downloads/trees.jpg
+exec --no-startup-id light -s 50
 exec telegram-desktop
 exec firefox
 exec chromium
@@ -223,9 +271,3 @@ exec compton -f
 # dont tile popups
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
-
-# jump to urgent window
-bindsym $mod+x [urgent=latest] focus
-
-# lock the screen
-bindsym $mod+Shift+x exec $HOME/.bin/scripts/lock.sh
