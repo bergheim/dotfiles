@@ -95,6 +95,14 @@ before layer configuration.
 It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
+
+  (add-to-list 'tramp-methods
+               '("yadm"
+                 (tramp-login-program "yadm")
+                 (tramp-login-args (("enter")))
+                 (tramp-remote-shell "/bin/sh")
+                 (tramp-remote-shell-args ("-c"))))
+
   (setq-default
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
@@ -366,7 +374,6 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-excluded-states '(visual))
   ;; (setq-default evil-escape-excluded-major-modes '(magit))
@@ -374,10 +381,13 @@ before packages are loaded."
   ;; dont try to line up tabs
   (setq-default evil-shift-round nil)
   ;; yank from cursor till end of line
-  (setq-default evil-want-Y-yank-to-eol nil)
+  (setq-default evil-want-Y-yank-to-eol t)
 
   ;; ignore jshint. TODO is this used?
   (setq-default javascript-jshint nil)
+  ;; Turn off js2 mode errors & warnings (we lean on eslint/standard)
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil)
 
   ;; if we are in text mode, i prefer to have linebreaks added automatically
   (add-hook 'text-mode-hook 'auto-fill-mode)
@@ -530,9 +540,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol t)
+ '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
  '(package-selected-packages
    (quote
-    (web-mode tide typescript-mode tagedit stickyfunc-enhance srefactor spotify slim-mode scss-mode sass-mode ranger rainbow-mode rainbow-identifiers pug-mode ox-twbs mmm-mode meghanada markdown-toc markdown-mode less-css-mode impatient-mode helm-spotify multi helm-css-scss helm-company helm-c-yasnippet haml-mode gradle-mode gh-md fuzzy flycheck-pos-tip pos-tip flycheck-elm flycheck ensime sbt-mode scala-mode emmet-mode elm-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-restclient know-your-http-well company-emacs-eclim eclim company color-identifiers-mode auto-yasnippet ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (web-mode tide pug-mode org-projectile org-download org-brain ob-http mmm-mode magit-gitflow ensime elm-mode editorconfig eclim tern window-purpose markdown-mode flycheck company yasnippet magit magit-popup git-commit with-editor haml-mode js2-mode simple-httpd zenburn-theme seti-theme monokai-theme molokai-theme material-theme badwolf-theme ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
