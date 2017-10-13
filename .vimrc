@@ -11,6 +11,10 @@ set showcmd             " display incomplete commands
 set hidden              " allow multiple buffers without saving
 set encoding=utf-8
 set fileencoding=utf-8
+" assumes fast connection
+set ttyfast
+" every window gets a status line
+set laststatus=2
 
 set background=dark
 syntax on
