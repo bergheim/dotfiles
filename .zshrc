@@ -77,9 +77,17 @@ bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
-bindkey "^k" vi-up-line-or-history
-bindkey "^j" vi-down-line-or-history
-bindkey '^o' autosuggest-accept
+bindkey "^K" vi-up-line-or-history
+bindkey "^J" vi-down-line-or-history
+bindkey '^O' autosuggest-accept
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+
+# Edit command line with editor
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^E' edit-command-line
+
 
 # rehash executables after something is installed in $PATH
 zstyle ':completion:*' rehash true
