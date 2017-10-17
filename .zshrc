@@ -1,36 +1,46 @@
+DEFAULT_USER=tsb # only show username, not username@hostname
 if [[ ! -d ~/.zplug ]];then
     git clone https://github.com/b4b4r07/zplug ~/.zplug
 fi
 
 source ~/.zplug/init.zsh
 
-# Load completion library for those sweet [tab] squares
-# zplug "lib/completion", from:oh-my-zsh
+zplug "zplug/zplug" # update yourself
+zplug "lib/completion", from:oh-my-zsh # arrows to choose dir
+zplug "plugins/command-not-found", from:oh-my-zsh
+zplug "plugins/git",   from:oh-my-zsh
+zplug "supercrabtree/k" # use k to view git file status
+zplug "b4b4r07/zsh-vimode-visual", use:"*.zsh", defer:3
+
+# zplug "zsh-users/zsh-history-substring-search"
+# zplug "joel-porquet/zsh-dircolors-solarized"
+
+# z
+# Navigate your most used directories based on 'frecency'.
+# https://github.com/rupa/z
+zplug 'rupa/z', use:'*.sh'
+
+# Themes
+autoload colors && colors
+setopt prompt_subst # Make sure propt is able to be generated properly.
+
+zplug "mafredri/zsh-async", from:github
+zplug "dfurnes/purer", use:pure.zsh, from:github, as:theme
+
+# zplug "themes/agnoster", from:oh-my-zsh
+# zplug 'agnoster/agnoster-zsh-theme', as:theme
+# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
+# zplug "adambiggs/zsh-theme", as:theme, use:adambiggs.zsh-theme
+
 # Syntax highlighting for commands, load last
 zplug "zsh-users/zsh-syntax-highlighting", from:github, defer:3
 
-# Load completion library for those sweet [tab] squares
-zplug "lib/completion", from:oh-my-zsh
-
-zplug "plugins/command-not-found", from:oh-my-zsh
-
-# use k to view git file status
-zplug "supercrabtree/k"
-
-zplug "b4b4r07/zsh-vimode-visual", use:"*.zsh", defer:3
-
-zplug "joel-porquet/zsh-dircolors-solarized"
-
-# zplug 'agnoster/agnoster-zsh-theme', as:theme
-# pure prompt
-#zplug "mafredri/zsh-async", from:github
-#zplug "sindresorhus/pure", use:"pure.zsh", from:github, as:theme
-zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
-
+zplug check || zplug install
 zplug load --verbose
 
-# autoload -Uz colors
-# colors
+# if zplug check joel-porquet/zsh-dircolors-solarized; then
+#     setupsolarized dircolors.256dark
+# fi
 
 alias ls='\ls --color'
 alias l='ls'
@@ -39,26 +49,25 @@ alias la='ls -a'
 alias ll='ls -l'
 alias llh='ls -lh'
 
-# if zplug check joel-porquet/zsh-dircolors-solarized; then
-#     setupsolarized dircolors.256dark
-# fi
-
-
-# The following lines were added by compinstall
-# zstyle :compinstall filename '/home/tsb/.zshrc'
-
-# autoload -Uz compinit promptinit
-# compinit
-# promptinit
-
 # enable zsh help. run with alt+h or esc+h FIXME does not work
 autoload -Uz run-help
 alias help=run-help
 
+setopt no_beep
+
 HISTFILE=~/.histfile
-HISTSIZE=10000
-SAVEHIST=10000
-setopt appendhistory extendedglob
+HISTSIZE=20000
+SAVEHIST=20000
+setopt extendedglob           # supports lots of globbing things
+setopt hist_ignore_dups       # ignore duplication command history list
+setopt hist_verify            # expand history onto the current line instead of executing it
+setopt hist_expire_dups_first # when trimming history, lose oldest duplicates first
+setopt hist_ignore_space      # don't save commands beginning with spaces to history
+setopt extended_history       # save beginning time and elapsed time before commands in history
+setopt append_history         # append to the end of the history file
+setopt inc_append_history     # don't just save at termend
+setopt share_history          # reloads the history whenever you use it
+setopt hist_ignore_all_dups   # delete old recorded entry if new entry is a duplicate
 
 # vim settings
 bindkey -v
@@ -72,18 +81,8 @@ bindkey "^k" vi-up-line-or-history
 bindkey "^j" vi-down-line-or-history
 bindkey '^o' autosuggest-accept
 
-# enable arrows on completion
-# zstyle ':completion:*' menu select
-# setopt COMPLETE_ALIASES
-
 # rehash executables after something is installed in $PATH
 zstyle ':completion:*' rehash true
-
-# search for package when "command not found"
-# source /usr/share/doc/pkgfile/command-not-found.zsh
-
-# enable additional syntax highlighting
-# source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # navigate down/back with c-h, c-l
 cdUndoKey() {
@@ -110,7 +109,6 @@ bindkey '^H'      cdParentKey
 bindkey '^U'      cdUndoKey
 
 ## source ~/.config/zsh/prompt.sh
-
 
 # fzf things
 source /usr/share/fzf/key-bindings.zsh
