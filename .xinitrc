@@ -10,6 +10,7 @@ fi
 numlockx &
 unclutter &
 setxkbmap -option 'ctrl:nocaps' & # use caps as esc
+xset b off # don't beep
 xset r rate 180 40
 # enable for extra logging
 #exec i3 -V >> ~/i3log-$(date +'%F-%k-%M-%S') 2>&1
