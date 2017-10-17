@@ -261,7 +261,11 @@ assign [class="^Chromium$"] $ws5
 # exec $jabber
 
 exec --no-startup-id feh --bg-fill ~/Downloads/trees.jpg
-exec --no-startup-id light -s 50
+# TODO what is light?
+# exec --no-startup-id light -s 50
+exec --no-startup-id redshift
+# Lock after timeout
+exec --no-startup-id "~/.config/xautolock.sh"
 exec telegram-desktop
 exec firefox
 exec chromium
