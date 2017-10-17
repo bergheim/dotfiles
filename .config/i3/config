@@ -264,6 +264,7 @@ exec --no-startup-id feh --bg-fill ~/Downloads/trees.jpg
 # TODO what is light?
 # exec --no-startup-id light -s 50
 exec --no-startup-id redshift
+# exec --no-startup-id emacs --daemon && emacsclient -c
 # Lock after timeout
 exec --no-startup-id "~/.config/xautolock.sh"
 exec telegram-desktop
