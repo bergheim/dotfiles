@@ -84,6 +84,9 @@ bindkey '^O' autosuggest-accept
 bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line
 
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line
+
 # Edit command line with editor
 autoload -Uz edit-command-line
 zle -N edit-command-line
