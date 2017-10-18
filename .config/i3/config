@@ -177,6 +177,9 @@ bindsym $mod+r mode "resize"
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
 
+# screenshots. like osx. they don't make sense but why not..
+bindsym $mod+Shift+3 exec scrot
+
 # colors
 #set $bg-color #2f343f
 #set $inactive-bg-color #2f343f
