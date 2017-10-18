@@ -175,6 +175,50 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# gaps
+gaps inner 10
+gaps outer 10
+smart_borders no_gaps
+# smart_gaps on
+for_window [class="^.*"] border pixel 3
+
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindsym $mod+Shift+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_inner" {
+        bindsym plus  gaps inner current plus 5
+        bindsym minus gaps inner current minus 5
+        bindsym 0     gaps inner current set 0
+
+        bindsym Shift+plus  gaps inner all plus 5
+        bindsym Shift+minus gaps inner all minus 5
+        bindsym Shift+0     gaps inner all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+        bindsym plus  gaps outer current plus 5
+        bindsym minus gaps outer current minus 5
+        bindsym 0     gaps outer current set 0
+
+        bindsym Shift+plus  gaps outer all plus 5
+        bindsym Shift+minus gaps outer all minus 5
+        bindsym Shift+0     gaps outer all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
 
@@ -209,6 +253,7 @@ client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
 
 client.background       #FFFFFF
 bar {
+  i3bar_command i3bar -t
   status_command i3blocks
   position          top
   workspace_buttons yes
@@ -225,7 +270,7 @@ bar {
 #        urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
 #    }
   colors {
-    background #000000
+    background #000000cc
     statusline #cccccc
     separator  #666666
 
