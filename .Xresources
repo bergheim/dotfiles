@@ -44,3 +44,13 @@ rofi.padding: 800
 rofi.eh: 2
 !rofi.separator-style: solid
 rofi.hide-scrollbar: true
+
+# make fonts nice
+Xft.lcdfilter: lcddefault
+Xft.antialias: true
+Xft.autohint: 0
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.rgba: rgb
+Xft.dpi: 96
+
