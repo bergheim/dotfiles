@@ -177,17 +177,6 @@ bindsym $mod+r mode "resize"
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
 
-set $keyboard_layout Keyboard Layout: (n) Norwegian, (e) US English
-mode "$keyboard_layout" {
-  bindsym n exec --no-startup-id setxkbmap no ,mode "default"
-  bindsym e exec --no-startup-id setxkbmap us ,mode "default"
-
-  # back to normal: Enter or Escape
-  bindsym Return mode "default"
-  bindsym Escape mode "default"
-}
-bindsym $mod+shift+Z mode "$keyboard_layout"
-
 # colors
 #set $bg-color #2f343f
 #set $inactive-bg-color #2f343f
