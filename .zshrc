@@ -9,6 +9,7 @@ zplug "zplug/zplug" # update yourself
 zplug "lib/completion", from:oh-my-zsh # arrows to choose dir
 zplug "plugins/command-not-found", from:oh-my-zsh
 zplug "plugins/git",   from:oh-my-zsh
+zplug "plugins/last-working-dir",   from:oh-my-zsh
 zplug "supercrabtree/k" # use k to view git file status
 zplug "b4b4r07/zsh-vimode-visual", use:"*.zsh", defer:3
 
