@@ -211,7 +211,8 @@ bar {
   status_command i3blocks
   position          top
   workspace_buttons yes
-  tray_output       none
+  tray_output       primary
+  # tray_padding 0
 #    colors {
 #        background $bg-color
 #        statusline #ffffff
@@ -255,7 +256,7 @@ assign [class="^Chromium$"] $ws5
 exec --no-startup-id feh --bg-fill ~/Downloads/trees.jpg
 # TODO what is light?
 # exec --no-startup-id light -s 50
-exec --no-startup-id redshift
+exec --no-startup-id redshift-gtk
 exec --no-startup-id dunst
 exec --no-startup-id emacs --daemon && emacsclient -c
 # Lock after timeout
