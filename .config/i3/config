@@ -24,7 +24,8 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 11
+# font pango:DejaVu Sans Mono 11
+font pango:Inconsolata 12
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
