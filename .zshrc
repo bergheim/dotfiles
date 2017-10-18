@@ -92,7 +92,6 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^E' edit-command-line
 
-
 # rehash executables after something is installed in $PATH
 zstyle ':completion:*' rehash true
 
@@ -120,11 +119,23 @@ bindkey '^[[1;3D'      cdUndoKey
 bindkey '^H'      cdParentKey
 bindkey '^U'      cdUndoKey
 
-## source ~/.config/zsh/prompt.sh
-
 # fzf things
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
+
+# use ag
+# export FZF_DEFAULT_COMMAND='ag --hidden -U --ignore .git -g ""'
+# use rg
+# --files: List files that would be searched but do not search
+# --no-ignore: Do not respect .gitignore, etc...
+# --hidden: Search hidden files and folders
+# --follow: Follow symlinks
+# --glob: Additional conditions for search
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!{.git,node_modules}/*" 2> /dev/null'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# preview
+export FZF_CTRL_T_OPTS="--preview '(highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
 
 # fd - cd to selected directory
 fd() {
