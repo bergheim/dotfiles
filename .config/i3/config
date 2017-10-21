@@ -312,7 +312,7 @@ assign [class="^Chromium$"] $ws5
 # exec dropboxd
 # exec $jabber
 
-exec --no-startup-id feh --bg-fill ~/Downloads/trees.jpg
+exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
 # TODO what is light?
 # exec --no-startup-id light -s 50
 exec --no-startup-id redshift-gtk
