@@ -185,7 +185,7 @@ gaps inner 10
 gaps outer 10
 smart_borders no_gaps
 # smart_gaps on
-for_window [class="^.*"] border pixel 3
+for_window [class="^.*"] border pixel 2
 
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
@@ -223,6 +223,14 @@ mode "$mode_gaps_outer" {
         bindsym Return mode "default"
         bindsym Escape mode "default"
 }
+
+bindsym $mod+o          gaps inner current set 0; gaps outer current set 0
+bindsym $mod+p          gaps inner current set 10; gaps outer current set 10
+bindsym $mod+shift+p    gaps inner current set 10; gaps outer current set 40
+bindsym $mod+shift+o    gaps inner current set 10; gaps outer current set 200
+
+bindsym $mod+y fullscreen disable; floating enable; resize set 422 240; sticky enable; move position 870 25
+
 
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
