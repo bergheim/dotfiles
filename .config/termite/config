@@ -43,7 +43,7 @@ foreground = #dcdccc
 foreground_bold = #ffffff
 background = #3f3f3f
 
-# 20% background transparency (requires a compositor)
+# background transparency (requires a compositor)
 background = rgba(63, 63, 63, 0.95)
 
 # if unset, will reverse foreground and background
