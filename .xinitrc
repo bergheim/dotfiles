@@ -9,13 +9,15 @@ fi
 
 numlockx &
 unclutter &
-setxkbmap -option caps:escape # use caps as esc
-setxkbmap -layout 'us,no' -option grp:alt_shift_toggle
 clipmenud &
+redshift-gtk &
+dunst &
+compton -f &
 kbdd
 
+setxkbmap -option caps:escape # use caps as esc
+#setxkbmap -layout 'us,no' -option "grp:alt_shift_toggle,terminate:ctrl_alt_bksp"
+setxkbmap -layout 'us,no' -option "terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 40
-# enable for extra logging
-#exec i3 -V >> ~/i3log-$(date +'%F-%k-%M-%S') 2>&1
 exec i3
