@@ -46,7 +46,7 @@ bindsym $mod+Shift+x exec $HOME/local/bin/lock.sh
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+d exec rofi -show run -lines 5 -eh 2 -width 100 -padding 800 -bw 0
+bindsym $mod+d exec rofi -show run -lines 10 -eh 1 -width 100 -padding 700 -bw 0
 bindsym $mod+Shift+d exec --no-startup-id rofi -show run
 
 # change focus
@@ -148,9 +148,11 @@ bindsym $mod+n move workspace to output right
 # bindsym $mod+Tab workspace next
 # bindsym $mod+Shift+Tab workspace prev
 # list open windows to switch to
-bindsym $mod+Tab exec rofi -show window
+bindsym $alt+Tab exec rofi -show window
 # Hit $mod-X twice, go back
 workspace_auto_back_and_forth yes
+
+bindsym $mod+c exec "CM_LAUNCHER=rofi clipmenu"
 
 # resize window (you can also use the mouse for that)
 # direction is grow in that direction

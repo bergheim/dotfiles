@@ -11,6 +11,7 @@ numlockx &
 unclutter &
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option grp:alt_shift_toggle
+clipmenud &
 kbdd
 
 xset b off # don't beep
