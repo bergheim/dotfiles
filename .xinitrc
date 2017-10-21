@@ -20,4 +20,12 @@ setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 40
-exec i3
+
+if [ "$1" = "bspwm" ]; then
+  sxhkd &
+  # panel &
+  polybar tb &
+  exec bspwm
+else
+  exec i3
+fi
