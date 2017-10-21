@@ -117,6 +117,9 @@ set $ws4 "4:email "
 set $ws5 "5:work "
 set $ws6 "6:misc "
 
+bindsym $mod+Shift+comma    move scratchpad
+bindsym $mod+comma          scratchpad show
+
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
