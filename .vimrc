@@ -26,6 +26,11 @@ set ruler " always show current position at bottom
 set cmdheight=2
 set number " linenumbers
 
+" jump to the last position when reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+endif
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " files/backups
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""
