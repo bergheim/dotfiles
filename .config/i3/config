@@ -99,7 +99,7 @@ bindsym $mod+p focus parent
 # switch to next/prev workspace
 # bindsym $sup+Right workspace next
 # bindsym $sup+Left  workspace prev
-bindsym $mod+t    workspace back_and_forth
+bindsym $mod+grave    workspace back_and_forth
 
 # jump to urgent window
 bindsym $mod+a [urgent=latest] focus
@@ -297,7 +297,10 @@ bar {
 
 
 #new_window pixel 0
-hide_edge_borders smart
+
+# with i3-gaps this looks strange on apps like chromium
+#hide_edge_borders smart
+
 bindsym $alt+b border toggle
 
 # {{{ automatically put clients on specific workspaces
@@ -315,15 +318,9 @@ assign [class="^Chromium$"] $ws5
 exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
 # TODO what is light?
 # exec --no-startup-id light -s 50
-exec --no-startup-id redshift-gtk
-exec --no-startup-id dunst
-exec --no-startup-id emacs --daemon && emacsclient -c
+# exec --no-startup-id emacs --daemon && emacsclient -c
 # Lock after timeout
 exec --no-startup-id "~/.config/xautolock.sh"
-exec telegram-desktop
-exec firefox
-exec chromium
-exec compton -f
 # }}}
 
 # dont tile popups
