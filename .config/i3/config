@@ -94,12 +94,12 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-bindsym $mod+p focus parent
+# bindsym $mod+p focus parent
 
 # switch to next/prev workspace
 # bindsym $sup+Right workspace next
 # bindsym $sup+Left  workspace prev
-bindsym $mod+grave    workspace back_and_forth
+bindsym $mod+grave workspace back_and_forth
 
 # jump to urgent window
 bindsym $mod+a [urgent=latest] focus
@@ -183,7 +183,7 @@ bindsym $mod+r mode "resize"
 # gaps
 gaps inner 10
 gaps outer 10
-smart_borders no_gaps
+# smart_borders no_gaps
 # smart_gaps on
 for_window [class="^.*"] border pixel 2
 
@@ -296,11 +296,9 @@ bar {
 }
 
 
-#new_window pixel 0
-
+# new_window pixel 0
 # with i3-gaps this looks strange on apps like chromium
-#hide_edge_borders smart
-
+# hide_edge_borders smart
 bindsym $alt+b border toggle
 
 # {{{ automatically put clients on specific workspaces
