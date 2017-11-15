@@ -43,7 +43,15 @@ zplug load --verbose
 #     setupsolarized dircolors.256dark
 # fi
 
-alias ls='\ls --color'
+case `uname` in
+  Darwin)
+	alias ls='ls -G'
+  ;;
+  Linux)
+	alias ls='ls --color'
+  ;;
+esac
+
 alias l='ls'
 alias sl='ls'
 alias la='ls -a'
