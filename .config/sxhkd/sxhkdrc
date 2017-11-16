@@ -98,7 +98,6 @@ super + {o,i}
 # focus or send to the given desktop
 super + {_,alt + }{1-3}
 	bspc {desktop -f,node -d} '^{1-3}'
-
 super + {_,alt + }q
 	bspc {desktop -f,node -d} '^4}'
 super + {_,alt + }w
