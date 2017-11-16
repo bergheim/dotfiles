@@ -14,7 +14,7 @@ set $left h
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+r restart
+bindsym $mod+$alt+esc restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
@@ -35,10 +35,10 @@ bindsym $mod+Return exec termite
 # bindsym $alt+Return exec i3-sensible-terminal
 
 # kill focused window
-bindsym $mod+Shift+q kill
+bindsym $mod+Shift+d kill
 
 # lock the screen
-bindsym $mod+Shift+x exec $HOME/local/bin/lock.sh
+bindsym $mod+Shift+x exec fancylocki3
 
 # start dmenu (a program launcher)
 # bindsym $mod+d exec dmenu_run
@@ -46,8 +46,8 @@ bindsym $mod+Shift+x exec $HOME/local/bin/lock.sh
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+d exec rofi -show run -lines 10 -eh 1 -width 100 -padding 700 -bw 0
-bindsym $mod+Shift+d exec --no-startup-id rofi -show run
+bindsym $mod+r exec rofi -show run -lines 10 -eh 1 -bw 0
+bindsym $mod+Shift+r exec --no-startup-id rofi -show run
 
 # change focus
 bindsym $mod+$left focus left
@@ -83,18 +83,24 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+z layout stacking
+bindsym $mod+x layout tabbed
+bindsym $mod+c layout toggle split
 
 # toggle tiling / floating
-bindsym $mod+Shift+space floating toggle
+bindsym $mod+s floating toggle
+
+# make window small and persist across desktops
+bindsym $mod+y fullscreen disable; floating enable; resize set 422 240; sticky enable; move position 870 25
+
+# stick windows between desktops etc
+bindsym $mod+Shift+s sticky toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-# bindsym $mod+p focus parent
+bindsym $mod+p focus parent
 
 # switch to next/prev workspace
 # bindsym $sup+Right workspace next
@@ -124,25 +130,25 @@ bindsym $mod+comma          scratchpad show
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
-bindsym $mod+4 workspace $ws4
-bindsym $mod+5 workspace $ws5
-bindsym $mod+6 workspace $ws6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym $mod+q workspace $ws4
+bindsym $mod+w workspace $ws5
+bindsym $mod+e workspace $ws6
+bindsym $mod+4 workspace 7
+bindsym $mod+5 workspace 8
+bindsym $mod+6 workspace 9
+bindsym $mod+7 workspace 10
 
 # move focused container to workspace
 bindsym $mod+$alt+1 move container to workspace $ws1
 bindsym $mod+$alt+2 move container to workspace $ws2
 bindsym $mod+$alt+3 move container to workspace $ws3
-bindsym $mod+$alt+4 move container to workspace $ws4
-bindsym $mod+$alt+5 move container to workspace $ws5
-bindsym $mod+$alt+6 move container to workspace $ws6
-bindsym $mod+$alt+7 move container to workspace 7
-bindsym $mod+$alt+8 move container to workspace 8
-bindsym $mod+$alt+9 move container to workspace 9
-bindsym $mod+$alt+0 move container to workspace 10
+bindsym $mod+$alt+q move container to workspace $ws4
+bindsym $mod+$alt+w move container to workspace $ws5
+bindsym $mod+$alt+e move container to workspace $ws6
+bindsym $mod+$alt+4 move container to workspace 7
+bindsym $mod+$alt+5 move container to workspace 8
+bindsym $mod+$alt+6 move container to workspace 9
+bindsym $mod+$alt+7 move container to workspace 10
 
 # toggle workspace between two monitors
 bindsym $mod+n move workspace to output right
@@ -178,7 +184,7 @@ mode "resize" {
         bindsym Escape mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+i mode "resize"
 
 # gaps
 gaps inner 10
@@ -224,16 +230,10 @@ mode "$mode_gaps_outer" {
         bindsym Escape mode "default"
 }
 
-bindsym $mod+o          gaps inner current set 0; gaps outer current set 0
-bindsym $mod+p          gaps inner current set 10; gaps outer current set 10
-bindsym $mod+shift+p    gaps inner current set 10; gaps outer current set 40
-bindsym $mod+shift+o    gaps inner current set 10; gaps outer current set 200
-
-bindsym $mod+y fullscreen disable; floating enable; resize set 422 240; sticky enable; move position 870 25
-
-
-# stick windows between desktops etc
-bindsym $mod+Shift+s sticky toggle
+bindsym $mod+minus          gaps inner current set 0; gaps outer current set 0
+bindsym $mod+equal          gaps inner current set 10; gaps outer current set 10
+bindsym $mod+shift+minus    gaps inner current set 10; gaps outer current set 40
+bindsym $mod+shift+equal    gaps inner current set 10; gaps outer current set 200
 
 # screenshots. like osx. they don't make sense but why not..
 bindsym $mod+Shift+3 exec scrot
