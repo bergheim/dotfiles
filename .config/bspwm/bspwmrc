@@ -1,7 +1,8 @@
 #! /bin/sh
 
 # bspc monitor -d I II III IV V VI VII VIII IX X
-bspc monitor -d "inet  " "com  " "music  " "email  " "work  " "misc  " VII VIII IX X
+bspc monitor DP-4 -n 0 -d "" "" "" "" "" "" VII
+bspc monitor DP-2 -n 1 -d VIII IX X
 
 bspc config border_width         2
 bspc config window_gap          12
