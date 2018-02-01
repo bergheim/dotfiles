@@ -379,8 +379,13 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-excluded-states '(visual))
-  ;; (setq-default evil-escape-excluded-major-modes '(magit))
-  (setq evil-escape-excluded-major-modes '(dired-mode neotree-mode evil-visual-mode magit-mode magit))
+  (setq-default evil-escape-excluded-major-modes '(dired-mode
+                                                   neotree-mode
+                                                   evil-visual-mode
+                                                   magit-mode
+                                                   magit-log-mode
+                                                   magit-revision-mode
+                                                   magit-status-mode))
   ;; dont try to line up tabs
   (setq-default evil-shift-round nil)
   ;; yank from cursor till end of line
