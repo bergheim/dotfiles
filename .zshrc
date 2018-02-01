@@ -59,8 +59,8 @@ alias ll='ls -l'
 alias llh='ls -lh'
 
 alias pacup='sudo pacman -Syu'
-alias pacs='pacman -Ss'
 alias pacin='sudo pacman -S'
+alias pacs='pacman -Ss'
 
 # enable zsh help. run with alt+h or esc+h FIXME does not work
 autoload -Uz run-help
