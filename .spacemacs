@@ -62,6 +62,7 @@ This function should only modify configuration layer settings."
      react
      javascript
      typescript
+     sql
      java
      semantic
      spotify
