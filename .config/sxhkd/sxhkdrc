@@ -89,6 +89,14 @@ super + bracket{left,right}
 super + {grave,Tab}
 	bspc {node,desktop} -f last
 
+# Change window gap
+super + {minus,equal}
+	bspc config -d focused window_gap $((`bspc config -d focused window_gap` {+,-} 4 ))
+
+# Set splitting ratio of windows
+# super + ctrl + {1-9}
+# 	bspc window -r 0.{1-9}
+
 # focus the older or newer node in the focus history
 super + {o,i}
 	bspc wm -h off; \
