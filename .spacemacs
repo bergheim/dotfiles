@@ -467,6 +467,20 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (spacemacs/set-leader-keys "ogo" 'vc-revision-other-window)
+  (spacemacs/set-leader-keys "ogD" 'magit-diff-buffer-file)
+  (spacemacs/set-leader-keys "ogd" 'magit-diff-buffer-file-popup)
+  (spacemacs/set-leader-keys "ogl" 'magit-log-buffer-file)
+  (spacemacs/set-leader-keys "ogf" 'magit-file-popup)
+
+  (spacemacs/set-leader-keys "op" 'spotify-playpause)
+  (spacemacs/set-leader-keys "on" 'spotify-next)
+  (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
+  ;; set transparency
+  (set-frame-parameter (selected-frame) 'alpha '(85 85))
+  (add-to-list 'default-frame-alist '(alpha 85 85))
+
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-excluded-states '(visual))
   (setq-default evil-escape-excluded-major-modes '(dired-mode
