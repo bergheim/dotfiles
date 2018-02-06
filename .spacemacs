@@ -477,6 +477,15 @@ before packages are loaded."
   (spacemacs/set-leader-keys "op" 'spotify-playpause)
   (spacemacs/set-leader-keys "on" 'spotify-next)
   (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
+
+  ;; force js2-mode to use flycheck-next-error (fixes spc e n/p)
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil)
+  (add-hook 'js2-init-hook
+            '(lambda ()
+               (setq next-error-function 'flycheck-next-error)
+               ))
+
   ;; set transparency
   (set-frame-parameter (selected-frame) 'alpha '(85 85))
   (add-to-list 'default-frame-alist '(alpha 85 85))
