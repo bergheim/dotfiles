@@ -66,6 +66,7 @@ This function should only modify configuration layer settings."
      java
      semantic
      spotify
+     python
      (themes-megapack :packages
                       badwolf-theme
                       material-theme
