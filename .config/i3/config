@@ -46,8 +46,10 @@ bindsym $mod+Shift+x exec fancylocki3
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+r exec rofi -show run -lines 10 -eh 1 -bw 0
-bindsym $mod+Shift+r exec --no-startup-id rofi -show run
+bindsym $mod+r exec rofi -show run -lines 10 -display-run "run: "
+bindsym $mod+Shift+r exec rofi -show combi -display-combi "combi: "
+bindsym $alt+Tab exec rofi -show window -display-window "Switch to window: "
+bindsym $mod+c exec "CM_LAUNCHER=rofi clipmenu"
 
 # change focus
 bindsym $mod+$left focus left
@@ -157,12 +159,8 @@ bindsym $mod+n move workspace to output right
 # next/previous workspace
 # bindsym $mod+Tab workspace next
 # bindsym $mod+Shift+Tab workspace prev
-# list open windows to switch to
-bindsym $alt+Tab exec rofi -show window
 # Hit $mod-X twice, go back
 workspace_auto_back_and_forth yes
-
-bindsym $mod+c exec "CM_LAUNCHER=rofi clipmenu"
 
 # resize window (you can also use the mouse for that)
 # direction is grow in that direction
@@ -326,3 +324,4 @@ exec --no-startup-id "~/.config/xautolock.sh"
 # dont tile popups
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
+for_window [class="Qalculate-gtk"] floating enable
