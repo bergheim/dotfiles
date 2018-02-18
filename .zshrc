@@ -62,6 +62,11 @@ alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
 alias pacs='pacman -Ss'
 
+# prefer vim to vi if it is installed
+if type vim >/dev/null 2>/dev/null; then
+  alias vi=vim
+fi
+
 # enable zsh help. run with alt+h or esc+h FIXME does not work
 autoload -Uz run-help
 alias help=run-help
