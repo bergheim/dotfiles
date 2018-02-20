@@ -118,13 +118,13 @@ bindsym $mod+shift+x focus output left
 # focus the child container
 #bindsym $mod+d focus child
 
-set $ws1 "1: "
-set $ws2 "2: "
-set $ws3 "3: "
-# set $ws4 ""
-set $ws4 "4: "
-set $ws5 "5: "
-set $ws6 "6: "
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
 
 bindsym $mod+Shift+comma    move scratchpad
 bindsym $mod+comma          scratchpad show
@@ -264,35 +264,36 @@ client.urgent           #2F343A #900000 #FFFFFF #900000   #900000
 client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
 
 client.background       #FFFFFF
-bar {
-  i3bar_command i3bar -t
-  status_command i3blocks
-  position          top
-  workspace_buttons yes
-  tray_output       primary
-  # tray_padding 0
-#    colors {
-#        background $bg-color
-#        statusline #ffffff
-#
-#        #                   border              background          text
-#        focused_workspace   $bg-color           $bg-color           $text-color
-#        active_workspace    $bg-color           $bg-color           $text-color
-#        inactive_workspace  $inactive-bg-color  $inactive-bg-color  $inactive-text-color
-#        urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
-#    }
-  colors {
-    background #000000cc
-    statusline #cccccc
-    separator  #666666
 
-    focused_workspace  #B89000 #F7A500 #444444
-    active_workspace   #333333 #222222 #FFFFFF
-    inactive_workspace #333333 #222222 #888888
-    urgent_workspace   #2F343A #900000 #FFFFFF
-    binding_mode       #2F343A #900000 #FFFFFF
-  }
-}
+# bar {
+#   i3bar_command i3bar -t
+#   status_command i3blocks
+#   position          top
+#   workspace_buttons yes
+#   tray_output       primary
+#   # tray_padding 0
+# #    colors {
+# #        background $bg-color
+# #        statusline #ffffff
+# #
+# #        #                   border              background          text
+# #        focused_workspace   $bg-color           $bg-color           $text-color
+# #        active_workspace    $bg-color           $bg-color           $text-color
+# #        inactive_workspace  $inactive-bg-color  $inactive-bg-color  $inactive-text-color
+# #        urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
+# #    }
+#   colors {
+#     background #000000cc
+#     statusline #cccccc
+#     separator  #666666
+
+#     focused_workspace  #B89000 #F7A500 #444444
+#     active_workspace   #333333 #222222 #FFFFFF
+#     inactive_workspace #333333 #222222 #888888
+#     urgent_workspace   #2F343A #900000 #FFFFFF
+#     binding_mode       #2F343A #900000 #FFFFFF
+#   }
+# }
 
 
 # new_window pixel 0
