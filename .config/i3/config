@@ -16,7 +16,7 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+$alt+Escape restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec sh -c '[ $(echo -e "NO\nYES" | dmenu -sb "#b89000" -i -p "Really exit i3 X session?") = "YES" ] && i3-msg exit'
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
