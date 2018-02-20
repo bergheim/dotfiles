@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo pacman -S $(grep -o '^[^#]*' ~/.config/bootstrap/archlinux/packages.pacman)
+
+# TODO: install an AUR manager, install ~/.config/bootstrap/archlinux/packages.aur

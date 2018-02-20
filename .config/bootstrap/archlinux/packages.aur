@@ -1,0 +1,12 @@
+clipmenu
+fc-font
+i3-gaps-next-git
+i3ipc-glib-git
+kbdd # per window keylayout settings
+khal-git
+polybar-git
+siji-git
+ttd-droid
+ttf-unifont
+unclutter-xfixes-git # remove mouse, this version fixes focus stealing
+weather-icons # for weather module

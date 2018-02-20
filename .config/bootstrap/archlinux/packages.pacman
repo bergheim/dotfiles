@@ -1,0 +1,88 @@
+adobe-source-code-pro-fonts
+adobe-source-sans-pro-fonts
+alsa-utils
+arandr
+arc-gtk-theme
+arc-icon-theme
+aws-cli
+bspwm
+chromium
+community/awesome-terminal-fonts
+compton
+dunst
+emacs
+feh
+ffmpeg
+firefox-developer-edition
+fzf
+gimp
+graphicsmagick
+gsimplecal
+highlight # for ranger code highlighting etc
+htop
+hunspell-en
+hunspell hyphen
+imagemagick # for screen lock etc
+kdeconnect
+krita
+libnotify
+libreoffice-fresh
+librsvg
+libxcb xcb-util xcb-util-keysyms xcb-util-wm
+linux-headers
+linux-lts
+linux-lts-headers
+markdown
+mlocate
+mpv
+net-tools
+# nitrogen # set background. but fev provides..
+nmap
+# notify-osd # unity crap
+numlockx # always set numlock
+openssh
+otf-font-awesome
+pavucontrol # pulse audio control
+pkgfile
+playerctl # for play-pause etc
+postgresql
+# powerline-fonts # needed?
+# powerline # needed?
+pulseaudio
+python-lxml # for weather module
+python-opengl
+python-requests # for weather module
+python-requests-oauthlib # for vdirsyncer
+python-xdg
+qalculate-gtk
+qt5-websockets
+qutebrowser
+ranger
+redshift
+reflector # get fast pacman mirror list
+ripgrep
+rofi
+rsync
+scrot
+sxhkd
+syncthing
+syncthing-gtk
+terminus-font
+tig
+tmux
+tree
+ttf-anonymous-pro
+ttf-droid
+ttf-font-awesome
+ttf-inconsolata
+ttf-roboto
+unzip
+vdirsyncer
+vim
+vimiv # vim image viewer. a bit slow..
+w3m
+xautolock
+xbindkeys
+zathura
+zathura-pdf-mupdf
+zip
