@@ -1,12 +1,12 @@
 clipmenu
-fc-font
+# fc-font # this does not exist?
 i3-gaps-next-git
 i3ipc-glib-git
-kbdd # per window keylayout settings
+kbdd-git # per window keylayout settings
 khal-git
 polybar-git
+redshift-git
 siji-git
-ttd-droid
 ttf-unifont
+ttf-weather-icons # for weather module
 unclutter-xfixes-git # remove mouse, this version fixes focus stealing
-weather-icons # for weather module

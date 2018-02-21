@@ -18,6 +18,8 @@ fzf
 gimp
 graphicsmagick
 gsimplecal
+gst-libav
+gst-plugins-good
 highlight # for ranger code highlighting etc
 htop
 hunspell-en
@@ -25,6 +27,7 @@ hunspell hyphen
 imagemagick # for screen lock etc
 kdeconnect
 krita
+libgexiv2 # autorotation and EXIT support for vimiv
 libnotify
 libreoffice-fresh
 librsvg
@@ -43,6 +46,7 @@ numlockx # always set numlock
 openssh
 otf-font-awesome
 pavucontrol # pulse audio control
+pdfjs # for PDF support in qutebrowser
 pkgfile
 playerctl # for play-pause etc
 postgresql
@@ -58,7 +62,6 @@ qalculate-gtk
 qt5-websockets
 qutebrowser
 ranger
-redshift
 reflector # get fast pacman mirror list
 ripgrep
 rofi
