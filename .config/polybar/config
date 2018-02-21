@@ -282,10 +282,10 @@ format-disconnected =
 type = internal/date
 interval = 5
 
-date = "%d / %m"
+date = "%a %d %b"
 date-alt = "%Y-%m-%d %a W%W"
 
-time = %H:%M
+time = %l:%M %p
 time-alt = %H:%M
 
 format-prefix = " "
@@ -293,6 +293,16 @@ format-prefix-foreground = ${colors.foreground-alt}
 # format-underline = #0a6cf5
 
 label = " %date% %time%"
+
+[module/week]
+; type = internal/date
+type = custom/script
+interval = 5
+
+exec = "date +" %W" | sed 's/^ 0*/ /'"
+
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-alt}
 
 [module/caldate]
 type = custom/script
