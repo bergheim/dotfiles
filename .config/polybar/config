@@ -141,7 +141,7 @@ type = internal/i3
 label-mode = %mode%
 format = <label-state> <label-mode>
 index-sort = true
-wrapping-scroll = false
+wrapping-scroll = true
 
 
 
