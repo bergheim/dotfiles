@@ -105,9 +105,11 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+p focus parent
 
 # switch to next/prev workspace
-# bindsym $sup+Right workspace next
-# bindsym $sup+Left  workspace prev
-bindsym $mod+grave workspace back_and_forth
+bindsym $mod+Control+l workspace next
+bindsym $mod+Control+h workspace prev
+bindsym $mod+Control+grave workspace back_and_forth
+# Hit $mod-X twice, go back
+workspace_auto_back_and_forth yes
 
 # jump to urgent window
 bindsym $mod+a [urgent=latest] focus
@@ -155,12 +157,6 @@ bindsym $mod+$alt+7 move container to workspace 10
 
 # toggle workspace between two monitors
 bindsym $mod+n move workspace to output right
-
-# next/previous workspace
-# bindsym $mod+Tab workspace next
-# bindsym $mod+Shift+Tab workspace prev
-# Hit $mod-X twice, go back
-workspace_auto_back_and_forth yes
 
 # resize window (you can also use the mouse for that)
 # direction is grow in that direction
