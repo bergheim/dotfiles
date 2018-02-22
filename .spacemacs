@@ -65,6 +65,7 @@ This function should only modify configuration layer settings."
      sql
      java
      semantic
+     yaml
      spotify
      python
      (themes-megapack :packages
