@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import lxml.etree
 import requests
+import sys
 
 
 url = 'https://www.yr.no/place/Norway/Oslo/Oslo/Oslo/forecast_hour_by_hour.xml'
@@ -29,4 +30,12 @@ symbol = icons[new.xpath('symbol')[0].attrib['var'].replace('mf/', '').split('.'
 degrees = new.xpath('temperature')[0].attrib['value']
 name = new.xpath('symbol')[0].attrib['name']
 
-print(u'%{T5}' + symbol + u'%{T-}  %{T1}' + degrees + '° C%{T-}')
+sys.stdout.write(u'%{T5}' + symbol + u'%{T-}  %{T1}' + name + ' ' + degrees + '° C%{T-}')
+
+
+new = root.xpath('forecast/tabular/time')[1]
+symbol = icons[new.xpath('symbol')[0].attrib['var'].replace('mf/', '').split('.')[0]]
+degrees = new.xpath('temperature')[0].attrib['value']
+name = new.xpath('symbol')[0].attrib['name']
+
+print(u'  %{T5}' + symbol + u'%{T-} %{T1}' + name + ' ' + degrees + '° C%{T-}')
