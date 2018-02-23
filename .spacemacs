@@ -250,7 +250,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-distinguish-gui-tab nil
 
    ;; If non-nil `Y' is remapped to `y$' in Evil states. (default nil)
-   dotspacemacs-remap-Y-to-y$ nil
+   dotspacemacs-remap-Y-to-y$ t
 
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
    ;; there. (default t)
@@ -516,8 +516,6 @@ before packages are loaded."
                                                    magit-status-mode))
   ;; dont try to line up tabs
   (setq-default evil-shift-round nil)
-  ;; yank from cursor till end of line
-  (setq-default evil-want-Y-yank-to-eol t)
 
   ;; ignore jshint. TODO is this used?
   (setq-default javascript-jshint nil)
@@ -560,11 +558,9 @@ before packages are loaded."
 
   ;; tabs vs spaces, i give up..
   (setq-default tab-width 2)
-  (setq-default
-   sh-basic-offset tab-width
-   sh-indentation tab-width
-   )
-
+  ;; TODO: am I using this..?
+  (setq-default sh-basic-offset tab-width
+                sh-indentation tab-width)
 
   (with-eval-after-load 'org
     (setq org-deadline-warning-days 14)
