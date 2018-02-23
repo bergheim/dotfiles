@@ -480,6 +480,19 @@ before packages are loaded."
   (spacemacs/set-leader-keys "on" 'spotify-next)
   (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
 
+  ;; Lock files are annoying when using sync and backup software
+  (setq create-lockfiles nil)
+  ;; Backups. Make a bunch
+  (setq make-backup-files t)
+  (setq version-control t     ;; Use version numbers for backups.
+        kept-new-versions 10  ;; Number of newest versions to keep.
+        kept-old-versions 2   ;; Number of oldest versions to keep.
+        delete-old-versions t ;; Don't ask to delete excess backup versions.
+        backup-by-copying t)  ;; Copy all files, don't rename them.
+  (setq vc-make-backup-files t)
+  ;; Default and per-save backups go here:
+  (setq backup-directory-alist '((".*" . "~/.emacs.d/backup")))
+
   ;; force js2-mode to use flycheck-next-error (fixes spc e n/p)
   (setq js2-mode-show-parse-errors nil)
   (setq js2-mode-show-strict-warnings nil)
