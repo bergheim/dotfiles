@@ -644,6 +644,7 @@ before packages are loaded."
     )
 
 
+    (spacemacs/toggle-maximize-frame)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
