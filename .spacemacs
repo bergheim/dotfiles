@@ -502,8 +502,8 @@ before packages are loaded."
                ))
 
   ;; set transparency
-  (set-frame-parameter (selected-frame) 'alpha '(85 85))
-  (add-to-list 'default-frame-alist '(alpha 85 85))
+  (if (equal system-type 'gnu/linux)
+      (spacemacs/toggle-transparency))
 
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-excluded-states '(visual))
