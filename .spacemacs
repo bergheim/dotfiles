@@ -501,10 +501,6 @@ before packages are loaded."
                (setq next-error-function 'flycheck-next-error)
                ))
 
-  ;; set transparency
-  (if (equal system-type 'gnu/linux)
-      (spacemacs/toggle-transparency))
-
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-excluded-states '(visual))
   (setq-default evil-escape-excluded-major-modes '(dired-mode
@@ -633,17 +629,9 @@ before packages are loaded."
     ;; 	(cancel-timer roryk-org-sync-timer))
 
     ;; (roryk-org-sync-start)
-
-    ;; ;; Set to the location of your Org files on your local system
-    ;; (setq org-directory "~/Documents/Org")
-    ;; ;; Set to the name of the file where new notes will be stored
-    ;; (setq org-mobile-inbox-for-pull "~/Documents/Org/inbox.org")
-    ;; ;; Set to <your Dropbox root directory>/MobileOrg.
-    ;; (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-
     )
-
-
+    (if (equal system-type 'gnu/linux)
+        (spacemacs/toggle-transparency))
     (spacemacs/toggle-maximize-frame)
   )
 
