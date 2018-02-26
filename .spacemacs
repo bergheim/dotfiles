@@ -42,13 +42,15 @@ This function should only modify configuration layer settings."
      helm
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t)
-     ;; better-defaults
      emacs-lisp
      git
      github
      markdown
      (org :variables
-          org-enable-bootstrap-support t)
+          org-enable-bootstrap-support t ;; prettier html exports
+          org-enable-reveal-js t ;; hipster html presentation exports
+          org-want-todo-bindings t ;; one key support on headings
+          )
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -81,8 +83,8 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(
-                                      editorconfig
+   dotspacemacs-additional-packages '(editorconfig
+                                      ;; org-plus-contrib
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -561,39 +563,39 @@ before packages are loaded."
   (with-eval-after-load 'org
     (setq org-deadline-warning-days 14)
     (global-set-key (kbd "C-c c") 'org-capture)
-    (setq org-directory "~/org/")
+    (setq org-directory (file-truename "~/org"))
     (setq org-agenda-files (quote ("~/org")))
     (setq org-default-notes-file "~/org/notes.org")
     (setq org-todo-keywords
-          '((sequence
-             "TODO(t)"
-             "INPROGRESS(i)"
-             "WAITING(w)"
-             "SOMEDAY(.)"
-             "|" "DONE(x!)" "CANCELLED(c@)")
-            (sequence "NEXT(n)"
-                      "|" "DONE(x!)" "CANCLELLED(c@)")
-            (sequence "MEET(m)" "|" "COMPLETE(x)")
+          '((sequence "TODO(t)"
+                      "INPROGRESS(i)"
+                      "WAITING(w)"
+                      "SOMEDAY(.)"
+                      "|" "DONE(x!)" "CANCELLED(c@)")
+            ;; (sequence "NEXT(n)"
+            ;;           "|" "DONE(x!)" "CANCLELLED(c@)")
             (sequence "BUG(b)" "|" "FIXED(f)")
             (sequence "READ(r)" "|" "DONE(x!)")
-            (sequence "TODELEGATE(-)" "DELEGATED(d)" "COMPLETE(x)")))
+            ))
 
     (setq org-agenda-start-on-weekday 1)
 
-    ;; (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+    (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h)))
 
-    ;; (setq org-capture-templates
-    ;; 	(quote (("t" "todo" entry (file "~/dev/org/TODO.org")
-    ;; 						"* TODO %?\n%T\n" :clock-in t :clock-resume t)
-    ;; 					 ("r" "respond" entry (file org-default-notes-file)
-    ;;              "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n" :clock-in t :clock-resume t :immediate-finish t)
-    ;; 					 ("n" "note" entry (file org-default-notes-file)
-    ;;              "* %? :NOTE:\n%T\n" :clock-in t :clock-resume t)
-    ;; 					 ("j" "Journal" entry (file+datetree "~/dev/org/journal.org")
-    ;;              "* %?\n%T\n" :clock-in t :clock-resume t)
-    ;; 					 ("m" "Meeting" entry (file org-default-notes-file)
-    ;;              "* MEETING with %? :MEETING:\n%T" :clock-in t :clock-resume t))))
-
+    (setq org-capture-templates
+    	(quote (("t" "todo" entry (file "~/org/inbox.org")
+               ;; "* TODO %?\n%T\n" :clock-in t :clock-resume t)
+               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+    					 ("r" "respond" entry (file org-default-notes-file)
+                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+               ("n" "note" entry (file "~/org/inbox.org")
+                 "* %? :NOTE:\n%T\n" :clock-in t :clock-resume t)
+    					 ("b" "bug" entry (file "~/org/inbox.org")
+                "* %? :BUG:\n%T\n" :clock-in t :clock-resume t)
+    					 ("j" "journal" entry (file+datetree (concat org-directory "journal.org"))
+                 "* %?\n%T\n" :clock-in t :clock-resume t)
+    					 ("m" "meeting" entry (file "~/org/inbox.org")
+                 "* MEETING with %? :MEETING:\n%T" :clock-in t :clock-resume t))))
     ;; (setq org-icalendar-combined-agenda-file "~/Dropbox/Public/hsph.ics")
     ;; (setq org-icalendar-alarm-time 60)
     ;; (setq org-agenda-default-appointment-duration 60)
