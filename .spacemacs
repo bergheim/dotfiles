@@ -596,6 +596,19 @@ before packages are loaded."
                  "* %?\n%T\n" :clock-in t :clock-resume t)
     					 ("m" "meeting" entry (file "~/org/inbox.org")
                  "* MEETING with %? :MEETING:\n%T" :clock-in t :clock-resume t))))
+
+
+    (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
+
+    ;; include the file in the refile search
+    (setq org-refile-use-outline-path 'file)
+    ;; give me all the possible completions at once so helm can present them
+    (setq org-outline-path-complete-in-steps nil)
+
+    ;; create sibling nodes by default, create new heding by adding /New heading at the end
+    ;; (setq org-refile-allow-creating-parent-nodes 'confirm)
+
+
     ;; (setq org-icalendar-combined-agenda-file "~/Dropbox/Public/hsph.ics")
     ;; (setq org-icalendar-alarm-time 60)
     ;; (setq org-agenda-default-appointment-duration 60)
