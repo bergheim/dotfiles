@@ -1,0 +1,3 @@
+#!/bin/sh
+
+gnome-screenshot -f "$HOME/Pictures/screenshots/$(date +%F_%H-%M-%S).png" "$@"
