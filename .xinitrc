@@ -20,11 +20,15 @@ setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 50
 
-if [ "$1" = "bspwm" ]; then
-  sxhkd &
-  # panel &
-  polybar tb &
-  exec bspwm
-else
-  exec i3
-fi
+# exec bspwm
+
+session=${1:-i3}
+case $session in
+    i3|i3wm           ) exec i3;;
+    bspwm             )
+		sxhkd &
+		polybar tb &
+		exec bspwm;;
+    # No known session, try to run it as command
+    *                 ) exec $1;;
+esac
