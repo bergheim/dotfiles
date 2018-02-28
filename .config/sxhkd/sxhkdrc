@@ -17,11 +17,11 @@ super + @space
 super + Escape
   pkill -USR1 -x sxhkd
 
-super + shift + p
-  screenshot
+super + shift + @p
+  screenshot && notify-send -u low 'Screenshot captured'
 
-super + alt + shift + p
-  screenshot -i
+super + alt + shift + @p
+  screenshot -a && notify-send -u low 'Screenshot area captured'
 
 super + shift + x
   exec fancylocki3
