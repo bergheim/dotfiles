@@ -15,8 +15,6 @@ set $left h
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+$alt+Escape restart
-# exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec sh -c '[ $(echo -e "NO\nYES" | dmenu -sb "#b89000" -i -p "Really exit i3 X session?") = "YES" ] && i3-msg exit'
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -30,26 +28,8 @@ font pango:Inconsolata 12
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-# start a terminal
-bindsym $mod+Return exec termite
-# bindsym $alt+Return exec i3-sensible-terminal
-
 # kill focused window
 bindsym $mod+Shift+d kill
-
-# lock the screen
-bindsym $mod+Shift+x exec fancylocki3
-
-# start dmenu (a program launcher)
-# bindsym $mod+d exec dmenu_run
-# There also is the (new) i3-dmenu-desktop which only displays applications
-# shipping a .desktop file. It is a wrapper around dmenu, so you need that
-# installed.
-# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+r exec rofi -show run -lines 10 -display-run "run: "
-bindsym $mod+Shift+r exec rofi -show combi -display-combi "combi: "
-bindsym $alt+Tab exec rofi -show window -display-window "Switch to window: "
-bindsym $mod+c exec "CM_LAUNCHER=rofi clipmenu"
 
 # change focus
 bindsym $mod+$left focus left
@@ -240,9 +220,6 @@ bindsym $mod+equal          gaps inner current set 10; gaps outer current set 10
 bindsym $mod+shift+minus    gaps inner current set 10; gaps outer current set 40
 bindsym $mod+shift+equal    gaps inner current set 10; gaps outer current set 200
 
-# screenshots. like osx. they don't make sense but why not..
-bindsym $mod+Shift+3 exec scrot
-
 # colors
 #set $bg-color #2f343f
 #set $inactive-bg-color #2f343f
@@ -310,22 +287,15 @@ bindsym $alt+b border toggle
 # {{{ automatically put clients on specific workspaces
 # assign [class="^Firefox$"] $ws1
 assign [class="^TelegramDesktop$"] $ws2
-# assign [class="^spotify$"] $ws3
+# assign [class="^Spotify$"] $ws3
 for_window [class="Spotify"] move to workspace $ws3
 assign [class="^Chromium$"] $ws4
 # }}}
 
 # {{{ automatically starting applications on i3 startup
-# exec volumeicon
-# exec dropboxd
-# exec $jabber
-
-exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
-# TODO what is light?
-# exec --no-startup-id light -s 50
+# exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
 # exec --no-startup-id emacs --daemon && emacsclient -c
-# Lock after timeout
-exec --no-startup-id "~/.config/xautolock.sh"
+exec --no-startup-id polybar tb
 # }}}
 
 # dont tile popups
