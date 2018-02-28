@@ -20,15 +20,20 @@ setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 50
 
-# exec bspwm
+
+feh --bg-fill ~/Pictures/wallpapers/active.png
+~/.config/xautolock.sh &
 
 session=${1:-i3}
 case $session in
-    i3|i3wm           ) exec i3;;
-    bspwm             )
-		sxhkd &
-		polybar tb &
-		exec bspwm;;
-    # No known session, try to run it as command
-    *                 ) exec $1;;
+    i3|i3wm)
+        sxhkd -c ~/.config/sxhkd/sxhkdrc.i3 ~/.config/sxhkd/sxhkdrc &
+        exec i3;;
+    bspwm)
+        sxhkd -c ~/.config/sxhkd/sxhkdrc.bspwm ~/.config/sxhkd/sxhkdrc &
+        polybar tb &
+        exec bspwm;;
+    *)
+        # No known session, try to run it as command
+        exec $1;;
 esac
