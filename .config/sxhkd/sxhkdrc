@@ -40,3 +40,6 @@ super + c
 
 super + {comma, period, slash}
   playerctl {previous, next, play-pause}
+
+super + shift + {comma, period}
+  pactl set-sink-volume 0 {-5%, +5%}
