@@ -43,6 +43,7 @@ rofi.width: 60
 rofi.bw: 0
 rofi.padding: 650
 rofi.eh: 2
+rofi.matching: fuzzy
 !rofi.separator-style: solid
 rofi.hide-scrollbar: true
 rofi.kb-remove-to-eol: Control+Shift+d
