@@ -32,3 +32,5 @@ bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
 
 feh --bg-scale ~/Pictures/wallpapers/active.png
+kbdd
+$HOME/.config/polybar/launch.sh

@@ -106,7 +106,6 @@ set $ws3 "3"
 set $ws4 "4"
 set $ws5 "5"
 set $ws6 "6"
-set $ws7 "7"
 
 bindsym $mod+Shift+comma    move scratchpad
 bindsym $mod+comma          scratchpad show
@@ -295,7 +294,8 @@ assign [class="^Chromium$"] $ws4
 # {{{ automatically starting applications on i3 startup
 # exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
 # exec --no-startup-id emacs --daemon && emacsclient -c
-exec --no-startup-id polybar tb
+  exec --no-startup-id kbdd
+  exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # }}}
 
 # dont tile popups
