@@ -13,13 +13,11 @@ clipmenud &
 redshift-gtk &
 dunst &
 compton -f &
-kbdd
 
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 50
-
 
 feh --bg-fill ~/Pictures/wallpapers/active.png
 ~/.config/xautolock.sh &
@@ -31,7 +29,6 @@ case $session in
         exec i3;;
     bspwm)
         sxhkd -c ~/.config/sxhkd/sxhkdrc.bspwm ~/.config/sxhkd/sxhkdrc &
-        polybar tb &
         exec bspwm;;
     *)
         # No known session, try to run it as command
