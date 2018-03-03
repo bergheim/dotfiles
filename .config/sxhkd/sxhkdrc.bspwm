@@ -71,24 +71,6 @@ super + {o,i}
 	bspc node {older,newer} -f; \
 	bspc wm -h on
 
-# focus or send to the given desktop
-super + {_,alt + }{1-3}
-	bspc {desktop -f,node -d} '^{1-3}'
-super + {_,alt + }q
-	bspc {desktop -f,node -d} '^4}'
-super + {_,alt + }w
-	bspc {desktop -f,node -d} '^5}'
-super + {_,alt + }e
-	bspc {desktop -f,node -d} '^6}'
-super + {_,alt + }{4}
-	bspc {desktop -f,node -d} '^{7}'
-super + {_,alt + }{5}
-	bspc {desktop -f,node -d} '^{8}'
-super + {_,alt + }{6}
-	bspc {desktop -f,node -d} '^{9}'
-super + {_,alt + }{7}
-	bspc {desktop -f,node -d} '^{10}'
-
 #
 # preselect
 #
