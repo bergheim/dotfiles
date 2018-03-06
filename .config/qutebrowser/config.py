@@ -2,12 +2,28 @@ config.load_autoconfig()
 # config.bind('t', 'set-cmd-text -s :open -t')
 #
 config.bind('h', 'back')
-config.bind('gT', 'tab-prev')
 config.bind('l', 'forward')
-config.bind('gt', 'tab-next')
 
-# config.bind('H', 'tab-prev')
-# config.bind('L', 'tab-next')
+config.bind('<Alt-h>', 'tab-prev')
+config.bind('<Alt-l>', 'tab-next')
+config.bind('<Alt-p>', 'tab-prev')
+config.bind('<Alt-n>', 'tab-next')
+config.bind('K', 'tab-prev')
+config.bind('J', 'tab-next')
+
+config.bind('<Alt-Shift-h>', 'tab-move -')
+config.bind('<Alt-Shift-l>', 'tab-move +')
+config.bind('<Alt-Shift-p>', 'tab-move -')
+config.bind('<Alt-Shift-n>', 'tab-move +')
+
+config.unbind('<Ctrl+tab>')
+config.bind('<Ctrl+tab>', 'tab-next')
+config.bind('<Ctrl+Shift+tab>', 'tab-prev')
+config.bind('<Ctrl+6>', 'tab-focus last')
+config.bind('<Ctrl+o>', 'tab-focus last')
+
+config.bind('<Ctrl+u>', 'fake-key <Shift+Home> ;; fake-key <Delete>', mode='insert')
+config.bind('<Ctrl+w>', 'fake-key <Ctrl-backspace>', mode='insert')
 
 config.bind('b', 'set-cmd-text -s :buffer')
 
@@ -15,17 +31,28 @@ config.bind('gi', 'hint inputs')
 config.bind('gn', 'set tabs.position top')
 config.bind('gN', 'set tabs.position left')
 
+# these may seem wierd, but they mimic the spacemacs setup
+# ideally , would be <space> but special keys are not allowed in a keychain
+config.bind(',fed', 'config-edit')
+config.bind(',fer', 'config-source')
+
+config.bind(',td', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/dark.css" "" ;; reload')
+config.bind(',tl', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/light.css" "" ;; reload')
+
+config.unbind(',t')
+config.bind(',tt', f'config-cycle tabs.position "top" "left" ;; reload')
+
+config.bind(',l', 'spawn --userscript qute-pass')
+
 # this is not supported right now
 # see https://github.com/qutebrowser/qutebrowser/issues/1044
-# config.bind('jk', 'leave-mode', mode='insert')
+#config.bind('jk', 'leave-mode', mode='insert')
 
 # config.bind('<Ctrl-u>', 'rl-unix-line-discard', mode='insert')
 # config.bind('<Ctrl-a>', 'rl-beginning-of-line', mode='insert')
 # config.bind('<Ctrl-e>', 'rl-end-of-line', mode='insert')
 # config.bind('<Ctrl-w>', 'rl-end-word-rubout', mode='insert')
 
-config.bind('J', 'tab-prev')
-config.bind('K', 'tab-next')
 config.bind('<Ctrl-k>', 'completion-item-focus --history prev', mode='command')
 config.bind('<Ctrl-j>', 'completion-item-focus --history next', mode='command')
 config.bind('<Ctrl-k>', 'prompt-item-focus next', mode='prompt')
@@ -137,17 +164,21 @@ c.content.ssl_strict = True
 # A list of user stylesheet filenames to use.
 c.content.user_stylesheets = "user.css"
 
+c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+
+c.content.cookies.store = False
+
 c.scrolling.smooth = False
 c.scrolling.bar = True
 
 c.url.searchengines = {
     "DEFAULT": "https://duckduckgo.com/?q={}",
-    "d": "https://www.google.com/search?q={}"
+    "g": "https://www.google.com/search?q={}",
+    "g": "https://www.google.com/search?q={}",
+    "gh": "https://github.com/search?utf8=%E2%9C%93&q={}"
 }
 
 c.auto_save.session = True
-
-c.content.headers.user_agent = 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
 
 ## Format to use for the tab title. The following placeholders are
 ## defined:  * `{perc}`: Percentage as a string like `[10%]`. *
@@ -180,6 +211,13 @@ c.tabs.padding = {
     "bottom": 5,
 }
 
+# Which tab to select when the focused tab is removed.
+# Valid values:
+#   - prev: Select the tab which came before the closed one (left in horizontal, above in vertical).
+#   - next: Select the tab which came after the closed one (right in horizontal, below in vertical).
+#   - last-used: Select the previously selected tab.
+c.tabs.select_on_remove = "last-used"
+
 # Behavior when the last tab is closed.
 # Valid values:
 #   - ignore: Don't do anything.
@@ -197,3 +235,6 @@ c.tabs.last_close = "close"
 ##   - left
 ##   - right
 c.tabs.position = 'top'
+
+# only for vertical
+c.tabs.width = 300
