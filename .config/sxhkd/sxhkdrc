@@ -38,8 +38,17 @@ alt + Tab
 super + c
   CM_LAUNCHER=rofi clipmenu
 
-super + {comma, period, slash}
+alt + {comma, period, slash}
   playerctl {previous, next, play-pause}
 
+{XF86AudioPrev, XF86AudioNext, XF86AudioPlay}
+  playerctl {previous, next, play-pause}
+
+XF86AudioMute
+  pactl set-sink-mute 0 toggle
+
 super + shift + {comma, period}
+  pactl set-sink-volume 0 {-5%, +5%}
+
+{XF86AudioLowerVolume, XF86AudioRaiseVolume}
   pactl set-sink-volume 0 {-5%, +5%}
