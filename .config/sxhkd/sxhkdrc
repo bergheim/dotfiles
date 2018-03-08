@@ -45,10 +45,10 @@ alt + {comma, period, slash}
   playerctl {previous, next, play-pause}
 
 XF86AudioMute
-  pactl set-sink-mute 0 toggle
+  pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 super + shift + {comma, period}
-  pactl set-sink-volume 0 {-5%, +5%}
+  pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
 
 {XF86AudioLowerVolume, XF86AudioRaiseVolume}
-  pactl set-sink-volume 0 {-5%, +5%}
+  pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
