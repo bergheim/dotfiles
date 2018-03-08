@@ -58,6 +58,18 @@ alias la='ls -a'
 alias ll='ls -l'
 alias llh='ls -lh'
 
+# attach and disconenct any current users (this enables resizing unlike tmux -A)
+# if it does not exist, create it
+# requires a string which is the session name
+ta() {
+  if [ -n "$1" ]
+  then
+    tmux attach -d -t $1 || tmux new -s $1
+  else
+    print "Please specify a session name"
+  fi
+}
+
 alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
 alias pacs='pacman -Ss'
