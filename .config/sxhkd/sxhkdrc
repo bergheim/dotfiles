@@ -1,6 +1,10 @@
 #
 # wm independent hotkeys
 #
+#
+
+super + shift + d
+	exec xkill
 
 # terminal emulator
 super + Return
