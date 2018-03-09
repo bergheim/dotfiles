@@ -4,6 +4,10 @@ config.load_autoconfig()
 config.bind('h', 'back')
 config.bind('l', 'forward')
 
+config.bind('-', 'zoom-out', mode='normal')
+config.bind('=', 'zoom-in', mode='normal')
+config.bind('0', 'zoom', mode='normal')
+
 config.bind('<Alt-h>', 'tab-prev')
 config.bind('<Alt-l>', 'tab-next')
 config.bind('<Alt-p>', 'tab-prev')
@@ -39,7 +43,6 @@ config.bind(',fer', 'config-source')
 config.bind(',td', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/dark.css" "" ;; reload')
 config.bind(',tl', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/light.css" "" ;; reload')
 
-config.unbind(',t')
 config.bind(',tt', f'config-cycle tabs.position "top" "left" ;; reload')
 
 config.bind(',l', 'spawn --userscript qute-pass')
