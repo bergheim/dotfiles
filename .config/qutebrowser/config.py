@@ -14,6 +14,8 @@ config.bind('<Alt-p>', 'tab-prev')
 config.bind('<Alt-n>', 'tab-next')
 config.bind('K', 'tab-prev')
 config.bind('J', 'tab-next')
+config.bind('<Ctrl-k>', 'tab-prev')
+config.bind('<Ctrl-j>', 'tab-next')
 
 config.bind('<Alt-Shift-h>', 'tab-move -')
 config.bind('<Alt-Shift-l>', 'tab-move +')

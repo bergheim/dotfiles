@@ -29,7 +29,7 @@ font pango:Inconsolata 12
 floating_modifier $mod
 
 # kill focused window
-bindsym $mod+Shift+d kill
+bindsym $mod+d kill
 
 # change focus
 bindsym $mod+$left focus left
