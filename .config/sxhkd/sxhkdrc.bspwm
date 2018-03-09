@@ -1,6 +1,3 @@
-super + shift + d
-  exec xkill
-
 # quit bspwm normally
 super + alt + Escape
 	bspc quit
