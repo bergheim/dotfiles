@@ -10,7 +10,7 @@ fi
 numlockx &
 unclutter &
 clipmenud &
-redshift-gtk &
+redshift &
 dunst &
 compton -f &
 
