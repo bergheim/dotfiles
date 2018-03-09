@@ -505,6 +505,7 @@ before packages are loaded."
                ))
 
   (setq-default evil-escape-key-sequence "jk")
+  (setq-default evil-escape-delay 0.2)
   (setq-default evil-escape-excluded-states '(visual))
   (setq-default evil-escape-excluded-major-modes '(dired-mode
                                                    neotree-mode
