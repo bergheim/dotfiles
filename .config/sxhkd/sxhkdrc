@@ -10,12 +10,11 @@ super + shift + d
 super + Return
   alacritty
 
-super + shift + Return
+super + alt + Return
   termite
 
-# program launcher
-super + @space
-  dmenu_run
+super + shift + Return
+  alacritty -e ranger
 
 # make sxhkd reload its configuration files:
 super + Escape
