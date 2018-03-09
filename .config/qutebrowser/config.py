@@ -3,6 +3,8 @@ config.load_autoconfig()
 #
 config.bind('h', 'back')
 config.bind('l', 'forward')
+config.bind('<Ctrl-h>', 'back')
+config.bind('<Ctrl-l>', 'forward')
 
 config.bind('-', 'zoom-out', mode='normal')
 config.bind('=', 'zoom-in', mode='normal')
@@ -16,6 +18,8 @@ config.bind('K', 'tab-prev')
 config.bind('J', 'tab-next')
 config.bind('<Ctrl-k>', 'tab-prev')
 config.bind('<Ctrl-j>', 'tab-next')
+config.bind('<Ctrl-Shift-k>', 'tab-move -')
+config.bind('<Ctrl-Shift-j>', 'tab-move +')
 
 config.bind('<Alt-Shift-h>', 'tab-move -')
 config.bind('<Alt-Shift-l>', 'tab-move +')
