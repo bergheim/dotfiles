@@ -351,7 +351,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
 
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
@@ -658,7 +658,6 @@ before packages are loaded."
     )
     (if (equal system-type 'gnu/linux)
         (spacemacs/enable-transparency))
-    (spacemacs/toggle-maximize-frame)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
