@@ -562,7 +562,9 @@ before packages are loaded."
   (setq-default sh-basic-offset tab-width
                 sh-indentation tab-width)
 
+  ;; this ensures we don't load the org-mode shipped with regular emacs
   (with-eval-after-load 'org
+    (setq spaceline-org-clock-p t)
     (setq org-deadline-warning-days 14)
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-directory (file-truename "~/org"))
