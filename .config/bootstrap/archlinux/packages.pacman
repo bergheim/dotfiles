@@ -95,3 +95,4 @@ youtube-dl
 pass
 gnupg
 python-tldextract # for qute-pass
+etckeeper
