@@ -450,8 +450,8 @@ format-prefix-foreground = ${colors.foreground-alt}
 
 [module/notice]
 type = custom/script
-exec = cat ~/.tmp/notice
-exec-if = [ -s ~/.tmp/notice ]
+exec = cat ~/.notice
+exec-if = [ -s ~/.notice ]
 tail = true
 format-padding = 2
 format-underline = #f11
