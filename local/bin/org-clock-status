@@ -7,7 +7,7 @@ if [ -z "$emacs_pid" ]; then
   exit 0
 fi
 
-CLOCK_STATUS=`emacsclient --eval "(if (org-clocking-p) (org-clock-get-clock-string))" |head -n 1|cut -c 5-`
+CLOCK_STATUS=`emacsclient --eval "(if (org-clocking-p) (org-clock-get-clock-string))" 2>/dev/null |head -n 1|cut -c 5-`
 
 if [ "$CLOCK_STATUS" ]; then
   TASK=`echo "$CLOCK_STATUS"|grep -Po '^.*?\K(?<=\().*?(?=\))'`
