@@ -496,14 +496,6 @@ before packages are loaded."
   ;; Default and per-save backups go here:
   (setq backup-directory-alist '((".*" . "~/.emacs.d/backup")))
 
-  ;; force js2-mode to use flycheck-next-error (fixes spc e n/p)
-  (setq js2-mode-show-parse-errors nil)
-  (setq js2-mode-show-strict-warnings nil)
-  (add-hook 'js2-init-hook
-            '(lambda ()
-               (setq next-error-function 'flycheck-next-error)
-               ))
-
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.2)
   (setq-default evil-escape-excluded-states '(visual))
@@ -517,8 +509,16 @@ before packages are loaded."
   ;; dont try to line up tabs
   (setq-default evil-shift-round nil)
 
+
+  ;; force js2-mode to use flycheck-next-error (fixes spc e n/p)
+  (setq js2-mode-show-parse-errors nil)
+  (setq js2-mode-show-strict-warnings nil)
+  (add-hook 'js2-init-hook '(lambda ()
+                              (setq next-error-function 'flycheck-next-error)
+                              ))
   ;; ignore jshint. TODO is this used?
   (setq-default javascript-jshint nil)
+  (setq-default js2-basic-offset 2)
   ;; Turn off js2 mode errors & warnings (we lean on eslint/standard)
   (setq js2-mode-show-parse-errors nil)
   (setq js2-mode-show-strict-warnings nil)
