@@ -55,7 +55,7 @@ config.bind(',l', 'spawn --userscript qute-pass')
 
 # this is not supported right now
 # see https://github.com/qutebrowser/qutebrowser/issues/1044
-#config.bind('jk', 'leave-mode', mode='insert')
+config.bind('jk', 'leave-mode', mode='insert')
 
 # config.bind('<Ctrl-u>', 'rl-unix-line-discard', mode='insert')
 # config.bind('<Ctrl-a>', 'rl-beginning-of-line', mode='insert')
