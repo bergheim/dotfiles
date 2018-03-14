@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$1" == "clear" ]; then
+  echo "" > ~/.tmp/notice
+else
+  echo "$1" > ~/.tmp/notice
+fi

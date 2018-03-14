@@ -29,6 +29,9 @@ super + alt + shift + @p
 super + shift + x
   exec fancylocki3
 
+super + alt + shift + x
+  exec ~/.config/xautolock.sh toggle
+
 super + r
   rofi -show run -lines 10 -display-run "run: "
 
