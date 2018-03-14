@@ -57,7 +57,7 @@ font-4 = Weather\Icons:pixelsize=16;1
 modules-left = bspwm i3
 ;modules-left = xworkspaces
 modules-center = xwindow
-modules-right = xbacklight spotify yr-weather memory cpu wlan battery temperature date xkeyboard pulseaudio
+modules-right = xbacklight notice org-mode spotify yr-weather memory cpu wlan battery temperature date xkeyboard pulseaudio
 
 tray-position = right
 tray-padding = 5
@@ -436,6 +436,29 @@ format-padding = 2
 format-prefix = "  "
 format-prefix-foreground = ${colors.foreground-alt}
 click-left = playerctl play-pause
+
+[module/org-mode]
+type = custom/script
+exec = ~/local/bin/org-clock-status
+tail = true
+format-padding = 2
+format-underline = ${colors.primary}
+
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-alt}
+; click-left = playerctl play-pause
+
+[module/notice]
+type = custom/script
+exec = cat ~/.tmp/notice
+exec-if = [ -s ~/.tmp/notice ]
+tail = true
+format-padding = 2
+format-underline = #f11
+
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-alt}
+; click-left = playerctl play-pause
 
 [settings]
 screenchange-reload = true
