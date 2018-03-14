@@ -188,6 +188,7 @@ c.url.searchengines = {
 }
 
 c.auto_save.session = True
+c.session.lazy_restore = True
 
 ## Format to use for the tab title. The following placeholders are
 ## defined:  * `{perc}`: Percentage as a string like `[10%]`. *
