@@ -542,9 +542,9 @@ before packages are loaded."
 
   (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
-  (if (spacemacs/system-is-mac)
-      (setq mac-command-modifier 'meta
-            mac-option-modifier  'none)
+  (when (spacemacs/system-is-mac)
+    (setq mac-command-modifier 'meta
+          mac-option-modifier  'none)
     ;; TODO should probably check if this exists
     (setq eclim-eclipse-dirs "/Applications/Eclipse.app/Contents/Eclipse"
           eclim-executable "/Applications/Eclipse.app/Contents/Eclipse/eclim"))
