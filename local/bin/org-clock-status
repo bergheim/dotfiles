@@ -1,0 +1,11 @@
+#!/bin/sh
+
+CLOCK_STATUS=`emacsclient  --eval "(if (org-clocking-p) (org-clock-get-clock-string)(ding)(print \"\"))" |head -n 1|cut -c 5-`
+
+if [ "$CLOCK_STATUS" ]; then
+  TASK=`echo "$CLOCK_STATUS"|grep -Po '^.*?\K(?<=\().*?(?=\))'`
+  TIME=`echo "$CLOCK_STATUS"|awk -F '[][]+' 'NF && !/\[\[/{print $2}'`
+  echo "$TIME - $TASK"
+else
+  echo ""
+fi
