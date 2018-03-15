@@ -51,6 +51,8 @@ rofi.kb-accept-entry: Return,KP_Enter
 rofi.kb-row-up: Control+k,Up
 rofi.kb-row-down: Control+j,Down
 rofi.kb-move-char-forward: Right,Control+l
+! show rofi on the currently focused monitor
+rofi.monitor: -1
 
 # make fonts nice
 Xft.lcdfilter: lcddefault
