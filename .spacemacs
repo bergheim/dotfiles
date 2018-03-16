@@ -479,6 +479,13 @@ before packages are loaded."
   (spacemacs/set-leader-keys "ogl" 'magit-log-buffer-file)
   (spacemacs/set-leader-keys "ogf" 'magit-file-popup)
 
+  (spacemacs/set-leader-keys "oa" 'org-agenda)
+  (spacemacs/set-leader-keys "oi" (lambda () (interactive) (find-file org-default-notes-file)))
+  (spacemacs/set-leader-keys "ocg" 'org-clock-goto)
+  (spacemacs/set-leader-keys "oci" 'org-clock-in)
+  (spacemacs/set-leader-keys "ocl" 'org-clock-in-last)
+  (spacemacs/set-leader-keys "oco" 'org-clock-out)
+
   (spacemacs/set-leader-keys "op" 'spotify-playpause)
   (spacemacs/set-leader-keys "on" 'spotify-next)
   (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
