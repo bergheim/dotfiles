@@ -14,6 +14,8 @@ redshift &
 dunst &
 compton -f &
 
+tilda &
+
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
