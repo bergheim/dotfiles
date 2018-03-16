@@ -650,7 +650,7 @@ before packages are loaded."
     ;; (roryk-org-sync-start)
     )
     (if (equal system-type 'gnu/linux)
-        (spacemacs/toggle-transparency))
+        (spacemacs/enable-transparency))
     (spacemacs/toggle-maximize-frame)
   )
 
