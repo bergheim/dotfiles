@@ -569,7 +569,7 @@ before packages are loaded."
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-directory (file-truename "~/org"))
     (setq org-agenda-files (quote ("~/org")))
-    (setq org-default-notes-file "~/org/notes.org")
+    (setq org-default-notes-file "~/org/inbox.org")
     (setq org-todo-keywords
           '((sequence "TODO(t)"
                       "INPROGRESS(i)"
@@ -587,18 +587,18 @@ before packages are loaded."
     (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h)))
 
     (setq org-capture-templates
-    	(quote (("t" "todo" entry (file "~/org/inbox.org")
+    	(quote (("t" "todo" entry (file org-default-notes-file)
                ;; "* TODO %?\n%T\n" :clock-in t :clock-resume t)
                "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
     					 ("r" "respond" entry (file org-default-notes-file)
                 "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-               ("n" "note" entry (file "~/org/inbox.org")
+               ("n" "note" entry (file org-default-notes-file)
                  "* %? :NOTE:\n%T\n" :clock-in t :clock-resume t)
-    					 ("b" "bug" entry (file "~/org/inbox.org")
+    					 ("b" "bug" entry (file org-default-notes-file)
                 "* %? :BUG:\n%T\n" :clock-in t :clock-resume t)
     					 ("j" "journal" entry (file+datetree (concat org-directory "journal.org"))
                  "* %?\n%T\n" :clock-in t :clock-resume t)
-    					 ("m" "meeting" entry (file "~/org/inbox.org")
+    					 ("m" "meeting" entry (file org-default-notes-file)
                  "* MEETING with %? :MEETING:\n%T" :clock-in t :clock-resume t))))
 
 
