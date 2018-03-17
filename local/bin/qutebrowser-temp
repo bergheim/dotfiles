@@ -1,0 +1,21 @@
+#!/bin/bash
+
+TMPBASEDIR=`mktemp -d`
+QBCONFIGDIR="$HOME/.config/qutebrowser"
+
+function cleanup {
+  echo Removing "$TMPBASEDIR"
+  rm -rf "$TMPBASEDIR"
+}
+
+mkdir -p "$TMPBASEDIR/config"
+cp -r $QBCONFIGDIR/* "$TMPBASEDIR/config"
+
+if [ "$1" == "--float" ]; then
+  shift
+  RESOURCE_NAME=floating qutebrowser --basedir "$TMPBASEDIR" $@
+else
+  qutebrowser --basedir "$TMPBASEDIR" $@
+fi
+
+trap cleanup EXIT
