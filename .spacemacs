@@ -480,7 +480,7 @@ before packages are loaded."
   (spacemacs/set-leader-keys "ogf" 'magit-file-popup)
 
   (spacemacs/set-leader-keys "oa" 'org-agenda)
-  (spacemacs/set-leader-keys "oi" (lambda () (interactive) (find-file org-default-notes-file)))
+  (spacemacs/set-leader-keys "oi" (lambda () (interactive) (find-file "~/org/inbox.org")))
   (spacemacs/set-leader-keys "ocg" 'org-clock-goto)
   (spacemacs/set-leader-keys "oci" 'org-clock-in)
   (spacemacs/set-leader-keys "ocl" 'org-clock-in-last)
