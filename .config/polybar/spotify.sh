@@ -5,11 +5,14 @@ if [ "$(pidof spotify)" ]; then
   # status can be Playing, Paused or Stopped
   status=`${dbus_cmd} string:'PlaybackStatus'|egrep -A 1 "string"|cut -b 26-|cut -d '"' -f 1|egrep -v ^$`
 
-  if [ "$status" == "Playing" ]; then
+  if [ "$status" != "Stopped" ]; then
     artist=`${dbus_cmd} string:'Metadata'|egrep -A 2 "artist"|egrep -v "artist"|egrep -v "array"|cut -b 27-|cut -d '"' -f 1|egrep -v ^$`
     album=`${dbus_cmd} string:'Metadata'|egrep -A 1 "album"|egrep -v "album"|cut -b 44-|cut -d '"' -f 1|egrep -v ^$`
     title=`${dbus_cmd} string:'Metadata'|egrep -A 1 "title"|egrep -v "title"|cut -b 44-|cut -d '"' -f 1|egrep -v ^$`
 
+    if [ "$status" == "Paused" ]; then
+      echo -ne "[Paused] "
+    fi
     echo ${artist} "-" ${title} | awk 'length > 60{$0=substr($0,0,61)"..."}1'
   else
     echo ""
