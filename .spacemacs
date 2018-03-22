@@ -490,6 +490,11 @@ before packages are loaded."
   (spacemacs/set-leader-keys "on" 'spotify-next)
   (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
 
+  (spaceline-toggle-buffer-size-off)
+  (spaceline-toggle-buffer-encoding-abbrev-off)
+  (spaceline-toggle-purpose-off)
+  (spaceline-toggle-org-clock-on)
+
   ;; Lock files are annoying when using sync and backup software
   (setq create-lockfiles nil)
   ;; Backups. Make a bunch
