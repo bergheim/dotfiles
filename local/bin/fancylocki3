@@ -5,10 +5,9 @@ tmpbg='/tmp/screen.png'
 
 (( $# )) && { icon=$1; }
 
-#pkill -u "$USER" -USR1 dunst
-#sleep 1
+pkill -u "$USER" -USR1 --exact dunst
 scrot "$tmpbg"
 convert "$tmpbg" -scale 10% -scale 1000% "$tmpbg"
 convert "$tmpbg" "$icon" -gravity center -composite -matte "$tmpbg"
 i3lock -n -e -i "$tmpbg"
-#pkill -u "$USER" -USR2 dunst
+pkill -u "$USER" -USR2 --exact dunst
