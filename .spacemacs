@@ -518,6 +518,12 @@ before packages are loaded."
                                                    magit-log-mode
                                                    magit-revision-mode
                                                    magit-status-mode))
+
+  (define-key evil-normal-state-map (kbd "M-h") #'evil-window-left)
+  (define-key evil-normal-state-map (kbd "M-j") #'evil-window-down)
+  (define-key evil-normal-state-map (kbd "M-k") #'evil-window-up)
+  (define-key evil-normal-state-map (kbd "M-l") #'evil-window-right)
+
   ;; dont try to line up tabs
   (setq-default evil-shift-round nil)
 
