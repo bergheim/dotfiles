@@ -175,7 +175,7 @@ gaps inner 10
 gaps outer 10
 # smart_borders no_gaps
 # smart_gaps on
-for_window [class="^.*"] border pixel 2
+for_window [class="^.*"] border pixel 1
 
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
