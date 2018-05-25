@@ -2,5 +2,8 @@
 
 sudo pacman -S $(grep -o '^[^#]*' ~/.config/bootstrap/archlinux/packages.pacman)
 
+sudo systemctl enable sshd.service
+sudo systemctl start sshd.service
+
 # TODO: install an AUR manager
 # sudo pacaur/yay/whatever -S $(grep -o '^[^#]*' ~/.config/bootstrap/archlinux/packages.aur)
