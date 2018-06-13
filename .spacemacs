@@ -574,6 +574,8 @@ before packages are loaded."
   ;; because the default is impractical
   (setq smerge-command-prefix "\C-cv")
 
+  (setq magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
+
   ;; tabs vs spaces, i give up..
   (setq-default tab-width 2)
   ;; TODO: am I using this..?
