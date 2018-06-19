@@ -57,6 +57,7 @@ alias sl='ls'
 alias la='ls -a'
 alias ll='ls -l'
 alias llh='ls -lh'
+alias o='xdg-open'
 
 # attach and disconenct any current users (this enables resizing unlike tmux -A)
 # if it does not exist, create it
