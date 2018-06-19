@@ -62,6 +62,7 @@ This function should only modify configuration layer settings."
      colors
      elm
      react
+     html
      javascript
      typescript
      sql
