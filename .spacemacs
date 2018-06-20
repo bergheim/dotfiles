@@ -517,6 +517,7 @@ before packages are loaded."
                                                    evil-visual-mode
                                                    magit-mode
                                                    magit-log-mode
+                                                   magit-diff-mode
                                                    magit-revision-mode
                                                    magit-status-mode))
 
