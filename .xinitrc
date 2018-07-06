@@ -27,10 +27,10 @@ feh --bg-fill ~/Pictures/wallpapers/active.png
 session=${1:-i3}
 case $session in
     i3|i3wm)
-        sxhkd -c ~/.config/sxhkd/sxhkdrc.i3 ~/.config/sxhkd/sxhkdrc &
+        SXHKD_SHELL='/usr/bin/sh' sxhkd -c ~/.config/sxhkd/sxhkdrc.i3 ~/.config/sxhkd/sxhkdrc &
         exec i3;;
     bspwm)
-        sxhkd -c ~/.config/sxhkd/sxhkdrc.bspwm ~/.config/sxhkd/sxhkdrc &
+        SXHKD_SHELL='/usr/bin/sh' sxhkd -c ~/.config/sxhkd/sxhkdrc.bspwm ~/.config/sxhkd/sxhkdrc &
         exec bspwm;;
     *)
         # No known session, try to run it as command
