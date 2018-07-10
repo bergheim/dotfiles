@@ -520,15 +520,14 @@ before packages are loaded."
   ;; Lock files are annoying when using sync and backup software
   (setq create-lockfiles nil)
   ;; Backups. Make a bunch
-  (setq make-backup-files t)
-  (setq version-control t     ;; Use version numbers for backups.
+  (setq make-backup-files t
+        version-control t     ;; Use version numbers for backups.
         kept-new-versions 10  ;; Number of newest versions to keep.
         kept-old-versions 2   ;; Number of oldest versions to keep.
         delete-old-versions t ;; Don't ask to delete excess backup versions.
-        backup-by-copying t)  ;; Copy all files, don't rename them.
-  (setq vc-make-backup-files t)
-  ;; Default and per-save backups go here:
-  (setq backup-directory-alist '((".*" . "~/.emacs.d/backup")))
+        backup-by-copying t  ;; Copy all files, don't rename them.
+        vc-make-backup-files t
+        backup-directory-alist '((".*" . "~/.emacs.d/backup"))) ;; Default and per-save backups go here
 
   (setq-default evil-escape-key-sequence "jk")
   (setq-default evil-escape-delay 0.2)
@@ -591,11 +590,8 @@ before packages are loaded."
           eclim-executable "/Applications/Eclipse.app/Contents/Eclipse/eclim"))
 
 
-  ;; always respect editorconfig files
-  (editorconfig-mode 1)
+  (editorconfig-mode 1) ;; always respect editorconfig files
 
-  ;; because the default is impractical
-  (setq smerge-command-prefix "\C-cv")
   ;; nodejs-repl
   (spacemacs/set-leader-keys-for-major-mode 'js2-mode "ne" 'nodejs-repl-send-last-expression)
   (spacemacs/set-leader-keys-for-major-mode 'js2-mode "nj" 'nodejs-repl-send-line)
@@ -604,10 +600,11 @@ before packages are loaded."
   (spacemacs/set-leader-keys-for-major-mode 'js2-mode "n'" 'nodejs-repl-switch-to-repl)
   (spacemacs/set-leader-keys-for-major-mode 'js2-mode "ns" 'nodejs-repl-switch-to-repl)
 
+  (setq smerge-command-prefix "\C-cv") ;; because the default is impractical
+
   (setq magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
 
-  ;; tabs vs spaces, i give up..
-  (setq-default tab-width 2)
+  (setq-default tab-width 2) ;; tabs vs spaces, i give up..
   ;; TODO: am I using this..?
   (setq-default sh-basic-offset tab-width
                 sh-indentation tab-width)
