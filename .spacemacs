@@ -85,6 +85,7 @@ This function should only modify configuration layer settings."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(editorconfig
+                                      nodejs-repl
                                       ;; org-plus-contrib
                                       )
    ;; A list of packages that cannot be updated.
@@ -575,6 +576,13 @@ before packages are loaded."
 
   ;; because the default is impractical
   (setq smerge-command-prefix "\C-cv")
+  ;; nodejs-repl
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "ne" 'nodejs-repl-send-last-expression)
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "nj" 'nodejs-repl-send-line)
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "nr" 'nodejs-repl-send-region)
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "nl" 'nodejs-repl-load-file)
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "n'" 'nodejs-repl-switch-to-repl)
+  (spacemacs/set-leader-keys-for-major-mode 'js2-mode "ns" 'nodejs-repl-switch-to-repl)
 
   (setq magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
 
