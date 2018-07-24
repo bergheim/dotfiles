@@ -214,3 +214,24 @@ hc() {
   awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}' |
   fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs $open > /dev/null 2> /dev/null
 }
+
+nvm() {
+  unset -f nvm
+  export NVM_DIR=~/.nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+  nvm "$@"
+}
+
+node() {
+  unset -f node
+  export NVM_DIR=~/.nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+  node "$@"
+}
+
+npm() {
+  unset -f npm
+  export NVM_DIR=~/.nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+  npm "$@"
+}
