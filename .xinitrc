@@ -15,11 +15,14 @@ dunst &
 compton -f &
 
 tilda &
+spotify &
+chromium &
+firefox-developer-edition &
 
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
-xset r rate 180 50
+xset r rate 180 60
 
 feh --bg-fill ~/Pictures/wallpapers/active.png
 ~/.config/xautolock.sh &
