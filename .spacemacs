@@ -488,6 +488,22 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (defun tsb-toggle-yadm ()
+    "Toggle the GIT_DIR between nil and yadm. Opens magit-status when it is enabled."
+    (interactive)
+    ;; use a property “state”. Value is t or nil
+    (if (get 'tsb-toggle-yadm 'state)
+        (progn
+          (message (concat "Enabling YADM" (getenv "HOME") "/.yadm/repo.git"))
+          (setenv "GIT_DIR" (concat (getenv "HOME") "/.yadm/repo.git"))
+          (put 'tsb-toggle-yadm 'state nil)
+          (magit-status))
+      (progn
+        (message "Disabling YADM")
+        (setenv "GIT_DIR" nil)
+        (put 'tsb-toggle-yadm 'state t))))
+
+  (spacemacs/set-leader-keys "ogy" 'tsb-toggle-yadm)
   (spacemacs/set-leader-keys "ogo" 'vc-revision-other-window)
   (spacemacs/set-leader-keys "ogD" 'magit-diff-buffer-file)
   (spacemacs/set-leader-keys "ogd" 'magit-diff-buffer-file-popup)
