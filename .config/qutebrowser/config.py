@@ -48,6 +48,7 @@ config.bind(',fer', 'config-source')
 
 config.bind(',td', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/dark.css" "" ;; reload')
 config.bind(',tl', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/light.css" "" ;; reload')
+config.bind(',tg', f'config-cycle content.user_stylesheets "~/.config/qutebrowser/gruv.css" "" ;; reload')
 
 config.bind(',tt', f'config-cycle tabs.position "top" "left" ;; reload')
 
@@ -99,7 +100,7 @@ c.colors.tabs.selected.odd.bg = c.colors.tabs.selected.even.bg
 ## for transparency.
 ## Type: QssColor
 # c.colors.hints.bg = 'qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 0, 0.8), stop:1 rgba(255, 0, 0, 0.8))'
-c.colors.hints.bg = 'rgba(255, 200, 40, 0.9)'
+c.colors.hints.bg = 'rgba(255, 200, 40, 0.8)'
 
 ## CSS border value for hints.
 c.hints.border = '1px solid black'
@@ -132,6 +133,8 @@ c.fonts.downloads = monospace
 
 # Font used in the keyhint widget.
 c.fonts.keyhint = monospace
+
+c.fonts.hints = monospace
 
 # Font used for error messages.
 c.fonts.messages.error = monospace
@@ -218,8 +221,8 @@ c.tabs.background = True
 # Padding around text for tabs
 c.tabs.padding = {
     "left": 5,
-    "right": 8,
-    "top": 8,
+    "right": 5,
+    "top": 5,
     "bottom": 5,
 }
 
