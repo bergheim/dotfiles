@@ -577,11 +577,7 @@ before packages are loaded."
 
   (when (spacemacs/system-is-mac)
     (setq mac-command-modifier 'meta
-          mac-option-modifier  'none)
-    ;; TODO should probably check if this exists
-    (setq eclim-eclipse-dirs "/Applications/Eclipse.app/Contents/Eclipse"
-          eclim-executable "/Applications/Eclipse.app/Contents/Eclipse/eclim"))
-
+          mac-option-modifier  'none))
 
   (editorconfig-mode 1) ;; always respect editorconfig files
 
@@ -610,7 +606,7 @@ before packages are loaded."
     (setq org-agenda-span (quote fortnight))
     ;;don't show tasks as scheduled if they are already shown as a deadline
     (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-    (global-set-key (kbd "C-c c") 'org-capture)
+
     (setq org-directory (file-truename "~/org"))
 
     ;; add all org files recursively
@@ -663,51 +659,11 @@ before packages are loaded."
 
 
     (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
-
     ;; include the file in the refile search
     (setq org-refile-use-outline-path 'file)
     ;; give me all the possible completions at once so helm can present them
     (setq org-outline-path-complete-in-steps nil)
 
-    ;; create sibling nodes by default, create new heding by adding /New heading at the end
-    ;; (setq org-refile-allow-creating-parent-nodes 'confirm)
-
-
-    ;; (setq org-icalendar-combined-agenda-file "~/Dropbox/Public/hsph.ics")
-    ;; (setq org-icalendar-alarm-time 60)
-    ;; (setq org-agenda-default-appointment-duration 60)
-    ;; (setq org-agenda-skip-scheduled-if-done t)
-
-    ;; Needs terminal-notifier (brew install terminal-notifier)
-    ;; (defun notify-osx (title message)
-    ;; 	(call-process "terminal-notifier"
-    ;; 		nil 0 nil
-    ;; 		"-group" "Emacs"
-    ;; 		"-title" title
-    ;; 		"-sender" "org.gnu.Emacs"
-    ;; 		"-message" message))
-
-    ;; (defvar roryk-org-sync-timer nil)
-
-    ;; (defvar roryk-org-sync-secs (* 60 20))
-
-    ;; (defun roryk-org-sync ()
-    ;; 	(org-icalendar-combine-agenda-files)
-    ;; 	(notify-osx "Emacs (org-mode)" "iCal sync completed."))
-
-    ;; (defun roryk-org-sync-start ()
-    ;; 	"Start automated org-mode syncing"
-    ;; 	(interactive)
-    ;; 	(setq roryk-org-sync-timer
-    ;; 		(run-with-idle-timer roryk-org-sync-secs t
-    ;; 			'roryk-org-sync)))
-
-    ;; (defun roryk-org-sync-stop ()
-    ;; 	"Stop automated org-mode syncing"
-    ;; 	(interactive)
-    ;; 	(cancel-timer roryk-org-sync-timer))
-
-    ;; (roryk-org-sync-start)
     )
     (if (equal system-type 'gnu/linux)
         (spacemacs/enable-transparency))
@@ -739,7 +695,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
  '(package-selected-packages
    (quote
     (zenburn-theme yasnippet-snippets web-mode pyvenv overseer orgit org-mime org-brain meghanada counsel-projectile counsel swiper ivy company yasnippet magit magit-popup ghub with-editor simple-httpd typescript-mode flycheck ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
