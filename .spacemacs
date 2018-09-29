@@ -626,7 +626,7 @@ before packages are loaded."
 
     (setq org-agenda-start-on-weekday 1)
 
-    (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h)))
+    (setq org-tag-alist '(("@work" . ?w) ("@life" . ?h)))
 
     (setq org-capture-templates
     	(quote (("t" "todo" entry (file org-default-notes-file)
