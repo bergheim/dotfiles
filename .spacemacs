@@ -46,14 +46,15 @@ This function should only modify configuration layer settings."
      git
      github
      markdown
+     neotree
      (org :variables
           org-enable-bootstrap-support t ;; prettier html exports
           org-enable-reveal-js t ;; hipster html presentation exports
           org-want-todo-bindings t ;; one key support on headings
           )
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+     (shell :variables
+            shell-default-height 30
+            shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
      version-control
