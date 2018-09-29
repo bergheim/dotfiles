@@ -610,7 +610,23 @@ before packages are loaded."
     (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-directory (file-truename "~/org"))
-    (setq org-agenda-files (quote ("~/org")))
+
+    ;; add all org files recursively
+    (setq org-agenda-files (apply 'append
+                                  (mapcar
+                                   (lambda (directory)
+                                     (directory-files-recursively
+                                      directory org-agenda-file-regexp))
+                                   '("~/org"))))
+
+    ;; add the project TODO files to the agenda as well
+    (with-eval-after-load 'org-agenda
+      (require 'org-projectile)
+      (mapcar '(lambda (file)
+                 (when (file-exists-p file)
+                   (push file org-agenda-files)))
+              (org-projectile-todo-files)))
+
     (setq org-default-notes-file "~/org/inbox.org")
     (setq org-todo-keywords
           '((sequence "TODO(t)"
