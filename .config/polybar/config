@@ -424,8 +424,7 @@ interval = 1800
 label = %output%
 format = <label>
 format-padding = 2
-click-left = qutebrowser-temp --float https://www.yr.no/place/Norway/Oslo/Oslo/Schous_Plass/
-
+click-left = qutebrowser-temp --float https://www.yr.no/place/Norway/Oslo/Oslo/Schous_Plass/hour_by_hour.html
 [module/spotify]
 type = custom/script
 exec = ~/.config/polybar/spotify.sh
