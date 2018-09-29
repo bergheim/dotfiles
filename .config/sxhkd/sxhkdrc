@@ -12,7 +12,7 @@ super + Return
   alacritty
 
 super + alt + Return
-  termite
+  kitty #termite
 
 super + shift + Return
   alacritty -e ranger
@@ -42,7 +42,7 @@ super + shift + r
 alt + Tab
   rofi -show window -display-window "Switch to window: "
 
-super + c
+super + v
   CM_LAUNCHER=rofi clipmenu
 
 alt + {comma, period, slash}
