@@ -183,8 +183,10 @@ c.scrolling.bar = True
 c.url.searchengines = {
     "DEFAULT": "https://duckduckgo.com/?q={}",
     "g": "https://www.google.com/search?q={}",
-    "g": "https://www.google.com/search?q={}",
-    "gh": "https://github.com/search?utf8=%E2%9C%93&q={}"
+    "gi": "https://www.google.com/search?q={}&tbm=isch",
+    "gh": "https://github.com/search?utf8=%E2%9C%93&q={}",
+    "yub": "http://yubnub.org/parser/parse?command={}",
+    "y": "http://www.youtube.com/results?search_query={}"
 }
 
 c.auto_save.session = True
