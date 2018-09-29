@@ -102,3 +102,6 @@ etckeeper
 tilda
 python-pip
 textlive-most
+kitty
+alacritty
+alacritty-terminfo
