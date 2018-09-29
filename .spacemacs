@@ -604,6 +604,10 @@ before packages are loaded."
   (with-eval-after-load 'org
     (setq spaceline-org-clock-p t)
     (setq org-deadline-warning-days 14)
+    ;;show me tasks scheduled or due in next fortnight
+    (setq org-agenda-span (quote fortnight))
+    ;;don't show tasks as scheduled if they are already shown as a deadline
+    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
     (global-set-key (kbd "C-c c") 'org-capture)
     (setq org-directory (file-truename "~/org"))
     (setq org-agenda-files (quote ("~/org")))
