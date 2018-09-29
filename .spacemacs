@@ -120,13 +120,6 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
-  ;; FIXME: not working
-  ;; (add-to-list 'tramp-methods
-  ;;              '("yadm"
-  ;;                (tramp-login-program "yadm")
-  ;;                (tramp-login-args (("enter")))
-  ;;                (tramp-remote-shell "/bin/sh")
-  ;;                (tramp-remote-shell-args ("-c"))))
    ;; File path pointing to emacs 27.1 executable compiled with support
    ;; for the portable dumper (this is currently the branch pdumper).
    ;; (default "emacs-27.0.50")
