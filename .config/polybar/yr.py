@@ -2,9 +2,10 @@
 import lxml.etree
 import requests
 import sys
-
+import re
 
 url = 'https://www.yr.no/place/Norway/Oslo/Oslo/Oslo/forecast_hour_by_hour.xml'
+r = re.compile(r'\bRAIN\b | \bSNOW\b | \bHEAVY\b', flags=re.I | re.X)
 
 icons = {'02d': u'\uf00c', '42d': u'\uf0b2', '20n': u'\uf01d', '24d': u'\uf00e',
          '48': u'', '02n': u'\uf081', '22': u'\uf01d', '26n': u'\uf06a',
@@ -25,17 +26,32 @@ icons = {'02d': u'\uf00c', '42d': u'\uf0b2', '20n': u'\uf01d', '24d': u'\uf00e',
 
 response = requests.get(url)
 root = lxml.etree.fromstring(response.content)
+
 new = root.xpath('forecast/tabular/time')[0]
 symbol = icons[new.xpath('symbol')[0].attrib['var'].replace('mf/', '').split('.')[0]]
 degrees = new.xpath('temperature')[0].attrib['value']
 name = new.xpath('symbol')[0].attrib['name']
 
-sys.stdout.write(u'%{T5}' + symbol + u'%{T-}  %{T1}' + name + ' ' + degrees + '° C%{T-}')
 
+bad_weather = r.findall(name)
+if len(bad_weather) > 0:
+    sys.stdout.write(u' %{u#c00 +u} ')
+
+sys.stdout.write(u'%{T5}' + symbol + u'%{T-} %{T1} ' + degrees + '° C%{T-}')
+
+if len(bad_weather) > 0:
+    sys.stdout.write(u' %{-u} ')
 
 new = root.xpath('forecast/tabular/time')[1]
 symbol = icons[new.xpath('symbol')[0].attrib['var'].replace('mf/', '').split('.')[0]]
 degrees = new.xpath('temperature')[0].attrib['value']
 name = new.xpath('symbol')[0].attrib['name']
 
-print(u'  %{T5}' + symbol + u'%{T-} %{T1}' + name + ' ' + degrees + '° C%{T-}')
+sys.stdout.write(u'   ')
+bad_weather = r.findall(name)
+if len(bad_weather) > 0:
+    sys.stdout.write(u'%{u#c00}')
+
+sys.stdout.write(u'%{T5}' + symbol + u'%{T-} %{T1} %{F#f00}%{F-}' + degrees + '° C%{T-}')
+if len(bad_weather) > 0:
+    sys.stdout.write(u'%{-u}')
