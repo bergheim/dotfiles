@@ -89,6 +89,7 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(editorconfig
                                       nodejs-repl
+                                      doom-themes
                                       ;; org-plus-contrib
                                       )
    ;; A list of packages that cannot be updated.
