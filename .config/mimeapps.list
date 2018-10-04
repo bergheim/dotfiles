@@ -1,0 +1,24 @@
+[Default Applications]
+x-scheme-handler/tg=telegramdesktop.desktop
+x-scheme-handler/http=qutebrowser.desktop
+x-scheme-handler/https=qutebrowser.desktop
+x-scheme-handler/ftp=chromium.desktop
+x-scheme-handler/chrome=chromium.desktop
+text/html=chromium.desktop
+application/x-extension-htm=chromium.desktop
+application/x-extension-html=chromium.desktop
+application/x-extension-shtml=chromium.desktop
+application/xhtml+xml=chromium.desktop
+application/x-extension-xhtml=chromium.desktop
+application/x-extension-xht=chromium.desktop
+
+[Added Associations]
+text/html=emacs.desktop;vim.desktop;chromium.desktop;
+application/x-extension-htm=chromium.desktop;
+application/x-extension-html=chromium.desktop;
+application/x-extension-shtml=chromium.desktop;
+application/xhtml+xml=chromium.desktop;
+application/x-extension-xhtml=chromium.desktop;
+application/x-extension-xht=chromium.desktop;
+application/pdf=zathura.desktop;
+application/x-java-jnlp-file=firefox-beta-bin.desktop;
