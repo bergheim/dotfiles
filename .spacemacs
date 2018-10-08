@@ -64,7 +64,8 @@ This function should only modify configuration layer settings."
      elm
      react
      html
-     javascript
+     (javascript :variables
+                 node-add-modules-path t)
      typescript
      sql
      java
@@ -576,20 +577,6 @@ before packages are loaded."
   (add-hook 'text-mode-hook 'auto-fill-mode)
 
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-  ;; use local eslint from node_modules before global
-  ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
-  (defun my/use-eslint-from-node-modules ()
-    (let* ((root (locate-dominating-file
-                  (or (buffer-file-name) default-directory)
-                  "node_modules"))
-           (eslint (and root
-                        (expand-file-name "node_modules/eslint/bin/eslint.js"
-                                          root))))
-      (when (and eslint (file-executable-p eslint))
-        (setq-local flycheck-javascript-eslint-executable eslint))))
-
-  (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
   (when (spacemacs/system-is-mac)
     (setq mac-command-modifier 'meta
