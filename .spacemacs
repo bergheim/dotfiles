@@ -495,14 +495,15 @@ before packages are loaded."
     ;; use a property “state”. Value is t or nil
     (if (get 'tsb-toggle-yadm 'state)
         (progn
-          (message (concat "Enabling YADM" (getenv "HOME") "/.yadm/repo.git"))
-          (setenv "GIT_DIR" (concat (getenv "HOME") "/.yadm/repo.git"))
-          (put 'tsb-toggle-yadm 'state nil)
-          (magit-status))
+          (message "Disabling YADM")
+          (setenv "GIT_DIR" nil)
+          (put 'tsb-toggle-yadm 'state nil))
       (progn
-        (message "Disabling YADM")
-        (setenv "GIT_DIR" nil)
-        (put 'tsb-toggle-yadm 'state t))))
+        (message (concat "Enabling YADM" (getenv "HOME") "/.yadm/repo.git"))
+        (setenv "GIT_DIR" (concat (getenv "HOME") "/.yadm/repo.git"))
+        (put 'tsb-toggle-yadm 'state t)
+        (magit-status))
+      ))
 
   (spacemacs/set-leader-keys "ogy" 'tsb-toggle-yadm)
   (spacemacs/set-leader-keys "ogo" 'vc-revision-other-window)
