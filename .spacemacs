@@ -644,7 +644,7 @@ before packages are loaded."
 
     (setq org-agenda-start-on-weekday 1)
 
-    (setq org-tag-alist '(("@work" . ?w) ("@life" . ?h)))
+    (setq org-tag-alist '(("@work" . ?w) ("@life" . ?l)))
 
     (setq org-capture-templates
     	(quote (("t" "todo" entry (file org-default-notes-file)
@@ -668,6 +668,7 @@ before packages are loaded."
     ;; give me all the possible completions at once so helm can present them
     (setq org-outline-path-complete-in-steps nil)
 
+    (advice-add 'org-refile :after 'org-save-all-org-buffers)
     )
     (if (equal system-type 'gnu/linux)
         (spacemacs/enable-transparency))
