@@ -175,6 +175,43 @@ hc() {
   fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs $open > /dev/null 2> /dev/null
   rm -f "$dbcopy"
 }
+
+# f - browse firefox history
+hf() {
+  local cols sep firefox_history open filter
+  cols=$(( COLUMNS / 3 ))
+  sep='{::}'
+  dbcopy="$HOME/tmp/f"
+  filter=$@
+
+  if [ "$(uname)" = "Darwin" ]; then
+    firefox_history=(${HOME}/Library/Application\ Support/Firefox/**/*dev*/places.sqlite([1]N))
+
+    if [ -z "$firefox_history" ]; then
+      firefox_history=(${HOME}/Library/Application\ Support/Firefox/**/places.sqlite([1]N))
+    fi
+    open=open
+  else
+    firefox_history=(${HOME}/.mozilla/firefox/**/*dev*/places.sqlite([1]N))
+
+    if [ -z "$firefox_history" ]; then
+      firefox_history=(${HOME}/.mozilla/firefox/**/places.sqlite([1]N))
+    fi
+    open=xdg-open
+  fi
+  cp -f "$firefox_history" "$dbcopy"
+
+  query="select p.title, p.url
+    from moz_historyvisits as h, moz_places as p where p.id == h.place_id "
+  if [ -n "${filter}" ]; then
+    query="$query AND (p.title LIKE '%$filter%' OR p.url LIKE '%$filter%')"
+  fi
+  query="$query order by h.visit_date"
+
+  sqlite3 -separator $sep "$dbcopy" "$query" |
+    awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}' |
+    fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs $open > /dev/null 2> /dev/null
+  rm -f "$dbcopy"
 }
 
 nvm() {
