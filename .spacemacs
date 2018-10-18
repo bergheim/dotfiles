@@ -48,10 +48,8 @@ This function should only modify configuration layer settings."
      markdown
      neotree
      (org :variables
-          org-enable-bootstrap-support t ;; prettier html exports
-          org-enable-reveal-js t ;; hipster html presentation exports
           org-want-todo-bindings t ;; one key support on headings
-          )
+          org-enable-org-journal-support t)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
@@ -604,75 +602,10 @@ before packages are loaded."
 
   ;; this ensures we don't load the org-mode shipped with regular emacs
   (with-eval-after-load 'org
-    (setq spaceline-org-clock-p t)
-    (setq org-deadline-warning-days 14)
-    ;;show me tasks scheduled or due in next fortnight
-    (setq org-agenda-span (quote fortnight))
-    ;;don't show tasks as scheduled if they are already shown as a deadline
-    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+    (load-file (expand-file-name "~/.emacs.d/custom/bergheim-org.el")))
 
-    (setq org-directory (file-truename "~/org"))
-
-    ;; add all org files recursively
-    (setq org-agenda-files (apply 'append
-                                  (mapcar
-                                   (lambda (directory)
-                                     (directory-files-recursively
-                                      directory org-agenda-file-regexp))
-                                   '("~/org"))))
-
-    ;; add the project TODO files to the agenda as well
-    (with-eval-after-load 'org-agenda
-      (require 'org-projectile)
-      (mapcar '(lambda (file)
-                 (when (file-exists-p file)
-                   (push file org-agenda-files)))
-              (org-projectile-todo-files)))
-
-    (setq org-default-notes-file "~/org/inbox.org")
-    (setq org-todo-keywords
-          '((sequence "TODO(t)"
-                      "INPROGRESS(i)"
-                      "WAITING(w)"
-                      "SOMEDAY(.)"
-                      "|" "DONE(x!)" "CANCELLED(c@)")
-            ;; (sequence "NEXT(n)"
-            ;;           "|" "DONE(x!)" "CANCLELLED(c@)")
-            (sequence "BUG(b)" "|" "FIXED(f)")
-            (sequence "READ(r)" "|" "DONE(x!)")
-            ))
-
-    (setq org-agenda-start-on-weekday 1)
-
-    (setq org-tag-alist '(("@work" . ?w) ("@life" . ?l)))
-
-    (setq org-capture-templates
-    	(quote (("t" "todo" entry (file org-default-notes-file)
-               ;; "* TODO %?\n%T\n" :clock-in t :clock-resume t)
-               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-    					 ("r" "respond" entry (file org-default-notes-file)
-                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-               ("n" "note" entry (file org-default-notes-file)
-                 "* %? :NOTE:\n%T\n" :clock-in t :clock-resume t)
-    					 ("b" "bug" entry (file org-default-notes-file)
-                "* %? :BUG:\n%T\n" :clock-in t :clock-resume t)
-    					 ("j" "journal" entry (file+datetree (concat org-directory "journal.org"))
-                 "* %?\n%T\n" :clock-in t :clock-resume t)
-    					 ("m" "meeting" entry (file org-default-notes-file)
-                 "* MEETING with %? :MEETING:\n%T" :clock-in t :clock-resume t))))
-
-
-    (setq org-refile-targets '((org-agenda-files :maxlevel . 3)))
-    ;; include the file in the refile search
-    (setq org-refile-use-outline-path 'file)
-    ;; give me all the possible completions at once so helm can present them
-    (setq org-outline-path-complete-in-steps nil)
-
-    (advice-add 'org-refile :after 'org-save-all-org-buffers)
-    )
-    (if (equal system-type 'gnu/linux)
-        (spacemacs/enable-transparency))
-  )
+  (if (equal system-type 'gnu/linux)
+      (spacemacs/enable-transparency)))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
