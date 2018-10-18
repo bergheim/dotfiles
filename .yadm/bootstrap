@@ -7,3 +7,10 @@ sudo systemctl start sshd.service
 
 # TODO: install an AUR manager
 # sudo pacaur/yay/whatever -S $(grep -o '^[^#]*' ~/.config/bootstrap/archlinux/packages.aur)
+
+# Because Git submodule commands cannot operate without a work tree, they must
+# be run from within $HOME (assuming this is the root of your dotfiles)
+cd "$HOME"
+
+echo "Init submodules"
+yadm submodule update --recursive --init

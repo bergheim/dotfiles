@@ -1,0 +1,3 @@
+[submodule ".zim"]
+	path = .zim
+	url = https://github.com/zimfw/zimfw
