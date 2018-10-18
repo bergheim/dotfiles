@@ -10,9 +10,11 @@ setopt prompt_subst # Make sure propt is able to be generated properly.
 case `uname` in
   Darwin)
 	alias ls='ls -G'
+	alias o='open'
   ;;
   Linux)
 	alias ls='ls --color'
+	alias o='xdg-open'
   ;;
 esac
 
@@ -21,19 +23,6 @@ alias sl='ls'
 alias la='ls -a'
 alias ll='ls -l'
 alias llh='ls -lh'
-alias o='xdg-open'
-
-# attach and disconenct any current users (this enables resizing unlike tmux -A)
-# if it does not exist, create it
-# requires a string which is the session name
-ta() {
-  if [ -n "$1" ]
-  then
-    tmux attach -d -t $1 || tmux new -s $1
-  else
-    print "Please specify a session name"
-  fi
-}
 
 alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
@@ -89,6 +78,7 @@ bindkey '^E' edit-command-line
 # rehash executables after something is installed in $PATH
 zstyle ':completion:*' rehash true
 
+# FIXME: c-l is clear...
 # navigate down/back with c-h, c-l
 cdUndoKey() {
   popd
@@ -114,11 +104,10 @@ bindkey '^H'      cdParentKey
 bindkey '^U'      cdUndoKey
 
 # fzf things
+export FZF_COMPLETION_TRIGGER="''"
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
-# use ag
-# export FZF_DEFAULT_COMMAND='ag --hidden -U --ignore .git -g ""'
 # use rg
 # --files: List files that would be searched but do not search
 # --no-ignore: Do not respect .gitignore, etc...
@@ -160,9 +149,11 @@ fkill() {
 
 # c - browse chrome history
 hc() {
-  local cols sep google_history open
+  local cols sep google_history open query
   cols=$(( COLUMNS / 3 ))
   sep='{::}'
+  dbcopy="$HOME/tmp/c"
+  filter=$@
 
   if [ "$(uname)" = "Darwin" ]; then
     google_history="$HOME/Library/Application Support/Google/Chrome/Default/History"
@@ -171,12 +162,19 @@ hc() {
     google_history="$HOME/.config/chromium/Default/History"
     open=xdg-open
   fi
-  cp -f "$google_history" /tmp/h
-  sqlite3 -separator $sep /tmp/h \
-    "select substr(title, 1, $cols), url
-     from urls order by last_visit_time desc" |
+  cp -f "$google_history" "$dbcopy"
+
+  query="select substr(title, 1, $cols), url from urls"
+  if [ -n "${filter}" ]; then
+    query="$query WHERE title LIKE '%$filter%' OR url LIKE '%$filter%'"
+  fi
+  query="$query order by last_visit_time desc"
+
+  sqlite3 -separator $sep "$dbcopy" "$query" |
   awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}' |
   fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs $open > /dev/null 2> /dev/null
+  rm -f "$dbcopy"
+}
 }
 
 nvm() {
@@ -198,4 +196,16 @@ npm() {
   export NVM_DIR=~/.nvm
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
   npm "$@"
+}
+
+# attach and disconenct any current users (this enables resizing unlike tmux -A)
+# if it does not exist, create it
+# requires a string which is the session name
+ta() {
+  if [ -n "$1" ]
+  then
+    tmux attach -d -t $1 || tmux new -s $1
+  else
+    print "Please specify a session name"
+  fi
 }
