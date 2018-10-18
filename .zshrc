@@ -105,8 +105,13 @@ bindkey '^U'      cdUndoKey
 
 # fzf things
 export FZF_COMPLETION_TRIGGER="''"
-source /usr/share/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
+
+if [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+elif [ -d /usr/share/fzf ]; then
+  source /usr/share/fzf/key-bindings.zsh
+  source /usr/share/fzf/completion.zsh
+fi
 
 # use rg
 # --files: List files that would be searched but do not search
