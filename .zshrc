@@ -211,7 +211,7 @@ hf() {
   if [ -n "${filter}" ]; then
     query="$query AND (p.title LIKE '%$filter%' OR p.url LIKE '%$filter%')"
   fi
-  query="$query order by h.visit_date"
+  query="$query GROUP BY p.url order by h.visit_date"
 
   sqlite3 -separator $sep "$dbcopy" "$query" |
     awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}' |
