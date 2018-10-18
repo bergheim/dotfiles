@@ -1,47 +1,9 @@
 DEFAULT_USER=tsb # only show username, not username@hostname
-if [[ ! -d ~/.zplug ]];then
-    git clone https://github.com/b4b4r07/zplug ~/.zplug
-fi
 
-source ~/.zplug/init.zsh
-
-zplug "zplug/zplug" # update yourself
-zplug "lib/completion", from:oh-my-zsh # arrows to choose dir
-zplug "plugins/command-not-found", from:oh-my-zsh
-zplug "plugins/git",   from:oh-my-zsh
-zplug "plugins/last-working-dir",   from:oh-my-zsh
-zplug "supercrabtree/k" # use k to view git file status
-zplug "b4b4r07/zsh-vimode-visual", use:"*.zsh", defer:3
-
-# zplug "zsh-users/zsh-history-substring-search"
-# zplug "joel-porquet/zsh-dircolors-solarized"
-
-# z
-# Navigate your most used directories based on 'frecency'.
-# https://github.com/rupa/z
-zplug 'rupa/z', use:'*.sh'
 
 # Themes
 autoload colors && colors
 setopt prompt_subst # Make sure propt is able to be generated properly.
-
-zplug "mafredri/zsh-async", from:github
-zplug "dfurnes/purer", use:pure.zsh, from:github, as:theme
-
-# zplug "themes/agnoster", from:oh-my-zsh
-# zplug 'agnoster/agnoster-zsh-theme', as:theme
-# zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme
-# zplug "adambiggs/zsh-theme", as:theme, use:adambiggs.zsh-theme
-
-# Syntax highlighting for commands, load last
-zplug "zsh-users/zsh-syntax-highlighting", from:github, defer:3
-
-zplug check || zplug install
-zplug load --verbose
-
-# if zplug check joel-porquet/zsh-dircolors-solarized; then
-#     setupsolarized dircolors.256dark
-# fi
 
 case `uname` in
   Darwin)
