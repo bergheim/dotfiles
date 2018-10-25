@@ -22,7 +22,7 @@ gst-libav
 gst-plugins-good
 highlight # for ranger code highlighting etc
 htop
-hunspell-en
+hunspell-en_GB
 hunspell hyphen
 imagemagick # for screen lock etc
 kdeconnect
@@ -76,7 +76,7 @@ tmux
 tree
 ttf-anonymous-pro
 ttf-droid
-odf-font-awesome
+otf-font-awesome
 ttf-inconsolata
 ttf-roboto
 ttf-dejavu
@@ -101,7 +101,7 @@ python-tldextract # for qute-pass
 etckeeper
 tilda
 python-pip
-textlive-most
+texlive-most
 kitty
 alacritty
 alacritty-terminfo
