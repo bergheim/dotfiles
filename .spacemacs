@@ -58,6 +58,8 @@ This function should only modify configuration layer settings."
      version-control
      ranger
      restclient
+     (elfeed :variables
+             rmh-elfeed-org-files (list "~/org/elfeed.org"))
      colors
      elm
      react
