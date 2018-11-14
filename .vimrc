@@ -1,5 +1,39 @@
 set nocompatible " must be first
 
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
+" bracket mappings
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-fugitive'
+Plug 'moll/vim-node'
+Plug 'francoiscabrol/ranger.vim'
+let g:ranger_map_keys = 0
+Plug 'mbbill/undotree'
+
+" themes
+Plug 'itchyny/lightline.vim'
+
+Plug 'captbaritone/molokai'
+Plug 'KeitaNakamura/neodark.vim'
+Plug 'morhetz/gruvbox'
+Plug 'arcticicestudio/nord-vim'
+Plug 'rakr/vim-one'
+Plug 'ayu-theme/ayu-vim'
+
+" Initialize plugin system
+call plug#end()
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " general
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -20,6 +54,10 @@ set background=dark
 syntax on
 "Allow  256 colors in Terminal
 set t_Co=256
+
+" colorscheme nord
+let ayucolor="mirage"   " for dark version of theme
+colorscheme gruvbox
 
 set wildmenu " command line completion in statusbar for commands
 set ruler " always show current position at bottom
