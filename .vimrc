@@ -50,6 +50,9 @@ set ttyfast
 " every window gets a status line
 set laststatus=2
 
+let mapleader = "\<Space>"
+let maplocalleader = ";"
+
 set background=dark
 syntax on
 "Allow  256 colors in Terminal
@@ -128,3 +131,70 @@ autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif
 
 :imap jj <Esc>
 :imap jk <Esc>:w<CR>
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" leader shortcuts
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" I'm damaged goods now - make it a bit more spacemacsey
+nmap <silent> <Leader>fed :vsplit $MYVIMRC<CR>
+nmap <silent> <Leader>feR :source $MYVIMRC<CR>
+nmap <silent> <Leader>feI :PlugInstall<CR>
+nmap <silent> <Leader>feU :PlugUpdate<CR>
+nmap <silent> <Leader>fs :write<CR>
+nmap <silent> <Leader>qq :qa<CR>
+
+nmap <leader>ff :RangerCurrentDirectory<CR>
+nmap <leader>f/ :Files<CR>
+nmap <leader>fd :Files<CR>
+nmap <leader>pf :GFiles<CR>
+nmap <leader>sap :Rg<CR>
+nmap <leader>s/ :Rg<CR>
+nmap <leader>bb :Buffers<CR>
+nmap <leader>bd :bd<CR>
+
+xmap <leader>;  <Plug>Commentary
+nmap <leader>;  <Plug>Commentary
+omap <leader>;  <Plug>Commentary
+
+nmap <leader>aou :UndotreeToggle<CR>
+
+nmap <leader>ws :split<CR>
+nmap <leader>wv :vsplit<CR>
+nmap <leader>wv :vsplit<CR>
+nmap <leader>wd <C-W>c
+
+nmap <leader>wj <C-W><C-J>
+nmap <leader>wk <C-W><C-K>
+nmap <leader>wl <C-W><C-L>
+nmap <leader>wh <C-W><C-H>
+
+nmap <leader>w1 1<C-W><C-W>
+nmap <leader>w2 2<C-W><C-W>
+nmap <leader>w3 3<C-W><C-W>
+nmap <leader>w4 4<C-W><C-W>
+
+" Clear search highlights
+nmap <leader><space> :nohlsearch<cr>
+
+nmap <leader>pp :%!python -m json.tool<cr>
+
+nnoremap <leader>wm :call MaximizeToggle()<CR>
+
+function! MaximizeToggle()
+  if exists("s:maximize_session")
+    exec "source " . s:maximize_session
+    call delete(s:maximize_session)
+    unlet s:maximize_session
+    let &hidden=s:maximize_hidden_save
+    unlet s:maximize_hidden_save
+  else
+    let s:maximize_hidden_save = &hidden
+    let s:maximize_session = tempname()
+    set hidden
+    exec "mksession! " . s:maximize_session
+    only
+  endif
+endfunction
+
