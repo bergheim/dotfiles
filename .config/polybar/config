@@ -61,8 +61,7 @@ modules-right = xbacklight notice org-mode spotify yr-weather memory cpu wlan ba
 
 tray-position = right
 tray-padding = 5
-;tray-transparent = true
-;tray-background = #0063ff
+tray-background = ${colors.background}
 
 wm-restack = bspwm
 ;wm-restack = i3
