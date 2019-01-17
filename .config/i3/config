@@ -32,10 +32,10 @@ floating_modifier $mod
 bindsym $mod+d kill
 
 # change focus
-bindsym $mod+$left focus left
-bindsym $mod+$down focus down
-bindsym $mod+$up focus up
-bindsym $mod+$right focus right
+bindsym $mod+$left  exec --no-startup-id i3fullscreen_nav.sh focus left
+bindsym $mod+$down  exec --no-startup-id i3fullscreen_nav.sh focus down
+bindsym $mod+$up    exec --no-startup-id i3fullscreen_nav.sh focus up
+bindsym $mod+$right exec --no-startup-id i3fullscreen_nav.sh focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
