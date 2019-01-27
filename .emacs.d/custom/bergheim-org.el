@@ -30,6 +30,10 @@
       ;; (setq org-agenda-default-appointment-duration 60)
       ;; (setq org-agenda-skip-scheduled-if-done t)
 
+;; This is a much better "see last clocked in tasks package"
+(require 'org-mru-clock)
+(setq org-mru-clock-how-many 100)
+(setq org-mru-clock-completing-read #'ivy-completing-read)
 
 (setq org-agenda-clockreport-parameter-plist
       (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80)))
