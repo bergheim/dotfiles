@@ -1,5 +1,8 @@
 (global-set-key (kbd "C-c c") 'org-capture)
 
+;; Resume clocking task when emacs is restarted
+(org-clock-persistence-insinuate)
+
 (setq spaceline-org-clock-p t
       org-deadline-warning-days 14
       ;; show tasks scheduled or due in next fortnight
