@@ -96,9 +96,9 @@ workspace_auto_back_and_forth no
 bindsym $mod+a [urgent=latest] focus
 
 # toggle between two monitors
-bindsym $mod+shift+x focus output left
+bindsym $mod+n focus output right
 # toggle workspace between two monitors
-bindsym $mod+n move workspace to output right
+bindsym $mod+shift+n move workspace to output right
 
 # focus the child container
 #bindsym $mod+d focus child
