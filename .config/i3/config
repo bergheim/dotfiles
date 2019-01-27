@@ -216,8 +216,8 @@ mode "$mode_gaps_outer" {
 
 bindsym $mod+minus          gaps inner current set 0; gaps outer current set 0
 bindsym $mod+equal          gaps inner current set 10; gaps outer current set 10
-bindsym $mod+shift+minus    gaps inner current set 10; gaps outer current set 40
-bindsym $mod+shift+equal    gaps inner current set 10; gaps outer current set 200
+bindsym $mod+shift+minus    gaps inner current set 40; gaps outer current set 40
+bindsym $mod+shift+equal    gaps inner current set 60; gaps outer current set 100
 
 # colors
 #set $bg-color #2f343f
