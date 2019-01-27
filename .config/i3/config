@@ -12,7 +12,7 @@ set $down j
 set $left h
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
+bindsym $mod+$alt+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+$alt+Escape restart
 
