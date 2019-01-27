@@ -59,3 +59,9 @@ super + shift + {comma, period}
 
 {XF86AudioLowerVolume, XF86AudioRaiseVolume}
   pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
+
+super + shift + c
+  emacs-capture --eval '(progn(org-capture nil "t")(spacemacs/toggle-maximize-buffer))'
+
+super + shift + a
+  emacs-capture --eval '(progn(org-agenda-list)(spacemacs/toggle-maximize-buffer))'
