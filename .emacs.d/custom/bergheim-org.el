@@ -3,6 +3,11 @@
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
 
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((js . t)
+   (emacs-lisp . t)))
+
 (setq spaceline-org-clock-p t
       org-deadline-warning-days 14
       ;; show tasks scheduled or due in next fortnight
