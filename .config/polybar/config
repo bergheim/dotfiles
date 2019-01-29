@@ -57,7 +57,7 @@ font-4 = Weather\Icons:pixelsize=16;1
 modules-left = bspwm i3
 ;modules-left = xworkspaces
 modules-center = xwindow
-modules-right = xbacklight notice org-mode spotify yr-weather memory cpu wlan battery temperature date xkeyboard pulseaudio
+modules-right = xbacklight notice org-mode spotify yr-weather memory cpu eth battery temperature date xkeyboard pulseaudio
 
 tray-position = right
 tray-padding = 5
@@ -263,13 +263,13 @@ ramp-signal-foreground = ${colors.foreground-alt}
 
 [module/eth]
 type = internal/network
-interface = enp4s0
-interval = 3.0
+interface = enp0s31f6
+interval = 5.0
 
-format-connected-underline = #55aa55
+; format-connected-underline = #55aa55
 format-connected-prefix = " "
 format-connected-prefix-foreground = ${colors.foreground-alt}
-label-connected = %local_ip%
+label-connected = %downspeed% / %upspeed%
 
 format-disconnected =
 ;format-disconnected = <label-disconnected>
