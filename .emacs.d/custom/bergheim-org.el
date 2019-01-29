@@ -23,7 +23,7 @@
       org-refile-use-outline-path 'file
       org-deadline-warning-days 7
       org-enable-bootstrap-support t ;; prettier html exports
-      org-enable-reveal-js t ;; hipster html presentation exports
+      org-enable-reveal-js nil ;; hipster html presentation exports
       org-journal-enable-agenda-integration t
       org-agenda-compact-blocks nil ;; don't compact the agenda
       ;; carry over _all_ items except done
@@ -37,6 +37,11 @@
 (require 'org-mru-clock)
 (setq org-mru-clock-how-many 100)
 (setq org-mru-clock-completing-read #'ivy-completing-read)
+
+;; FIXME: workaround
+;; https://github.com/syl20bnr/spacemacs/issues/11798
+(when (version<= "9.2" (org-version))
+  (require 'org-tempo))
 
 (setq org-agenda-clockreport-parameter-plist
       (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80)))
