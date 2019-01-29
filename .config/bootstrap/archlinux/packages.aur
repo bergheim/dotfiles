@@ -10,3 +10,4 @@ siji-git
 ttf-unifont
 ttf-weather-icons # for weather module
 unclutter-xfixes-git # remove mouse, this version fixes focus stealing
+compton-tryone-git # adds kawase blur
