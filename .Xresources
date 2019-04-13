@@ -54,7 +54,7 @@ rofi.kb-move-char-forward: Right,Control+l
 ! show rofi on the currently focused monitor
 rofi.monitor: -1
 
-# make fonts nice
+! make fonts nice
 Xft.lcdfilter: lcddefault
 Xft.antialias: true
 Xft.autohint: 0
