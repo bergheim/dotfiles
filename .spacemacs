@@ -560,6 +560,7 @@ before packages are loaded."
                                                    magit-log-mode
                                                    magit-diff-mode
                                                    magit-revision-mode
+                                                   magit-stash-mode
                                                    magit-status-mode))
 
   (define-key evil-normal-state-map (kbd "M-h") #'evil-window-left)
