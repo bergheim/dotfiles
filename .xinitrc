@@ -24,6 +24,7 @@ setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 60
+(sleep 5 && kbdd) & # kbdd is buggy if it does not start after the WM
 
 feh --bg-fill ~/Pictures/wallpapers/active.png
 ~/.config/xautolock.sh &
