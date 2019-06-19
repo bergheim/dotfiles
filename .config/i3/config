@@ -60,7 +60,7 @@ bindsym $mod+Shift+Right move right
 
 # split in vertical orientation
 # bindsym $mod+v split v
-bindsym $mod+t split toggle
+bindsym $mod+bar split toggle
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
