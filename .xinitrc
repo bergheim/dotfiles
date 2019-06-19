@@ -14,7 +14,6 @@ redshift &
 dunst &
 compton -f &
 
-if [ $(which dropbox ) ]; then dropbox &; fi
 tilda &
 spotify &
 chromium &
