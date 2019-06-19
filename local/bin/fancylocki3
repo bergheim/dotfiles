@@ -9,5 +9,5 @@ pkill -u "$USER" -USR1 --exact dunst
 scrot "$tmpbg"
 convert "$tmpbg" -scale 10% -scale 1000% "$tmpbg"
 convert "$tmpbg" "$icon" -gravity center -composite -matte "$tmpbg"
-i3lock -n -e -i "$tmpbg"
+i3lock -n -f -e -i "$tmpbg"
 pkill -u "$USER" -USR2 --exact dunst
