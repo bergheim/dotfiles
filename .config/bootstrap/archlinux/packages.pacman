@@ -110,3 +110,5 @@ pixz
 xdotool
 pacman-contrib
 entr
+ruby
+ruby-rdoc
