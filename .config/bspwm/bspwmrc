@@ -34,5 +34,4 @@ bspc rule -a Tilda state=floating
 bspc rule -a "*:floating" state=floating
 
 feh --bg-scale ~/Pictures/wallpapers/active.png
-kbdd
 $HOME/.config/polybar/launch.sh
