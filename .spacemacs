@@ -619,7 +619,8 @@ before packages are loaded."
     (load-file (expand-file-name "~/.emacs.d/custom/bergheim-org.el")))
 
   (if (equal system-type 'gnu/linux)
-      (spacemacs/enable-transparency)))
+      (spacemacs/disable-transparency))
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
