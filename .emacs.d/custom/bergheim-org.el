@@ -139,6 +139,11 @@
 ;; timer each hour or something. This is used for git ssync issues
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
+;; FIXME: workaround
+;; https://github.com/syl20bnr/spacemacs/issues/11798
+(when (version<= "9.2" (org-version))
+  (require 'org-tempo))
+
 (require 'org-habit)
 (load-file (expand-file-name "~/.emacs.d/custom/bh-org.el"))
 
