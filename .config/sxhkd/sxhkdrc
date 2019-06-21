@@ -17,6 +17,9 @@ super + alt + Return
 super + shift + Return
   alacritty -e ranger
 
+super + shift + q
+  qualculate-gtk
+
 # make sxhkd reload its configuration files:
 super + Escape
   pkill -USR1 -x sxhkd
