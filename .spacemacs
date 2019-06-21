@@ -73,6 +73,7 @@ This function should only modify configuration layer settings."
      yaml
      spotify
      python
+     tmux
      (themes-megapack :packages
                       badwolf-theme
                       doom-city-lights
