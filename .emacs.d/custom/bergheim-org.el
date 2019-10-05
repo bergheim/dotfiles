@@ -41,7 +41,7 @@
 ;; This is a much better "see last clocked in tasks package"
 (require 'org-mru-clock)
 (setq org-mru-clock-how-many 100)
-(setq org-mru-clock-completing-read #'ivy-completing-read)
+(setq org-mru-clock-completing-read #'helm-comp-read)
 
 ;; FIXME: workaround
 ;; https://github.com/syl20bnr/spacemacs/issues/11798
