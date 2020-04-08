@@ -28,6 +28,7 @@ xset r rate 180 60
 
 feh --bg-fill ~/Pictures/wallpapers/active.png
 ~/.config/xautolock.sh &
+picom -f &
 
 session=${1:-i3}
 case $session in
