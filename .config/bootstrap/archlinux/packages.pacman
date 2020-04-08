@@ -8,6 +8,7 @@ aws-cli
 bspwm
 chromium
 community/awesome-terminal-fonts
+dnstools
 dunst
 emacs
 feh
@@ -80,6 +81,7 @@ ttf-inconsolata
 ttf-roboto
 ttf-dejavu
 ttf-liberation
+tmuxp
 noto-fonts
 unzip
 vdirsyncer
@@ -107,6 +109,7 @@ alacritty-terminfo
 pbzip2
 pigz
 pixz
+xdo
 xdotool
 pacman-contrib
 entr
