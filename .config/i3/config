@@ -299,6 +299,7 @@ assign [class="^Chromium$"] $ws4
 # exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
 # exec --no-startup-id emacs --daemon && emacsclient -c
   exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+  exec_always --no-startup-id tilda &
 # }}}
 
 # dont tile popups
