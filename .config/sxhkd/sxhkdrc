@@ -9,10 +9,11 @@ super + shift + d
 
 # terminal emulator
 super + Return
-  kitty
+  alacritty
 
+# alternate terminal emulator
 super + alt + Return
-  alacritty #termite
+  kitty
 
 super + shift + Return
   alacritty -e ranger
