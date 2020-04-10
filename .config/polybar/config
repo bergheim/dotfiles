@@ -122,7 +122,7 @@ label-layout-underline = ${colors.foreground}
 label-indicator-padding = 2
 label-indicator-margin = 1
 label-indicator-background = ${colors.secondary}
-# label-indicator-underline = ${colors.secondary}
+label-indicator-underline = ${colors.secondary}
 
 [module/filesystem]
 type = internal/fs
@@ -130,7 +130,7 @@ interval = 25
 
 mount-0 = /
 
-# label-mounted = %{F#0a81f5}%mountpoint%%{F-}: %free%
+; label-mounted = %{F#0a81f5}%mountpoint%%{F-}: %free%
 label-mounted = %mountpoint%: %free%
 label-unmounted = %mountpoint% not mounted
 label-unmounted-foreground = ${colors.foreground-alt}
@@ -156,12 +156,13 @@ label-empty-padding = 2
 
 fuzzy-match = true
 
-# ws-icon-7 = IX;♚
-# ws-icon-8 = IX;♚
-# ws-icon-9 = IX;♚
-#
-# ws-icon-default = ♟
 pin-workspaces = true
+
+; ws-icon-7 = IX;♚
+; ws-icon-8 = IX;♚
+; ws-icon-9 = IX;♚
+;
+; ws-icon-default = ♟
 
 [module/i3]
 type = internal/i3
@@ -256,7 +257,7 @@ type = internal/cpu
 interval = 2
 format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
-# format-underline = #f90000
+; format-underline = #f90000
 label = %percentage:2%%
 
 [module/memory]
@@ -264,7 +265,7 @@ type = internal/memory
 interval = 2
 format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
-# format-underline = #4bffdc
+; format-underline = #4bffdc
 label = %gb_free%
 
 [module/wlan]
@@ -317,7 +318,7 @@ time-alt = %H:%M
 
 format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
-# format-underline = #0a6cf5
+; format-underline = #0a6cf5
 
 label = " %date% %time%"
 
