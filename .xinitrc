@@ -15,9 +15,9 @@ clipmenud & # clipboard history
 redshift & # dim the screen at night
 dunst & # notifications
 
+firefox-developer-edition &
 spotify &
 chromium &
-firefox-developer-edition &
 telegram-desktop &
 
 setxkbmap -option caps:escape # use caps as esc
@@ -30,7 +30,7 @@ feh --bg-fill ~/Pictures/wallpapers/active.png
 ~/.config/xautolock.sh &
 picom -f &
 
-session=${1:-i3}
+session=${1:-bspwm}
 case $session in
     i3|i3wm)
         SXHKD_SHELL='/usr/bin/sh' sxhkd -c ~/.config/sxhkd/sxhkdrc.i3 ~/.config/sxhkd/sxhkdrc &
