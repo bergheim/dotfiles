@@ -1,0 +1,25 @@
+[options]
+hide-info-box=1
+scale-images-up=1
+browse=1
+sort=1
+thumbnail-preload=100
+thumbnail-persistence=yes
+watch-directories=1
+
+[keybindings]
+n  { goto_file_relative(1) }
+p  { goto_file_relative(-1) }
+=  { toggle_fullscreen() }
+w  { toggle_fullscreen() }
+
+@MONTAGE {
+  h           { montage_mode_shift_x(-1) }
+  j           { montage_mode_shift_y(1) }
+  k           { montage_mode_shift_y(-1) }
+  l           { montage_mode_shift_x(1) }
+  <Control>u  { montage_mode_shift_y_pg(-1) }
+  <Control>d  { montage_mode_shift_y_pg(1) }
+  0           { goto_file_byindex(0) }
+  $           { goto_file_byindex(-1) }
+}
