@@ -8,6 +8,7 @@
 super + shift + 1
   sxhkd-show-bindings
 
+# kill an application
 super + shift + d
 	exec xkill
 
@@ -19,9 +20,11 @@ super + Return
 super + alt + Return
   kitty
 
+# file manager
 super + shift + Return
-  alacritty -e ranger
+  alacritty -e vifmrun
 
+# calculator
 super + shift + q
   qualculate-gtk
 
@@ -29,19 +32,24 @@ super + shift + q
 super + Escape
   pkill -USR1 -x sxhkd
 
+# screenshot
 super + shift + @p
   screenshot && notify-send -u low 'Screenshot captured'
 
+# screenshot area
 super + alt + shift + @p
   screenshot -a && notify-send -u low 'Screenshot area captured'
 
+# lock screen
 super + shift + x
   exec fancylocki3
 
+# toggle autolock
 super + alt + shift + x
   exec ~/.config/xautolock.sh toggle
 
-super + r
+# run rofi
+super + {r,space}
   rofi -show run -lines 10 -display-run "run: "
 
 super + shift + r
@@ -73,3 +81,9 @@ super + shift + c
 
 super + shift + a
   emacs-capture --eval '(progn(org-agenda-list)(spacemacs/toggle-maximize-buffer))'
+
+shift + F12
+  alacritty-colorscheme -T
+
+F12
+  desktop-toggle-color
