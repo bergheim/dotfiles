@@ -333,6 +333,29 @@ hf() {
   rm -f "$dbcopy"
 }
 
+# glf - git commit browser (enter for show, ctrl-d for diff, ` toggles sort)
+glf() {
+  local out shas sha q k
+  while out=$(
+      #--format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
+      git log --graph --color=always \
+          --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen[%ci (%cr)] %C(bold blue)<%an>%Creset' --abbrev-commit |
+        fzf --ansi --multi --no-sort --reverse --query="${q}" --tiebreak=index \
+            --print-query --expect=ctrl-d,ctrl-o --toggle-sort=\`); do
+    q=$(head -1 <<< "${out}")
+    k=$(head -2 <<< "${out}" | tail -1)
+    shas=$(sed '1,2d;s/^[^a-z0-9]*//;/^$/d' <<< "${out}" | awk '{print $1}')
+    [ -z "${shas}" ] && continue
+    if [ "${k}" = 'ctrl-d' ] || [ "${k}" = 'ctrl-o' ]; then
+      git diff --color=always ${shas} | less -R
+    else
+      for sha in ${shas}; do
+        git show --color=always ${sha} | less -R
+      done
+    fi
+  done
+}
+
 nvm() {
   unset -f nvm
   export NVM_DIR=~/.nvm
@@ -364,27 +387,4 @@ ta() {
   else
     print "Please specify a session name"
   fi
-}
-
-# glf - git commit browser (enter for show, ctrl-d for diff, ` toggles sort)
-glf() {
-  local out shas sha q k
-  while out=$(
-      #--format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-      git log --graph --color=always \
-          --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen[%ci (%cr)] %C(bold blue)<%an>%Creset' --abbrev-commit |
-        fzf --ansi --multi --no-sort --reverse --query="${q}" --tiebreak=index \
-            --print-query --expect=ctrl-d,ctrl-o --toggle-sort=\`); do
-    q=$(head -1 <<< "${out}")
-    k=$(head -2 <<< "${out}" | tail -1)
-    shas=$(sed '1,2d;s/^[^a-z0-9]*//;/^$/d' <<< "${out}" | awk '{print $1}')
-    [ -z "${shas}" ] && continue
-    if [ "${k}" = 'ctrl-d' ] || [ "${k}" = 'ctrl-o' ]; then
-      git diff --color=always ${shas} | less -R
-    else
-      for sha in ${shas}; do
-        git show --color=always ${sha} | less -R
-      done
-    fi
-  done
 }
