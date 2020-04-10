@@ -83,6 +83,10 @@ super + {_,alt + }{1-3,q,w,e,4,a,s,7,8}
 alt + shift + {Left,Right}
   id=$(bspc query --nodes --node); bspc node --to-desktop {prev,next}; bspc desktop --focus next; bspc node --focus ${id}
 
+# focus the node that demands attention
+super + u
+  bspc node --focus $(bspc query -N -n .urgent)
+
 #
 # preselect
 #
