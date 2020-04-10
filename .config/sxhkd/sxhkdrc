@@ -4,6 +4,10 @@
 #
 #
 
+# show keybindings
+super + shift + 1
+  sxhkd-show-bindings
+
 super + shift + d
 	exec xkill
 
