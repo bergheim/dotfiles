@@ -5,6 +5,7 @@ arandr
 arc-gtk-theme
 arc-icon-theme
 aws-cli
+bat # cat on steriods, syntax highlighting, git integration etc
 bspwm
 chromium
 community/awesome-terminal-fonts
@@ -13,6 +14,7 @@ dunst
 emacs
 feh
 ffmpeg
+ffmpegthumbnailer # show thumbnails from movies
 firefox-developer-edition
 fzf
 gimp
