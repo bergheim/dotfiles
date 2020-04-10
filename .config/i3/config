@@ -74,7 +74,7 @@ bindsym $mod+c layout toggle split
 bindsym $mod+s floating toggle
 
 # make window small and persist across desktops
-bindsym $mod+y fullscreen disable; floating enable; resize set 422 240; sticky enable; move position 870 25
+bindsym $mod+y fullscreen disable; floating enable; resize set 1024 576; sticky enable; move position 870 225
 
 # stick windows between desktops etc
 bindsym $mod+Shift+s sticky toggle
