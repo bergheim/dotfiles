@@ -206,7 +206,6 @@ c.session.lazy_restore = True
 ## is enabled. * `{current_url}`: URL of the current web page. *
 ## `{protocol}`: Protocol (http/https/...) of the current web page.
 ## Type: FormatString
-c.tabs.title.format = '{index}:{title}'
 
 ## Format to use for the tab title for pinned tabs. The same placeholders
 ## like for `tabs.title.format` are defined.
