@@ -33,5 +33,6 @@ bspc rule -a Screenkey manage=off
 bspc rule -a Tilda state=floating
 bspc rule -a "*:floating" state=floating
 
+bspwm-scratchterm-toggle &
 feh --bg-scale ~/Pictures/wallpapers/active.png
 $HOME/.config/polybar/launch.sh

@@ -123,3 +123,5 @@ super + {Left,Down,Up,Right}
 super + {minus,equal}
 	bspc config -d focused window_gap $((`bspc config -d focused window_gap` {+,-} 10 ))
 
+super + grave
+  bspwm-scratchterm-toggle
