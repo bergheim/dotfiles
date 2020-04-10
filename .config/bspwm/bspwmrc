@@ -37,7 +37,8 @@ bspc rule -a File-roller state=floating
 bspc rule -a mplayer2 state=floating
 bspc rule -a Screenkey manage=off
 
-bspc rule -a "*:floating" state=floating
+
+bspc rule -a "*:floating" state=floating rectangle=1200x800+720+240
 bspc rule -a scratchpad sticky=on state=floating hidden=on follow=on
 
 # spotify hack
