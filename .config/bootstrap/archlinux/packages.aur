@@ -10,4 +10,7 @@ siji-git
 ttf-unifont
 ttf-weather-icons # for weather module
 unclutter-xfixes-git # remove mouse, this version fixes focus stealing
+python-ueberzug # displays images in terminal, ie vifm
+epub-thumbnailer-git # displays epub in terminal ie vifm
+fontpreview-git # previews fonts in terminal ie vifm
 pqiv # light weight image browser and viewer
