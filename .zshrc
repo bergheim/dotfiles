@@ -149,6 +149,8 @@ alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
 alias pacs='pacman -Ss'
 
+alias f='vifmrun'
+
 # prefer vim to vi if it is installed
 if type vim >/dev/null 2>/dev/null; then
   alias vi=vim
@@ -387,4 +389,13 @@ ta() {
   else
     print "Please specify a session name"
   fi
+}
+
+fcd() {
+  local dst="$(command vifmrun --choose-dir - "$@")"
+  if [ -z "$dst" ]; then
+    echo 'Directory picking cancelled/failed'
+    return 1
+  fi
+  cd "$dst"
 }
