@@ -79,3 +79,35 @@
 
 (require 'winum)
 (winum-mode)
+
+(defun bergheim-toggle-yadm ()
+  "Toggle the GIT_DIR between nil and yadm. Opens magit-status when it is enabled."
+  (interactive)
+  ;; use a property “state”. Value is t or nil
+  (if (get 'tsb-toggle-yadm 'state)
+      (progn
+        (message "Disabling YADM")
+        (setenv "GIT_DIR" nil)
+        (put 'tsb-toggle-yadm 'state nil))
+    (progn
+      (message (concat "Enabling YADM " (getenv "XDG_CONFIG_HOME") "/yadm/repo.git"))
+      (setenv "GIT_DIR" (concat (getenv "XDG_CONFIG_HOME") "/yadm/repo.git"))
+      (put 'tsb-toggle-yadm 'state t)
+      (magit-status))
+    ))
+
+(map! :leader
+      "agy" 'bergheim-toggle-yadm
+      "agd" 'magit-diff-buffer-file
+      "agl" 'magit-log-buffer-file
+
+      "ai" (lambda () (interactive) (find-file "~/org/inbox.org"))
+      "acg" 'org-clock-goto
+      "aci" 'org-clock-in
+      "acl" 'org-clock-in-last
+      "aco" 'org-clock-out
+      "acr" #'org-mru-clock-in
+      "acR" #'org-mru-clock-select-recent-task
+      "aL" 'org-store-link
+      "al" 'org-insert-link
+      )
