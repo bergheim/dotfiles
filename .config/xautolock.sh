@@ -25,5 +25,6 @@ if [ "$1" == "toggle" ]; then
   fi
 elif [ -z "$autolock_pid" ]; then
   echo "Starting xautolock"
+  notice clear
   start
 fi
