@@ -28,5 +28,5 @@ xinput --set-prop 9 'libinput Accel Speed' -1.0
 (sleep 5 && kbdd) & # kbdd is buggy if it does not start after the WM
 
 feh --bg-fill ~/Pictures/wallpapers/active.png
-~/.config/xautolock.sh &
+desktop-locker &
 picom -f &
