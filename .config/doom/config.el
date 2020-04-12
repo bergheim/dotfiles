@@ -62,3 +62,4 @@
 
 (global-visual-line-mode) ;; Always wrap long lines
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow)) ;; Show arrows on wrapped lines
+(setq confirm-kill-emacs nil)
