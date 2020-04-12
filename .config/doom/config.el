@@ -68,3 +68,14 @@
       evil-vsplit-window-right t)
 
 (setq confirm-kill-emacs nil)
+;; things I missed from spacemacs
+(map! :leader
+      "1" 'winum-select-window-1
+      "2" 'winum-select-window-2
+      "3" 'winum-select-window-3
+      "4" 'winum-select-window-4
+      ";" 'evilnc-comment-operator ;; was (pp-eval-expression EXPRESSION)
+      )
+
+(require 'winum)
+(winum-mode)
