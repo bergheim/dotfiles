@@ -62,4 +62,9 @@
 
 (global-visual-line-mode) ;; Always wrap long lines
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow)) ;; Show arrows on wrapped lines
+
+;; Switch to the new window after splitting
+(setq evil-split-window-below t
+      evil-vsplit-window-right t)
+
 (setq confirm-kill-emacs nil)
