@@ -68,6 +68,16 @@
       evil-vsplit-window-right t)
 
 (setq confirm-kill-emacs nil)
+
+;; Backups. Make a bunch
+(setq make-backup-files t
+      version-control t
+      kept-new-versions 10
+      kept-old-versions 2
+      delete-old-versions t
+      backup-by-copying t  ;; Copy all files, don't rename them.
+      vc-make-backup-files t
+      backup-directory-alist '((".*" . "~/.emacs.d/backup")))
 ;; things I missed from spacemacs
 (map! :leader
       "1" 'winum-select-window-1
