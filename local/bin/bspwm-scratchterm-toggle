@@ -5,11 +5,14 @@ NAME=bspwmtermscratchpad
 if id="$(xdo id -N $NAME)"; then
   bspc node "$id" -g hidden -f
 else
-  TERM_WIDTH=2048
-  TERM_HEIGHT=1200
+  TERM_WIDTH_PERCENT=0.9
+  TERM_HEIGHT_PERCENT=0.8
 
   SCREEN_WIDTH=$(xrandr --current | awk -v monitor="connected primary" '/disconnected/ {p = 0} $0 ~ monitor {p = 1} p' | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1)
   SCREEN_HEIGHT=$(xrandr --current | awk -v monitor="connected primary" '/disconnected/ {p = 0} $0 ~ monitor {p = 1} p' | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f2)
+
+  TERM_WIDTH=$(echo "$SCREEN_WIDTH * $TERM_WIDTH_PERCENT" | bc | awk '{printf("%d\n",$1 + 0.5)}' )
+  TERM_HEIGHT=$(echo "$SCREEN_HEIGHT * $TERM_HEIGHT_PERCENT" | bc | awk '{printf("%d\n",$1 + 0.5)}' )
 
   WIN_X=$(("$SCREEN_WIDTH"/2-"$TERM_WIDTH"/2))
   WIN_Y=$(("$SCREEN_HEIGHT"/2-"$TERM_HEIGHT"/2))
@@ -17,8 +20,8 @@ else
   bspc monitor -f primary
   bspc rule -a $NAME state=floating monitor=primary follow=on sticky=on hidden=on rectangle="$TERM_WIDTH"x"$TERM_HEIGHT"+"$WIN_X"+"$WIN_Y"
 
-  ALACRITTY_CONFIG_HOME=~/.config/alacritty/
-  yq merge $(ALACRITTY_CONFIG_HOME)scratchpad-template.yml $(ALACRITTY_CONFIG_HOME)alacritty.yml | tee $(ALACRITTY_CONFIG_HOME)scratchpad.yml > /dev/null
+  ALACRITTY_CONFIG_HOME=$XDG_CONFIG_HOME/alacritty
+  yq merge ${ALACRITTY_CONFIG_HOME}/scratchpad-template.yml ${ALACRITTY_CONFIG_HOME}/alacritty.yml | tee ${ALACRITTY_CONFIG_HOME}/scratchpad.yml > /dev/null
 
-  alacritty --class $NAME,$NAME --live-config-reload --config-file ~/.config/alacritty/scratchpad.yml -e tmuxa scratchpad
+  alacritty --class $NAME,$NAME --live-config-reload --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.yml -e tmuxa scratchpad
 fi
