@@ -5,6 +5,7 @@
 
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
+(load! "utils")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -92,21 +93,6 @@
 (require 'winum)
 (winum-mode)
 
-(defun bergheim-toggle-yadm ()
-  "Toggle the GIT_DIR between nil and yadm. Opens magit-status when it is enabled."
-  (interactive)
-  ;; use a property “state”. Value is t or nil
-  (if (get 'tsb-toggle-yadm 'state)
-      (progn
-        (message "Disabling YADM")
-        (setenv "GIT_DIR" nil)
-        (put 'tsb-toggle-yadm 'state nil))
-    (progn
-      (message (concat "Enabling YADM " (getenv "XDG_CONFIG_HOME") "/yadm/repo.git"))
-      (setenv "GIT_DIR" (concat (getenv "XDG_CONFIG_HOME") "/yadm/repo.git"))
-      (put 'tsb-toggle-yadm 'state t)
-      (magit-status))
-    ))
 
 (map! :leader
       "agy" 'bergheim-toggle-yadm
