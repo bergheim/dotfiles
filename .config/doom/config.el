@@ -76,33 +76,11 @@
       backup-by-copying t  ;; Copy all files, don't rename them.
       vc-make-backup-files t
       backup-directory-alist '((".*" . "~/.emacs.d/backup")))
-;; things I missed from spacemacs
-(map! :leader
-      "1" 'winum-select-window-1
-      "2" 'winum-select-window-2
-      "3" 'winum-select-window-3
-      "4" 'winum-select-window-4
-      ";" 'evilnc-comment-operator ;; was (pp-eval-expression EXPRESSION)
-      )
 
 (require 'winum)
 (winum-mode)
 
 
-(map! :leader
-      "agy" 'bergheim-toggle-yadm
-      "agd" 'magit-diff-buffer-file
-      "agl" 'magit-log-buffer-file
-
-      "ai" (lambda () (interactive) (find-file "~/org/inbox.org"))
-      "acg" 'org-clock-goto
-      "aci" 'org-clock-in
-      "acl" 'org-clock-in-last
-      "aco" 'org-clock-out
-      "acr" #'org-mru-clock-in
-      "acR" #'org-mru-clock-select-recent-task
-      "aL" 'org-store-link
-      "al" 'org-insert-link
-      )
 (after! mu4e (load! "modules/mu4e"))
 (load! "colors")
+(load! "keybindings")
