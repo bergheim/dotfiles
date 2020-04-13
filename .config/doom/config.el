@@ -8,7 +8,7 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
-(setq user-full-name bergheim/name
+(setq user-full-name "Thomas Bergheim"
       user-mail-address bergheim/email)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -123,3 +123,4 @@
       "aL" 'org-store-link
       "al" 'org-insert-link
       )
+(after! mu4e (load! "modules/mu4e"))
