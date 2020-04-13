@@ -49,3 +49,4 @@
 (package! winum)
 (package! org-mru-clock)
 (package! mu4e-alert)
+(package! heaven-and-hell)
