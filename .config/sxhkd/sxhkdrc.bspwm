@@ -61,9 +61,13 @@ super + {_,shift + }c
 super + bracket{left,right}
 	bspc desktop -f {prev,next}.local
 
-# focus the last node/desktop/monitor
+# focus the last (node/)desktop/monitor
 super + {Tab, n}
 	bspc {desktop,monitor} -f last
+
+# move the focused node to the other monitor
+super + shift {Tab, n}
+	id=$(bspc query --nodes --node); bspc node --to-{desktop,monitor} last; bspc {desktop,monitor} -f last; bspc node --focus ${id}
 
 # Set splitting ratio of windows
 # super + ctrl + {1-9}
