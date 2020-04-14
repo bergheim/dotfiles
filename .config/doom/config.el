@@ -81,6 +81,6 @@
 (winum-mode)
 
 
-(after! mu4e (load! "modules/mu4e"))
+(after! mu4e (load! "+mu4e"))
 (load! "colors")
 (load! "keybindings")
