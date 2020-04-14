@@ -1,4 +1,4 @@
-;;; ~/.config/doom/modules/mu4e.el -*- lexical-binding: t; -*-
+;;; ~/.config/doom/+mu4e.el -*- lexical-binding: t; -*-
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
@@ -46,8 +46,10 @@
       message-sendmail-extra-arguments '("--read-envelope-from")
       message-sendmail-f-is-evil t
 
+      ;; figure out the account to reply from based on addresses
       mu4e-context-policy 'pick-first
-      mu4e-compose-context-policy 'always-ask
+      mu4e-compose-context-policy 'ask
+      mu4e-user-mail-address-list (append `(,bergheim/neptune/email ,bergheim/glvortex/email ,bergheim/gmail/email) bergheim/glvortex/aliases)
 
       ;; notification settings
       alert-fade-time 20
@@ -85,7 +87,6 @@
                 (user-full-name     . ,bergheim/neptune/name)
                 (user-mail-address  . ,bergheim/neptune/email )
                 (mu4e-compose-signature . ,bergheim/neptune/signature)
-                (mu4e-compose-reply-to-address . ,bergheim/neptune/email)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -109,7 +110,6 @@
                 (user-full-name      . ,bergheim/gmail/name)
                 (user-mail-address   . ,bergheim/gmail/email)
                 (mu4e-compose-signature . ,bergheim/gmail/signature)
-                (mu4e-compose-reply-to-address . ,bergheim/gmail/signature)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -133,7 +133,6 @@
                 (user-full-name     . ,bergheim/glvortex/name)
                 (user-mail-address  . ,bergheim/glvortex/email)
                 (mu4e-compose-signature . ,bergheim/glvortex/signature)
-                (mu4e-compose-reply-to-address . ,bergheim/glvortex/email)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -150,6 +149,7 @@
                                             ))))
        ))
 
+
 ;; (with-eval-after-load 'mu4e-alert
 ;;   ;; Enable Desktop notifications
 ;;   (mu4e-alert-set-default-style 'libnotify))
@@ -157,8 +157,6 @@
 ;; TODO: verify that this works. If so, remove the stuff above
 (mu4e-alert-set-default-style 'libnotify)
 (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-
-
 
 ;; this seems nice - had I only had xwidgets support
 ;; (defun mu4e-action-view-in-browser-webkit (msg)
