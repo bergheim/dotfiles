@@ -141,7 +141,7 @@
                 (mu4e-drafts-folder . "/glvortex.net/Drafts")
                 (mu4e-refile-folder . "/glvortex.net/Archive")
 
-                (mu4e-maildir-shortcuts . ( ("/glvortex.net/All Mail" . ?i)
+                (mu4e-maildir-shortcuts . ( ("/glvortex.net/Inbox" . ?i)
                                             ("/glvortex.net/Sent"     . ?s)
                                             ("/glvortex.net/Trash"    . ?t)
                                             ("/glvortex.net/Drafts"   . ?d)
