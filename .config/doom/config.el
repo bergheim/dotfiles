@@ -77,6 +77,14 @@
       vc-make-backup-files t
       backup-directory-alist '((".*" . "~/.emacs.d/backup")))
 
+(after! ivy
+        ;; include recent files and bookmarks
+  (setq ivy-use-virtual-buffers t
+        ;; show index/total in the minibuf prompt
+        ivy-count-format "(%d/%d) "
+        ;; show the abbreviated path for files, not just project relative
+        ivy-rich-path-style 'abbrev))
+
 (require 'winum)
 (winum-mode)
 
