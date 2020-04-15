@@ -167,3 +167,8 @@
 ;;   :config
 ;;   (add-to-list 'mu4e-view-actions
 ;;                '("web browser" . mu4e-action-view-in-browser-webkit)))
+
+  (map!
+   (:map (mu4e-headers-mode-map mu4e-view-mode-map)
+     ;; I prefer getting asked about what to do with the thread
+     :n "T" #'mu4e-headers-mark-thread))
