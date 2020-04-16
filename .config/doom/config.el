@@ -5,7 +5,6 @@
 
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
-(load! "utils")
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
