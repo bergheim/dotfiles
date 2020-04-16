@@ -39,6 +39,8 @@ linux-lts
 linux-lts-headers
 markdown
 mlocate
+msmtp
+msmtp-mta
 mpv
 net-tools
 # nitrogen # set background. but fev provides..
