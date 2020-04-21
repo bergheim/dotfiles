@@ -20,8 +20,9 @@
       ;; outlook handles this
       ;; FIXME I am put on CC - look into contexts
       mu4e-compose-dont-reply-to-self t
-      ;; display is nicer with these
-      mu4e-use-fancy-chars t
+      ;; display is nicer with these. in theory. in practice, alignme
+      ;; nt is ;; messed up
+      mu4e-use-fancy-chars nil
       mail-user-agent 'mu4e-user-agent
       ;; don't keep message buffers around
       message-kill-buffer-on-exit t
@@ -30,11 +31,22 @@
       ;; this is insanely annoying. it kills whatever is in the minibuffer
       mu4e-hide-index-messages t
 
-      ;; set up a more ISO timestamp
-      ;; mu4e-headers-date-format "%Y-%m-%d %H:%M"
+      ;; mu4e-headers-include-related t
+
+      ;; set up a more concise timestamp
+      mu4e-headers-date-format "%e/%b %H:%M"
+      mu4e-headers-time-format "%H:%M"
+
+      ;; and make room for the subject
+      mu4e-headers-fields '((:account      .  8)
+                            (:human-date   . 13)
+                            (:flags        .  4)
+                            ;; (:mailing-list . 10)
+                            (:from         . 25)
+                            (:subject))
 
       ;; show overview to left, email to the right
-      mu4e-split-view 'vertical
+      ;; mu4e-split-view 'vertical
       mu4e-headers-visible-columns 110
 
       ;; SMTP stuff
@@ -49,7 +61,6 @@
       ;; figure out the account to reply from based on addresses
       mu4e-context-policy 'pick-first
       mu4e-compose-context-policy 'ask
-      mu4e-user-mail-address-list (append `(,bergheim/neptune/email ,bergheim/glvortex/email ,bergheim/gmail/email) bergheim/glvortex/aliases)
 
       ;; notification settings
       alert-fade-time 20
@@ -91,8 +102,8 @@
                 (mu4e-compose-format-flowed . t)
 
                 (mu4e-sent-folder   . "/neptune/Sent Items")
-                (mu4e-drafts-folder . "/neptune/Drafts")
                 (mu4e-trash-folder  . "/neptune/Deleted Items")
+                (mu4e-drafts-folder . "/neptune/Drafts")
                 (mu4e-refile-folder . "/neptune/Archive")
 
                 (mu4e-maildir-shortcuts . ( ("/neptune/Inbox"         . ?i)
