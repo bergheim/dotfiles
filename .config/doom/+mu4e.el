@@ -3,11 +3,6 @@
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
-      mu4e-maildir "~/.mail"
-      mu4e-trash-folder "/Deleted Items"
-      mu4e-refile-folder "/Archive"
-      mu4e-sent-folder "/Sent Items"
-      mu4e-drafts-folder "/Drafts"
       mu4e-get-mail-command "mbsync -a"
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil
