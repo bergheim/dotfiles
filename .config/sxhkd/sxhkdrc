@@ -46,7 +46,7 @@ super + shift + x
 
 # toggle autolock
 super + alt + shift + x
-  exec ~/.config/xautolock.sh toggle
+  exec desktop-locker toggle
 
 # run rofi
 super + {r,space}
