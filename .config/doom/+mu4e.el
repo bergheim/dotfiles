@@ -67,14 +67,43 @@
       )
 
 (setq mu4e-bookmarks
-      '(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
-      ("date:today..now" "Today's messages" ?t)
-      ("date:7d..now" "Last 7 days" ?w)
-      ("mime:image/*" "Messages with images" ?p)
-      ("flag:attach" "Messages with attachments" ?a)
-      ("maildir:/Inbox" "Inbox" ?i)
-      ("maildir:/Sent Items" "Sent" ?s)
-      ))
+      '((:name  "Unread messages"
+                :query "flag:unread AND NOT flag:trashed"
+                :key ?u)
+
+        (:name  "Unread work messages"
+                :query "to:thomas.bergheim@neptune-software.com"
+                :key ?n)
+
+        (:name  "Support"
+                :query "to:thomas.bergheim@neptune-software.com AND from:no-reply@neptune-software.com"
+                :key ?s)
+
+        (:name "Today's messages"
+               :query "date:today..now"
+               :key ?t)
+
+        (:name "Today's unhandled messages"
+               :query "date:today..now AND maildir:/inbox/"
+               :key ?z)
+
+        (:name "Last 7 days"
+               :query "date:7d..now"
+               :key ?w)
+
+        (:name "Messages with images"
+               ;; everybody has some image in their sig
+               :query "mime:image/* AND size:50K..100M"
+               :key ?p)
+
+        (:name "Messages with attachments"
+               ;; everybody has some image in their sig
+               :query "flag:attach AND size:50K..1000M"
+               :key ?a)
+
+        (:name "All sent items"
+               :query "maildir:/Sent/"
+               :key ?o)))
 
 (add-to-list 'mu4e-view-actions
   '("Open in Browser" . mu4e-action-view-in-browser) t)
