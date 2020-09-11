@@ -24,3 +24,5 @@ application/x-extension-xhtml=chromium.desktop;
 application/x-extension-xht=chromium.desktop;
 application/pdf=zathura.desktop;
 application/x-java-jnlp-file=firefox-beta-bin.desktop;
+application/octet-stream=emacs.desktop;
+application/vnd.lotus-organizer=chromium.desktop;
