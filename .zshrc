@@ -252,14 +252,14 @@ my_grep_options=(--color=auto --exclude-dir=.cvs --exclude-dir=.git --exclude-di
 alias grep='grep $my_grep_options' egrep='grep -E $my_grep_options' fgrep='grep -F $my_grep_options'
 
 # fd - cd to selected directory
-fd() {
+cdf() {
   local dir
   dir=$(find ${1:-.} -path '*/\.*' -prune \
                   -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
 # fda - including hidden directories
-fda() {
+cdfa() {
   local dir
   dir=$(find ${1:-.} -type d 2> /dev/null | fzf +m) && cd "$dir"
 }
