@@ -119,3 +119,4 @@ pacman-contrib
 entr
 ruby
 ruby-rdoc
+shellcheck
