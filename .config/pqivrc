@@ -3,7 +3,7 @@ hide-info-box=1
 scale-images-up=1
 browse=1
 sort=1
-thumbnail-preload=100
+thumbnail-preload=10000
 thumbnail-persistence=yes
 watch-directories=1
 
@@ -12,6 +12,7 @@ n  { goto_file_relative(1) }
 p  { goto_file_relative(-1) }
 =  { toggle_fullscreen() }
 w  { toggle_fullscreen() }
+<space>  { montage_mode_enter() }
 
 @MONTAGE {
   h           { montage_mode_shift_x(-1) }
@@ -22,4 +23,5 @@ w  { toggle_fullscreen() }
   <Control>d  { montage_mode_shift_y_pg(1) }
   0           { goto_file_byindex(0) }
   $           { goto_file_byindex(-1) }
+  <space>  { montage_mode_return_cancel() }
 }
