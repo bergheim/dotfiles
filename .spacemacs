@@ -39,7 +39,9 @@ This function should only modify configuration layer settings."
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
+     (helm :variables
+           helm-completion-style 'emacs
+           completion-styles '(helm-flex))
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t)
      emacs-lisp
@@ -47,13 +49,21 @@ This function should only modify configuration layer settings."
      github
      markdown
      neotree
+     (mu4e :variables
+           mu4e-enable-async-operations t ;; send email at once, async
+           mu4e-use-maildirs-extension t ;; see number of unread emails
+           mu4e-enable-notifications t
+           mu4e-enable-mode-line nil
+           )
      (org :variables
           org-want-todo-bindings t ;; one key support on headings
-          org-enable-org-journal-support t)
+          org-enable-reveal-js-support t
+          org-enable-hugo-support t
+          org-enable-org-journal-support nil)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
-     ;; spell-checking
+;; spell-checking
      syntax-checking
      version-control
      ranger
@@ -61,14 +71,23 @@ This function should only modify configuration layer settings."
      (elfeed :variables
              rmh-elfeed-org-files (list "~/org/elfeed.org"))
      colors
+     rust
      elm
      react
      html
-     (javascript :variables
-                 node-add-modules-path t)
-     typescript
+     javascript
+     ;; (javascript :variables
+     ;;             node-add-modules-path t)
+     (typescript :variables
+                 typescript-fmt-tool nil
+                 typescript-fmt-on-save nil
+                 ;; tide-tsserver-executable "/home/tsb/dev/planet9/node_modules/.bin/tsserver"
+                 )
+     prettier
      sql
+     lsp
      java
+     scala
      semantic
      yaml
      spotify
@@ -86,6 +105,7 @@ This function should only modify configuration layer settings."
                       monokai-theme
                       seti-theme
                       zenburn-theme)
+     xkcd
      )
 
    ;; List of additional packages that will be installed without being
@@ -98,8 +118,11 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(editorconfig
                                       nodejs-repl
                                       doom-themes
+                                      git-auto-commit-mode
+                                      ;; prettier-js
                                       org-mru-clock
-                                      ;; org-plus-contrib
+                                      org-plus-contrib
+                                      heaven-and-hell
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -198,7 +221,7 @@ It should only modify the values of Spacemacs settings."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner 'random
 
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
@@ -206,7 +229,8 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
+   dotspacemacs-startup-lists '(
+                                ;; (recents . 5)
                                 (todos . 5)
                                 (agenda . 5)
                                 (projects . 7))
@@ -226,8 +250,9 @@ It should only modify the values of Spacemacs settings."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(gruvbox
                          doom-molokai
-                         monokai
+                         doom-nord
                          material
+                         monokai
                          spacemacs-dark
                          spacemacs-light)
 
@@ -238,7 +263,8 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   ;; dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(doom :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -246,10 +272,10 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
+   dotspacemacs-default-font '("Iosevka"
                                :size 16
                                :weight normal
-                               :width normal
+                               :width expanded
                                :powerline-scale 1.1)
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
@@ -498,6 +524,15 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; this is a hack to make .spacemacs.env work when run as a daemon. this has
+  ;; been a bug for years....
+  (spacemacs|do-after-display-system-init
+   (spacemacs/load-spacemacs-env))
+
+  ;; Set transparency of emacs window (active . inactive) where 0 is completely transparent.
+  ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 70))
+  ;; (add-to-list 'default-frame-alist '(alpha . (90 . 70)))
+
   (defun tsb-toggle-yadm ()
     "Toggle the GIT_DIR between nil and yadm. Opens magit-status when it is enabled."
     (interactive)
@@ -508,8 +543,8 @@ before packages are loaded."
           (setenv "GIT_DIR" nil)
           (put 'tsb-toggle-yadm 'state nil))
       (progn
-        (message (concat "Enabling YADM" (getenv "HOME") "/.yadm/repo.git"))
-        (setenv "GIT_DIR" (concat (getenv "HOME") "/.yadm/repo.git"))
+        (message (concat "Enabling YADM" (getenv "HOME") "/.config/yadm/repo.git"))
+        (setenv "GIT_DIR" (concat (getenv "HOME") "/.config/yadm/repo.git"))
         (put 'tsb-toggle-yadm 'state t)
         (magit-status))
       ))
@@ -525,6 +560,8 @@ before packages are loaded."
   (spacemacs/set-leader-keys "oi" (lambda () (interactive) (find-file "~/org/inbox.org")))
   (spacemacs/set-leader-keys "ocg" 'org-clock-goto)
   (spacemacs/set-leader-keys "oci" 'org-clock-in)
+  (spacemacs/set-leader-keys "ocI" (lambda () (interactive) (org-clock-in '(4))))
+
   (spacemacs/set-leader-keys "ocl" 'org-clock-in-last)
   (spacemacs/set-leader-keys "oco" 'org-clock-out)
   (spacemacs/set-leader-keys "ocr" #'org-mru-clock-in)
@@ -534,13 +571,14 @@ before packages are loaded."
   (spacemacs/set-leader-keys "on" 'spotify-next)
   (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
 
-  (spaceline-toggle-buffer-size-off)
-  (spaceline-toggle-buffer-encoding-abbrev-off)
-  (spaceline-toggle-purpose-off)
-  (spaceline-toggle-org-clock-on)
+  ;; (spaceline-toggle-buffer-size-off)
+  ;; (spaceline-toggle-buffer-encoding-abbrev-off)
+  ;; (spaceline-toggle-purpose-off)
+  ;; (spaceline-toggle-org-clock-on)
 
   ;; Lock files are annoying when using sync and backup software
   (setq create-lockfiles nil)
+  ;; (setq ensime-startup-notification nil)
   ;; Backups. Make a bunch
   (setq make-backup-files t
         version-control t     ;; Use version numbers for backups.
@@ -564,18 +602,28 @@ before packages are loaded."
                                                    magit-stash-mode
                                                    magit-status-mode))
 
-  (define-key evil-normal-state-map (kbd "M-h") #'evil-window-left)
-  (define-key evil-normal-state-map (kbd "M-j") #'evil-window-down)
-  (define-key evil-normal-state-map (kbd "M-k") #'evil-window-up)
-  (define-key evil-normal-state-map (kbd "M-l") #'evil-window-right)
+  ;; (define-key global-map (kbd "C-h") #'evil-window-left)
+  ;; (define-key global-map (kbd "C-j") #'evil-window-down)
+  ;; (define-key global-map (kbd "C-k") #'evil-window-up)
+  ;; (define-key global-map (kbd "C-l") #'evil-window-right)
+  ;; (define-key magit-log-mode-map (kbd "TAB") 'magit-cycle-margin-style)
+
+  ;; (define-key evil-normal-state-map (kbd "M-h") #'evil-window-left)
+  ;; (define-key evil-normal-state-map (kbd "M-j") #'evil-window-down)
+  ;; (define-key evil-normal-state-map (kbd "M-k") #'evil-window-up)
+  ;; (define-key evil-normal-state-map (kbd "M-l") #'evil-window-right)
+
+
+  (setq evil-want-Y-yank-to-eol t)
+
+  (add-hook 'focus-out-hook
+            (lambda () (save-some-buffers t)))
 
   ;; dont try to line up tabs
   (setq-default evil-shift-round nil)
 
 
   ;; force js2-mode to use flycheck-next-error (fixes spc e n/p)
-  (setq js2-mode-show-parse-errors nil)
-  (setq js2-mode-show-strict-warnings nil)
   (add-hook 'js2-init-hook '(lambda ()
                               (setq next-error-function 'flycheck-next-error)
                               ))
@@ -591,9 +639,101 @@ before packages are loaded."
 
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+  ;; use local eslint from node_modules before global
+  ;; http://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable
+  ;; (defun my/use-eslint-from-node-modules ()
+  ;;   (let* ((root (locate-dominating-file
+  ;;                 (or (buffer-file-name) default-directory)
+  ;;                 "node_modules"))
+  ;;          (eslint (and root
+  ;;                       (expand-file-name "node_modules/eslint/bin/eslint.js"
+  ;;                                         root))))
+  ;;     (when (and eslint (file-executable-p eslint))
+  ;;       (setq-local flycheck-javascript-eslint-executable eslint))))
+
+  ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
+  ;; (eval-after-load 'js-mode
+  ;;   '(add-hook 'js-mode-hook #'node-add-modules-path))
+
+  ;; jacked from Tommi Komulainen
+  (defun spacemacs/node-executable-find (command &rest extra-modules)
+    "Search for an executable named COMMAND and return the absolute file name of
+    the executable. This function searches directories \"node_modules/.bin\",
+    \"node_modules/MODULE/node_modules/.bin\" for each extra module in
+    EXTRA-MODULES, and the directories searched by `executable-find'."
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (node_modules (expand-file-name "node_modules" root))
+           (bindirs (nconc
+                     (list
+                      ;; node_modules/.bin/{command}
+                      ".bin"
+                      ;; node_modules/{command}/bin/{command}
+                      ;; (format "%s/bin" command)
+                      )
+                     ;; node_modules/{moduleN}/node_modules/.bin/{command}
+                     (--map (f-join it "node_modules" ".bin") extra-modules))))
+      (or
+       (dolist (bindir bindirs)
+         (let ((path (f-join node_modules bindir command)))
+           (when (file-executable-p path) (return path))))
+       (executable-find command))))
+
+  (defun bergheim/find-npm-file (npm-file)
+    "Search for a locally installed npm module, and failing that, a globally
+installed module. Returns the path, or nil if it could not be found"
+    (let* ((root (locate-dominating-file
+                  (or (buffer-file-name) default-directory)
+                  "node_modules"))
+           (file (and root
+                      (expand-file-name (concat "node_modules/.bin/" npm-file)
+                                        root))))
+      (cond ((and file (file-executable-p file)) file)
+            (t (executable-find npm-file)))))
+
+  ;; ;; fjerna denne
+  ;; (defun bergheim/js-hook ()
+  ;;   (let ((eslint (bergheim/find-npm-file "eslint")))
+  ;;     (if eslint
+  ;;       (setq-local flycheck-javascript-eslint-executable eslint))))
+  ;; (add-hook 'flycheck-mode-hook 'bergheim/js-hook)
+
+  ;; ;; fjerna denne
+  ;; (defun bergheim/ts-hook ()
+  ;;   (let ((tslint (bergheim/find-npm-file "tslint")))
+  ;;     (if tslint
+  ;;         (setq-local flycheck-typescript-tslint-executable tslint))))
+  ;; (add-hook 'flycheck-mode-hook 'bergheim/ts-hook)
+
+  (defun bergheim/eslint-hook ()
+    (let ((eslint (bergheim/find-npm-file "eslint")))
+      (if eslint
+          (setq-local flycheck-javascript-eslint-executable eslint)
+          (setq-local flycheck-typescript-tslint-executable eslint))))
+  (add-hook 'flycheck-mode-hook 'bergheim/eslint-hook)
+
+
+  ;; (defun bergheim/prettier-hook ()
+  ;;   (let ((prettier (bergheim/find-npm-file "prettier")))
+  ;;     (if prettier
+  ;;         (setq-local prettier-js-command prettier))))
+  ;; (add-hook 'prettier-js-mode-hook 'bergheim/prettier-hook)
+
+  ;; prettier settings
+  (setq prettier-js-args '(
+                           "--trailing-comma" "all"
+                           ;; "--bracket-spacing" "false"
+                           ))
+
   (when (spacemacs/system-is-mac)
     (setq mac-command-modifier 'meta
           mac-option-modifier  'none))
+
+  (defun bergheim/set-color-scheme (color)
+    "Sets the color scheme based on the color input (light or dark)"
+    (setq heaven-and-hell-theme-type color)
+    (heaven-and-hell-clean-load-themes (heaven-and-hell-themes-switch-to)))
 
   (editorconfig-mode 1) ;; always respect editorconfig files
 
@@ -609,14 +749,122 @@ before packages are loaded."
 
   (setq magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
 
+
   (setq-default tab-width 2) ;; tabs vs spaces, i give up..
   ;; TODO: am I using this..?
   (setq-default sh-basic-offset tab-width
                 sh-indentation tab-width)
 
+  (setq mu4e-maildir "~/.mail/neptune"
+        mu4e-trash-folder "/Deleted Items"
+        mu4e-refile-folder "/Archive"
+        mu4e-sent-folder "/Sent Items"
+        mu4e-drafts-folder "/Drafts"
+        mu4e-get-mail-command "mbsync -a"
+        mu4e-attachment-dir "~/Downloads/email"
+        mu4e-confirm-quit nil
+        ; mu4e-update-interval nil
+        ; mu4e-compose-signature-auto-include nil
+        mu4e-view-show-images t
+        mu4e-view-show-addresses t
+        ;; this fixes some sync issues with mbsync
+        mu4e-change-filenames-when-moving t
+        mu4e-compose-dont-reply-to-self t
+        ;; display is nicer with these. Note: causes mis-alignment
+        mu4e-use-fancy-chars nil
+        ;; mail-user-agent 'mu4e-user-agent
+        ;; don't keep message buffers around
+        ;; mu4e-enable-notifications t
+        ;; mu4e-enable-mode-line t
+        message-kill-buffer-on-exit t
+        mu4e-update-interval 60 ;; i think this fucks up emacsclient - are you SURE you want to kill mu4e-update?
+        alert-fade-time 20
+        ;; set up a more ISO timestamp
+        mu4e-headers-date-format "%Y-%m-%d %H:%M"
+        ;; stop spamming the minibuffer
+        mu4e-hide-index-messages t
+        )
+
+
+  ;; (setq message-send-mail-function 'message-send-mail-with-sendmail
+  ;;       send-mail-function 'sendmail-send-it)
+
+  ;; ;; substitute sendmail with msmtp
+  ;; (setq sendmail-program "msmtp")
+
+  ;; ;; allow setting account through email header
+  ;; (setq message-sendmail-extra-arguments '("--read-envelope-from"))
+  ;; (setq message-sendmail-f-is-evil t)
+
+
+  ;; the headers to show in the headers list -- a pair of a field
+  ;; and its width, with `nil' meaning 'unlimited'
+  ;; (better only use that for the last field.
+  ;; These are the defaults:
+  (setq mu4e-headers-fields
+        '( (:date          .  20)    ;; alternatively, use :human-date
+           (:flags         .   6)
+           (:from          .  22)
+           (:subject       .  nil))) ;; alternatively, use :thread-subject
+
+  ;; (mu4e-alert-enable-notifications)
+  ;; (setq mu4e-alert-interesting-mail-query
+  ;;       (concat "(maildir:<fu> AND date:today..now"
+  ;;               " OR maildir:<bar> AND date:today..now"
+  ;;               " AND flag:unread"))
+
+
+  ;; (alert-add-rule :severity 'high :continue t)
+  ;; (setq send-mail-function 'async-smtpmail-send-it)
+
+  (setq user-mail-address "this@needs.com"
+        user-full-name "to be changed"
+        mu4e-compose-signature
+        (concat
+         "Kind regards,\n"
+         "me\n"))
+
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "Inbox"
+                :query "maildir:/Inbox"
+                :key ?i))
+
+  (with-eval-after-load 'mu4e-alert
+    ;; Enable Desktop notifications
+    (mu4e-alert-set-default-style 'libnotify)
+    ;; (mu4e-alert-enable-mode-line-display)
+    ;; (mu4e-alert-enable-notifications)
+    ;; (mu4e-alert-enable-mode-line-display)
+    ;; (mu4e-alert-set-default-style 'libnotify)
+    ;; (alert-add-rule :category "mu4e-alert" :style 'fringe :predicate (lambda (_) (string-match-p "^mu4e-" (symbol-name major-mode))) :continue t)
+    ;; (mu4e-alert-enable-notifications)
+    )
+
   ;; this ensures we don't load the org-mode shipped with regular emacs
   (with-eval-after-load 'org
     (load-file (expand-file-name "~/.emacs.d/custom/bergheim-org.el")))
+
+
+  ;; Default is 'light
+  (setq heaven-and-hell-theme-type 'dark)
+
+  ;; Set preferred light and dark themes
+  ;; default light is emacs default theme, default dark is wombat
+  ;; Themes can be the list: (dark . (tsdh-dark tango-dark))
+  (setq heaven-and-hell-themes
+        '((dark . doom-nord)
+          (light . material-light)))
+  ;; Optionall, load themes without asking for confirmation.
+  (setq heaven-and-hell-load-theme-no-confirm t)
+
+  ;; Add init-hook so heaven-and-hell can load your theme
+  (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
+
+  (spacemacs/set-leader-keys "ot" 'heaven-and-hell-toggle-theme)
+  (spacemacs/set-leader-keys "oT" 'heaven-and-hell-load-default-theme)
+
+  ;; (add-to-list 'recentf-exclude "~/org/")
 
   (if (equal system-type 'gnu/linux)
       (spacemacs/disable-transparency))
@@ -648,9 +896,71 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
+ '(custom-enabled-themes (quote (tsdh-light)))
+ '(evil-want-Y-yank-to-eol nil)
+ '(fci-rule-color "#ECEFF1")
+ '(helm-completion-style (quote emacs))
+ '(hl-sexp-background-color "#efebe9")
+ '(hl-todo-keyword-faces
+   (quote
+    (("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#3a81c3")
+     ("OKAY" . "#3a81c3")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#42ae2c")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f"))))
+ '(jdee-db-active-breakpoint-face-colors (cons "#D0D0E3" "#009B7C"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#D0D0E3" "#005F00"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#D0D0E3" "#4E4E4E"))
+ '(objed-cursor-color "#D70000")
  '(package-selected-packages
    (quote
-    (ox-twbs ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (ox-twbs ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
+ '(pdf-view-midnight-colors (quote ("#655370" . "#fbf8ef")))
+ '(rustic-ansi-faces
+   ["#F5F5F9" "#D70000" "#005F00" "#AF8700" "#1F55A0" "#AF005F" "#007687" "#0F1019"])
+ '(safe-local-variable-values
+   (quote
+    ((org-confirm-babel-evaluate)
+     (typescript-backend . tide)
+     (typescript-backend . lsp)
+     (javascript-backend . tern)
+     (javascript-backend . lsp))))
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#B71C1C")
+     (40 . "#FF5722")
+     (60 . "#FFA000")
+     (80 . "#558b2f")
+     (100 . "#00796b")
+     (120 . "#2196f3")
+     (140 . "#4527A0")
+     (160 . "#B71C1C")
+     (180 . "#FF5722")
+     (200 . "#FFA000")
+     (220 . "#558b2f")
+     (240 . "#00796b")
+     (260 . "#2196f3")
+     (280 . "#4527A0")
+     (300 . "#B71C1C")
+     (320 . "#FF5722")
+     (340 . "#FFA000")
+     (360 . "#558b2f"))))
+ '(vc-annotate-very-old-color nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
