@@ -1,4 +1,7 @@
 #! /bin/sh
+#
+## Set environment
+export BSPWM_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/bspwm"
 
 bspc monitor DP-0 -d "" "" "" "" "" "" ""
 bspc monitor HDMI-0 -d "" "" "" ""
@@ -26,15 +29,13 @@ bspc config ignore_ewmh_focus true
 bspc rule -r "*"
 
 bspc rule -a Gimp desktop='^8' state=floating follow=on
-bspc rule -a firefoxdeveloperedition:Navigator desktop='^1' state=tiled focused=on
+bspc rule -a firefoxdeveloperedition:Navigator desktop='^1' state=tiled focused=on follow=on
 bspc rule -a TelegramDesktop desktop='^2' state=tiled focused=on
 bspc rule -a Spotify desktop='^3' state=tiled focused=on
 bspc rule -a spotify desktop='^3' state=tiled focused=on
 bspc rule -a "" desktop='^3' state=tiled focused=on
 bspc rule -a Chromium desktop='^4'
 bspc rule -a Emacs state=tiled focused=on
-bspc rule -a File-roller state=floating
-bspc rule -a mplayer2 state=floating
 bspc rule -a Screenkey manage=off
 
 
