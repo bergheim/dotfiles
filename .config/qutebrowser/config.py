@@ -152,7 +152,7 @@ c.fonts.prompts = monospace
 c.fonts.statusbar = monospace
 
 # Font used in the tab bar.
-c.fonts.tabs = monospace
+# c.fonts.tabs = monospace
 
 
 # The height of the completion, in px or as percentage of the window.
