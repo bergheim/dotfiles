@@ -11,6 +11,8 @@
 (setq user-full-name "Thomas Bergheim"
       user-mail-address bergheim/email)
 
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
 ;;
