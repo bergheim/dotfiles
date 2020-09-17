@@ -86,6 +86,16 @@
 (winum-mode)
 
 
-(after! mu4e (load! "+mu4e"))
 (load! "colors")
 (load! "keybindings")
+
+(after! engine-mode
+  ;; (engine/set-keymap-prefix (kbd "C-c s"))
+  (engine-mode t)
+  (defengine duckduckgo
+    "https://duckduckgo.com/?q=%s"
+    :keybinding "s"))
+(after! elfeed
+  (setq elfeed-search-filter "@2-month-ago +unread"))
+(after! mu4e (load! "+mu4e"))
+(after! org (load! "+org"))
