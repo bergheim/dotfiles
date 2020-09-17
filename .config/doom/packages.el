@@ -48,7 +48,11 @@
 
 (package! winum)
 (package! org-mru-clock)
+(package! org-super-agenda)
+(package! org-fancy-priorities)
 (package! mu4e-alert)
 (package! heaven-and-hell)
+(package! doct)
 (package! rainbow-mode)
 (package! restclient)
+(package! helm-org-rifle)
