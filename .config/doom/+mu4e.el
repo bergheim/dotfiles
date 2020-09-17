@@ -17,14 +17,20 @@
       mu4e-compose-dont-reply-to-self t
       ;; display is nicer with these. in theory. in practice, alignme
       ;; nt is ;; messed up
-      mu4e-use-fancy-chars nil
+      mu4e-use-fancy-chars t
+
       mail-user-agent 'mu4e-user-agent
       ;; don't keep message buffers around
       message-kill-buffer-on-exit t
+
+      ;; fetch mail in the background
       mu4e-update-interval 60
 
       ;; this is insanely annoying. it kills whatever is in the minibuffer
       mu4e-hide-index-messages t
+
+      ;; use the new experimental article viewer
+      mu4e-view-use-gnus t
 
       ;; mu4e-headers-include-related t
 
@@ -72,8 +78,16 @@
                 :key ?u)
 
         (:name  "Unread work messages"
-                :query "to:thomas.bergheim@neptune-software.com"
+                :query "maildir:/neptune/Inbox AND flag:unread"
                 :key ?n)
+
+        (:name  "Inbox glvortex"
+                :query "maildir:/glvortex/Inbox"
+                :key ?g)
+
+        (:name  "Inbox gmail"
+                :query "maildir:/gmail/Inbox"
+                :key ?q)
 
         (:name  "Support"
                 :query "to:thomas.bergheim@neptune-software.com AND from:no-reply@neptune-software.com"
@@ -84,20 +98,20 @@
                :key ?t)
 
         (:name "Today's unhandled messages"
-               :query "date:today..now AND maildir:/inbox/"
-               :key ?z)
+               :query "date:1d..now AND maildir:/inbox/"
+               :key ?i)
 
         (:name "Last 7 days"
                :query "date:7d..now"
                :key ?w)
 
         (:name "Messages with images"
-               ;; everybody has some image in their sig
+               ;; everybody has some image in their sig. sigh..
                :query "mime:image/* AND size:50K..100M"
                :key ?p)
 
         (:name "Messages with attachments"
-               ;; everybody has some image in their sig
+               ;; everybody has some image in their sig. sigh..
                :query "flag:attach AND size:50K..1000M"
                :key ?a)
 
@@ -171,18 +185,24 @@
 
                 (mu4e-compose-format-flowed . t)
 
-                (mu4e-sent-folder   . "/glvortex.net/Sent")
-                (mu4e-trash-folder  . "/glvortex.net/Trash")
-                (mu4e-drafts-folder . "/glvortex.net/Drafts")
-                (mu4e-refile-folder . "/glvortex.net/Archive")
+                (mu4e-sent-folder   . "/glvortex/Sent")
+                (mu4e-trash-folder  . "/glvortex/Trash")
+                (mu4e-drafts-folder . "/glvortex/Drafts")
+                (mu4e-refile-folder . "/glvortex/Archive")
 
-                (mu4e-maildir-shortcuts . ( ("/glvortex.net/Inbox" . ?i)
-                                            ("/glvortex.net/Sent"     . ?s)
-                                            ("/glvortex.net/Trash"    . ?t)
-                                            ("/glvortex.net/Drafts"   . ?d)
-                                            ("/glvortex.net/Archive"  . ?a)
+                (mu4e-maildir-shortcuts . ( ("/glvortex/Inbox" . ?i)
+                                            ("/glvortex/Sent"     . ?s)
+                                            ("/glvortex/Trash"    . ?t)
+                                            ("/glvortex/Drafts"   . ?d)
+                                            ("/glvortex/Archive"  . ?a)
                                             ))))
        ))
+
+
+;; (with-eval-after-load 'mu4e-alert
+;;     ;; Enable Desktop notifications
+;;     (mu4e-alert-set-default-style 'libnotify)
+;;     )
 
 
 ;; (with-eval-after-load 'mu4e-alert
