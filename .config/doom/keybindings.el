@@ -2,6 +2,12 @@
 
 (map!
  (:leader
+   ;; things I missed from spacemacs
+   "1" 'winum-select-window-1
+   "2" 'winum-select-window-2
+   "3" 'winum-select-window-3
+   "4" 'winum-select-window-4
+   "/" '+default/search-project
 
    (:prefix ("a" . "custom bindings")
 
