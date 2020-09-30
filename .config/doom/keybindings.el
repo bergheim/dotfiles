@@ -22,6 +22,7 @@
        "a" 'org-agenda
        "g" 'org-clock-goto
        "i" 'org-clock-in
+       "n" 'org-add-note
        "l" 'org-clock-in-last
        "o" 'org-clock-out
        "c" 'org-capture
