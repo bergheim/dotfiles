@@ -18,7 +18,7 @@ set vicmd=vim
 set syscalls
 
 " Open with preview window
-view
+" view
 
 " Trash Directory
 " The default is to move files that are deleted with dd or :d to
