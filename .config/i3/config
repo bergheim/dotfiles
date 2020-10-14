@@ -23,7 +23,7 @@ bindsym $mod+$alt+Escape restart
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 # font pango:DejaVu Sans Mono 11
-font pango:Inconsolata 12
+font pango:Inconsolata 14
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -116,6 +116,19 @@ set $ws0 "0"
 
 bindsym $mod+Shift+comma    move scratchpad
 bindsym $mod+comma          scratchpad show
+
+set $monitor1 DisplayPort-0
+set $monitor2 DisplayPort-1
+workspace $ws1 output $monitor1
+workspace $ws2 output $monitor1
+workspace $ws3 output $monitor1
+workspace $ws4 output $monitor1
+workspace $ws5 output $monitor1
+workspace $ws6 output $monitor1
+workspace $ws7 output $monitor2
+workspace $ws8 output $monitor2
+workspace $ws9 output $monitor2
+workspace $ws0 output $monitor2
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
