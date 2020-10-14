@@ -32,6 +32,9 @@ window:
   # Spread additional padding evenly around the terminal content.
   #dynamic_padding: false
 
+  # Allow terminal applications to change Alacritty's window title.
+  dynamic_title: true
+
   # Window decorations
   #
   # Values for `decorations`:
