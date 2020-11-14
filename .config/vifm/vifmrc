@@ -289,7 +289,10 @@ nnoremap yf :!echo %c:p | xclip -i -selection clipboard %i<cr>
 
 " Mappings for faster renaming
 nnoremap I cw<c-a>
-nnoremap cc cw<c-u>
+" change the root of the filename, starting blank
+nnoremap cc cW<c-u>
+" change the filename, starting blank
+nnoremap cC cw<c-u>
 nnoremap A cw
 
 " Extract an archive
