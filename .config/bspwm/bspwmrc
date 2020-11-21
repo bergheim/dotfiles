@@ -31,19 +31,14 @@ bspc rule -r "*"
 bspc rule -a Gimp desktop='^8' state=floating follow=on
 bspc rule -a firefoxdeveloperedition:Navigator desktop='^1' state=tiled focused=on follow=on
 bspc rule -a TelegramDesktop desktop='^2' state=tiled focused=on
-bspc rule -a Spotify desktop='^3' state=tiled focused=on
 bspc rule -a spotify desktop='^3' state=tiled focused=on
 bspc rule -a "" desktop='^3' state=tiled focused=on
 bspc rule -a Chromium desktop='^4'
 bspc rule -a Emacs state=tiled focused=on
 bspc rule -a Screenkey manage=off
-
-
-bspc rule -a Emacs:doom-capture state=floating rectangle=1200x800+720+240
 bspc rule -a "*:floating" state=floating rectangle=1200x800+720+240
 bspc rule -a scratchpad sticky=on state=floating hidden=on follow=on
 
-# spotify hack
 bspc config external_rules_command ~/.config/bspwm/rules
 
 bspwm-scratchterm-toggle &

@@ -1,25 +1,41 @@
-#!/bin/sh
+#!/bin/bash
 
-id="${1?}" \
-instance="$3" \
-class="$2";
+wid=$1
+class=$2
+instance=$3
+title="$(xtitle "$wid")"
 
-case "$class" in
-    (foo)
-        bar;;
-    ("")
-        unset -v _NET_WM_PID;
-        . /dev/fd/0 2>/dev/null <<IN
-        : \"\${$(
-            xprop \
-                -id "$id" \
-                -notype \
-                -f _NET_WM_PID 32c '=$0' \
-                _NET_WM_PID;
-        )}\";
-IN
-        case "$(ps -p "${_NET_WM_PID:?}" -o comm= 2>/dev/null)" in
-            (spotify)
-                echo desktop=^3;;
-        esac;;
-esac;
+read W H <<< $(xdotool getdisplaygeometry)
+
+# Enable debugging
+# notify-send "$wid $class $instance $title"
+
+# Make telegram images fullscreen
+if [ "$class" = "TelegramDesktop" ] && [ "$title" = "Media viewer" ]; then
+    echo "state=fullscreen"
+fi
+
+
+# Float org-capture
+if [ "$class" = "Emacs" ] && [ "$title" = "doom-capture" ]; then
+    echo "state=floating rectangle=1200x800+720+240"
+fi
+
+# Move window to where the mouse is
+if [ "$instance" = "popup-mouse" ]; then
+    echo "state=floating"
+    eval $(xdotool getmouselocation --shell)
+    xdotool windowmove $wid $X $Y
+fi
+
+# Floats, resizes and moves window
+if [ "$instance" = "surf" ]; then
+    if [[ $(xprop -id $wid '\t$0' WM_NAME | cut -f 2) == *"Messenger"* ]]; then
+        w=$((1920 / 4))
+        h=$((1080 / 4))
+        xdotool windowsize $wid $w $h
+        xdotool windowmove $wid $(($W - $w)) $(($H- $h))
+    fi
+    echo "state=floating"
+    echo "sticky=on"
+fi
