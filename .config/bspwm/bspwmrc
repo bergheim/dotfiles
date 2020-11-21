@@ -39,7 +39,7 @@ bspc rule -a Screenkey manage=off
 bspc rule -a "*:floating" state=floating rectangle=1200x800+720+240
 bspc rule -a scratchpad sticky=on state=floating hidden=on follow=on
 
-bspc config external_rules_command ~/.config/bspwm/rules
+bspc config external_rules_command ~/.config/bspwm/external_rules
 
 bspwm-scratchterm-toggle &
 feh --bg-fill ~/Pictures/wallpapers/active_primary.png --bg-fill ~/Pictures/wallpapers/active_secondary.png
