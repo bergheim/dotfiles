@@ -29,3 +29,13 @@
       (put 'tsb-toggle-yadm 'state t)
       (magit-status))
     ))
+
+;;;###autoload
+(defun bergheim-email-inbox()
+  (interactive)
+  (mu4e-headers-search-bookmark "maildir:/Inbox/"))
+
+;;;###autoload
+(defun bergheim-email-today()
+  (interactive)
+  (mu4e-headers-search-bookmark "(date:1d..now OR flag:unread) AND maildir:/Inbox/"))

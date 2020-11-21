@@ -3,7 +3,7 @@
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
-      mu4e-get-mail-command "mbsync -a"
+      mu4e-get-mail-command "mbsync -V inbox"
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil
       mu4e-view-show-images t
@@ -77,17 +77,29 @@
                 :query "flag:unread AND NOT flag:trashed"
                 :key ?u)
 
-        (:name  "Unread work messages"
-                :query "maildir:/neptune/Inbox AND flag:unread"
+        (:name  "Inbox work"
+                :query "maildir:/neptune/Inbox"
                 :key ?n)
+
+        (:name  "Inbox work unread"
+                :query "maildir:/neptune/Inbox AND flag:unread"
+                :key ?N)
 
         (:name  "Inbox glvortex"
                 :query "maildir:/glvortex/Inbox"
                 :key ?g)
 
+        (:name  "Inbox glvortex unread"
+                :query "maildir:/glvortex/Inbox AND flag:unread"
+                :key ?G)
+
         (:name  "Inbox gmail"
                 :query "maildir:/gmail/Inbox"
                 :key ?q)
+
+        (:name  "Inbox gmail unread"
+                :query "maildir:/gmail/Inbox AND flag:unread"
+                :key ?Q)
 
         (:name  "Support"
                 :query "to:thomas.bergheim@neptune-software.com AND from:no-reply@neptune-software.com"
@@ -98,7 +110,7 @@
                :key ?t)
 
         (:name "Today's unhandled messages"
-               :query "date:1d..now AND maildir:/inbox/"
+               :query "date:1d..now AND maildir:/Inbox/"
                :key ?i)
 
         (:name "Last 7 days"
