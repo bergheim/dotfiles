@@ -3,10 +3,10 @@
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((js . t)
-   (emacs-lisp . t)))
+;; (org-babel-do-load-languages
+;;  'org-babel-load-languages
+;;  '((js . t)
+;;    (emacs-lisp . t)))
 
 (setq spaceline-org-clock-p t
       org-deadline-warning-days 14
@@ -60,12 +60,8 @@
 ;;         (900 1100 1300 1500 1700)
 ;;         "......" "----------------")))
 
-(setq org-agenda-files (apply 'append
-                              (mapcar
-                               (lambda (directory)
-                                 (directory-files-recursively
-                                  directory org-agenda-file-regexp))
-                               '("~/org")))) ;; TODO set this to org-directory
+
+(setq org-agenda-files (directory-files-recursively "~/org/" "\\.org$"))
 
 ;; add the project TODO files to the agenda as well
 (with-eval-after-load 'org-agenda
@@ -87,18 +83,18 @@
         (sequence "READ(r)" "|" "DONE(x!)")
         ))
 
-(setq org-todo-keyword-faces
-      (quote (("TODO" :foreground "red" :weight bold)
-              ("NEXT" :foreground "yellow" :weight bold)
-              ("DONE" :foreground "forest green" :weight bold)
-              ("WAITING" :foreground "orange" :weight bold)
-              ("HOLD" :foreground "magenta" :weight bold)
-              ("CANCELLED" :foreground "forest green" :weight bold)
-              )))
+;; (setq org-todo-keyword-faces
+;;       (quote (("TODO" :foreground "red" :weight bold)
+;;               ("NEXT" :foreground "yellow" :weight bold)
+;;               ("DONE" :foreground "forest green" :weight bold)
+;;               ("WAITING" :foreground "orange" :weight bold)
+;;               ("HOLD" :foreground "magenta" :weight bold)
+;;               ("CANCELLED" :foreground "forest green" :weight bold)
+;;               )))
 
-(setq org-priority-faces '((?A . (:foreground "#F0DFAF" :weight bold))
-                           (?B . (:foreground "LightSteelBlue"))
-                           (?C . (:foreground "OliveDrab"))))
+;; (setq org-priority-faces '((?A . (:foreground "#F0DFAF" :weight bold))
+;;                            (?B . (:foreground "LightSteelBlue"))
+;;                            (?C . (:foreground "OliveDrab"))))
 
 (setq org-tag-alist '(("@work" . ?w) ("@life" . ?l)))
 
@@ -183,7 +179,7 @@
                ((org-agenda-overriding-header "Habits")
                 (org-agenda-sorting-strategy
                  '(todo-state-down effort-up category-keep))))
-              (" " "Agenda"
+              ("A" "Agenda"
                ((agenda "" nil)
                 (tags "REFILE"
                       ((org-agenda-overriding-header "Tasks to Refile")
