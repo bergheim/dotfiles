@@ -3,8 +3,9 @@
 ## Set environment
 export BSPWM_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/bspwm"
 
-bspc monitor DP-0 -d "" "" "" "" "" "" ""
-bspc monitor HDMI-0 -d "" "" "" ""
+# FIXME: "Invalid descriptior found in" both of there
+bspc monitor $MONITOR_PRIMARY -n 0 -d "" "" "" "" "" ""
+bspc monitor $MONITOR_SECONDARY -n 1 -d "" "" "" ""
 
 bspc config border_width         2
 bspc config window_gap          30
