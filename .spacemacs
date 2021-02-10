@@ -33,7 +33,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(nginx
+     systemd
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -43,29 +44,42 @@ This function should only modify configuration layer settings."
            helm-completion-style 'emacs
            completion-styles '(helm-flex))
      (auto-completion :variables
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t)
+     docker
      emacs-lisp
      git
      github
      markdown
-     neotree
+     multiple-cursors
+     prettier
      (mu4e :variables
-           mu4e-enable-async-operations t ;; send email at once, async
-           mu4e-use-maildirs-extension t ;; see number of unread emails
+           ;; enabling async removes feedback if a sent mail failed for instance
+           ;; mu4e-enable-async-operations t
            mu4e-enable-notifications t
+           mu4e-use-maildirs-extension t ;; see number of unread emails
            mu4e-enable-mode-line nil
            )
+     ;; notmuch
+     deft
      (org :variables
           org-want-todo-bindings t ;; one key support on headings
           org-enable-reveal-js-support t
+          org-enable-sticky-header t
           org-enable-hugo-support t
-          org-enable-org-journal-support nil)
+          org-journal-file-format "%Y-%m"
+          org-journal-date-format "%A, %d %B %Y"
+          org-enable-org-journal-support t)
      (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
-;; spell-checking
+          shell-default-height 30
+          shell-default-position 'bottom)
+     (spell-checking
+          :variables spell-checking-enable-by-default nil)
      syntax-checking
+     evil-snipe
      version-control
+     ;; multiple-cursors
      ranger
      restclient
      (elfeed :variables
@@ -74,16 +88,16 @@ This function should only modify configuration layer settings."
      rust
      elm
      react
+     ;; dap
      html
-     javascript
-     ;; (javascript :variables
-     ;;             node-add-modules-path t)
+     (javascript :variables
+                 ;; javascript-backend 'lsp
+                 node-add-modules-path nil)
      (typescript :variables
+                 ;; node-add-modules-path t
                  typescript-fmt-tool nil
-                 typescript-fmt-on-save nil
-                 ;; tide-tsserver-executable "/home/tsb/dev/planet9/node_modules/.bin/tsserver"
-                 )
-     prettier
+                 ;; typescript-fmt-tool 'prettier
+                 typescript-fmt-on-save nil)
      sql
      lsp
      java
@@ -119,10 +133,13 @@ This function should only modify configuration layer settings."
                                       nodejs-repl
                                       doom-themes
                                       git-auto-commit-mode
-                                      ;; prettier-js
                                       org-mru-clock
                                       org-plus-contrib
                                       heaven-and-hell
+                                      ;; all-the-icons
+                                      ;; magit-todos
+                                      magit-gh-pulls
+                                      evil-collection
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -153,18 +170,18 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
-   ;; File path pointing to emacs 27.1 executable compiled with support
-   ;; for the portable dumper (this is currently the branch pdumper).
-   ;; (default "emacs-27.0.50")
-   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+   ;; Name of executable file pointing to emacs 27+. This executable must be
+   ;; in your PATH.
+   ;; (default "emacs")
+   dotspacemacs-emacs-pdumper-executable-file "emacs"
 
    ;; Name of the Spacemacs dump file. This is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
    ;; To load it when starting Emacs add the parameter `--dump-file'
    ;; when invoking Emacs 27.1 executable on the command line, for instance:
-   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
-   ;; (default spacemacs.pdmp)
-   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+   ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
+   ;; (default (format "spacemacs-%s.pdmp" emacs-version))
+   dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
 
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
@@ -184,14 +201,21 @@ It should only modify the values of Spacemacs settings."
    ;; (default '(100000000 0.1))
    dotspacemacs-gc-cons '(100000000 0.1)
 
+   ;; Set `read-process-output-max' when startup finishes.
+   ;; This defines how much data is read from a foreign process.
+   ;; Setting this >= 1 MB should increase performance for lsp servers
+   ;; in emacs 27.
+   ;; (default (* 1024 1024))
+   dotspacemacs-read-process-output-max (* 1024 1024)
+
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
    ;; latest version of packages from MELPA. (default nil)
    dotspacemacs-use-spacelpa nil
 
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
-   ;; (default nil)
-   dotspacemacs-verify-spacelpa-archives nil
+   ;; (default t)
+   dotspacemacs-verify-spacelpa-archives t
 
    ;; If non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. Note that checking for
@@ -210,7 +234,10 @@ It should only modify the values of Spacemacs settings."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+
+   ;; dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style '(vim :variables
+                                    vim-style-remap-Y-to-y$ t)
 
    ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
@@ -237,6 +264,11 @@ It should only modify the values of Spacemacs settings."
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
+
+   ;; Default major mode for a new empty buffer. Possible values are mode
+   ;; names such as `text-mode'; and `nil' to use Fundamental mode.
+   ;; (default `text-mode')
+   dotspacemacs-new-empty-buffer-major-mode 'text-mode
 
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
@@ -273,7 +305,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Iosevka"
-                               :size 16
+                               :size 28
                                :weight normal
                                :width expanded
                                :powerline-scale 1.1)
@@ -296,8 +328,10 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-major-mode-leader-key ","
 
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m")
-   dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+   ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+   ;; Thus M-RET should work as leader key in both GUI and terminal modes.
+   ;; C-M-m also should work in terminal mode, but not in GUI mode.
+   dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
 
    ;; These variables control whether separate commands are bound in the GUI to
    ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -376,6 +410,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil) (Emacs 24.4+ only)
    dotspacemacs-maximized-at-startup t
 
+   ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
+   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
+   ;; borderless fullscreen. (default nil)
+   dotspacemacs-undecorated-at-startup nil
+
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -403,10 +442,14 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-smooth-scrolling t
 
    ;; Control line numbers activation.
-   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
-   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
+   ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
+   ;; numbers are relative. If set to `visual', line numbers are also relative,
+   ;; but lines are only visual lines are counted. For example, folded lines
+   ;; will not be counted and wrapped lines are counted as multiple lines.
    ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
+   ;;   :visual nil
    ;;   :disabled-for-modes dired-mode
    ;;                       doc-view-mode
    ;;                       markdown-mode
@@ -414,6 +457,7 @@ It should only modify the values of Spacemacs settings."
    ;;                       pdf-view-mode
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
+   ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
    dotspacemacs-line-numbers nil
 
@@ -426,7 +470,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-smartparens-strict-mode nil
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
-   ;; over any automatically added closing parenthesis, bracket, quote, etc…
+   ;; over any automatically added closing parenthesis, bracket, quote, etc...
    ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
    dotspacemacs-smart-closing-parenthesis nil
 
@@ -485,6 +529,20 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
+   ;; If non nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfer with mode specific
+   ;; indent handling like has been reported for `go-mode'.
+   ;; If it does deactivate it here.
+   ;; (default t)
+   dotspacemacs-use-clean-aindent-mode t
+
+   ;; If non-nil shift your number row to match the entered keyboard layout
+   ;; (only in insert state). Currently supported keyboard layouts are:
+   ;; `qwerty-us', `qwertz-de' and `querty-ca-fr'.
+   ;; New layouts can be added in `spacemacs-editing' layer.
+   ;; (default nil)
+   dotspacemacs-swap-number-row nil
+
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
    dotspacemacs-zone-out-when-idle nil
@@ -492,7 +550,11 @@ It should only modify the values of Spacemacs settings."
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
    ;; (default nil)
-   dotspacemacs-pretty-docs nil))
+   dotspacemacs-pretty-docs nil
+
+   ;; If nil the home buffer shows the full path of agenda items
+   ;; and todos. If non nil only the file name is shown.
+   dotspacemacs-home-shorten-agenda-source nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -526,12 +588,14 @@ before packages are loaded."
 
   ;; this is a hack to make .spacemacs.env work when run as a daemon. this has
   ;; been a bug for years....
-  (spacemacs|do-after-display-system-init
-   (spacemacs/load-spacemacs-env))
+  ;; (spacemacs|do-after-display-system-init
+  ;;  (spacemacs/load-spacemacs-env))
 
   ;; Set transparency of emacs window (active . inactive) where 0 is completely transparent.
   ;; (set-frame-parameter (selected-frame) 'alpha '(90 . 70))
   ;; (add-to-list 'default-frame-alist '(alpha . (90 . 70)))
+
+  (load-file (expand-file-name "~/.emacs.d/custom/private.el"))
 
   (defun tsb-toggle-yadm ()
     "Toggle the GIT_DIR between nil and yadm. Opens magit-status when it is enabled."
@@ -548,6 +612,13 @@ before packages are loaded."
         (put 'tsb-toggle-yadm 'state t)
         (magit-status))
       ))
+
+  ;; (setq projectile-enable-caching t)
+  ;; (setq projectile-indexing-method 'alien)
+  (setq projectile-indexing-method 'alien)
+  ;; (setq projectile-git-command)
+  (setq projectile-git-command "fd -H --ignore-file .ignore -t f -0")
+  (setq projectile-generic-command "fd -H --ignore-file .ignore -t f -0")
 
   (spacemacs/set-leader-keys "ogy" 'tsb-toggle-yadm)
   (spacemacs/set-leader-keys "ogo" 'vc-revision-other-window)
@@ -570,6 +641,83 @@ before packages are loaded."
   (spacemacs/set-leader-keys "op" 'spotify-playpause)
   (spacemacs/set-leader-keys "on" 'spotify-next)
   (spacemacs/set-leader-keys "os" 'helm-spotify-plus)
+  (spacemacs/set-leader-keys "oj" 'dumb-jump-go)
+
+  ;; (spaceline-toggle-buffer-size-off)
+  ;; (spaceline-toggle-buffer-encoding-abbrev-off)
+  ;; (spaceline-toggle-purpose-off)
+  ;; (spaceline-toggle-org-clock-on)
+  (setq size-indication-mode nil)
+
+  (setq mu4e-maildir "~/.mail/neptune"
+        mu4e-trash-folder "/Deleted Items"
+        mu4e-refile-folder "/Archive"
+        mu4e-sent-folder "/Sent Items"
+        mu4e-drafts-folder "/Drafts"
+        mu4e-get-mail-command "mbsync -a"
+        mu4e-attachment-dir "~/Downloads/email"
+        mu4e-confirm-quit nil
+        ; mu4e-update-interval nil
+        ; mu4e-compose-signature-auto-include nil
+        mu4e-view-show-images t
+        mu4e-view-show-addresses t
+        ;; this fixes some sync issues with mbsync
+        mu4e-change-filenames-when-moving t
+        mu4e-compose-dont-reply-to-self t
+        mu4e-confirm-quit nil
+        ;; display is nicer with these
+        mu4e-use-fancy-chars nil
+        mail-user-agent 'mu4e-user-agent
+        ;; don't keep message buffers around
+        message-kill-buffer-on-exit t
+        mu4e-update-interval 60
+        mu4e-sent-messages-behavior 'delete
+
+        mu4e-hide-index-messages t
+
+        ;; show overview to left, email to the right
+        mu4e-split-view 'vertical
+        mu4e-headers-visible-columns 110
+
+        ;; oooor
+        ;; mu4e-split-view 'horizontal
+        ;; mu4e-headers-visible-lines 12
+
+        alert-fade-time 20)
+
+  (setq message-send-mail-function 'message-send-mail-with-sendmail
+        send-mail-function 'sendmail-send-it)
+
+  ;; substitute sendmail with msmtp
+  (setq sendmail-program "msmtp")
+
+  ;; allow setting account through email header
+  (setq message-sendmail-extra-arguments '("--read-envelope-from"))
+  (setq message-sendmail-f-is-evil t)
+
+  (setq user-mail-address bergheim/neptune/email
+        user-full-name  bergheim/neptune/name
+        mu4e-compose-signature bergheim/neptune/signature)
+
+  (add-to-list 'mu4e-bookmarks
+               (make-mu4e-bookmark
+                :name "Inbox"
+                :query "maildir:/Inbox"
+                :key ?i))
+
+  (with-eval-after-load 'mu4e-alert
+    ;; Enable Desktop notifications
+    (mu4e-alert-set-default-style 'libnotify)
+    ;; (mu4e-alert-enable-mode-line-display)
+    ;; (mu4e-alert-enable-notifications)
+    ;; (mu4e-alert-enable-mode-line-display)
+    ;; (mu4e-alert-set-default-style 'libnotify)
+    ;; (alert-add-rule :category "mu4e-alert" :style 'fringe :predicate (lambda (_) (string-match-p "^mu4e-" (symbol-name major-mode))) :continue t)
+    ;; (mu4e-alert-enable-notifications)
+    )
+
+  ;; (with-eval-after-load 'magit (evil-collection-magit-todos-setup))
+  ;; (magit-todos-mode 1)
 
   ;; (spaceline-toggle-buffer-size-off)
   ;; (spaceline-toggle-buffer-encoding-abbrev-off)
@@ -623,6 +771,83 @@ before packages are loaded."
   (setq-default evil-shift-round nil)
 
 
+ (dumb-jump-mode)
+  (nconc dumb-jump-language-file-exts
+         '((:language "typescript" :ext "ts" :agtype "ts" :rgtype nil)
+           (:language "typescript" :ext "tsx" :agtype "ts" :rgtype "ts")))
+  (nconc dumb-jump-language-comments
+         '((:comment "//" :language "typescript")))
+  (nconc dumb-jump-find-rules
+         ;; Rules translated from link below, except where noted
+         ;; https://github.com/jacktasia/dumb-jump/issues/97#issuecomment-346441412
+         ;;
+         ;; --regex-typescript=/^[ \t]*(export[ \t]+(abstract[ \t]+)?)?class[ \t]+([a-zA-Z0-9_$]+)/\3/c,classes/
+         '((:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+(abstract\\s+)?)?class\\s+JJJ\\b"
+                  :tests ("class test" "export class test" "abstract class test"
+                          "export abstract class test")
+                  :not ("class testnot"))
+           ;; --regex-typescript=/^[ \t]*(declare[ \t]+)?namespace[ \t]+([a-zA-Z0-9_$]+)/\2/c,modules/
+           (:type "module" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(declare\\s+)?namespace\\s+JJJ\\b"
+                  :tests ("declare namespace test" "namespace test")
+                  :not ("declare testnot"))
+           ;; --regex-typescript=/^[ \t]*(export[ \t]+)?module[ \t]+([a-zA-Z0-9_$]+)/\2/n,modules/
+           (:type "module" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+)?module\\s+JJJ\\b"
+                  :tests ("export module test" "module test")
+                  :not ("module testnot"))
+           ;; --regex-typescript=/^[ \t]*(export[ \t]+)?(async[ \t]+)?function[ \t]+([a-zA-Z0-9_$]+)/\3/f,functions/
+           (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+)?(async\\s+)?function\\s+JJJ\\b"
+                  :tests ("function test" "export function test" "export async function test"
+                          "async function test")
+                  :not ("function testnot"))
+           ;;--regex-typescript=/^[ \t]*export[ \t]+(var|let|const)[ \t]+([a-zA-Z0-9_$]+)/\2/v,variables/
+           (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "export\\s+(var|let|const)\\s+JJJ\\b"
+                  :tests ("export var test" "let test" "const test")
+                  :not ("var testnot"))
+           ;; --regex-typescript=/^[ \t]*(var|let|const)[ \t]+([a-zA-Z0-9_$]+)[ \t]*=[ \t]*function[ \t]*[*]?[ \t]*\(\)/\2/v,varlambdas/
+           (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(var|let|const)\\s+JJJ\\s*=\\s*function\\s*\\*?\\s*\\\(\\\)"
+                  :tests ("var test = function ()" "let test = function()" "const test=function*()")
+                  :not ("var testnot = function ()"))
+           ;; --regex-typescript=/^[ \t]*(export[ \t]+)?(public|protected|private)[ \t]+(static[ \t]+)?(abstract[ \t]+)?(((get|set)[ \t]+)|(async[ \t]+[*]*[ \t]*))?([a-zA-Z1-9_$]+)/\9/m,members/
+           (:type "variable" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+)?(public|protected|private)\\s+(static\\s+)?(abstract\\s+)?(((get|set)\\s+)|(async\\s+))?JJJ\\b"
+                  :tests ("public test" "protected static test" "private abstract get test"
+                          "export public static set test" "export protected abstract async test")
+                  :not ("public testnot"))
+           ;; --regex-typescript=/^[ \t]*(export[ \t]+)?interface[ \t]+([a-zA-Z0-9_$]+)/\2/i,interfaces/
+           (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+)?interface\\s+JJJ\\b"
+                  :tests ("interface test" "export interface test")
+                  :not ("interface testnot"))
+           ;; --regex-typescript=/^[ \t]*(export[ \t]+)?type[ \t]+([a-zA-Z0-9_$]+)/\2/t,types/
+           (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+)?type\\s+JJJ\\b"
+                  :tests ("type test" "export type test")
+                  :not ("type testnot"))
+           ;; --regex-typescript=/^[ \t]*(export[ \t]+)?enum[ \t]+([a-zA-Z0-9_$]+)/\2/e,enums/
+           (:type "enum" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "(export\\s+)?enum\\s+JJJ\\b"
+                  :tests ("enum test" "export enum test")
+                  :not ("enum testnot"))
+           ;; --regex-typescript=/^[ \t]*import[ \t]+([a-zA-Z0-9_$]+)/\1/I,imports/
+           (:type "type" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "import\\s+JJJ\\b"
+                  :tests ("import test")
+                  :not ("import testnot"))
+           ;; Custom definition for public methods without "public" keyword.
+           ;; Fragile! Requires brace on same line.
+           (:type "function" :supports ("ag" "grep" "rg" "git-grep") :language "typescript"
+                  :regex "\\bJJJ\\s*\\(.*\\{"
+                  :tests ("test() {" "test(foo: bar) {")
+                  :not ("testnot() {"))))
+
+
+
   ;; force js2-mode to use flycheck-next-error (fixes spc e n/p)
   (add-hook 'js2-init-hook '(lambda ()
                               (setq next-error-function 'flycheck-next-error)
@@ -650,81 +875,73 @@ before packages are loaded."
   ;;                                         root))))
   ;;     (when (and eslint (file-executable-p eslint))
   ;;       (setq-local flycheck-javascript-eslint-executable eslint))))
-
   ;; (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
-  ;; (eval-after-load 'js-mode
-  ;;   '(add-hook 'js-mode-hook #'node-add-modules-path))
 
-  ;; jacked from Tommi Komulainen
-  (defun spacemacs/node-executable-find (command &rest extra-modules)
-    "Search for an executable named COMMAND and return the absolute file name of
-    the executable. This function searches directories \"node_modules/.bin\",
-    \"node_modules/MODULE/node_modules/.bin\" for each extra module in
-    EXTRA-MODULES, and the directories searched by `executable-find'."
+  ;; (defun my/use-tslint-from-node-modules ()
+  ;;   (let* ((root (locate-dominating-file
+  ;;                 (or (buffer-file-name) default-directory)
+  ;;                 "node_modules"))
+  ;;          (tslint (and root
+  ;;                       (expand-file-name "node_modules/tslint/bin/tslint"
+  ;;                                         root))))
+  ;;     (when (and tslint (file-executable-p tslint))
+  ;;       (setq-local flycheck-typescript-tslint-executable tslint))))
+  ;; (add-hook 'flycheck-mode-hook #'my/use-tslint-from-node-modules)
+
+  (defun my/use-prettier-from-node-modules ()
     (let* ((root (locate-dominating-file
                   (or (buffer-file-name) default-directory)
                   "node_modules"))
-           (node_modules (expand-file-name "node_modules" root))
-           (bindirs (nconc
-                     (list
-                      ;; node_modules/.bin/{command}
-                      ".bin"
-                      ;; node_modules/{command}/bin/{command}
-                      ;; (format "%s/bin" command)
-                      )
-                     ;; node_modules/{moduleN}/node_modules/.bin/{command}
-                     (--map (f-join it "node_modules" ".bin") extra-modules))))
-      (or
-       (dolist (bindir bindirs)
-         (let ((path (f-join node_modules bindir command)))
-           (when (file-executable-p path) (return path))))
-       (executable-find command))))
+           (prettier (and root
+                        (expand-file-name "node_modules/prettier/bin-prettier.js"
+                                          root))))
+      (when (and prettier (file-executable-p prettier))
+        (setq-local prettier-js-command prettier))))
+  (add-hook 'prettier-js-mode-hook #'my/use-prettier-from-node-modules)
 
-  (defun bergheim/find-npm-file (npm-file)
-    "Search for a locally installed npm module, and failing that, a globally
-installed module. Returns the path, or nil if it could not be found"
+                                        ;typescript
+  ;; (eval-after-load 'typescript-mode
+  ;;   '(progn
+  ;;      (add-hook 'typescript-mode-hook #'node-add-modules-path)
+  ;;      (add-hook 'typescript-mode-hook #'prettier-js-mode)))
+
+  ;; (add-hook 'typescript-mode-hook #'add-node-modules-path)
+  ;; (add-hook 'typescript-mode-hook #'prettier-js-mode)
+
+  ;; (add-hook 'js2-mode-hook 'prettier-js-mode)
+
+  ;; (add-hook 'web-mode-hook 'prettier-js-mode)
+
+  ;; (eval-after-load 'typescript-mode
+  ;;   '(add-hook 'typescript-mode-hook #'add-node-modules-path))
+
+  ;; (eval-after-load 'js-mode
+  ;;   '(add-hook 'js-mode-hook #'node-add-modules-path))
+
+  (setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tss.log"))
+
+  ;; (require 'dap-node)
+
+
+  (defun bergheim/find-npm-file (npm)
     (let* ((root (locate-dominating-file
                   (or (buffer-file-name) default-directory)
                   "node_modules"))
            (file (and root
-                      (expand-file-name (concat "node_modules/.bin/" npm-file)
+                      (expand-file-name (concat "node_modules/.bin/" npm)
                                         root))))
       (cond ((and file (file-executable-p file)) file)
-            (t (executable-find npm-file)))))
+            (t nil))))
 
-  ;; ;; fjerna denne
+  ;; (let ((eslint (bergheim/find-npm-file "eslint")))
+  ;;   (if eslint
+  ;;       (setq-local flycheck-javascript-eslint-executable eslint)))
+
   ;; (defun bergheim/js-hook ()
   ;;   (let ((eslint (bergheim/find-npm-file "eslint")))
   ;;     (if eslint
-  ;;       (setq-local flycheck-javascript-eslint-executable eslint))))
+  ;;         (setq-local flycheck-javascript-eslint-executable eslint))))
   ;; (add-hook 'flycheck-mode-hook 'bergheim/js-hook)
-
-  ;; ;; fjerna denne
-  ;; (defun bergheim/ts-hook ()
-  ;;   (let ((tslint (bergheim/find-npm-file "tslint")))
-  ;;     (if tslint
-  ;;         (setq-local flycheck-typescript-tslint-executable tslint))))
-  ;; (add-hook 'flycheck-mode-hook 'bergheim/ts-hook)
-
-  (defun bergheim/eslint-hook ()
-    (let ((eslint (bergheim/find-npm-file "eslint")))
-      (if eslint
-          (setq-local flycheck-javascript-eslint-executable eslint)
-          (setq-local flycheck-typescript-tslint-executable eslint))))
-  (add-hook 'flycheck-mode-hook 'bergheim/eslint-hook)
-
-
-  ;; (defun bergheim/prettier-hook ()
-  ;;   (let ((prettier (bergheim/find-npm-file "prettier")))
-  ;;     (if prettier
-  ;;         (setq-local prettier-js-command prettier))))
-  ;; (add-hook 'prettier-js-mode-hook 'bergheim/prettier-hook)
-
-  ;; prettier settings
-  (setq prettier-js-args '(
-                           "--trailing-comma" "all"
-                           ;; "--bracket-spacing" "false"
-                           ))
 
   (when (spacemacs/system-is-mac)
     (setq mac-command-modifier 'meta
@@ -896,71 +1113,12 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline bold bold-italic bold])
- '(ansi-color-names-vector
-   ["#d2ceda" "#f2241f" "#67b11d" "#b1951d" "#3a81c3" "#a31db1" "#21b8c7" "#655370"])
- '(custom-enabled-themes (quote (tsdh-light)))
- '(evil-want-Y-yank-to-eol nil)
- '(fci-rule-color "#ECEFF1")
- '(helm-completion-style (quote emacs))
- '(hl-sexp-background-color "#efebe9")
- '(hl-todo-keyword-faces
-   (quote
-    (("TODO" . "#dc752f")
-     ("NEXT" . "#dc752f")
-     ("THEM" . "#2d9574")
-     ("PROG" . "#3a81c3")
-     ("OKAY" . "#3a81c3")
-     ("DONT" . "#f2241f")
-     ("FAIL" . "#f2241f")
-     ("DONE" . "#42ae2c")
-     ("NOTE" . "#b1951d")
-     ("KLUDGE" . "#b1951d")
-     ("HACK" . "#b1951d")
-     ("TEMP" . "#b1951d")
-     ("FIXME" . "#dc752f")
-     ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f"))))
- '(jdee-db-active-breakpoint-face-colors (cons "#D0D0E3" "#009B7C"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#D0D0E3" "#005F00"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#D0D0E3" "#4E4E4E"))
- '(objed-cursor-color "#D70000")
+ '(evil-want-Y-yank-to-eol t)
+ '(org-agenda-files
+   '("~/dev/planet9/TODOs.org" "/home/tsb/org/projects/babeltest.org" "/home/tsb/org/projects/kp.org" "/home/tsb/org/projects/mediaserver.org" "/home/tsb/org/projects/recoil.org" "/home/tsb/org/projects/serverscript.org" "/home/tsb/org/projects/sg23borettslag.org" "/home/tsb/org/projects/vimdesktop.org" "/home/tsb/org/bergtech.org" "/home/tsb/org/elfeed.org" "/home/tsb/org/inbox.org" "/home/tsb/org/life.org" "/home/tsb/org/p9.org" "/home/tsb/org/test.org" "/home/tsb/org/work.org"))
  '(package-selected-packages
-   (quote
-    (ox-twbs ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(pdf-view-midnight-colors (quote ("#655370" . "#fbf8ef")))
- '(rustic-ansi-faces
-   ["#F5F5F9" "#D70000" "#005F00" "#AF8700" "#1F55A0" "#AF005F" "#007687" "#0F1019"])
- '(safe-local-variable-values
-   (quote
-    ((org-confirm-babel-evaluate)
-     (typescript-backend . tide)
-     (typescript-backend . lsp)
-     (javascript-backend . tern)
-     (javascript-backend . lsp))))
- '(vc-annotate-background nil)
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#B71C1C")
-     (40 . "#FF5722")
-     (60 . "#FFA000")
-     (80 . "#558b2f")
-     (100 . "#00796b")
-     (120 . "#2196f3")
-     (140 . "#4527A0")
-     (160 . "#B71C1C")
-     (180 . "#FF5722")
-     (200 . "#FFA000")
-     (220 . "#558b2f")
-     (240 . "#00796b")
-     (260 . "#2196f3")
-     (280 . "#4527A0")
-     (300 . "#B71C1C")
-     (320 . "#FF5722")
-     (340 . "#FFA000")
-     (360 . "#558b2f"))))
- '(vc-annotate-very-old-color nil))
+   '(ox-twbs ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))
+ '(send-mail-function 'mailclient-send-it))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
