@@ -96,19 +96,19 @@ draw_bold_text_with_bright_colors: true
 font:
   # The normal (roman) font face to use.
   normal:
-    family: Iosevka # should be "Menlo" or something on macOS.
+    family: Fira Mono # should be "Menlo" or something on macOS.
     # Style can be specified to pick a specific face.
     style: Regular
 
   # The bold font face
   bold:
-    family: Iosevka # should be "Menlo" or something on macOS.
+    family: Fira Mono # should be "Menlo" or something on macOS.
     # Style can be specified to pick a specific face.
     style: SemiBold
 
   # The italic font face
   italic:
-    family: Iosevka # should be "Menlo" or something on macOS.
+    family: Fira Mono # should be "Menlo" or something on macOS.
     # Style can be specified to pick a specific face.
     style: Italic
 
