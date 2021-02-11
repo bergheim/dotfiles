@@ -1,0 +1,12 @@
+[Unit]
+Description=mbsync all timer
+ConditionPathExists=%h/.mbsyncrc
+
+[Timer]
+OnBootSec=10m
+# OnUnitActiveSec=60m
+OnUnitInactiveSec=60m
+# Unit=mbsync.service
+
+[Install]
+WantedBy=default.target

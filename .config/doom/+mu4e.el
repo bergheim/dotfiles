@@ -3,7 +3,7 @@
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
-      mu4e-get-mail-command "mbsync -V inbox"
+      mu4e-get-mail-command "mbsync inbox"
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil
       mu4e-view-show-images t
@@ -23,8 +23,8 @@
       ;; don't keep message buffers around
       message-kill-buffer-on-exit t
 
-      ;; fetch mail in the background
-      mu4e-update-interval 60
+      ;; do not fetch mail in the background (handled by the system now)
+      mu4e-update-interval nil
 
       ;; this is insanely annoying. it kills whatever is in the minibuffer
       mu4e-hide-index-messages t
@@ -209,21 +209,6 @@
                                             ("/glvortex/Archive"  . ?a)
                                             ))))
        ))
-
-
-;; (with-eval-after-load 'mu4e-alert
-;;     ;; Enable Desktop notifications
-;;     (mu4e-alert-set-default-style 'libnotify)
-;;     )
-
-
-;; (with-eval-after-load 'mu4e-alert
-;;   ;; Enable Desktop notifications
-;;   (mu4e-alert-set-default-style 'libnotify))
-
-;; TODO: verify that this works. If so, remove the stuff above
-(mu4e-alert-set-default-style 'libnotify)
-(add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
 
 ;; this seems nice - had I only had xwidgets support
 ;; (defun mu4e-action-view-in-browser-webkit (msg)

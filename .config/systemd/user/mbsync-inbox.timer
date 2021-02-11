@@ -1,0 +1,10 @@
+[Unit]
+Description=mbsync inbox timer
+ConditionPathExists=%h/.mbsyncrc
+
+[Timer]
+OnBootSec=1m
+OnUnitInactiveSec=1m
+
+[Install]
+WantedBy=default.target
