@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# based on mutt-wiz
+
+MAIL_DIR=~/.mail
+MAIL_SYNC_FILE="$MAIL_DIR/.lastsync"
+
+# todo < /dev/null this
+if [ -z "$1" ]; then
+    mbsync inbox;
+else
+    mbsync -a;
+fi
+
+NEW_MAILS=$(find "$MAIL_DIR/neptune/Inbox/new/" "$MAIL_DIR/glvortex/Inbox/new/" "$MAIL_DIR/gmail/INBOX/new/" -type f -newer "$MAIL_SYNC_FILE" 2> /dev/null)
+NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
+
+echo "Num new mails $NEW_MAILS_COUNT"
+
+if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
+    /usr/bin/emacsclient -e '(mu4e-update-index)' 2> /dev/null
+    if [ "$NEW_MAILS_COUNT" -gt "1" ]; then
+        notify-send --icon=mail-unread --category email --app-name=mbsync "You've got mail" "You have $NEW_MAILS_COUNT new emails" &
+    fi
+    for file in $NEW_MAILS; do
+        # Extract subject and sender from mail.
+        from=$(awk '/^From: / && ++n ==1,/^\<.*\>:/' "$file" | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | awk '{ $1=""; if (NF>=3)$NF=""; print $0 }' | sed 's/^[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//')
+        subject=$(awk '/^Subject: / && ++n == 1,/^\<.*\>: / && ++i == 2' "$file" | head -n 1 | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | sed 's/^Subject: //' | sed 's/^{[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//' | tr -d '\n')
+        notify-send --icon=mail-unread --category email --app-name=mbsync "$from" "$subject"
+    done
+
+fi
+
+wait
+
+touch $MAIL_SYNC_FILE
