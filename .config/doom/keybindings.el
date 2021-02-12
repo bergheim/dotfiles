@@ -49,11 +49,12 @@
      (:prefix ("m" . "E-mail")
       "m" 'mu4e
       (:desc "Compose" "c" #'+mu4e/compose)
-      (:desc "Search" "s" #'mu4e-headers-search)
+      (:desc "Find" "f" #'mu4e-headers-search)
       (:desc "Htmlize this" "h" #'org-mime-htmlize)
       (:desc "Send this" "s" #'org-mime-org-subtree-htmlize)
       (:desc "Edit in org-mode" "e" #'org-mime-edit-mail-in-org-mode)
-      (:desc "Todays e-mail" "t" 'bergheim-email-today)
+      (:desc "Todays email" "t" 'bergheim-email-today)
+      (:desc "Todays work email" "w" 'bergheim-email-work-inbox)
       (:desc "Inbox" "i" 'bergheim-email-inbox))
 
      "e" 'elfeed

@@ -36,6 +36,11 @@
   (mu4e-headers-search-bookmark "maildir:/Inbox/"))
 
 ;;;###autoload
+(defun bergheim-email-work-inbox()
+  (interactive)
+  (mu4e-headers-search-bookmark "maildir:/neptune/Inbox/"))
+
+;;;###autoload
 (defun bergheim-email-today()
   (interactive)
   (mu4e-headers-search-bookmark "(date:1d..now OR flag:unread) AND maildir:/Inbox/"))
