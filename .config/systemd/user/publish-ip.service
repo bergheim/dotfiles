@@ -1,0 +1,11 @@
+[Unit]
+Description=Publish the external IP
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/local/bin/publish-ip
+
+[Install]
+WantedBy=multi-user.target
