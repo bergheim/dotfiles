@@ -1,0 +1,9 @@
+[Unit]
+Description=Publish external IP timer
+
+[Timer]
+OnBootSec=2m
+OnUnitInactiveSec=1h
+
+[Install]
+WantedBy=multi-user.target
