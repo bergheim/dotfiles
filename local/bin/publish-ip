@@ -6,7 +6,7 @@ HOST="$1"
 
 if [ -z "$HOST" ]; then
     if [ "$HOSTNAME" != "berghome" ]; then
-        HOST="home"
+        HOST="berghome"
     else
         HOST="work"
     fi
