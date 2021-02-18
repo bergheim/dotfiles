@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+IP=$(curl -s http://minip.no |grep -oE "[^^][0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" |head -n1 |xargs)
+
+HOST="$1"
+
+if [ -z "$HOST" ]; then
+    if [ "$HOSTNAME" != "berghome" ]; then
+        HOST="home"
+    else
+        HOST="work"
+    fi
+fi
+
+ssh "$HOST" "echo $IP > ~/.ip"
