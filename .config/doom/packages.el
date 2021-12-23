@@ -51,6 +51,8 @@
 (package! org-super-agenda)
 (package! org-fancy-priorities)
 (package! mu4e-alert)
+(package! mu4e-alert :disable t)
+
 (package! heaven-and-hell)
 (package! doct)
 (package! rainbow-mode)

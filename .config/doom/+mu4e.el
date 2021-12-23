@@ -64,7 +64,6 @@
       mu4e-compose-context-policy 'ask
 
       ;; notification settings
-      alert-fade-time 20
       ;; mu4e-alert-set-window-urgency nil
       ;; mu4e-alert-interesting-mail-query (concat "flag:unread"
       ;;                                           " AND NOT flag:trashed"
