@@ -121,3 +121,5 @@ entr
 ruby
 ruby-rdoc
 shellcheck
+tmuxp
+openbsd-netcat
