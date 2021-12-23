@@ -5,6 +5,7 @@ ConditionPathExists=%h/.mbsyncrc
 [Timer]
 OnBootSec=1m
 OnUnitInactiveSec=1m
+Unit=mbsync-inbox.service
 
 [Install]
-WantedBy=default.target
+WantedBy=timers.target

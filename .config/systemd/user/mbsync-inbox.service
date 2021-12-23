@@ -1,12 +1,15 @@
 [Unit]
 Description=mbsync inbox service
-# After=network.target network-online.target dbus.socket
 ConditionPathExists=%h/.mbsyncrc
+Wants=network-online.target
+After=network-online.target
 
 [Service]
-Type=simple
-ExecStart=/home/tsb/local/bin/sync-mail
+# Type=simple
+Type=oneshot
+ExecStart=%h/local/bin/sync-mail
+# don't do this - only update index if we have new emails
 # ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
 
-[Install]
-WantedBy=mail.target
+# [Install]
+# WantedBy=multi-user.target

@@ -1,12 +1,13 @@
 [Unit]
 Description=mbsync all service
-# After=network.target network-online.target dbus.socket
 ConditionPathExists=%h/.mbsyncrc
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/home/tsb/local/bin/sync-mail all
+ExecStart=%h/local/bin/sync-mail all
 # ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
