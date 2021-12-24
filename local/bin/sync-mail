@@ -12,7 +12,7 @@ else
     mbsync -a;
 fi
 
-NEW_MAILS=$(find "$MAIL_DIR/neptune/Inbox/new/" "$MAIL_DIR/glvortex/Inbox/new/" "$MAIL_DIR/gmail/INBOX/new/" -type f -newer "$MAIL_SYNC_FILE" 2> /dev/null)
+NEW_MAILS=$(find "$MAIL_DIR/neptune/Inbox/new/" "$MAIL_DIR/glvortex/Inbox/new/" "$MAIL_DIR/gmail/Inbox/new/" -type f -newer "$MAIL_SYNC_FILE" 2> /dev/null)
 NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
 
 echo "Num new mails $NEW_MAILS_COUNT"
