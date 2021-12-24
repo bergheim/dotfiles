@@ -1,0 +1,123 @@
+# defaults
+# save syncstate in the Maildir directories itself
+SyncState *
+# only create local folders
+Create Near
+# by default (CopyArrivalDate no), if you copy an old email from inbox to
+# Archive (e.g.) it will get the date of the copy assigned, instead of just
+# keeping its original date of arrival! That doesn't sound like a very good
+# default to me. Also see:
+# https://rakhim.org/fastmail-setup-with-emacs-mu4e-and-mbsync-on-macos/
+# https://wiki.archlinux.org/index.php/Isync#Emails_on_remote_server_have_the_wrong_date
+CopyArrivalDate yes
+
+
+# Neptune email
+# ----------
+IMAPAccount neptune
+    Host outlook.office365.com
+    Port 993
+    UserCmd "pass show email/neptune/address"
+    PassCmd "pass show email/neptune/me"
+    SSLType IMAPS
+    CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore neptune-remote
+    Account neptune
+
+MaildirStore neptune-local
+    Subfolders Verbatim
+    # The trailing "/" is important
+    Path ~/.mail/neptune/
+    Inbox ~/.mail/neptune/Inbox
+
+Channel neptune-inbox
+    Far :neptune-remote:
+    Near :neptune-local:
+    Patterns "INBOX" "Sent Items" "Drafts" "Deleted Items" "Archive"
+    Sync All
+    Expunge Both
+
+Channel neptune
+    Far :neptune-remote:
+    Near :neptune-local:
+    Patterns *
+    Sync All
+    Expunge Both
+
+# glvortex account
+# ----------------
+IMAPAccount glvortex
+    Host 127.0.0.1
+    Port 1143
+    UserCmd "pass show email/glvortex/address"
+    PassCmd "pass show email/glvortex/bridge"
+    # Use SSL
+    SSLType STARTTLS
+    CertificateFile /etc/ssl/certs/protonbridge.pem
+
+IMAPStore glvortex-remote
+    Account glvortex
+
+MaildirStore glvortex-local
+    SubFolders Verbatim
+    Path ~/.mail/glvortex/
+    Inbox ~/.mail/glvortex/Inbox
+    # Trash Trash
+    # TODO trash?
+
+Channel glvortex-inbox
+    Far :glvortex-remote:
+    Near :glvortex-local:
+    # this setup ignores all mail because I do not want all the email lists etc..
+    Patterns "INBOX" "Archive" "Spam" "Sent" "Trash"
+    Sync All
+    Expunge Both # sync changes like delete to server
+
+Channel glvortex
+    Far :glvortex-remote:
+    Near :glvortex-local:
+    Patterns * !"Labels/*" !"Folders/*" !"All Mail"
+    Expunge Both
+    Sync All
+
+
+# gmail account
+# --------------
+IMAPAccount gmail
+    Host imap.gmail.com
+    UserCmd "pass show email/gmail/address"
+    PassCmd "pass show email/gmail/mbsync"
+    AuthMechs LOGIN
+    SSLType IMAPS
+    #SSLVersions SSLv3
+    CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore gmail-remote
+    Account gmail
+
+MaildirStore gmail-local
+    SubFolders Verbatim
+    # Trailing / is important
+    Path ~/.mail/gmail/
+    Inbox ~/.mail/gmail/Inbox
+    # Trash [Gmail].Trash
+    Flatten .
+
+Channel gmail-inbox
+    Far :gmail-remote:
+    Near :gmail-local:
+    # Just sync things that operations on an email can affect
+    Patterns "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/Trash"
+    Expunge Both # la akkurat denne til
+
+Channel gmail
+    Far :gmail-remote:
+    Near :gmail-local:
+    Patterns  "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail" "[Gmail]/Drafts" "[Gmail]/Trash"
+    Expunge Both # la akkurat denne til
+
+Group inbox
+    Channel neptune-inbox
+    Channel glvortex-inbox
+    Channel gmail-inbox
