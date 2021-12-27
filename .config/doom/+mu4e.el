@@ -22,14 +22,6 @@
          msgid (and (eq major-mode 'mu4e-view-mode)
                     (not (eq mu4e-split-view 'single-window))))))))
 
-(defun bergheim/mu4e-toggle-gnus ()
-  "Toggle between old mu4e view mode and gnus-view-mode."
-  (interactive)
-  (if (equal mu4e-view-use-old t)
-      (setq mu4e-view-use-old nil)
-    (setq mu4e-view-use-old t))
-  (mu4e-view-refresh))
-
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
