@@ -24,8 +24,9 @@
         (setenv "GIT_DIR" nil)
         (put 'tsb-toggle-yadm 'state nil))
     (progn
-      (message (concat "Enabling YADM " (getenv "XDG_CONFIG_HOME") "/yadm/repo.git"))
-      (setenv "GIT_DIR" (concat (getenv "XDG_CONFIG_HOME") "/yadm/repo.git"))
+      ;; TODO enable the XDG env for this
+      (message (concat "Enabling YADM " (getenv "HOME") "/.local/share/yadm/repo.git"))
+      (setenv "GIT_DIR" (concat (getenv "HOME") "/.local/share/yadm/repo.git"))
       (put 'tsb-toggle-yadm 'state t)
       (magit-status))
     ))
@@ -35,12 +36,35 @@
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/Inbox/"))
 
+;;;autoload
+(defun bergheim-email-trash()
+  (interactive)
+  (mu4e-headers-search-bookmark "maildir:/glvortex/Trash OR maildir:/gmail/[Gmail].Trash OR maildir:\"/neptune/Deleted Items\""))
+
 ;;;###autoload
 (defun bergheim-email-work-inbox()
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/neptune/Inbox/"))
 
 ;;;###autoload
+(defun bergheim-email-personal-inbox()
+  (interactive)
+  (mu4e-headers-search-bookmark "maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox"))
+
+;;;###autoload
 (defun bergheim-email-today()
+  "Opens the inbox with unread and todays email"
+  (interactive)
+  (mu4e-headers-search-bookmark "(date:1d..now) AND maildir:/Inbox/"))
+
+;;;###autoload
+(defun bergheim-email-week()
+  "Opens the inbox with unread and this weeks email"
+  (interactive)
+  (mu4e-headers-search-bookmark "(date:1w..now) AND maildir:/Inbox/"))
+
+;;;autoload
+(defun bergheim-email-today-or-unread()
+  "Opens the inbox with unread and todays email"
   (interactive)
   (mu4e-headers-search-bookmark "(date:1d..now OR flag:unread) AND maildir:/Inbox/"))
