@@ -1,5 +1,27 @@
 ;;; ~/.config/doom/+mu4e.el -*- lexical-binding: t; -*-
 
+(defun bergheim-mu4e-filter-this-message (_)
+  "Quickly narrow view to emails sent from the selected email"
+
+  ;; TODO: get this to work. msg contains :from! No need to use message field at point..
+  ;; (print msg)
+  ;; (mu4e-headers-search-narrow (concat "from:" (cdr (first (msg :from))))))
+  (mu4e-headers-search-narrow (concat "from:" (cdr (car (mu4e-message-field-at-point :from))))))
+
+(defun bergheim-mu4e-relate-this-message (msg)
+  "Quickly find all mails sent to or from this address"
+
+  (let (email)
+    (setq email (cdr (car (mu4e-message-field-at-point :from))))
+
+    (let ((msgid (mu4e-message-field msg :message-id)))
+      (when msgid
+        (mu4e-headers-search
+         (format "(from:%s or to:%s)" email email)
+         nil nil nil
+         msgid (and (eq major-mode 'mu4e-view-mode)
+                    (not (eq mu4e-split-view 'single-window))))))))
+
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
@@ -102,28 +124,28 @@
                 :key ?Q)
 
         (:name  "Support"
-                :query "to:thomas.bergheim@neptune-software.com AND from:no-reply@neptune-software.com"
+                :query "to:thomas.bergheim@neptune-software.com AND from:no-reply@neptune-software.com AND maildir:/neptune/Inbox"
                 :key ?s)
 
         (:name "Today's messages"
-               :query "date:today..now"
+               :query "date:1d..now"
                :key ?t)
 
         (:name "Today's unhandled messages"
-               :query "date:1d..now AND maildir:/Inbox/"
+               :query "date:1d..now AND maildir:/Inbox/ AND flag:unread"
                :key ?i)
 
         (:name "Last 7 days"
-               :query "date:7d..now"
+               :query "date:7d..now AND maildir:/Inbox/"
                :key ?w)
 
         (:name "Messages with images"
-               ;; everybody has some image in their sig. sigh..
+               ;; everybody has some huge image in their sig. sigh..
                :query "mime:image/* AND size:50K..100M"
                :key ?p)
 
         (:name "Messages with attachments"
-               ;; everybody has some image in their sig. sigh..
+               ;; everybody has some huge image in their sig. sigh..
                :query "flag:attach AND size:50K..1000M"
                :key ?a)
 
@@ -220,6 +242,14 @@
  (:map (mu4e-headers-mode-map mu4e-view-mode-map)
   ;; I prefer getting asked about what to do with the thread
   :n "T" #'mu4e-headers-mark-thread))
+
+(add-to-list 'mu4e-headers-actions
+             '("find all from" . bergheim-mu4e-relate-this-message) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("narrow to sender" . bergheim-mu4e-filter-this-message) t)
+
+;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
 
 ;; based on https://github.com/djcb/mu/issues/1136#issuecomment-486177435
 (setf (alist-get 'trash mu4e-marks)
