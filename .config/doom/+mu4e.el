@@ -6,7 +6,9 @@
       mu4e-get-mail-command "mbsync inbox"
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil
-      mu4e-view-show-images t
+
+      ;; TODO confirm that these are only local images (trackers etc)
+      mu4e-view-show-images nil
       mu4e-view-show-addresses t
       ;; this fixes some sync issues with mbsync and office365
       mu4e-change-filenames-when-moving t
@@ -29,25 +31,24 @@
       ;; this is insanely annoying. it kills whatever is in the minibuffer
       mu4e-hide-index-messages t
 
-      ;; use the new experimental article viewer
-      mu4e-view-use-gnus t
-
-      ;; mu4e-headers-include-related t
+      mu4e-headers-include-related nil
+      mu4e-headers-show-threads nil
 
       ;; set up a more concise timestamp
-      mu4e-headers-date-format "%e/%b %H:%M"
+      mu4e-headers-date-format "%d/%m/%y %H:%M"
       mu4e-headers-time-format "%H:%M"
 
       ;; and make room for the subject
       mu4e-headers-fields '((:account      .  8)
-                            (:human-date   . 13)
+                            (:human-date   . 14)
                             (:flags        .  4)
+                            (:maildir      .  26)
                             ;; (:mailing-list . 10)
                             (:from         . 25)
-                            (:subject))
+                            (:subject      ))
 
       ;; show overview to left, email to the right
-      ;; mu4e-split-view 'vertical
+      ;; mu4e-split-view 'single-window
       mu4e-headers-visible-columns 110
 
       ;; SMTP stuff
@@ -130,9 +131,6 @@
                :query "maildir:/Sent/"
                :key ?o)))
 
-(add-to-list 'mu4e-view-actions
-  '("Open in Browser" . mu4e-action-view-in-browser) t)
-
 (setq mu4e-contexts
       (list
        (make-mu4e-context
@@ -209,17 +207,28 @@
                                             ))))
        ))
 
-;; this seems nice - had I only had xwidgets support
+;; this seems nice - requires xwidgets support
 ;; (defun mu4e-action-view-in-browser-webkit (msg)
 ;;   (let ((url (concat "file://" (mu4e~write-body-to-html msg))))
 ;;     (xwidget-webkit-browse-url url)))
-
 ;; (after! mu4e
 ;;   :config
 ;;   (add-to-list 'mu4e-view-actions
 ;;                '("web browser" . mu4e-action-view-in-browser-webkit)))
 
-  (map!
-   (:map (mu4e-headers-mode-map mu4e-view-mode-map)
-     ;; I prefer getting asked about what to do with the thread
-     :n "T" #'mu4e-headers-mark-thread))
+(map!
+ (:map (mu4e-headers-mode-map mu4e-view-mode-map)
+  ;; I prefer getting asked about what to do with the thread
+  :n "T" #'mu4e-headers-mark-thread))
+
+;; based on https://github.com/djcb/mu/issues/1136#issuecomment-486177435
+(setf (alist-get 'trash mu4e-marks)
+      (list :char '("d" . "▼")
+            :prompt "dtrash"
+            :dyn-target (lambda (target msg)
+                          (mu4e-get-trash-folder msg))
+            :action (lambda (docid msg target)
+                      ;; Here's the main difference to the regular trash mark,
+                      ;; no +T before -N so the message is not marked as
+                      ;; IMAP-deleted:
+                      (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
