@@ -9,6 +9,10 @@
         doom-modeline-mu4e t ;; TODO where is this exactly?
         doom-modeline-buffer-encoding nil))
 
+;; default to english.
+;; TODO: add ispell-local-dictionary
+(setq ispell-dictionary "en")
+
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
 
