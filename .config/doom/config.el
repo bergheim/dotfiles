@@ -3,6 +3,12 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+(after! doom-modeline
+  (setq doom-modeline-display-default-persp-name t
+        doom-modeline-persp-name t ;; TODO make it easier to see
+        doom-modeline-mu4e t ;; TODO where is this exactly?
+        doom-modeline-buffer-encoding nil))
+
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
 
