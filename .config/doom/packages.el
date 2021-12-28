@@ -46,15 +46,22 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-(package! winum)
+(package! winum) ;; TODO not needed bco window-select pkg
 (package! org-mru-clock)
+
+(package! counsel-org-clock)
 (package! org-super-agenda)
+
+;; https://github.com/IvanMalison/org-projectile
+;; (package! org-projectile)
 (package! org-fancy-priorities)
-(package! mu4e-alert)
+;; (package! helm-org-rifle)
+
 (package! mu4e-alert :disable t)
 
 (package! heaven-and-hell)
 (package! doct)
 (package! rainbow-mode)
+;; allows you to search in a browser from emacs
+;; (package! engine-mode)
 (package! restclient)
-(package! helm-org-rifle)
