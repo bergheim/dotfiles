@@ -25,8 +25,9 @@
 ;; font string. You generally only need these two:
 ;; (setq doom-font (font-spec :family "monospace" :size 14))
 
-(setq doom-font (font-spec :family "Iosevka" :size 16))
-(setq doom-big-font (font-spec :family "Iosevka" :size 20))
+(setq doom-font (font-spec :family "Fira Code" :size 26)
+      doom-big-font (font-spec :family "Fira Code" :size 30)
+      doom-variable-pitch-font (font-spec :family "Fira Code" :size 26))
 
 (when IS-LINUX
   (font-put doom-font :weight 'semi-light))
