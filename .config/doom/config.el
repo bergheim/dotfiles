@@ -9,6 +9,12 @@
         doom-modeline-mu4e t ;; TODO where is this exactly?
         doom-modeline-buffer-encoding nil))
 
+(setq org-clock-history-length 20)
+
+(use-package! counsel-org-clock
+  :config
+  (setq counsel-org-clock-history-limit 20))
+
 ;; default to english.
 ;; TODO: add ispell-local-dictionary
 (setq ispell-dictionary "en")
