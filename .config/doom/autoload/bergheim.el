@@ -36,7 +36,7 @@
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/Inbox/"))
 
-;;;autoload
+;;;###autoload
 (defun bergheim-email-trash()
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/glvortex/Trash OR maildir:/gmail/[Gmail].Trash OR maildir:\"/neptune/Deleted Items\""))
@@ -63,7 +63,7 @@
   (interactive)
   (mu4e-headers-search-bookmark "(date:1w..now) AND maildir:/Inbox/"))
 
-;;;autoload
+;;;###autoload
 (defun bergheim-email-today-or-unread()
   "Opens the inbox with unread and todays email"
   (interactive)
