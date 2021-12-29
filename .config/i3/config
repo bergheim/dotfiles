@@ -271,6 +271,28 @@ client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
 
 client.background       #FFFFFF
 
+
+# Set colors from Xresources
+set_from_resource $bg background #2f343f
+set_from_resource $fg foreground #d8dee8
+set_from_resource $c1 color1 #bf616a
+set_from_resource $c3 color3 #ebcb8b # primary
+set_from_resource $c4 color4
+set_from_resource $c5 color5 #81a1c1
+set_from_resource $c6 color6
+
+set_from_resource $c9 color9 #81a1c1
+set_from_resource $c15 color15 #81a1c1
+
+# see https://thomashunter.name/i3-configurator/
+# class                 border  backgr. text indicator child_border
+client.focused          $c3     $c3     $bg  $c1       $c3
+client.focused_inactive $fg     $bg     $fg  $fg       $bg
+client.unfocused        $fg     $bg     $fg  $fg       $bg
+client.urgent           $fg     $c1     $bg  $bg       $c1
+client.placeholder      $fg     $bg     $fg  $bg       $bg
+client.background       $fg
+
 # bar {
 #   i3bar_command i3bar -t
 #   status_command i3blocks
