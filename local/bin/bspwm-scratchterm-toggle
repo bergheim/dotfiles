@@ -23,5 +23,5 @@ else
   ALACRITTY_CONFIG_HOME=$XDG_CONFIG_HOME/alacritty
   yq merge ${ALACRITTY_CONFIG_HOME}/scratchpad-template.yml ${ALACRITTY_CONFIG_HOME}/alacritty.yml | tee ${ALACRITTY_CONFIG_HOME}/scratchpad.yml > /dev/null
 
-  alacritty --class $NAME,$NAME --live-config-reload --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.yml -e tmuxa scratchpad
+  alacritty --class $NAME,$NAME --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.yml -e tmuxa scratchpad
 fi
