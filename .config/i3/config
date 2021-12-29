@@ -188,11 +188,12 @@ bindsym $mod+$alt+Shift+j resize shrink down 10 px or 10 ppt
 bindsym $mod+$alt+Shift+k resize shrink up 10 px or 10 ppt
 
 # gaps
-gaps inner 10
+gaps inner 20
 gaps outer 10
 # smart_borders no_gaps
 # smart_gaps on
-for_window [class="^.*"] border pixel 1
+set $border_size 1
+for_window [class="^.*"] border pixel $border_size
 
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
@@ -232,9 +233,9 @@ mode "$mode_gaps_outer" {
 }
 
 bindsym $mod+minus          gaps inner current set 0; gaps outer current set 0; border none
-bindsym $mod+equal          gaps inner current set 10; gaps outer current set 10; border pixel 1
-bindsym $mod+shift+minus    gaps inner current set 40; gaps outer current set 40; border pixel 1
-bindsym $mod+shift+equal    gaps inner current set 60; gaps outer current set 100; border pixel 1
+bindsym $mod+equal          gaps inner current set 20; gaps outer current set 10; border pixel $border_size
+bindsym $mod+shift+minus    gaps inner current set 40; gaps outer current set 20; border pixel $border_size
+bindsym $mod+shift+equal    gaps inner current set 60; gaps outer current set 30; border pixel $border_size
 
 # colors
 #set $bg-color #2f343f
