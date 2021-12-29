@@ -41,7 +41,7 @@ rofi.theme: Monokai
 rofi.width: 60
 ! rofi.lines: 5
 ! rofi.columns: 2
-! rofi.font: Noto Sans 14
+rofi.font: Noto Sans 18
 rofi.bw: 0
 rofi.padding: 650
 rofi.eh: 2
@@ -64,4 +64,6 @@ Xft.hinting: 1
 Xft.hintstyle: hintfull
 Xft.rgba: rgb
 ! about right for a 27 inch 1440p monitor
-Xft.dpi: 108
+! Xft.dpi: 120
+Xft.dpi: 163
+! Xcursor.size: 16
