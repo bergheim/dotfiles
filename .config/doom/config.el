@@ -22,6 +22,10 @@
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
 
+;; this will draw a vertical line to indicate line length
+(global-display-fill-column-indicator-mode 1)
+;; (setq-default fill-column 100)
+
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Thomas Bergheim"
@@ -57,6 +61,10 @@
 ;; use visible buffer, not just the current line
 (setq evil-snipe-scope 'visible)
 
+;; pop up dap-hydra on first stop. i don't like this because it takes over your keys
+;; (use-package! dap-mode
+;;   ;; :custom (dap-auto-configure-features '(sessions locals tooltip))
+;;   :hook (dap-stopped . (lambda (arg) (call-interactively #'dap-hydra))))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -94,8 +102,11 @@
       vc-make-backup-files t
       backup-directory-alist '((".*" . "~/.emacs.d/backup")))
 
+;; decrease the timeout before jumping around the buffer
+(setq avy-timeout-seconds 0.3)
+
 (after! ivy
-        ;; include recent files and bookmarks
+  ;; include recent files and bookmarks
   (setq ivy-use-virtual-buffers t
         ;; show index/total in the minibuf prompt
         ivy-count-format "(%d/%d) "
