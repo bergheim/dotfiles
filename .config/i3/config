@@ -117,8 +117,8 @@ set $ws0 "0"
 bindsym $mod+Shift+comma    move scratchpad
 bindsym $mod+comma          scratchpad show
 
-set $monitor1 DisplayPort-0
-set $monitor2 DisplayPort-1
+set $monitor1 DP-0
+set $monitor2 DP-2
 workspace $ws1 output $monitor1
 workspace $ws2 output $monitor1
 workspace $ws3 output $monitor1
