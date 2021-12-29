@@ -5,6 +5,31 @@
 
 (setq org-directory "~/org/")
 
+;; add the project TODO files to the agenda as well
+;; FIXME: this is an old relic before doom and I don't think it works anymore
+;; (with-eval-after-load 'org-agenda
+;;   (require 'org-projectile)
+;;   (mapcar #'(lambda (file)
+;;              (when (file-exists-p file)
+;;                (push file org-agenda-files)))
+;;           (org-projectile-todo-files)))
+
+;; org-journal. move TODOs from previous days to the current
+;; (defun my-old-carryover (old_carryover)
+;;   (save-excursion
+;;     (let ((matcher (cdr (org-make-tags-matcher org-journal-carryover-items))))
+;;       (dolist (entry (reverse old_carryover))
+;;         (save-restriction
+;;           (narrow-to-region (car entry) (cadr entry))
+;;           (goto-char (point-min))
+;;           (org-scan-tags '(lambda ()
+;;                             (org-set-tags ":carried:"))
+;;                          matcher org--matcher-tags-todo-only))))))
+;; (setq org-journal-handle-old-carryover 'my-old-carryover)
+
+;; I.. don't know what this comes from
+(setq org-agenda-text-search-extra-files '(agenda-archives))
+
 (setq org-deadline-warning-days 14
       ;; show tasks scheduled or due in next fortnight
       org-agenda-span 14
