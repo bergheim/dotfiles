@@ -32,9 +32,6 @@ window:
   # Spread additional padding evenly around the terminal content.
   #dynamic_padding: false
 
-  # Allow terminal applications to change Alacritty's window title.
-  dynamic_title: true
-
   # Window decorations
   #
   # Values for `decorations`:
@@ -150,6 +147,7 @@ custom_cursor_colors: false
 # gruvbox_dark.yaml
 # Colors (Gruvbox dark)
 colors:
+  # COLORSCHEME: gruvbox_dark.yaml
   # Default colors
   primary:
     # hard contrast: background = '0x1d2021'
@@ -159,49 +157,25 @@ colors:
 
   # Normal colors
   normal:
-    black:   '0x282828'
-    red:     '0xcc241d'
-    green:   '0x98971a'
-    yellow:  '0xd79921'
-    blue:    '0x458588'
+    black: '0x282828'
+    red: '0xcc241d'
+    green: '0x98971a'
+    yellow: '0xd79921'
+    blue: '0x458588'
     magenta: '0xb16286'
-    cyan:    '0x689d6a'
-    white:   '0xa89984'
+    cyan: '0x689d6a'
+    white: '0xa89984'
 
   # Bright colors
   bright:
-    black:   '0x928374'
-    red:     '0xfb4934'
-    green:   '0xb8bb26'
-    yellow:  '0xfabd2f'
-    blue:    '0x83a598'
+    black: '0x928374'
+    red: '0xfb4934'
+    green: '0xb8bb26'
+    yellow: '0xfabd2f'
+    blue: '0x83a598'
     magenta: '0xd3869b'
-    cyan:    '0x8ec07c'
-    white:   '0xebdbb2'
-# color_end
-
-# Visual Bell
-#
-# Any time the BEL code is received, Alacritty "rings" the visual bell. Once
-# rung, the terminal background will be set to white and transition back to the
-# default background color. You can control the rate of this transition by
-# setting the `duration` property (represented in milliseconds). You can also
-# configure the transition function by setting the `animation` property.
-#
-# Possible values for `animation`
-# `Ease`
-# `EaseOut`
-# `EaseOutSine`
-# `EaseOutQuad`
-# `EaseOutCubic`
-# `EaseOutQuart`
-# `EaseOutQuint`
-# `EaseOutExpo`
-# `EaseOutCirc`
-# `Linear`
-#
-# To completely disable the visual bell, set its duration to 0.
-#
+    cyan: '0x8ec07c'
+    white: '0xebdbb2'
 bell:
   animation: EaseOutExpo
   duration: 0
@@ -215,8 +189,8 @@ mouse:
   # The `double_click` and `triple_click` settings control the time
   # alacritty should wait for accepting multiple clicks as one double
   # or triple click.
-  double_click: { threshold: 300 }
-  triple_click: { threshold: 300 }
+  double_click: {threshold: 300}
+  triple_click: {threshold: 300}
   # If this is `true`, the cursor is temporarily hidden when typing.
   hide_when_typing: true
 
@@ -258,7 +232,7 @@ mouse:
 # - PasteSelection
 # - Copy (TODO)
 mouse_bindings:
-  - { mouse: Middle, action: PasteSelection }
+  - {mouse: Middle, action: PasteSelection}
 
 selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
@@ -339,55 +313,55 @@ live_config_reload: true
 # (e.g. "\x1b[5~") is? Open another terminal (like xterm) without tmux,
 # then run `showkey -a` to get the sequence associated to a key combination.
 key_bindings:
-  - { key: Paste,                                action: Paste          }
-  - { key: Copy,                                 action: Copy           }
-  - { key: L,         mods: Control,             action: ClearLogNotice }
-  - { key: L,         mods: Control, mode: ~Vi,  chars: "\x0c"          }
-  - { key: PageUp,    mods: Shift,   mode: ~Alt, action: ScrollPageUp,  }
-  - { key: PageDown,  mods: Shift,   mode: ~Alt, action: ScrollPageDown }
-  - { key: Home,      mods: Shift,   mode: ~Alt, action: ScrollToTop,   }
-  - { key: End,       mods: Shift,   mode: ~Alt, action: ScrollToBottom }
+  - {key: Paste, action: Paste}
+  - {key: Copy, action: Copy}
+  - {key: L, mods: Control, action: ClearLogNotice}
+  - {key: L, mods: Control, mode: ~Vi, chars: "\f"}
+  - {key: PageUp, mods: Shift, mode: ~Alt, action: ScrollPageUp}
+  - {key: PageDown, mods: Shift, mode: ~Alt, action: ScrollPageDown}
+  - {key: Home, mods: Shift, mode: ~Alt, action: ScrollToTop}
+  - {key: End, mods: Shift, mode: ~Alt, action: ScrollToBottom}
 
   # Vi Mode
-  - { key: Space,  mods: Shift|Control, mode: Vi, action: ScrollToBottom          }
-  - { key: Space,  mods: Shift|Control,           action: ToggleViMode            }
-  - { key: Escape,                      mode: Vi, action: ClearSelection          }
-  - { key: I,                           mode: Vi, action: ScrollToBottom          }
-  - { key: I,                           mode: Vi, action: ToggleViMode            }
-  - { key: Y,      mods: Control,       mode: Vi, action: ScrollLineUp            }
-  - { key: E,      mods: Control,       mode: Vi, action: ScrollLineDown          }
-  - { key: G,                           mode: Vi, action: ScrollToTop             }
-  - { key: G,      mods: Shift,         mode: Vi, action: ScrollToBottom          }
-  - { key: B,      mods: Control,       mode: Vi, action: ScrollPageUp            }
-  - { key: F,      mods: Control,       mode: Vi, action: ScrollPageDown          }
-  - { key: U,      mods: Control,       mode: Vi, action: ScrollHalfPageUp        }
-  - { key: D,      mods: Control,       mode: Vi, action: ScrollHalfPageDown      }
-  - { key: Y,                           mode: Vi, action: Copy                    }
-  - { key: Y,                           mode: Vi, action: ClearSelection          }
-  - { key: Copy,                        mode: Vi, action: ClearSelection          }
-  - { key: V,                           mode: Vi, action: ToggleNormalSelection   }
-  - { key: V,      mods: Shift,         mode: Vi, action: ToggleLineSelection     }
-  - { key: V,      mods: Control,       mode: Vi, action: ToggleBlockSelection    }
-  - { key: V,      mods: Alt,           mode: Vi, action: ToggleSemanticSelection }
-  - { key: Return,                      mode: Vi, action: Open                    }
-  - { key: K,                           mode: Vi, action: Up                      }
-  - { key: J,                           mode: Vi, action: Down                    }
-  - { key: H,                           mode: Vi, action: Left                    }
-  - { key: L,                           mode: Vi, action: Right                   }
-  - { key: Up,                          mode: Vi, action: Up                      }
-  - { key: Down,                        mode: Vi, action: Down                    }
-  - { key: Left,                        mode: Vi, action: Left                    }
-  - { key: Right,                       mode: Vi, action: Right                   }
-  - { key: Key0,                        mode: Vi, action: First                   }
-  - { key: Key4,   mods: Shift,         mode: Vi, action: Last                    }
-  - { key: Key6,   mods: Shift,         mode: Vi, action: FirstOccupied           }
-  - { key: H,      mods: Shift,         mode: Vi, action: High                    }
-  - { key: M,      mods: Shift,         mode: Vi, action: Middle                  }
-  - { key: L,      mods: Shift,         mode: Vi, action: Low                     }
-  - { key: B,                           mode: Vi, action: SemanticLeft            }
-  - { key: W,                           mode: Vi, action: SemanticRight           }
-  - { key: E,                           mode: Vi, action: SemanticRightEnd        }
-  - { key: B,      mods: Shift,         mode: Vi, action: WordLeft                }
-  - { key: W,      mods: Shift,         mode: Vi, action: WordRight               }
-  - { key: E,      mods: Shift,         mode: Vi, action: WordRightEnd            }
-  - { key: Key5,   mods: Shift,         mode: Vi, action: Bracket                 }
+  - {key: Space, mods: Shift|Control, mode: Vi, action: ScrollToBottom}
+  - {key: Space, mods: Shift|Control, action: ToggleViMode}
+  - {key: Escape, mode: Vi, action: ClearSelection}
+  - {key: I, mode: Vi, action: ScrollToBottom}
+  - {key: I, mode: Vi, action: ToggleViMode}
+  - {key: Y, mods: Control, mode: Vi, action: ScrollLineUp}
+  - {key: E, mods: Control, mode: Vi, action: ScrollLineDown}
+  - {key: G, mode: Vi, action: ScrollToTop}
+  - {key: G, mods: Shift, mode: Vi, action: ScrollToBottom}
+  - {key: B, mods: Control, mode: Vi, action: ScrollPageUp}
+  - {key: F, mods: Control, mode: Vi, action: ScrollPageDown}
+  - {key: U, mods: Control, mode: Vi, action: ScrollHalfPageUp}
+  - {key: D, mods: Control, mode: Vi, action: ScrollHalfPageDown}
+  - {key: Y, mode: Vi, action: Copy}
+  - {key: Y, mode: Vi, action: ClearSelection}
+  - {key: Copy, mode: Vi, action: ClearSelection}
+  - {key: V, mode: Vi, action: ToggleNormalSelection}
+  - {key: V, mods: Shift, mode: Vi, action: ToggleLineSelection}
+  - {key: V, mods: Control, mode: Vi, action: ToggleBlockSelection}
+  - {key: V, mods: Alt, mode: Vi, action: ToggleSemanticSelection}
+  - {key: Return, mode: Vi, action: Open}
+  - {key: K, mode: Vi, action: Up}
+  - {key: J, mode: Vi, action: Down}
+  - {key: H, mode: Vi, action: Left}
+  - {key: L, mode: Vi, action: Right}
+  - {key: Up, mode: Vi, action: Up}
+  - {key: Down, mode: Vi, action: Down}
+  - {key: Left, mode: Vi, action: Left}
+  - {key: Right, mode: Vi, action: Right}
+  - {key: Key0, mode: Vi, action: First}
+  - {key: Key4, mods: Shift, mode: Vi, action: Last}
+  - {key: Key6, mods: Shift, mode: Vi, action: FirstOccupied}
+  - {key: H, mods: Shift, mode: Vi, action: High}
+  - {key: M, mods: Shift, mode: Vi, action: Middle}
+  - {key: L, mods: Shift, mode: Vi, action: Low}
+  - {key: B, mode: Vi, action: SemanticLeft}
+  - {key: W, mode: Vi, action: SemanticRight}
+  - {key: E, mode: Vi, action: SemanticRightEnd}
+  - {key: B, mods: Shift, mode: Vi, action: WordLeft}
+  - {key: W, mods: Shift, mode: Vi, action: WordRight}
+  - {key: E, mods: Shift, mode: Vi, action: WordRightEnd}
+  - {key: Key5, mods: Shift, mode: Vi, action: Bracket}
