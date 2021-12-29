@@ -256,3 +256,6 @@
                                :file +org-capture-central-project-changelog-file))
                    ))))
 
+;; TODO: why is this changed?
+(setq org-protocol-default-template-key "p")
+

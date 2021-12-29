@@ -37,6 +37,10 @@
   (let ((org-mu4e-link-query-in-headers-mode t))
     (call-interactively 'org-store-link)))
 
+;; This makes mu4e buffers more prominent. Read doom-real-buffer-p
+;; (add-hook 'mu4e-headers-mode-hook #'doom-mark-buffer-as-real-h)
+;; (add-hook 'mu4e-view-mode-hook #'doom-mark-buffer-as-real-h)
+
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
