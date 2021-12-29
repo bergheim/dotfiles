@@ -145,7 +145,9 @@
   (defengine duckduckgo
     "https://duckduckgo.com/?q=%s"
     :keybinding "s"))
+
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
+
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
