@@ -54,6 +54,9 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
 
+;; use visible buffer, not just the current line
+(setq evil-snipe-scope 'visible)
+
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
