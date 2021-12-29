@@ -49,6 +49,12 @@
       doom-big-font (font-spec :family "Fira Code" :size 30)
       doom-variable-pitch-font (font-spec :family "Fira Code" :size 26))
 
+;; enlarge numbers for ace-window
+(custom-set-faces!
+  '(aw-leading-char-face
+    :foreground "white" :background "red"
+    :weight bold :height 2.5 :box (:line-width 10 :color "red")))
+
 (when IS-LINUX
   (font-put doom-font :weight 'semi-light))
 (when IS-MAC
@@ -126,9 +132,9 @@
             (goto-char pt)
             (funcall (intern (format "+lookup/%s" fn)) identifier arg)))))
 
-(require 'winum)
-(winum-mode)
-
+;; what the fuck is winum
+;; (require 'winum)
+;; (winum-mode)
 
 (load! "colors")
 (load! "keybindings")
