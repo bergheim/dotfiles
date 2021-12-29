@@ -11,6 +11,7 @@ Create Near
 # https://wiki.archlinux.org/index.php/Isync#Emails_on_remote_server_have_the_wrong_date
 CopyArrivalDate yes
 
+Sync All # already global default
 
 # Neptune email
 # ----------
@@ -35,14 +36,12 @@ Channel neptune-inbox
     Far :neptune-remote:
     Near :neptune-local:
     Patterns "INBOX" "Sent Items" "Drafts" "Deleted Items" "Archive"
-    Sync All
     Expunge Both
 
 Channel neptune
     Far :neptune-remote:
     Near :neptune-local:
     Patterns *
-    Sync All
     Expunge Both
 
 # glvortex account
@@ -71,7 +70,6 @@ Channel glvortex-inbox
     Near :glvortex-local:
     # this setup ignores all mail because I do not want all the email lists etc..
     Patterns "INBOX" "Archive" "Spam" "Sent" "Trash"
-    Sync All
     Expunge Both # sync changes like delete to server
 
 Channel glvortex
@@ -79,7 +77,6 @@ Channel glvortex
     Near :glvortex-local:
     Patterns * !"Labels/*" !"Folders/*" !"All Mail"
     Expunge Both
-    Sync All
 
 
 # gmail account
