@@ -19,6 +19,10 @@
 ;; TODO: add ispell-local-dictionary
 (setq ispell-dictionary "en")
 
+;; default is 1 second which is a bit slow
+(setq which-key-idle-delay 0.3)
+;; (which-key-mode 1)
+
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
 
