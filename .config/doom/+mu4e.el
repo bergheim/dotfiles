@@ -22,6 +22,21 @@
          msgid (and (eq major-mode 'mu4e-view-mode)
                     (not (eq mu4e-split-view 'single-window))))))))
 
+(defun bergheim-mu4e-read-later (msg)
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "el"))
+
+(defun bergheim-mu4e-follow-up (msg)
+  (interactive)
+  (call-interactively 'org-store-link)
+  (org-capture nil "ef"))
+
+(defun bergheim-mu4e-store-link-to-query ()
+  (interactive)
+  (let ((org-mu4e-link-query-in-headers-mode t))
+    (call-interactively 'org-store-link)))
+
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
@@ -248,6 +263,12 @@
 
 (add-to-list 'mu4e-headers-actions
              '("narrow to sender" . bergheim-mu4e-narrow-this-sender) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("Follow up" . bergheim-mu4e-follow-up) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("read later" . bergheim-mu4e-read-later) t)
 
 ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
 
