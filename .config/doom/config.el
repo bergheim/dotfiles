@@ -113,6 +113,19 @@
         ;; show the abbreviated path for files, not just project relative
         ivy-rich-path-style 'abbrev))
 
+;; this is a hack that allows us to use lookups to other windows
+;; https://github.com/hlissner/doom-emacs/issues/3397
+(dolist (fn '(definition references))
+  (fset (intern (format "+lookup/%s-other-window" fn))
+        (lambda (identifier &optional arg)
+          "TODO"
+          (interactive (list (doom-thing-at-point-or-region)
+                             current-prefix-arg))
+          (let ((pt (point)))
+            (switch-to-buffer-other-window (current-buffer))
+            (goto-char pt)
+            (funcall (intern (format "+lookup/%s" fn)) identifier arg)))))
+
 (require 'winum)
 (winum-mode)
 
