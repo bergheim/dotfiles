@@ -115,7 +115,7 @@ Channel gmail-inbox
     Far :gmail-remote:
     Near :gmail-local:
     # Just sync things that operations on an email can affect
-    Patterns "Archives" "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/Drafts" !"[Gmail]/Trash"
+    Patterns "Archives" "INBOX" "[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
 
 Channel gmail-trash
@@ -123,11 +123,21 @@ Channel gmail-trash
     Near :gmail-local:"Trash"
     Expunge Both
 
+Channel gmail-sent
+    Far :gmail-remote:"[Gmail]/Sent Mail"
+    Near :gmail-local:"Sent"
+    Expunge Both
+
+Channel gmail-drafts
+    Far :gmail-remote:"[Gmail]/Drafts"
+    Near :gmail-local:"Drafts"
+    Expunge Both
+
 Channel gmail
     Far :gmail-remote:
     Near :gmail-local:
     # Patterns *
-    Patterns  "Archives" "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/Drafts" !"[Gmail]/Trash"
+    Patterns  "Archives" "INBOX" "[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
 
 Group inbox
@@ -137,3 +147,5 @@ Group inbox
     Channel glvortex-inbox
     Channel gmail-inbox
     Channel gmail-trash
+    Channel gmail-sent
+    Channel gmail-drafts
