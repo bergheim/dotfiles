@@ -114,6 +114,12 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws0 "0"
 
+exec_always --no-startup-id i3-scratchterm-toggle &
+bindsym $mod+grave [title="i3termscratchpad"] scratchpad show, resize set 3546 1440, move position center
+for_window [title="i3termscratchpad"] border none
+for_window [title="i3termscratchpad"] floating enable sticky disable
+for_window [title="i3termscratchpad"] move scratchpad
+
 bindsym $mod+Shift+comma    move scratchpad
 bindsym $mod+comma          scratchpad show
 
@@ -311,9 +317,7 @@ assign [class="^Chromium$"] $ws4
 
 # {{{ automatically starting applications on i3 startup
 # exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
-# exec --no-startup-id emacs --daemon && emacsclient -c
   exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-  exec_always --no-startup-id tilda &
 # }}}
 
 # dont tile popups
