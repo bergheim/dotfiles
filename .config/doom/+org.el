@@ -48,6 +48,19 @@
       org-habit-graph-column 60
 
       +org-capture-todo-file "inbox.org"
+
+      ;; include tags from all agenda files
+      org-complete-tags-always-offer-all-agenda-tags t
 )
+
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)"
+                  "INPROGRESS(i!)"
+                  "NEXT(n)"
+                  "WAITING(w@/!)"
+                  "SOMEDAY(s!)"
+                  "|" "DONE(d@)" "CANCELLED(c@/!)")
+        (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")))
 
