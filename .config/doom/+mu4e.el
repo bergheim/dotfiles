@@ -13,11 +13,14 @@
 
   (let (email)
     (setq email (cdr (car (mu4e-message-field-at-point :from))))
+    (if (equal current-prefix-arg nil) ; no C-u
+        (setq query-string "NOT maildir:/Trash/ AND (from:%s or to:%s)")
+        (setq query-string "(from:%s or to:%s)"))
 
     (let ((msgid (mu4e-message-field msg :message-id)))
       (when msgid
         (mu4e-headers-search
-         (format "(from:%s or to:%s)" email email)
+         (format query-string email email)
          nil nil nil
          msgid (and (eq major-mode 'mu4e-view-mode)
                     (not (eq mu4e-split-view 'single-window))))))))
