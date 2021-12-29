@@ -46,7 +46,6 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-(package! winum) ;; TODO not needed bco window-select pkg
 (package! org-mru-clock)
 
 (package! counsel-org-clock)
