@@ -51,7 +51,7 @@ font-4 = Weather\Icons:pixelsize=16;1
 modules-left = bspwm i3
 ;modules-left = xworkspaces
 modules-center = xwindow
-modules-right = xbacklight notice org-mode spotify yr-weather memory cpu eth battery temperature date xkeyboard pulseaudio
+modules-right = xbacklight notice org-mode spotify memory cpu eth battery temperature date xkeyboard pulseaudio
 
 tray-position = right
 tray-padding = 5
