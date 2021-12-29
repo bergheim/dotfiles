@@ -1,6 +1,6 @@
 ;;; ~/.config/doom/+mu4e.el -*- lexical-binding: t; -*-
 
-(defun bergheim-mu4e-filter-this-message (_)
+(defun bergheim-mu4e-narrow-this-sender (_)
   "Quickly narrow view to emails sent from the selected email"
 
   ;; TODO: get this to work. msg contains :from! No need to use message field at point..
@@ -247,7 +247,7 @@
              '("find all from" . bergheim-mu4e-relate-this-message) t)
 
 (add-to-list 'mu4e-headers-actions
-             '("narrow to sender" . bergheim-mu4e-filter-this-message) t)
+             '("narrow to sender" . bergheim-mu4e-narrow-this-sender) t)
 
 ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
 
