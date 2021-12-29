@@ -35,7 +35,7 @@ MaildirStore neptune-local
 Channel neptune-inbox
     Far :neptune-remote:
     Near :neptune-local:
-    Patterns "INBOX" "Sent Items" "Drafts" "Archive"
+    Patterns "INBOX" "Drafts" "Archive"
     Expunge Both
 
 Channel neptune-trash
@@ -43,10 +43,15 @@ Channel neptune-trash
     Near :neptune-local:"Trash"
     Expunge Both
 
+Channel neptune-sent
+    Far :neptune-remote:"Sent Items"
+    Near :neptune-local:"Sent"
+    Expunge Both
+
 Channel neptune
     Far :neptune-remote:
     Near :neptune-local:
-    Patterns * !"Deleted Items"
+    Patterns * !"Deleted Items" !"Sent Items"
     Expunge Both
 
 # glvortex account
@@ -128,6 +133,7 @@ Channel gmail
 Group inbox
     Channel neptune-inbox
     Channel neptune-trash
+    Channel neptune-sent
     Channel glvortex-inbox
     Channel gmail-inbox
     Channel gmail-trash
