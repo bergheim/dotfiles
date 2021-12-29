@@ -36,10 +36,15 @@
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/Inbox/"))
 
+;;;autoload
+(defun bergheim-email-sent()
+  (interactive)
+  (mu4e-headers-search-bookmark "maildir:/Sent/"))
+
 ;;;###autoload
 (defun bergheim-email-trash()
   (interactive)
-  (mu4e-headers-search-bookmark "maildir:/glvortex/Trash OR maildir:/gmail/[Gmail].Trash OR maildir:\"/neptune/Deleted Items\""))
+  (mu4e-headers-search-bookmark "maildir:/Trash/"))
 
 ;;;###autoload
 (defun bergheim-email-work-inbox()

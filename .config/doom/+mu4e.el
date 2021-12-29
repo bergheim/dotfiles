@@ -189,14 +189,14 @@
 
                 (mu4e-compose-format-flowed . t)
 
-                (mu4e-sent-folder   . "/neptune/Sent Items")
-                (mu4e-trash-folder  . "/neptune/Deleted Items")
+                (mu4e-sent-folder   . "/neptune/Sent")
+                (mu4e-trash-folder  . "/neptune/Trash")
                 (mu4e-drafts-folder . "/neptune/Drafts")
                 (mu4e-refile-folder . "/neptune/Archive")
 
                 (mu4e-maildir-shortcuts . ( ("/neptune/Inbox"         . ?i)
-                                            ("/neptune/Sent Items"    . ?s)
-                                            ("/neptune/Deleted Items" . ?t)
+                                            ("/neptune/Sent"    . ?s)
+                                            ("/neptune/Trash" . ?t)
                                             ("/neptune/Drafts"        . ?d)
                                             ("/neptune/Archive"       . ?a)
                                             ))))
@@ -212,15 +212,15 @@
 
                 (mu4e-compose-format-flowed . t)
 
-                (mu4e-sent-folder   . "/gmail/[Gmail].Sent Mail")
-                (mu4e-trash-folder  . "/gmail/[Gmail].Trash")
-                (mu4e-drafts-folder . "/gmail/[Gmail].Drafts")
-                (mu4e-refile-folder . "/gmail/[Gmail].Archive")
+                (mu4e-sent-folder   . "/gmail/Sent")
+                (mu4e-trash-folder  . "/gmail/Trash")
+                (mu4e-drafts-folder . "/gmail/Drafts")
+                (mu4e-refile-folder . "/gmail/Archives")
 
                 (mu4e-maildir-shortcuts . ( ("/gmail/Inbox"            . ?i)
-                                            ("/gmail/[Gmail].Sent Mail" . ?s)
-                                            ("/gmail/[Gmail].Trash"       . ?t)
-                                            ("/gmail/[Gmail].Drafts"    . ?d)
+                                            ("/gmail/Sent" . ?s)
+                                            ("/gmail/Trash"       . ?t)
+                                            ("/gmail/Drafts"    . ?d)
                                             ))))
        (make-mu4e-context
         :name "glvortex"
