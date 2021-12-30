@@ -64,3 +64,5 @@
 ;; allows you to search in a browser from emacs
 ;; (package! engine-mode)
 (package! restclient)
+
+(package! telega)
