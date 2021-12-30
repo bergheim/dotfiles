@@ -63,7 +63,7 @@
 
 (defun bergheim-mu4e-store-link-to-query ()
   (interactive)
-  (let ((org-mu4e-link-query-in-headers-mode t))
+  (let ((mu4e-org-link-query-in-headers-mode t))
     (call-interactively 'org-store-link)))
 
 ;; This makes mu4e buffers more prominent. Read doom-real-buffer-p
@@ -147,7 +147,7 @@
 
 (setq mu4e-bookmarks
       '((:name  "Unread messages"
-                :query "flag:unread AND NOT flag:trashed"
+                :query "flag:unread AND NOT (flag:trashed OR maildir:/Trash/)"
                 :key ?u)
 
         (:name  "Inbox work"
@@ -175,20 +175,20 @@
                 :key ?Q)
 
         (:name  "Support"
-                :query "to:thomas.bergheim@neptune-software.com AND from:no-reply@neptune-software.com AND maildir:/neptune/Inbox"
+                :query (concat "to:" bergheim/neptune/email " AND from:no-reply@neptune-software.com AND maildir:/neptune/Inbox")
                 :key ?s)
 
         (:name "Today's messages"
-               :query "date:1d..now"
+               :query "maildir:/Inbox/ AND (date:1d..now)"
                :key ?t)
 
         (:name "Today's unhandled messages"
-               :query "date:1d..now AND maildir:/Inbox/ AND flag:unread"
-               :key ?i)
+               :query "maildir:/Inbox/ AND (date:1d..now OR flag:unread)"
+               :key ?T)
 
-        (:name "Last 7 days"
-               :query "date:7d..now AND maildir:/Inbox/"
-               :key ?w)
+        (:name "Last week"
+               :query "maildir:/Inbox/ AND date:71..now"
+               :key ?W)
 
         (:name "Messages with images"
                ;; everybody has some huge image in their sig. sigh..
@@ -200,9 +200,17 @@
                :query "flag:attach AND size:50K..1000M"
                :key ?a)
 
-        (:name "All sent items"
+        (:name "Trash"
+               :query "maildir:/Trash/ OR flag:trashed"
+               :key ?x)
+
+        (:name "Focus inbox"
+               :query "(maildir:/Inbox/ AND date:1w..now AND flag:unread) OR flag:flagged"
+               :key ?I)
+
+        (:name "Sent items"
                :query "maildir:/Sent/"
-               :key ?o)))
+               :key ?S)))
 
 (setq mu4e-contexts
       (list

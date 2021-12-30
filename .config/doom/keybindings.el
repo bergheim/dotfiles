@@ -48,18 +48,17 @@
       "m" '=mu4e
       ;; TODO figure out how to load mu4e if this is called
       (:desc "Compose" "c" #'+mu4e/compose)
-      (:desc "Find" "f" #'mu4e-headers-search)
-      (:desc "Htmlize this" "h" #'org-mime-htmlize)
-      (:desc "Send this" "s" #'org-mime-org-subtree-htmlize)
-      (:desc "Edit in org-mode" "e" #'org-mime-edit-mail-in-org-mode)
-      (:desc "Todays email" "t" 'bergheim-email-today)
-      (:desc "Todays email or unread" "T" 'bergheim-email-today-or-unread)
-      (:desc "Todays work email" "w" 'bergheim-email-work-inbox)
-      (:desc "Todays personal email" "p" 'bergheim-email-personal-inbox)
+      (:desc "Search" "s" #'mu4e-headers-search)
+      (:desc "Sent" "S" 'bergheim-email-sent)
+      (:desc "Today's email" "t" 'bergheim-email-today)
+      (:desc "Today's unhandled email" "T" 'bergheim-email-today-or-unread)
+      (:desc "Today's work email" "w" 'bergheim-email-work-inbox)
+      (:desc "Today's personal email" "p" 'bergheim-email-personal-inbox)
       (:desc "This weeks email" "W" 'bergheim-email-week)
       (:desc "Update index" "u" 'mu4e-update-index)
       (:desc "Update index and mail" "U" 'mu4e-update-mail-and-index)
       (:desc "Trash" "x" 'bergheim-email-trash)
+      (:desc "Important" "I" 'bergheim-email-important)
       (:desc "Inbox" "i" 'bergheim-email-inbox))
 
      "e" 'elfeed
