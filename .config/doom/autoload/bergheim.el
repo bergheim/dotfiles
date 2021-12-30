@@ -36,7 +36,7 @@
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/Inbox/"))
 
-;;;autoload
+;;;###autoload
 (defun bergheim-email-sent()
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/Sent/"))
@@ -44,7 +44,12 @@
 ;;;###autoload
 (defun bergheim-email-trash()
   (interactive)
-  (mu4e-headers-search-bookmark "maildir:/Trash/"))
+  (mu4e-headers-search-bookmark "maildir:/Trash/ OR flag:trashed"))
+
+;;;###autoload
+(defun bergheim-email-important()
+  (interactive)
+  (mu4e-headers-search-bookmark "(maildir:/Inbox/ AND date:1w..now AND flag:unread) OR flag:flagged"))
 
 ;;;###autoload
 (defun bergheim-email-work-inbox()
