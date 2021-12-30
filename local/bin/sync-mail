@@ -12,10 +12,15 @@ else
     mbsync -a;
 fi
 
-NEW_MAILS=$(find "$MAIL_DIR/neptune/Inbox/new/" "$MAIL_DIR/glvortex/Inbox/new/" "$MAIL_DIR/gmail/Inbox/new/" -type f -newer "$MAIL_SYNC_FILE" 2> /dev/null)
+# something like this would work if we could index mu behind the scenes. but if
+# we do that, we will still update mu4e which is a bit annoying..
+# LAST_SYNC=$(date -u -r ${MAIL_SYNC_FILE} +"%Y-%m-%dT%H:%M:%S%Z")
+# NEW_MAILS_COUNT=$(mu find "(maildir:/Inbox/ OR maildir:/Trash/ OR maildir:/Archive/ OR maildir:/Sent/) AND (date:${LAST_SYNC}..now)" 2>/dev/null | wc -l)
+
+NEW_MAILS=$(find ${MAIL_DIR}/*/{Inbox,Sent,Archive,Trash,Drafts}/new/ -type f -newer ${MAIL_SYNC_FILE})
 NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
 
-echo "Num new mails $NEW_MAILS_COUNT"
+echo "Num new mails ${NEW_MAILS_COUNT}"
 
 if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
     /usr/bin/emacsclient -e '(mu4e-update-index)' 2> /dev/null
