@@ -77,8 +77,7 @@
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil
 
-      ;; TODO confirm that these are only local images (trackers etc)
-      mu4e-view-show-images nil
+      mu4e-view-show-images t
       mu4e-view-show-addresses t
       ;; this fixes some sync issues with mbsync and office365
       mu4e-change-filenames-when-moving t
