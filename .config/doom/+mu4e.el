@@ -8,6 +8,32 @@
   ;; (mu4e-headers-search-narrow (concat "from:" (cdr (first (msg :from))))))
   (mu4e-headers-search-narrow (concat "from:" (cdr (car (mu4e-message-field-at-point :from))))))
 
+;; if this is not emacs-fu I don't know what is
+;; TODO: perhaps add universal for top domain and the whole domain?
+(defun bergheim-get-domain (email)
+  "Get the main domain of an email address"
+  (let* ((domain (car (cdr (split-string email "@"))))
+        (parts (reverse (split-string domain "\\."))))
+       (format "%s.%s" (nth 1 parts) (nth 0 parts))))
+
+(defun bergheim-mu4e-relate-this-domain (msg)
+  "Quickly find all mails sent to or from this domain"
+
+  (let (email)
+    (setq email (cdr (car (mu4e-message-field-at-point :from))))
+    (if (equal current-prefix-arg nil) ; no C-u
+        (setq query-string "NOT maildir:/Trash/ AND (from:%s or to:%s)")
+        (setq query-string "(from:%s or to:%s)"))
+
+    (let ((msgid (mu4e-message-field msg :message-id))
+          (domain (bergheim-get-domain email)))
+      (when msgid
+        (mu4e-headers-search
+         (format query-string domain domain)
+         nil nil nil
+         msgid (and (eq major-mode 'mu4e-view-mode)
+                    (not (eq mu4e-split-view 'single-window))))))))
+
 (defun bergheim-mu4e-relate-this-message (msg)
   "Quickly find all mails sent to or from this address"
 
@@ -266,7 +292,10 @@
   :n "T" #'mu4e-headers-mark-thread))
 
 (add-to-list 'mu4e-headers-actions
-             '("find all from" . bergheim-mu4e-relate-this-message) t)
+             '("find email" . bergheim-mu4e-relate-this-message) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("domain" . bergheim-mu4e-relate-this-domain) t)
 
 (add-to-list 'mu4e-headers-actions
              '("narrow to sender" . bergheim-mu4e-narrow-this-sender) t)
