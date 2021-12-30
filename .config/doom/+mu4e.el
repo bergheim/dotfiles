@@ -134,7 +134,11 @@
       mu4e-context-policy 'pick-first
       mu4e-compose-context-policy 'ask
 
+      ;; this makes html emails easier to read
+      shr-color-visible-luminance-min 80
+
       ;; notification settings
+      ;; TODO: move this to the sync script?
       ;; mu4e-alert-set-window-urgency nil
       ;; mu4e-alert-interesting-mail-query (concat "flag:unread"
       ;;                                           " AND NOT flag:trashed"
@@ -205,9 +209,6 @@
       (list
        (make-mu4e-context
         :name "work"
-        ;; :match-func (lambda (msg)
-        ;;               (when msg
-        ;;                 (mu4e-message-maildir-matches msg "^/neptune/")))
         :match-func (lambda (msg)
                       (when msg
                         (string-match-p "^/neptune" (mu4e-message-field msg :maildir))))
@@ -230,7 +231,7 @@
                                             ("/neptune/Archive"       . ?a)
                                             ))))
        (make-mu4e-context
-        :name "public"
+        :name "gmail"
         :match-func (lambda (msg)
                       (when msg
                         (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
