@@ -28,7 +28,7 @@
 
 # typeset -U path
 # path=(~/local/bin $path[@])
-export PATH=~/local/bin:~/.local/bin:$PATH
+export PATH=~/local/bin:~/.local/bin:~/.cargo/bin:$PATH
 
 export RANGER_LOAD_DEFAULT_RC=FALSE
 export PANEL_FIFO="/tmp/panel-fifo"
@@ -40,4 +40,6 @@ export VISUAL="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
 
 export MONITOR_PRIMARY="DP-0"
-export MONITOR_SECONDARY="HDMI-0"
+export MONITOR_SECONDARY="DP-2"
+
+export GPG_TTY=$(tty)
