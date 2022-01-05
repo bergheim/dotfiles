@@ -187,7 +187,7 @@
                :key ?T)
 
         (:name "Last week"
-               :query "maildir:/Inbox/ AND date:71..now"
+               :query "maildir:/Inbox/ AND date:1w..now"
                :key ?W)
 
         (:name "Messages with images"
