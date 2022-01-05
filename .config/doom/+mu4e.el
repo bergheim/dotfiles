@@ -111,7 +111,7 @@
       mu4e-headers-fields '((:account      .  8)
                             (:human-date   . 14)
                             (:flags        .  4)
-                            (:maildir      .  20)
+                            (:maildir      .  17)
                             ;; (:mailing-list . 10)
                             (:from         . 25)
                             (:subject      ))
