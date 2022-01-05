@@ -22,8 +22,8 @@
   (let (email)
     (setq email (cdr (car (mu4e-message-field-at-point :from))))
     (if (equal current-prefix-arg nil) ; no C-u
-        (setq query-string "NOT maildir:/Trash/ AND (from:%s or to:%s)")
-        (setq query-string "(from:%s or to:%s)"))
+        (setq query-string "NOT maildir:/Trash/ AND (from:/.*%s$/ or to:/.*%s$/)")
+        (setq query-string "(from:/.*%s$/ or to:/.*%s$/)"))
 
     (let ((msgid (mu4e-message-field msg :message-id))
           (domain (bergheim-get-domain email)))
