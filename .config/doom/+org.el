@@ -27,6 +27,8 @@
 ;;                          matcher org--matcher-tags-todo-only))))))
 ;; (setq org-journal-handle-old-carryover 'my-old-carryover)
 
+(add-to-list 'org-modules 'org-habit)
+
 ;; I.. don't know what this comes from
 (setq org-agenda-text-search-extra-files '(agenda-archives))
 
