@@ -286,3 +286,19 @@
 ;; TODO: why is this changed?
 (setq org-protocol-default-template-key "p")
 
+
+(defun bergheim/org-clock-status ()
+  "Return the org time status - including any pomodoro activity"
+  (if (org-pomodoro-active-p)
+      (cl-case org-pomodoro-state
+        (:pomodoro
+         (format "Pomo: %d minutes - %s" (/ (org-pomodoro-remaining-seconds) 60) org-clock-heading))
+        (:short-break
+         (format "Short break time: %d minutes" (/ (org-pomodoro-remaining-seconds) 60)))
+        (:long-break
+         (format "Long break time: %d minutes" (/ (org-pomodoro-remaining-seconds) 60)))
+        (:overtime
+         (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
+    (if (org-clocking-p)
+        (format "%s - %s" (org-duration-from-minutes (org-clock-get-clocked-time)) org-clock-heading)
+      "")))
