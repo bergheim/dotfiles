@@ -301,7 +301,7 @@
 
 (defun bergheim/org-clock-status ()
   "Return the org time status - including any pomodoro activity"
-  (if (org-pomodoro-active-p)
+  (if (and (featurep! 'org-pomodoro) (org-pomodoro-active-p))
       (cl-case org-pomodoro-state
         (:pomodoro
          (format "Pomo: %d minutes - %s" (/ (org-pomodoro-remaining-seconds) 60) org-clock-heading))
