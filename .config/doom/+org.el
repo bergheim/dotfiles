@@ -79,6 +79,18 @@
 
       ;; include tags from all agenda files
       org-complete-tags-always-offer-all-agenda-tags t
+
+      ;; persist agendas and don't bury them when you hit q (gr to update)
+      ;; (setq org-agenda-sticky t)
+
+
+      ;; default all open files
+      ;; org-mru-clock-files #'org-agenda-files
+
+      ;; keep history between sessions
+      org-clock-persist 'history
+      org-mru-clock-how-many 100
+      ;; TODO: check out org-clock-persistence-insinuate
 )
 
 (advice-add 'org-refile :after 'org-save-all-org-buffers)

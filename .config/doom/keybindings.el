@@ -25,7 +25,7 @@
        "o" 'org-clock-out
        "c" 'org-capture
        "r" #'org-mru-clock-in
-       "R" #'org-mru-clock-select-recent-task
+       "R" #'org-mru-clock-goto
        "s" 'org-store-link
        "l" 'org-insert-link)
 
@@ -38,7 +38,7 @@
        "o" 'org-clock-out
        "c" 'org-capture
        "r" #'org-mru-clock-in
-       "R" #'org-mru-clock-select-recent-task)
+       "R" #'org-mru-clock-goto)
 
      (:prefix ("d" . "dotfiles")
        "d" 'find-in-dotfiles
