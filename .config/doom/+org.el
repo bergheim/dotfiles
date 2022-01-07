@@ -96,6 +96,9 @@
 )
 
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
+(advice-add #'org-todo :after (lambda (&rest _)
+                                  (org-save-all-org-buffers)))
+(add-hook 'auto-save-hook 'org-save-all-org-buffers)
 
 (setq org-todo-keywords
       '((sequence "TODO(t)"
