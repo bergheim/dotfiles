@@ -76,6 +76,8 @@
 
       +org-capture-todo-file "inbox.org"
       +org-capture-mail-file (concat org-directory "mail.org")
+      +org-capture-work-file (concat org-directory "work.org")
+      +org-capture-personal-file (concat org-directory "personal.org")
 
       ;; include tags from all agenda files
       org-complete-tags-always-offer-all-agenda-tags t
@@ -104,196 +106,177 @@
                   "|" "DONE(d@)" "CANCELLED(c@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")))
 
- (setq org-capture-templates
-          (doct `((,(format "%s\tBug" (all-the-icons-octicon "bug" :face 'all-the-icons-green :v-adjust 0.01))
-               :keys "b"
-               :file +org-capture-todo-file
-               ;; :prepend t
-               ;; :headline "Bug"
+
+;; thanks tecosaur
+(defun +doct-icon-declaration-to-icon (declaration)
+  "Convert :icon declaration to icon"
+  (let ((name (pop declaration))
+        (set  (intern (concat "all-the-icons-" (plist-get declaration :set))))
+        (face (intern (concat "all-the-icons-" (plist-get declaration :color))))
+        (v-adjust (or (plist-get declaration :v-adjust) 0.01)))
+    (apply set `(,name :face ,face :v-adjust ,v-adjust))))
+
+(defun +doct-iconify-capture-templates (groups)
+  "Add declaration's :icon to each template group in GROUPS."
+  (let ((templates (doct-flatten-lists-in groups)))
+    (setq doct-templates (mapcar (lambda (template)
+                                   (when-let* ((props (nthcdr (if (= (length template) 4) 2 5) template))
+                                               (spec (plist-get (plist-get props :doct) :icon)))
+                                     (setf (nth 1 template) (concat (+doct-icon-declaration-to-icon spec)
+                                                                    "\t"
+                                                                    (nth 1 template))))
+                                   template)
+                                 templates))))
+
+(setq doct-after-conversion-functions '(+doct-iconify-capture-templates))
+
+(setq org-capture-templates
+      (doct `(("Personal"
+               :icon ("person" :set "material" :color "green")
+               :keys "p"
+               :prepend true
+               :file +org-capture-personal-file
+               :type entry
+               :default-tags "@life"
+               :children (("Tasks"
+                           :icon ("inbox" :set "octicon" :color "yellow")
+                           :keys "t"
+                           :extra ""
+                           :clock-in t
+                           :clock-resume: t
+                           :headline "Tasks"
+                           :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
+                                      ":PROPERTIES:"
+                                      ":Created: %U"
+                                      ":END:"
+                                      ""
+                                      "%?"
+                                      ""
+                                      "%a")
+                           :children (("General Task" :keys "t"
+                                       :icon ("inbox" :set "octicon" :color "yellow")
+                                       :extra "")
+                                      ("Task with deadline" :keys "d"
+                                       :icon ("timer" :set "material" :color "orange" :v-adjust -0.1)
+                                       :extra "\nDEADLINE: %^{Deadline:}t")
+                                      ("Scheduled Task" :keys "s"
+                                       :icon ("calendar" :set "octicon" :color "orange")
+                                       :extra "\nSCHEDULED: %^{Start time:}t")))
+
+                          ("Enter a note"
+                           :icon ("sticky-note-o" :set "faicon" :color "green")
+                           :keys "n"
+                           :headline "Notes"
+                           :template ("* %?"
+                                      "%i %a"))
+
+                          ("Meeting"
+                           :icon ("repo" :set "octicon" :color "silver")
+                           :keys "m"
+                           :headline "Meetings"
+                           :clock-in t
+                           :clock-resume: t
+                           :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %^{Meeting description}} %^G:%{default-tags}:meeting:"
+                                      ":PROPERTIES:"
+                                      ":Created: %U"
+                                      ":END:"
+                                      "SCHEDULED: %^t"
+                                      ""
+                                      "%?"
+                                      ""
+                                      "%a"))))
+              ("Work"
+               :keys "w"
+               :icon ("work" :set "material" :color "yellow")
+               :prepend t
+               :file +org-capture-work-file
                :type entry
                :clock-in t
-               :clock-resume t
-               :template ("* TODO [#%^{Priority|A|B|C}] %?  %^G:bug:%{extra}"
-                          ;; "\nFrom: %a\n\n%i")
-                          "%U %i %a")
-               :children ((,(format "%s\tGeneral bug" (all-the-icons-octicon "inbox" :face 'all-the-icons-yellow :v-adjust 0.01))
+               :clock-resume: t
+               :default-tags "@work"
+               :children (("Tasks"
+                           :keys "t"
+                           :icon ("inbox" :set "octicon" :color "yellow")
+                           :headline "Tasks"
+                           :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
+                                      ":PROPERTIES:"
+                                      ":Created: %U"
+                                      ":END:"
+                                      ""
+                                      "%?"
+                                      ""
+                                      "%a")
+                           :children (("General Task" :keys "t"
+                                       :icon ("inbox" :set "octicon" :color "yellow")
+                                       :extra "")
+                                      ("Task with deadline" :keys "d"
+                                       :icon ("timer" :set "material" :color "orange" :v-adjust -0.1)
+                                       :extra "\nDEADLINE: %^{Deadline:}t")
+                                      ("Scheduled Task" :keys "s"
+                                       :icon ("calendar" :set "octicon" :color "orange")
+                                       :extra "\nSCHEDULED: %^{Start time:}t")))
+                          ("Bug"
+                           :icon ("bug" :set "octicon" :color "green")
                            :keys "b"
-                           :extra ""
-                           )
-                          (,(format "%s\tBug with deadline" (all-the-icons-material "timer" :face 'all-the-icons-orange :v-adjust -0.1))
-                           :keys "d"
-                           :extra "\nDEADLINE: %^{Deadline:}t"
-                           )
-                          (,(format "%s\tScheduled bug" (all-the-icons-octicon "calendar" :face 'all-the-icons-orange :v-adjust 0.01))
-                           :keys "s"
-                           :extra "\nSCHEDULED: %^{Start time:}t"
-                           )
-                          ))
+                           :headline "Bugs"
+                           :template ("* TODO [#%^{Priority|B|A|C}] %^{Bug description} %^G:%{default-tags}:planet9:bug:%{extra}"
+                                      ":PROPERTIES:"
+                                      ":Created: %U"
+                                      ":END:"
+                                      ""
+                                      "%?"
+                                      ""
+                                      "%a")
+                           :children (("General bug"
+                                       :icon ("inbox" :set "octicon" :color "yellow")
+                                       :keys "b"
+                                       :extra "")
+                                      ("Bug with deadline"
+                                       :icon ("timer" :set "material" :color "orange")
+                                       :keys "d"
+                                       :extra "\nDEADLINE: %^{Deadline:}t")
+                                      ("Scheduled bug"
+                                       :icon ("calendar" :set "octicon" :color "orange")
+                                       :keys "s"
+                                       :extra "\nSCHEDULED: %^{Start time:}t")))
+                          ("Meeting"
+                           :icon ("repo" :set "octicon" :color "silver")
+                           :keys "m"
+                           :headline "Meetings"
+                           :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %^{Meeting description} %^G:planet9:meeting:"
+                                      ":PROPERTIES:"
+                                      ":Created: %U"
+                                      ":END:"
+                                      "SCHEDULED: %^t"
+                                      ""
+                                      "%?"
+                                      ""
+                                      "%a"))))
 
-                  (,(format "%s\tPersonal todo" (all-the-icons-octicon "checklist" :face 'all-the-icons-green :v-adjust 0.01))
-                   :keys "t"
-                   :file +org-capture-todo-file
-                   :prepend t
-                   :headline "Inbox"
-                   :type entry
-                   :template ("* TODO %?"
-                              "%U %i %a")
-                   :clock-in t
-                   :clock-resume: t
-                   )
-                  (,(format "%s\tPersonal note" (all-the-icons-faicon "sticky-note-o" :face 'all-the-icons-green :v-adjust 0.01))
-                   :keys "n"
-                   :file +org-capture-todo-file
-                   :prepend t
-                   :headline "Inbox"
-                   :type entry
-                   :template ("* %?"
-                              "%i %a")
-                   )
-
-                  (,(format "%s\tEmail" (all-the-icons-faicon "envelope" :face 'all-the-icons-blue :v-adjust 0.01))
-                   :keys "e"
-                   :file +org-capture-mail-file
-                   :prepend t
-                   :headline "Mail"
-                   :type entry
-                   :template ("* TODO %{email-action} with %:fromname on %a"
-                              "SCHEDULED:%t"
-                              "DEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))"
-                              "%i")
-                   :children (
-                              ;; TODO can use date or date-timestamp to get the msg date
-                              (,(format "%s\tFollow up" (all-the-icons-octicon "file-text" :face 'all-the-icons-yellow :v-adjust 0.01))
-                               :keys "f"
-                               :template ("* TODO Follow up with %:fromname on %a"
-                                          "SCHEDULED:%t"
-                                          "DEADLINE: %(org-insert-time-stamp (org-read-date nil t \"+2d\"))"
-                                          "%U %i")
-                               :desc ""
-                               :headline "Follow Up"
-                               :immediate-finish t
-                               )
-                              (,(format "%s\tRead Later" (all-the-icons-octicon "file-text" :face 'all-the-icons-yellow :v-adjust 0.01))
-                               :template ("* TODO Read %a"
-                                          "SCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+6d\"))"
-                                          "%a"
-                                          "%U %i")
-                               :keys "l"
-                               :desc ""
-                               :headline "Read Later"
-                               :immediate-finish t
-                               )
-                              )
-                   )
-
-                  (,(format "%s\tInteresting" (all-the-icons-faicon "eye" :face 'all-the-icons-lcyan :v-adjust 0.01))
-                   :keys "i"
-                   :file +org-capture-todo-file
-                   :prepend t
-                   :headline "Interesting"
-                   :type entry
-                   :template ("* [ ] %{desc}%? :%{i-type}:"
-                              "%i %a")
-                   :children ((,(format "%s\tWebpage" (all-the-icons-faicon "globe" :face 'all-the-icons-green :v-adjust 0.01))
-                               :keys "w"
-                               :desc "%(org-cliplink-capture) "
-                               :i-type "read:web"
-                               )
-                              (,(format "%s\tArticle" (all-the-icons-octicon "file-text" :face 'all-the-icons-yellow :v-adjust 0.01))
-                               :keys "a"
-                               :desc ""
-                               :i-type "read:reaserch"
-                               )
-                              (,(format "%s\tInformation" (all-the-icons-faicon "info-circle" :face 'all-the-icons-blue :v-adjust 0.01))
-                               :keys "i"
-                               :desc ""
-                               :i-type "read:info"
-                               )
-                              (,(format "%s\tIdea" (all-the-icons-material "bubble_chart" :face 'all-the-icons-silver :v-adjust 0.01))
-                               :keys "I"
-                               :desc ""
-                               :i-type "idea"
-                               )))
-                  (,(format "%s\tTasks" (all-the-icons-octicon "inbox" :face 'all-the-icons-yellow :v-adjust 0.01))
-                   :keys "k"
-                   :file +org-capture-todo-file
-                   :prepend t
-                   :headline "Tasks"
-                   :type entry
-                   :template ("* TODO %? %^G%{extra}"
-                              "%i")
-                   :children ((,(format "%s\tGeneral Task" (all-the-icons-octicon "inbox" :face 'all-the-icons-yellow :v-adjust 0.01))
-                               :keys "k"
-                               :extra ""
-                               )
-                              (,(format "%s\tTask with deadline" (all-the-icons-material "timer" :face 'all-the-icons-orange :v-adjust -0.1))
-                               :keys "d"
-                               :extra "\nDEADLINE: %^{Deadline:}t"
-                               )
-                              (,(format "%s\tScheduled Task" (all-the-icons-octicon "calendar" :face 'all-the-icons-orange :v-adjust 0.01))
-                               :keys "s"
-                               :extra "\nSCHEDULED: %^{Start time:}t"
-                               )
-                              ))
-                  (,(format "%s\tMeeting" (all-the-icons-octicon "repo" :face 'all-the-icons-silver :v-adjust 0.01))
-                   :keys "m"
-                   :file +org-capture-todo-file
-                   ;; :prepend t
-                   ;; :headline "Meetings"
-                   :type entry
-                   :clock-in t
-                   :clock-resume: t
-                   :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %? %^G:meeting:"
-                              "%U %i (scheduled for %^t)")
-                   )
-                  (,(format "%s\tProject" (all-the-icons-octicon "repo" :face 'all-the-icons-silver :v-adjust 0.01))
-                   :keys "p"
-                   :prepend t
-                   :type entry
-                   :headline "Inbox"
-                   :template ("* %{time-or-todo} %?"
-                              "%i"
-                              "%a")
-                   :file ""
-                   :custom (:time-or-todo "")
-                   :children ((,(format "%s\tProject-local todo" (all-the-icons-octicon "checklist" :face 'all-the-icons-green :v-adjust 0.01))
-                               :keys "t"
-                               :time-or-todo "TODO"
-                               :file +org-capture-project-todo-file)
-                              (,(format "%s\tProject-local note" (all-the-icons-faicon "sticky-note" :face 'all-the-icons-yellow :v-adjust 0.01))
-                               :keys "n"
-                               :time-or-todo "%U"
-                               :file +org-capture-project-notes-file)
-                              (,(format "%s\tProject-local changelog" (all-the-icons-faicon "list" :face 'all-the-icons-blue :v-adjust 0.01))
-                               :keys "c"
-                               :time-or-todo "%U"
-                               :heading "Unreleased"
-                               :file +org-capture-project-changelog-file))
-                   )
-                  ("\tCentralised project templates"
-                   :keys "o"
-                   :type entry
-                   :prepend t
-                   :template ("* %{time-or-todo} %?"
-                              "%i"
-                              "%a")
-                   :children (("Project todo"
-                               :keys "t"
-                               :prepend nil
-                               :time-or-todo "TODO"
-                               :heading "Tasks"
-                               :file +org-capture-central-project-todo-file)
-                              ("Project note"
-                               :keys "n"
-                               :time-or-todo "%U"
-                               :heading "Notes"
-                               :file +org-capture-central-project-notes-file)
-                              ("Project changelog"
-                               :keys "c"
-                               :time-or-todo "%U"
-                               :heading "Unreleased"
-                               :file +org-capture-central-project-changelog-file))
-                   ))))
+              ("Active project" :keys "a"
+               :icon ("repo" :set "octicon" :color "silver")
+               :prepend t
+               :type entry
+               :headline "Inbox"
+               :template ("* %{time-or-todo} %?"
+                          "%i"
+                          "%a")
+               :file ""
+               :custom (:time-or-todo "")
+               :children (("Project-local todo" :keys "t"
+                           :icon ("checklist" :set "octicon" :color "green")
+                           :time-or-todo "TODO"
+                           :file +org-capture-project-todo-file)
+                          ("Project-local note" :keys "n"
+                           :icon ("sticky-note" :set "faicon" :color "yellow")
+                           :time-or-todo "%U"
+                           :file +org-capture-project-notes-file)
+                          ("Project-local changelog" :keys "c"
+                           :icon ("list" :set "faicon" :color "blue")
+                           :time-or-todo "%U"
+                           :heading "Unreleased"
+                           :file +org-capture-project-changelog-file)))
+              )))
 
 ;; TODO: why is this changed?
 (setq org-protocol-default-template-key "p")
