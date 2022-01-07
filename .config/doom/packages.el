@@ -66,3 +66,6 @@
 (package! restclient)
 
 (package! telega)
+
+;; this is useful for things like org repos
+(package! git-auto-commit-mode)
