@@ -59,7 +59,7 @@
 ;;;###autoload
 (defun bergheim-email-personal-inbox()
   (interactive)
-  (mu4e-headers-search-bookmark "maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox"))
+  (mu4e-headers-search-bookmark "(maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox) AND (date:1w..now OR flag:unread)"))
 
 ;;;###autoload
 (defun bergheim-email-today()
@@ -77,4 +77,4 @@
 (defun bergheim-email-today-or-unread()
   "Opens the inbox with unread and todays email"
   (interactive)
-  (mu4e-headers-search-bookmark "(date:1d..now OR flag:unread) AND maildir:/Inbox/"))
+  (mu4e-headers-search-bookmark "maildir:/Inbox/ AND (date:1d..now OR flag:unread)"))
