@@ -46,7 +46,8 @@
       ;; this either
       org-agenda-compact-blocks t
 
-      ;; org-agenda-start-on-weekday 1 ;; start on monday instead of current day
+      ;; start on monday instead of current day
+      ;; org-agenda-start-on-weekday 1
 
       ;; timestamp when we set something to done
       ;; org-log-done nil
@@ -155,11 +156,11 @@
                            :keys "t"
                            :extra ""
                            :clock-in t
-                           :clock-resume: t
+                           :clock-resume t
                            :headline "Tasks"
                            :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
                                       ":PROPERTIES:"
-                                      ":Created: %U"
+                                      ":CREATED: %U"
                                       ":END:"
                                       ""
                                       "%?"
@@ -187,10 +188,10 @@
                            :keys "m"
                            :headline "Meetings"
                            :clock-in t
-                           :clock-resume: t
                            :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %^{Meeting description}} %^G:%{default-tags}:meeting:"
+                           :clock-resume t
                                       ":PROPERTIES:"
-                                      ":Created: %U"
+                                      ":CREATED: %U"
                                       ":END:"
                                       "SCHEDULED: %^t"
                                       ""
@@ -204,7 +205,7 @@
                :file +org-capture-work-file
                :type entry
                :clock-in t
-               :clock-resume: t
+               :clock-resume t
                :default-tags "@work"
                :children (("Tasks"
                            :keys "t"
@@ -212,7 +213,7 @@
                            :headline "Tasks"
                            :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
                                       ":PROPERTIES:"
-                                      ":Created: %U"
+                                      ":CREATED: %U"
                                       ":END:"
                                       ""
                                       "%?"
@@ -233,7 +234,7 @@
                            :headline "Bugs"
                            :template ("* TODO [#%^{Priority|B|A|C}] %^{Bug description} %^G:%{default-tags}:planet9:bug:%{extra}"
                                       ":PROPERTIES:"
-                                      ":Created: %U"
+                                      ":CREATED: %U"
                                       ":END:"
                                       ""
                                       "%?"
@@ -257,7 +258,7 @@
                            :headline "Meetings"
                            :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %^{Meeting description} %^G:planet9:meeting:"
                                       ":PROPERTIES:"
-                                      ":Created: %U"
+                                      ":CREATED: %U"
                                       ":END:"
                                       "SCHEDULED: %^t"
                                       ""
