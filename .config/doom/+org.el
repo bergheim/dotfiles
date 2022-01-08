@@ -38,11 +38,21 @@
       ;;don't show tasks as scheduled if they are already shown as a deadline
       ;; org-agenda-skip-scheduled-if-deadline-is-shown t
 
+      org-agenda-skip-scheduled-if-done t
+      org-agenda-skip-deadline-if-done t
+      org-agenda-include-deadlines t
+      ;; I had this but not really sure where the difference is
+      org-agenda-block-separator nil
+      ;; this either
+      org-agenda-compact-blocks t
+
+      ;; org-agenda-start-on-weekday 1 ;; start on monday instead of current day
+
       ;; timestamp when we set something to done
       ;; org-log-done nil
       org-agenda-start-with-log-mode t
-      org-log-into-drawer t
 
+      org-log-into-drawer t
 
       org-journal-date-format "%B %d, %Y - %A"
       org-journal-file-format "%Y%m.org"
@@ -51,7 +61,6 @@
       ;; org-journal-dir "~/org/journal/"
 
       ;; org-default-notes-file "~/org/inbox.org"
-      ;; org-agenda-start-on-weekday 1 ;; start on monday instead of current day
       ;; org-use-fast-todo-selection t
 
       ;; org-refile-targets '((nil :maxlevel . 4)
