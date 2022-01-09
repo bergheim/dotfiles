@@ -7,8 +7,10 @@
    "3" 'winum-select-window-3
    "4" 'winum-select-window-4
 
-   (:prefix ("a" . "custom bindings")
+   (:desc "Open journal"
+    "n j o" #'org-journal-open-current-journal-file)
 
+   (:prefix ("d" . "custom bindings")
      (:prefix ("g" . "git")
        "y" 'bergheim-toggle-yadm
        "d" 'magit-diff-buffer-file
