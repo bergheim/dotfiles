@@ -145,9 +145,14 @@
                       ;; (org-agenda-current-span 'day)
                       (org-agenda-start-day (org-today))
                       (org-super-agenda-groups
-                       '((:name "Now look at your day"
-                          :time-grid t
+                       '((:name "And make sure you keep up these :)"
+                          :and (:habit t)
                           :order 3)
+                         (:name "This is how your day looks"
+                          ;; :habit nil
+                          ;; :discard (:habit t)
+                          :time-grid t
+                          :order 1)
                          (:name "First, do one of these"
                           ;; :discard (:not (:tag "@work"))
                           :and (:deadline today :priority "A")
@@ -156,10 +161,8 @@
                           :and (:scheduled t :priority "A")
                           :and (:scheduled past :priority "A")
                           :deadline past
-                          :order 1)
-                         (:name "And make sure you keep up these :)"
-                          :and (:scheduled today :habit t)
                           :order 2)
+
 
                          (:name "Upcoming deadlines"
                           :deadline future
