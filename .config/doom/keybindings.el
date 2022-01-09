@@ -43,8 +43,9 @@
        "R" #'org-mru-clock-goto)
 
      (:prefix ("d" . "dotfiles")
-       "d" 'find-in-dotfiles
-       "f" 'browse-dotfiles)
+      (:desc "Magit" "d" (λ! (magit-status "/yadm::")))
+      (:desc "Find a file" "f" 'find-in-dotfiles)
+      (:desc "Browse" "b" 'browse-dotfiles))
 
      (:prefix ("m" . "E-mail")
       "m" '=mu4e
