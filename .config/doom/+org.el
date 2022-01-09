@@ -153,20 +153,20 @@
                           :and (:scheduled t :priority "A")
                           :and (:scheduled past :priority "A")
                           :deadline past
-                          :order 1)
+                          :order 2)
                          (:name "And make sure you keep up these :)"
                           :and (:scheduled today :habit t)
-                          :order 2)
+                          :order 3)
                          (:name "Now look at your day"
                           :time-grid t
-                          :order 3)
-                         (:name "Do you still need to do these?"
-                          ;; :discard (:tag ("someday" "habits"))
-                          :scheduled past
-                          :order 10)
+                          :order 1)
                          (:name "Upcoming deadlines"
                           :deadline future
-                          :order 3)))))
+                          :order 3)
+                         (:name "Do you still need to do these?"
+                          :discard (:anything t)
+                          :scheduled past
+                          :order 10)))))
           (alltodo "" ((org-agenda-overriding-header "")
                        (org-super-agenda-groups
                         '((:name "You need to act on these"
@@ -177,6 +177,9 @@
                            :discard (:tag "habits")
                            :scheduled future
                            :order 4)
+                          (:name "If you are bored, these are easy!"
+                           :effort< "15"
+                           :order 5)
                           (:discard (:anything t))))))))
 
         ("w" "Work related tasks"
