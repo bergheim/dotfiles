@@ -136,6 +136,15 @@
             (goto-char pt)
             (funcall (intern (format "+lookup/%s" fn)) identifier arg)))))
 
+(after! tramp
+  (add-to-list 'tramp-methods
+               '("yadm"
+                 (tramp-login-program "yadm")
+                 (tramp-login-args (("enter")))
+                 (tramp-login-env (("SHELL") ("/bin/sh")))
+                 (tramp-remote-shell "/bin/sh")
+                 (tramp-remote-shell-args ("-c")))))
+
 ;; what the fuck is winum
 ;; (require 'winum)
 ;; (winum-mode)
