@@ -139,13 +139,16 @@
 ;;         (search . "%-12c"))))
 
 (setq org-agenda-custom-commands
-      '(("d" "Dashboard"
+      '(("d" "Dashboard for today"
          ((agenda "" ((org-agenda-overriding-header "Dashboard")
                       (org-agenda-span 'day)
                       ;; (org-agenda-current-span 'day)
                       (org-agenda-start-day (org-today))
                       (org-super-agenda-groups
-                       '((:name "First, do one of these"
+                       '((:name "Now look at your day"
+                          :time-grid t
+                          :order 3)
+                         (:name "First, do one of these"
                           ;; :discard (:not (:tag "@work"))
                           :and (:deadline today :priority "A")
                           :deadline today
@@ -153,13 +156,11 @@
                           :and (:scheduled t :priority "A")
                           :and (:scheduled past :priority "A")
                           :deadline past
-                          :order 2)
+                          :order 1)
                          (:name "And make sure you keep up these :)"
                           :and (:scheduled today :habit t)
-                          :order 3)
-                         (:name "Now look at your day"
-                          :time-grid t
-                          :order 1)
+                          :order 2)
+
                          (:name "Upcoming deadlines"
                           :deadline future
                           :order 3)
@@ -328,12 +329,12 @@
                :file +org-capture-personal-file
                :type entry
                :default-tags "@life"
+               :clock-in t
+               :clock-resume t
                :children (("Tasks"
                            :icon ("inbox" :set "octicon" :color "yellow")
                            :keys "t"
                            :extra ""
-                           :clock-in t
-                           :clock-resume t
                            :headline "Tasks"
                            :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
                                       ":PROPERTIES:"
@@ -364,8 +365,6 @@
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
-                           :clock-in t
-                           :clock-resume t
                            :template ("* )] %^{Meeting description} %^G:%{default-tags}:meeting:"
                                       ":PROPERTIES:"
                                       ":CREATED: %U"
