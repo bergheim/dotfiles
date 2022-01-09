@@ -188,12 +188,12 @@
                            :keys "m"
                            :headline "Meetings"
                            :clock-in t
-                           :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %^{Meeting description}} %^G:%{default-tags}:meeting:"
                            :clock-resume t
+                           :template ("* )] %^{Meeting description} %^G:%{default-tags}:meeting:"
                                       ":PROPERTIES:"
                                       ":CREATED: %U"
                                       ":END:"
-                                      "SCHEDULED: %^t"
+                                      "%^T"
                                       ""
                                       "%?"
                                       ""
