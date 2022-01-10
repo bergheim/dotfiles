@@ -146,11 +146,15 @@ Channel gmail
     Patterns  "Archives" "INBOX" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
 
-Group inbox
+Group neptune-inbox
     Channel neptune-inbox
     Channel neptune-trash
     Channel neptune-sent
+
+Group glvortex-inbox
     Channel glvortex-inbox
+
+Group gmail-inbox
     Channel gmail-inbox
     Channel gmail-trash
     Channel gmail-sent

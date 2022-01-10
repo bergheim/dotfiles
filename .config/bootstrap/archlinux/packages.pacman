@@ -125,3 +125,4 @@ tmuxp
 openbsd-netcat
 dex # run .desktop files
 kdeconnect
+parallel
