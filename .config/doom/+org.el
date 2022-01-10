@@ -146,7 +146,7 @@
                       (org-agenda-start-day (org-today))
                       (org-super-agenda-groups
                        '((:name "And make sure you keep up these :)"
-                          :and (:habit t)
+                          :habit t
                           :order 3)
                          (:name "This is how your day looks"
                           ;; :habit nil
@@ -161,30 +161,20 @@
                           :and (:scheduled t :priority "A")
                           :and (:scheduled past :priority "A")
                           :deadline past
+                          :scheduled past
                           :order 2)
 
+                         (:name "Scheduled for today"
+                          :scheduled today
+                          :order 3)
 
                          (:name "Upcoming deadlines"
                           :deadline future
-                          :order 3)
+                          :order 4)
                          (:name "Do you still need to do these?"
                           :discard (:anything t)
                           :scheduled past
-                          :order 10)))))
-          (alltodo "" ((org-agenda-overriding-header "")
-                       (org-super-agenda-groups
-                        '((:name "You need to act on these"
-                           ;; :discard (:not (:tag "@work"))
-                           :deadline future
-                           :order 3)
-                          (:name "And maybe start on these?"
-                           :discard (:tag "habits")
-                           :scheduled future
-                           :order 4)
-                          (:name "If you are bored, these are easy!"
-                           :effort< "15"
-                           :order 5)
-                          (:discard (:anything t))))))))
+                          :order 10)))))))
 
         ("w" "Work related tasks"
          ((tags-todo "@work|planet9" (
