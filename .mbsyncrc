@@ -21,6 +21,7 @@ IMAPAccount neptune
     UserCmd "pass show email/neptune/address"
     PassCmd "pass show email/neptune/me"
     SSLType IMAPS
+    AuthMechs PLAIN
     CertificateFile /etc/ssl/certs/ca-certificates.crt
 
 IMAPStore neptune-remote
