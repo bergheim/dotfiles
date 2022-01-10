@@ -435,11 +435,11 @@
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
-                           :template ("* [%(org-read-date nil nil org-read-date-final-answer)] %^{Meeting description} %^G:planet9:meeting:"
+                           :template ("* )] %^{Meeting description} %^G:%{default-tags}:meeting:"
                                       ":PROPERTIES:"
                                       ":CREATED: %U"
                                       ":END:"
-                                      "SCHEDULED: %^t"
+                                      "%^T"
                                       ""
                                       "%?"
                                       ""
