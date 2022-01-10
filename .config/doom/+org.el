@@ -103,6 +103,8 @@
       org-clock-persist 'history
       org-mru-clock-how-many 100
       ;; TODO: check out org-clock-persistence-insinuate
+
+      org-protocol-default-template-key "z"
 )
 
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
@@ -460,8 +462,24 @@
                            :file +org-capture-project-changelog-file)))
               )))
 
-;; TODO: why is this changed?
-(setq org-protocol-default-template-key "p")
+
+              ("Protocol Link Marked" :keys "z"
+               :icon ("bookmark" :set "octicon" :color "silver")
+               :type entry
+               :prepent t
+               :headline "Protocol"
+               :file +org-capture-todo-file
+               :immediate-finish t
+               :template ("* [[%:link][%:description]] \nCaptured: %U\n\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE%?"))
+
+              ("Protocol Link Unmarked" :keys "Z"
+               :icon ("bookmark" :set "octicon" :color "silver")
+               :type entry
+               :prepent t
+               :headline "Protocol"
+               :file +org-capture-todo-file
+               :immediate-finish t
+               :template ("* [[%:link][%:description]] \nCaptured: %U"))
 
 
 (defun bergheim/org-clock-status ()
