@@ -1,0 +1,8 @@
+[Unit]
+Description=Fetch any .ics calendars into an .org file
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/local/bin/sync-cal
