@@ -115,6 +115,9 @@
                                   (org-save-all-org-buffers)))
 (add-hook 'auto-save-hook 'org-save-all-org-buffers)
 
+;; open new notes etc in insert mode
+(add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
+
 (setq org-todo-keywords
       '((sequence "TODO(t)"
                   "INPROGRESS(i!)"
