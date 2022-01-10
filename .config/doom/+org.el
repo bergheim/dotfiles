@@ -99,6 +99,9 @@
       ;; default all open files
       ;; org-mru-clock-files #'org-agenda-files
 
+
+      ;; keep clocks - makes it easier to see a list of recent tasks
+      org-clock-out-remove-zero-time-clocks nil
       ;; keep history between sessions
       org-clock-persist 'history
       org-mru-clock-how-many 100
