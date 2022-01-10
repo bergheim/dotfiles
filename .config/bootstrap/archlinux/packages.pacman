@@ -123,3 +123,5 @@ ruby-rdoc
 shellcheck
 tmuxp
 openbsd-netcat
+dex # run .desktop files
+kdeconnect
