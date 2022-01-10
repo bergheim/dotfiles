@@ -1,0 +1,10 @@
+[Unit]
+Description=Fetch .ics calendars timer
+
+[Timer]
+OnBootSec=2m
+OnUnitInactiveSec=30m
+Unit=fetch-calendars.service
+
+[Install]
+WantedBy=multi-user.target
