@@ -196,7 +196,7 @@
                                           :tag "REFILE"
                                           :order 1)))))))
 
-        ("c" "Done and clocked items"
+        ("c" "Todays done and clocked items"
          ((agenda "" ((org-agenda-overriding-header "")
                       (org-agenda-span 'day)
                       (org-agenda-current-span 'week)
@@ -225,18 +225,20 @@
 
         ("gc" "Coding" tags-todo "@coding"
          ((org-agenda-view-columns-initially t)))
+        ("gd" "Done items" todo "DONE"
+         ((org-agenda-view-columns-initially t)))
+        ("ge" "Errands" tags-todo "errands"
+         ((org-agenda-view-columns-initially t)))
         ("gh" "Home" tags-todo "@home"
          ((org-agenda-view-columns-initially t)))
-        ("ge" "Errands" tags-todo "@errands"
-         ((org-agenda-view-columns-initially t)))
-        ("gw" "Waiting for" todo "WAITING")
+        ("gi" "In progress" tags-todo "TODO=\"INPROGRESS\"")
         ("gs" "Someday" tags-todo "TODO=\"SOMEDAY\""
          ((org-agenda-view-columns-initially nil)
           (org-tags-exclude-from-inheritance '("project"))
           (org-agenda-overriding-header "Someday: ")
           (org-columns-default-format "%50ITEM %TODO %3PRIORITY %Effort{:} %TAGS")
           (org-agenda-sorting-strategy '(todo-state-up priority-down effort-up tag-up category-keep))))
-        ("gi" "In progress" tags-todo "TODO=\"INPROGRESS\"")
+        ("gw" "Waiting for" todo "WAITING")
         ("gP" "By priority"
          ((tags-todo "+PRIORITY=\"A\"")
           (tags-todo "+PRIORITY=\"B\"")
