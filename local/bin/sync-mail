@@ -7,9 +7,9 @@ MAIL_SYNC_FILE="$MAIL_DIR/.lastsync"
 
 # todo < /dev/null this
 if [ -z "$1" ]; then
-    mbsync inbox;
+    parallel "mbsync {}" ::: "glvortex-inbox" "gmail-inbox" "neptune-inbox"
 else
-    mbsync -a;
+    parallel "mbsync {}" ::: "glvortex" "gmail" "neptune"
 fi
 
 # something like this would work if we could index mu behind the scenes. but if
