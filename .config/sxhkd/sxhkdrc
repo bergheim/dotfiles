@@ -24,6 +24,10 @@ super + alt + Return
 super + shift + Return
   alacritty -e vifmrun
 
+# edit whatever in emacs
+super + shift + e
+  emacs-anywhere
+
 # calculator
 super + shift + q
   qualculate-gtk
