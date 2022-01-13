@@ -100,15 +100,20 @@
       ;; org-mru-clock-files #'org-agenda-files
 
 
+
+      ;; auto-resolve a clock after 30 minutes of idle time
+      org-clock-idle-time 30
       ;; keep clocks - makes it easier to see a list of recent tasks
       org-clock-out-remove-zero-time-clocks nil
       ;; keep history between sessions
       org-clock-persist 'history
+
+      org-mru-clock-files #'org-agenda-files
+
       org-mru-clock-how-many 100
       ;; TODO: check out org-clock-persistence-insinuate
 
-      org-protocol-default-template-key "z"
-)
+      org-protocol-default-template-key "z")
 
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
 (advice-add #'org-todo :after (lambda (&rest _)
