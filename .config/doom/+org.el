@@ -471,7 +471,7 @@
                           ("Project-local changelog" :keys "c"
                            :icon ("list" :set "faicon" :color "blue")
                            :time-or-todo "%U"
-                           :heading "Unreleased"
+                           :headline "Unreleased"
                            :file +org-capture-project-changelog-file)))
               )))
 
@@ -479,20 +479,20 @@
               ("Protocol Link Marked" :keys "z"
                :icon ("bookmark" :set "octicon" :color "silver")
                :type entry
-               :prepent t
+               :prepend t
                :headline "Protocol"
                :file +org-capture-todo-file
                :immediate-finish t
-               :template ("* [[%:link][%:description]] \nCaptured: %U\n\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE%?"))
+               :template ("* [[%:link][%:description]] :captured:\nCaptured: %U\n\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE%?"))
 
               ("Protocol Link Unmarked" :keys "Z"
                :icon ("bookmark" :set "octicon" :color "silver")
                :type entry
-               :prepent t
+               :prepend t
                :headline "Protocol"
                :file +org-capture-todo-file
                :immediate-finish t
-               :template ("* [[%:link][%:description]] \nCaptured: %U"))
+               :template ("* [[%:link][%:description]] :captured:\nCaptured: %U"))
 
 
 (defun bergheim/org-clock-status ()
