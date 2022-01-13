@@ -373,7 +373,7 @@
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
-                           :template ("* )] %^{Meeting description} %^G:%{default-tags}:meeting:"
+                           :template ("* %^{Meeting description} %^G:%{default-tags}:meeting:"
                                       ":PROPERTIES:"
                                       ":CREATED: %U"
                                       ":END:"
@@ -440,7 +440,7 @@
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
-                           :template ("* )] %^{Meeting description} %^G:%{default-tags}:meeting:"
+                           :template ("* %^{Meeting description} %^G:%{default-tags}:meeting:"
                                       ":PROPERTIES:"
                                       ":CREATED: %U"
                                       ":END:"
