@@ -4,13 +4,13 @@
 (defun find-in-dotfiles ()
   "Open a file somewhere in ~/.config via a fuzzy filename search."
   (interactive)
-  (doom-project-find-file (expand-file-name "~/.config")))
+  (doom-project-find-file (expand-file-name "~/.config/")))
 
 ;;;###autoload
 (defun browse-dotfiles ()
   "Browse the files in ~/.config."
   (interactive)
-  (doom-project-browse (expand-file-name "~/.config")))
+  (doom-project-browse (expand-file-name "~/.config/")))
 
 ;;;###autoload
 (defun bergheim-email-inbox()
