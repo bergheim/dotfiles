@@ -79,6 +79,8 @@
       ;; I don't think all are added if not
       org-agenda-files (directory-files-recursively "~/org/" "\\.org$")
 
+      ;; stamp a CLOSED: [X] on DONE items
+      org-log-done 'time
       ;; org-agenda-clockreport-parameter-plist
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))
 
@@ -99,7 +101,7 @@
       ;; default all open files
       ;; org-mru-clock-files #'org-agenda-files
 
-
+      org-clock-history-length 20
 
       ;; auto-resolve a clock after 30 minutes of idle time
       org-clock-idle-time 30
