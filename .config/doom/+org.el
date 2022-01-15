@@ -475,7 +475,6 @@
                            :time-or-todo "%U"
                            :headline "Unreleased"
                            :file +org-capture-project-changelog-file)))
-              )))
 
 
               ("Protocol Link Marked" :keys "z"
@@ -494,7 +493,7 @@
                :headline "Protocol"
                :file +org-capture-todo-file
                :immediate-finish t
-               :template ("* [[%:link][%:description]] :captured:\nCaptured: %U"))
+               :template ("* [[%:link][%:description]] :captured:\nCaptured: %U")))))
 
 
 (defun bergheim/org-clock-status ()
