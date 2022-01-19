@@ -36,7 +36,7 @@
       ;; show tasks scheduled or due in next fortnight
       org-agenda-span 14
       ;;don't show tasks as scheduled if they are already shown as a deadline
-      ;; org-agenda-skip-scheduled-if-deadline-is-shown t
+      org-agenda-skip-scheduled-if-deadline-is-shown t
 
       org-agenda-skip-scheduled-if-done t
       org-agenda-skip-deadline-if-done t
@@ -110,9 +110,6 @@
       ;; keep history between sessions
       org-clock-persist 'history
 
-      org-mru-clock-files #'org-agenda-files
-
-      org-mru-clock-how-many 100
       ;; TODO: check out org-clock-persistence-insinuate
 
       org-protocol-default-template-key "z")
@@ -121,6 +118,11 @@
 (advice-add #'org-todo :after (lambda (&rest _)
                                   (org-save-all-org-buffers)))
 (add-hook 'auto-save-hook 'org-save-all-org-buffers)
+(use-package! org-mru-clock
+  :init
+  (setq org-mru-clock-files #'org-agenda-files
+      org-mru-clock-how-many 100))
+
 
 ;; open new notes etc in insert mode
 (add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
