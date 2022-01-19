@@ -70,6 +70,12 @@
 ;; (add-hook 'mu4e-headers-mode-hook #'doom-mark-buffer-as-real-h)
 ;; (add-hook 'mu4e-view-mode-hook #'doom-mark-buffer-as-real-h)
 
+(use-package! org-msg
+  :init
+  (setq org-msg-greeting-fmt "Hello%s,\n\n"
+        org-msg-signature bergheim/signature-html
+        org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil tex:dvipng \\n:t"))
+
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
@@ -223,6 +229,7 @@
                 (user-full-name     . ,bergheim/neptune/name)
                 (user-mail-address  . ,bergheim/neptune/email )
                 (mu4e-compose-signature . ,bergheim/neptune/signature)
+                (org-msg-signature . ,bergheim/neptune/signature-html)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -246,6 +253,7 @@
                 (user-full-name      . ,bergheim/gmail/name)
                 (user-mail-address   . ,bergheim/gmail/email)
                 (mu4e-compose-signature . ,bergheim/gmail/signature)
+                (org-msg-signature . ,bergheim/gmail/signature-html)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -269,6 +277,7 @@
                 (user-full-name     . ,bergheim/glvortex/name)
                 (user-mail-address  . ,bergheim/glvortex/email)
                 (mu4e-compose-signature . ,bergheim/glvortex/signature)
+                (org-msg-signature . ,bergheim/glvortex/signature-html)
 
                 (mu4e-compose-format-flowed . t)
 
