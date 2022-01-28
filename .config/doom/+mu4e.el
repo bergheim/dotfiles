@@ -1,67 +1,152 @@
 ;;; ~/.config/doom/+mu4e.el -*- lexical-binding: t; -*-
 
-(defun bergheim-mu4e-narrow-this-sender (_)
+(defun bergheim/mu4e-narrow-to-sender (_)
   "Quickly narrow view to emails sent from the selected email"
 
-  ;; TODO: get this to work. msg contains :from! No need to use message field at point..
-  ;; (print msg)
-  ;; (mu4e-headers-search-narrow (concat "from:" (cdr (first (msg :from))))))
-  (mu4e-headers-search-narrow (concat "from:" (cdr (car (mu4e-message-field-at-point :from))))))
+  (mu4e-headers-search-narrow (concat "from:" (cdar (mu4e-message-field-at-point :from)))))
 
-;; if this is not emacs-fu I don't know what is
-;; TODO: perhaps add universal for top domain and the whole domain?
-(defun bergheim-get-domain (email)
+(defun bergheim/utils--get-domain (email)
   "Get the main domain of an email address"
-  (let* ((domain (car (cdr (split-string email "@"))))
+  (let* ((domain (cadr (split-string email "@")))
         (parts (reverse (split-string domain "\\."))))
-       (format "%s.%s" (nth 1 parts) (nth 0 parts))))
 
-(defun bergheim-mu4e-relate-this-domain (msg)
+    (unless current-prefix-arg
+        domain
+      (format "%s.%s" (nth 1 parts) (nth 0 parts)))))
+
+(defun bergheim/mu4e-search-from-domain (msg)
   "Quickly find all mails sent to or from this domain"
 
-  (let (email)
-    (setq email (cdr (car (mu4e-message-field-at-point :from))))
-    (if (equal current-prefix-arg nil) ; no C-u
-        (setq query-string "NOT maildir:/Trash/ AND (from:/.*%s$/ or to:/.*%s$/)")
-        (setq query-string "(from:/.*%s$/ or to:/.*%s$/)"))
+  (let* ((email (cdar (mu4e-message-field-at-point :from)))
+        (msgid (mu4e-message-field msg :message-id))
+        (domain (bergheim/utils--get-domain email))
+        (query-string "(from:/.*%s$/ or to:/.*%s$/)"))
 
-    (let ((msgid (mu4e-message-field msg :message-id))
-          (domain (bergheim-get-domain email)))
-      (when msgid
-        (mu4e-headers-search
-         (format query-string domain domain)
-         nil nil nil
-         msgid (and (eq major-mode 'mu4e-view-mode)
-                    (not (eq mu4e-split-view 'single-window))))))))
+    (unless current-prefix-arg
+        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
 
-(defun bergheim-mu4e-relate-this-message (msg)
+    (mu4e-headers-search
+     (format query-string domain domain)
+     nil nil nil
+     msgid (and (eq major-mode 'mu4e-view-mode)
+                (not (eq mu4e-split-view 'single-window))))))
+
+(defun bergheim/mu4e-search-from-address (msg)
   "Quickly find all mails sent to or from this address"
 
-  (let (email)
-    (setq email (cdr (car (mu4e-message-field-at-point :from))))
-    (if (equal current-prefix-arg nil) ; no C-u
-        (setq query-string "NOT maildir:/Trash/ AND (from:%s or to:%s)")
-        (setq query-string "(from:%s or to:%s)"))
+  (let ((email (cdar (mu4e-message-field-at-point :from)))
+        (msgid (mu4e-message-field msg :message-id))
+        (query-string "(from:%s or to:%s)"))
 
-    (let ((msgid (mu4e-message-field msg :message-id)))
-      (when msgid
-        (mu4e-headers-search
-         (format query-string email email)
-         nil nil nil
-         msgid (and (eq major-mode 'mu4e-view-mode)
-                    (not (eq mu4e-split-view 'single-window))))))))
+    (unless current-prefix-arg
+        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
 
-(defun bergheim-mu4e-read-later (msg)
+    (mu4e-headers-search
+     (format query-string email email)
+     nil nil nil
+     msgid (and (eq major-mode 'mu4e-view-mode)
+                (not (eq mu4e-split-view 'single-window))))))
+
+(defun bergheim/mu4e-search-this-subject (msg)
+  "Quickly find all mails sent to or from this address
+
+Strips away subject action prefixes and special characters to capture more emails.
+
+If \\[universal-argument\] is called before this, include the trash."
+
+  (let ((subject (mu4e-message-field msg :subject))
+        (msgid (mu4e-message-field msg :message-id))
+        (query-string "%s"))
+
+    (unless current-prefix-arg
+        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
+
+    ;; remove any "Re: ", "Fwd: " etc
+    (setq subject (replace-regexp-in-string "^\\(\\ca\\{2,3\\}: ?\\)+" "" subject))
+
+    ;; remove characters that make mu unhappy
+    (setq subject (replace-regexp-in-string "\\W" " " subject))
+
+    (mu4e-headers-search
+     (format query-string subject)
+     nil nil nil
+     msgid (and (eq major-mode 'mu4e-view-mode)
+                (not (eq mu4e-split-view 'single-window))))))
+
+
+(defun bergheim/mu4e-search-to-me (msg)
+  "Quickly find all mails sent to me from this address.
+
+Includes BCC emails, but does not include CC, because that point just use from:address"
+
+  (let* ((from (cdar (mu4e-message-field-at-point :from)))
+         (maildir (mu4e-message-field msg :maildir))
+         (msgid (mu4e-message-field msg :message-id))
+         (my-email (bergheim/mu4e--get-account-email maildir))
+         (query-string (format "(from:%s AND (to:%s OR NOT to:*)" from my-email)))
+
+    (unless current-prefix-arg
+        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
+
+    (mu4e-headers-search
+     query-string
+     nil nil nil
+     msgid (and (eq major-mode 'mu4e-view-mode)
+                (not (eq mu4e-split-view 'single-window))))))
+
+(defun bergheim/mu4e--get-account (maildir)
+  (when (string-match "^/\\(\\w+\\)/" maildir)
+    (match-string 1 maildir)))
+
+(defun bergheim/mu4e--get-account-email (maildir)
+  (let ((account (bergheim/mu4e--get-account maildir)))
+    (pcase account
+        ("neptune" bergheim/neptune/email)
+        ("gmail" bergheim/gmail/email)
+        ("glvortex" bergheim/glvortex/email))))
+
+(defun bergheim/mu4e-open-message-in-webclient (msg)
+  (let* ((maildir (mu4e-message-field msg :maildir))
+         (msgid (mu4e-message-field msg :message-id))
+         (subject (mu4e-message-field msg :subject))
+         (to (cdar (mu4e-message-field msg :to)))
+         (from (cdar (mu4e-message-field msg :from)))
+         (account (bergheim/mu4e--get-account maildir)))
+
+    (pcase account
+      ("neptune" (let ((query (format "SUBJECT:(%s) %s %s" subject to from)))
+                   ;; ms could not care less about standards, as always. you
+                   ;; can't even produce a link to a search, let alone to an
+                   ;; email without crawling through their enterprise API
+                   ;; "offerings". I am amazed this even works over IMAP
+                   ;; so uh, paste this into the searchbox in outlook I guess
+                   (kill-new query)
+                   (browse-url "https://outlook.office.com/mail/")))
+      ("gmail"
+       (let ((url (concat "https://mail.google.com/mail/u/0/#search/rfc822msgid%3A"
+                          (url-encode-url msgid))))
+         (start-process "" nil "chromium" url)))
+      ("glvortex"
+       ;; I am not seing any Message-Id or anything else in the headers on
+       ;; ProtonMail - I assume they have filtered it
+       (browse-url
+        (format "https://mail.protonmail.com/u/0/all-mail#keyword=%s&from=%s&to=%s"
+                (url-encode-url subject) (url-encode-url from) (url-encode-url to))))
+      (_ (display-warning :warning (format "Account \"%s\" not found!" account))))))
+
+(defun bergheim/mu4e-read-later (msg)
   (interactive)
   (call-interactively 'org-store-link)
-  (org-capture nil "el"))
+  (org-capture nil "el")
+  (mu4e-headers-mark-for-refile))
 
-(defun bergheim-mu4e-follow-up (msg)
+(defun bergheim/mu4e-follow-up (msg)
   (interactive)
   (call-interactively 'org-store-link)
-  (org-capture nil "ef"))
+  (org-capture nil "ef")
+  (mu4e-headers-mark-for-refile))
 
-(defun bergheim-mu4e-store-link-to-query ()
+(defun bergheim/mu4e-store-link-to-query ()
   (interactive)
   (let ((mu4e-org-link-query-in-headers-mode t))
     (call-interactively 'org-store-link)))
@@ -89,8 +174,7 @@
       mu4e-change-filenames-when-moving t
       ;; the servers handle this
       mu4e-sent-messages-behavior 'delete
-      ;; outlook handles this
-      ;; FIXME I am put on CC - look into contexts
+      ;; the servers handle this
       mu4e-compose-dont-reply-to-self t
       ;; display is nicer with these. in theory. in practice, alignme
       ;; nt is ;; messed up
@@ -139,7 +223,7 @@
       mu4e-context-policy 'pick-first
       mu4e-compose-context-policy 'ask
 
-      ;; this makes html emails easier to read
+      ;; this makes html emails easier to read. in theory.
       shr-color-visible-luminance-min 80
 
       ;; notification settings
@@ -161,7 +245,7 @@
                 :key ?n)
 
         (:name  "Inbox work unread"
-                :query "maildir:/neptune/Inbox AND flag:unread"
+                :query "flag:unread AND maildir:/neptune/Inbox"
                 :key ?N)
 
         (:name  "Inbox glvortex"
@@ -169,7 +253,7 @@
                 :key ?g)
 
         (:name  "Inbox glvortex unread"
-                :query "maildir:/glvortex/Inbox AND flag:unread"
+                :query "flag:unread AND maildir:/glvortex/Inbox"
                 :key ?G)
 
         (:name  "Inbox gmail"
@@ -177,11 +261,11 @@
                 :key ?q)
 
         (:name  "Inbox gmail unread"
-                :query "maildir:/gmail/Inbox AND flag:unread"
+                :query "flag:unread AND maildir:/gmail/Inbox"
                 :key ?Q)
 
         (:name  "Support"
-                :query (concat "to:" bergheim/neptune/email " AND from:no-reply@neptune-software.com AND maildir:/neptune/Inbox")
+                :query (concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
                 :key ?s)
 
         (:name "Today's messages"
@@ -189,17 +273,21 @@
                :key ?t)
 
         (:name "Today's unhandled messages"
-               :query "maildir:/Inbox/ AND (date:1d..now OR flag:unread)"
+               :query "maildir:/Inbox/ AND (flag:unread OR date:1d..now)"
                :key ?T)
 
         (:name "Last week"
                :query "maildir:/Inbox/ AND date:1w..now"
                :key ?W)
 
+        (:name "Recent personal messages"
+               :query "(maildir:/gmail/Inbox/ OR maildir:/glvortex/Inbox) AND (flag:unread OR date:1w..now)"
+               :key ?T)
+
         (:name "Messages with images"
                ;; everybody has some huge image in their sig. sigh..
                :query "mime:image/* AND size:50K..100M"
-               :key ?p)
+               :key ?i)
 
         (:name "Messages with attachments"
                ;; everybody has some huge image in their sig. sigh..
@@ -211,7 +299,7 @@
                :key ?x)
 
         (:name "Focus inbox"
-               :query "(maildir:/Inbox/ AND date:1w..now AND flag:unread) OR flag:flagged"
+               :query "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"
                :key ?I)
 
         (:name "Sent items"
@@ -268,7 +356,7 @@
                                             ("/gmail/Drafts"    . ?d)
                                             ))))
        (make-mu4e-context
-        :name "glvortex"
+        :name "private"
         :enter-func (lambda () (mu4e-message "Switch to Personal Context"))
         :match-func (lambda (msg)
                       (when msg
@@ -309,19 +397,39 @@
   :n "T" #'mu4e-headers-mark-thread))
 
 (add-to-list 'mu4e-headers-actions
-             '("find email" . bergheim-mu4e-relate-this-message) t)
+             '("narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
 
 (add-to-list 'mu4e-headers-actions
-             '("domain" . bergheim-mu4e-relate-this-domain) t)
+             '("email" . bergheim/mu4e-search-from-address) t)
 
 (add-to-list 'mu4e-headers-actions
-             '("narrow to sender" . bergheim-mu4e-narrow-this-sender) t)
+             '("domain" . bergheim/mu4e-search-from-domain) t)
 
 (add-to-list 'mu4e-headers-actions
-             '("Follow up" . bergheim-mu4e-follow-up) t)
+             '("me" . bergheim/mu4e-search-to-me) t)
 
 (add-to-list 'mu4e-headers-actions
-             '("read later" . bergheim-mu4e-read-later) t)
+             '("Subject" . bergheim/mu4e-search-this-subject) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("follow up" . bergheim/mu4e-follow-up) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("later" . bergheim/mu4e-read-later) t)
+
+(add-to-list 'mu4e-headers-actions
+             '("browser" . bergheim/mu4e-open-message-in-webclient) t)
+
+
+(add-to-list 'mu4e-view-actions
+             '("follow up" . bergheim/mu4e-follow-up) t)
+
+(add-to-list 'mu4e-view-actions
+             '("later" . bergheim/mu4e-read-later) t)
+
+(add-to-list 'mu4e-view-actions
+             '("browser" . bergheim/mu4e-open-message-in-webclient) t)
+
 
 ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
 
