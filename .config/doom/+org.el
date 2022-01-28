@@ -46,11 +46,14 @@
       ;; this either
       org-agenda-compact-blocks t
 
+      org-agenda-breadcrumbs-separator " ❱ "
+
       ;; start on monday instead of current day
       ;; org-agenda-start-on-weekday 1
 
-      ;; timestamp when we set something to done
-      ;; org-log-done nil
+      ;; stamp a CLOSED: [X] on DONE items
+      org-log-done 'time
+
       org-agenda-start-with-log-mode t
 
       org-log-into-drawer t
@@ -76,11 +79,13 @@
       ;; org-agenda-default-appointment-duration 60
       ;; org-agenda-skip-scheduled-if-done t
 
-      ;; I don't think all are added if not
-      org-agenda-files (directory-files-recursively "~/org/" "\\.org$")
+      ;; once you've used org for a while, you start to chose which files go to
+      ;; the agenda
+      org-agenda-files (append (file-expand-wildcards "~/org/*.org")
+                               (file-expand-wildcards "~/org/roam/*.org")
+                               (directory-files-recursively "~/org/projects" "\\.org$")
+                               (directory-files-recursively "~/org/journal" "\\.org$"))
 
-      ;; stamp a CLOSED: [X] on DONE items
-      org-log-done 'time
       ;; org-agenda-clockreport-parameter-plist
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))
 
@@ -90,6 +95,7 @@
       +org-capture-mail-file (concat org-directory "mail.org")
       +org-capture-work-file (concat org-directory "work.org")
       +org-capture-personal-file (concat org-directory "personal.org")
+      org-capture-custom-template-directory (concat org-directory "templates/capture/")
 
       ;; include tags from all agenda files
       org-complete-tags-always-offer-all-agenda-tags t
@@ -97,6 +103,8 @@
       ;; persist agendas and don't bury them when you hit q (gr to update)
       ;; (setq org-agenda-sticky t)
 
+      ;; this might be handly if I find project TODOs start to litter things
+      ;; org-tags-exclude-from-inheritance (quote ("crypt" "project"))
 
       ;; default all open files
       ;; org-mru-clock-files #'org-agenda-files
@@ -136,13 +144,17 @@
                   "|" "DONE(d@)" "CANCELLED(c@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")))
 
+;; this should work.. not that it matters much
 ;; (use-package! org-super-agenda
 ;;   :after org-agenda
 ;;   :commands org-super-agenda-mode
+;;   ;; :hook (org-agenda-mode . org-super-agenda-mode)
 ;;   :config
-;;   (setq org-super-agenda-header-map (make-sparse-keymap)))
-
+;;   (setq org-super-agenda-header-map (make-sparse-keymap))
+;;   ;; (org-agenda-super-mode)
+;;   )
 (org-super-agenda-mode)
+
 ;; don't break evil on org-super-agenda headings, see
 ;; https://github.com/alphapapa/org-super-agenda/issues/50
 (setq org-super-agenda-header-map (make-sparse-keymap))
@@ -161,16 +173,20 @@
                       (org-agenda-span 'day)
                       ;; (org-agenda-current-span 'day)
                       (org-agenda-start-day (org-today))
+                      ;; (org-agenda-remove-tags t)
+                      ;; (org-agenda-current-time-string "ᐊ┈┈┈┈┈┈┈ Now")
                       (org-super-agenda-groups
-                       '((:name "And make sure you keep up these :)"
+                       '((:name "And make sure you keep up these 🔥"
                           :habit t
                           :order 3)
-                         (:name "This is how your day looks"
+                         (:name "Logged 📅" :log t :order 15)
+                         (:name "This is how your day looks "
                           ;; :habit nil
                           ;; :discard (:habit t)
+                          ;; :log '(closed clock)
                           :time-grid t
                           :order 1)
-                         (:name "First, do one of these"
+                         (:name "First, do one of these 🗲"
                           ;; :discard (:not (:tag "@work"))
                           :and (:deadline today :priority "A")
                           :deadline today
@@ -181,17 +197,29 @@
                           :scheduled past
                           :order 2)
 
-                         (:name "Scheduled for today"
+                         (:name "Scheduled for today ⏰"
                           :scheduled today
                           :order 3)
 
-                         (:name "Upcoming deadlines"
+                         (:name "Upcoming deadlines 🚌"
                           :deadline future
                           :order 4)
-                         (:name "Do you still need to do these?"
+                         (:name "Do you still need to do these? 🤔"
                           :discard (:anything t)
                           :scheduled past
                           :order 10)))))))
+
+        ("W" "Dashboard for the week"
+         ((agenda "" ((org-agenda-overriding-header "Dashboard")
+                      (org-agenda-span 'week)
+                      ;; (org-agenda-current-span 'day)
+                      (org-agenda-start-day "-1w")
+                      ;; (org-agenda-clockreport-mode nil)
+                      (org-agenda-log-mode-items '(closed))
+                      (org-super-agenda-groups
+                       '((:time-grid t
+                          :order 1)
+                         (:discard (:anything t))))))))
 
         ("w" "Work related tasks"
          ((tags-todo "@work|planet9" (
@@ -348,14 +376,7 @@
                            :keys "t"
                            :extra ""
                            :headline "Tasks"
-                           :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
-                                      ":PROPERTIES:"
-                                      ":CREATED: %U"
-                                      ":END:"
-                                      ""
-                                      "%?"
-                                      ""
-                                      "%a")
+                           :template-file ,(expand-file-name "task.org" org-capture-custom-template-directory)
                            :children (("General Task" :keys "t"
                                        :icon ("inbox" :set "octicon" :color "yellow")
                                        :extra "")
@@ -370,22 +391,14 @@
                            :icon ("sticky-note-o" :set "faicon" :color "green")
                            :keys "n"
                            :headline "Notes"
-                           :template ("* %?"
-                                      "%i %a"))
+                           :template-file ,(expand-file-name "note.org" org-capture-custom-template-directory))
 
                           ("Meeting"
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
-                           :template ("* %^{Meeting description} %^G:%{default-tags}:meeting:"
-                                      ":PROPERTIES:"
-                                      ":CREATED: %U"
-                                      ":END:"
-                                      "%^T"
-                                      ""
-                                      "%?"
-                                      ""
-                                      "%a"))))
+                           :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
+
               ("Work"
                :keys "w"
                :icon ("work" :set "material" :color "yellow")
@@ -399,14 +412,7 @@
                            :keys "t"
                            :icon ("inbox" :set "octicon" :color "yellow")
                            :headline "Tasks"
-                           :template ("* TODO %^{Task description} %^G:%{default-tags}:%{extra}"
-                                      ":PROPERTIES:"
-                                      ":CREATED: %U"
-                                      ":END:"
-                                      ""
-                                      "%?"
-                                      ""
-                                      "%a")
+                           :template-file ,(expand-file-name "task.org" org-capture-custom-template-directory)
                            :children (("General Task" :keys "t"
                                        :icon ("inbox" :set "octicon" :color "yellow")
                                        :extra "")
@@ -420,14 +426,7 @@
                            :icon ("bug" :set "octicon" :color "green")
                            :keys "b"
                            :headline "Bugs"
-                           :template ("* TODO [#%^{Priority|B|A|C}] %^{Bug description} %^G:%{default-tags}:planet9:bug:%{extra}"
-                                      ":PROPERTIES:"
-                                      ":CREATED: %U"
-                                      ":END:"
-                                      ""
-                                      "%?"
-                                      ""
-                                      "%a")
+                           :template-file ,(expand-file-name "bug.org" org-capture-custom-template-directory)
                            :children (("General bug"
                                        :icon ("inbox" :set "octicon" :color "yellow")
                                        :keys "b"
@@ -444,25 +443,67 @@
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
-                           :template ("* %^{Meeting description} %^G:%{default-tags}:meeting:"
-                                      ":PROPERTIES:"
-                                      ":CREATED: %U"
-                                      ":END:"
-                                      "%^T"
-                                      ""
-                                      "%?"
-                                      ""
-                                      "%a"))))
+                           :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
+
+              ("Quickly capture to clocked in task" :keys "c"
+               :icon ("email" :set "material" :color "silver")
+               :type entry
+               :clock t
+               :template-file ,(expand-file-name "clocked.org" org-capture-custom-template-directory))
+
+              ("Interrupted" :keys "I"
+               :icon ("stop-circle" :set "faicon" :color "red")
+               :file +org-capture-work-file
+               :type entry
+               :clock-in t
+               :clock-resume t
+               :headline "Interruptions"
+               :default-tags "@work:interrupted"
+               :template-file ,(expand-file-name "interrupted.org" org-capture-custom-template-directory))
+
+              ("Daily review"
+               :icon ("sticky-note-o" :set "faicon" :color "green")
+               :keys "n"
+               :file "~/org/review.org"
+               :headline "Daily"
+               :type entry
+               :clock-in t
+               :clock-keep t
+               :jump-to-captured t
+               :default-tags "@work:daily:review"
+               :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
+
+              ("Weekly review"
+               :icon ("sticky-note-o" :set "faicon" :color "green")
+               :keys "m"
+               :file "~/org/review.org"
+               :headline "Weekly"
+               :type entry
+               :clock-in t
+               :clock-keep t
+               :jump-to-captured t
+               :default-tags "@work:weeklyreview:review"
+               :template-file ,(expand-file-name "review-weekly.org" org-capture-custom-template-directory))
+
+              ("Add contact" :keys "C"
+               :icon ("person" :set "octicon" :color "silver")
+               :type entry
+               :headline "People"
+               :file "~/org/contacts.org"
+               :template ("* %(org-contacts-template-name)
+:PROPERTIES:
+:ADDRESS: %^{Address}
+:BIRTHDAY: %^{Birthday (yyyy-mm-dd)}
+:EMAIL: %(org-contacts-template-email)
+:NOTE: %^{NOTE}
+:END:"))
 
               ("Active project" :keys "a"
                :icon ("repo" :set "octicon" :color "silver")
                :prepend t
                :type entry
                :headline "Inbox"
-               :template ("* %{time-or-todo} %?"
-                          "%i"
-                          "%a")
-               :file ""
+               :template-file ,(expand-file-name "active-project.org" org-capture-custom-template-directory)
                :custom (:time-or-todo "")
                :children (("Project-local todo" :keys "t"
                            :icon ("checklist" :set "octicon" :color "green")
@@ -486,7 +527,7 @@
                :headline "Protocol"
                :file +org-capture-todo-file
                :immediate-finish t
-               :template ("* [[%:link][%:description]] :captured:\nCaptured: %U\n\n#+BEGIN_QUOTE\n%i\n#+END_QUOTE%?"))
+               :template-file ,(expand-file-name "protocol-marked.org" org-capture-custom-template-directory))
 
               ("Protocol Link Unmarked" :keys "Z"
                :icon ("bookmark" :set "octicon" :color "silver")
@@ -495,8 +536,72 @@
                :headline "Protocol"
                :file +org-capture-todo-file
                :immediate-finish t
-               :template ("* [[%:link][%:description]] :captured:\nCaptured: %U")))))
+               :template-file ,(expand-file-name "protocol-unmarked.org" org-capture-custom-template-directory))
 
+              ("Protocol Link Active Task" :keys "o"
+               :icon ("bookmark" :set "octicon" :color "silver")
+               :type entry
+               :prepend t
+               :clock t
+               :immediate-finish t
+               :template-file ,(expand-file-name "protocol-active-task.org" org-capture-custom-template-directory))
+
+              ("Email Workflow" :keys "e"
+               :icon ("email" :set "material" :color "silver")
+               :type entry
+               :file +org-capture-mail-file
+               :immediate-finish t
+               :children (("Follow Up" :keys "f"
+                           :headline "Follow Up"
+                           :file +org-capture-mail-file
+                           :template-file ,(expand-file-name "email-follow-up.org" org-capture-custom-template-directory)
+                           )
+                          ("Read Later" :keys "l"
+                           :template-file ,(expand-file-name "email-read-later.org" org-capture-custom-template-directory)
+                           :headline "Read Later")))
+
+              ("Interesting"
+               :keys "i"
+               :icon ("eye" :set "faicon" :color "lcyan")
+               :file +org-capture-todo-file
+               :prepend t
+               :headline "Interesting"
+               :type entry
+               :template-file ,(expand-file-name "interesting.org" org-capture-custom-template-directory)
+               :children (("Webpage" :keys "w"
+                           :icon ("globe" :set "faicon" :color "green")
+                           :desc "%(org-cliplink-capture) "
+                           :i-type "read:web")
+                          ("Article" :keys "a"
+                           :icon ("file-text" :set "octicon" :color "yellow")
+                           :desc ""
+                           :i-type "read:reaserch")
+                          ("Information" :keys "i"
+                           :icon ("info-circle" :set "faicon" :color "blue")
+                           :desc ""
+                           :i-type "read:info")
+                          ("Idea" :keys "I"
+                           :icon ("bubble_chart" :set "material" :color "silver")
+                           :desc ""
+                           :i-type "idea"))))))
+
+(defun org-capture-select-template-prettier (&optional keys)
+  "Select a capture template, in a prettier way than default
+Lisp programs can force the template by setting KEYS to a string."
+  (let ((org-capture-templates
+         (or (org-contextualize-keys
+              (org-capture-upgrade-templates org-capture-templates)
+              org-capture-templates-contexts)
+             '(("t" "Task" entry (file+headline "" "Tasks")
+                "* TODO %?\n  %u\n  %a")))))
+    (if keys
+        (or (assoc keys org-capture-templates)
+            (error "No capture template referred to by \"%s\" keys" keys))
+      (org-mks org-capture-templates
+               "Select a capture template\n━━━━━━━━━━━━━━━━━━━━━━━━━"
+               "Template key: "
+               `(("q" ,(concat (all-the-icons-octicon "stop" :face 'all-the-icons-red :v-adjust 0.01) "\tAbort")))))))
+(advice-add 'org-capture-select-template :override #'org-capture-select-template-prettier)
 
 (defun bergheim/org-clock-status ()
   "Return the org time status - including any pomodoro activity"
@@ -513,3 +618,39 @@
     (if (org-clocking-p)
         (format "%s - %s" (org-duration-from-minutes (org-clock-get-clocked-time)) org-clock-heading)
       "")))
+
+;; org roam stuff
+
+(use-package! org-roam-dailies
+  :init
+  (setq org-roam-dailies-directory "daily/"
+        org-roam-dailies-capture-templates
+        '(("d" "default" entry
+           "* %?"
+           :target (file+head "%<%Y-%m-%d>.org"
+                              "#+title: %<%Y-%m-%d>\n"))))
+
+  (defun my/org-roam-copy-todo-to-today ()
+    (interactive)
+    (let ((org-refile-keep t) ;; Set this to nil to delete the original!
+          (org-roam-dailies-capture-templates
+           '(("t" "tasks" entry "%?"
+              :if-new (file+head+olp "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n" ("Tasks")))))
+          (org-after-refile-insert-hook #'save-buffer)
+          today-file
+          pos)
+      (save-window-excursion
+        (org-roam-dailies--capture (current-time) t)
+        (setq today-file (buffer-file-name))
+        (setq pos (point)))
+
+      ;; Only refile if the target file is different than the current file
+      (unless (equal (file-truename today-file)
+                     (file-truename (buffer-file-name)))
+        (org-refile nil nil (list "Tasks" today-file nil pos)))))
+
+  :config
+  (add-to-list 'org-after-todo-state-change-hook
+               (lambda ()
+                 (when (equal org-state "DONE")
+                   (my/org-roam-copy-todo-to-today)))))
