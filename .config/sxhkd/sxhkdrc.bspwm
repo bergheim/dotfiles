@@ -21,8 +21,8 @@ super + g
 #
 
 # set the window state
-# super + {t,shift + t,s,f}
-super + {c,shift + c,x,z}
+super + {t,shift + t,s,f}
+# super + f ; s ; {a,s,d,f}
 	bspc node -t {tiled,pseudo_tiled,\~floating,\~fullscreen}
 
 # alternate between the tiled and monocle layout
@@ -46,7 +46,7 @@ super + ctrl + {x,y,z}
 super + {_,shift + }{h,j,k,l}
   LAYOUT=$(bspc query -T -d | jq -r .layout); \
   [[ "$LAYOUT" == "tiled" ]] && bspc node -{f,s} {west,south,north,east}; \
-  [[ "$LAYOUT" == "monocle" ]] && bspc node -{f,s} {prev,next,prev,next}.local
+  [[ "$LAYOUT" == "monocle" ]] && bspc node -{f,s} {prev,next,prev,next}
 
 
 # focus the node for the given path jump
@@ -54,8 +54,9 @@ super + {p,b,comma,period}
 	bspc node -f @{parent,brother,first,second}
 
 # focus the next/previous node in the current desktop
-super + {_,shift + }c
-	bspc node -f {next,prev}.local
+#super + {_,shift + }c
+super + alt + shift + {h,l}
+	bspc node -f {prev,next}.local
 
 # focus the next/previous desktop in the current monitor
 super + bracket{left,right}
@@ -133,3 +134,14 @@ super + {minus,equal}
 
 super + grave
   bspwm-scratchterm-toggle
+
+super + alt + shift + n
+  bspc node @/ -R 90
+
+# Move current window to a pre-selected space
+super + shift + m
+    bspc node -n last.!automatic
+
+# Rotate tree
+super + shift + {u,i}
+    bspc node @/ -C {forward,backward}
