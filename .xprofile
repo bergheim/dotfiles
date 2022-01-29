@@ -7,13 +7,13 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
 	unset f
 fi
 
-~/.config/screenlayout/home.sh &
+# fancylocki3 &
+~/.config/screenlayout/home.sh
 
 numlockx & # turn numlock on
 unclutter & # hide the mouse when it is unused
 clipmenud & # clipboard history
 redshift & # dim the screen at night
-dunst & # notifications
 
 telegram-desktop &
 sleep 3 && firefox-developer-edition &
@@ -24,7 +24,8 @@ setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
 xset b off # don't beep
 xset r rate 180 60
-xinput --set-prop 9 'libinput Accel Speed' -1.0
+xinput --set-prop 16 'libinput Accel Speed' -0.5
+
 (sleep 5 && kbdd) & # kbdd is buggy if it does not start after the WM
 
 feh --bg-fill ~/Pictures/wallpapers/active.png
@@ -33,3 +34,5 @@ if [ $(hostname -s) != 'berghome' ]; then
 	desktop-locker &
 fi
 picom -f &
+
+dunst & # notifications
