@@ -18,7 +18,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-monokai-spectrum)
+(setq doom-theme 'doom-monokai-classic)
 
 ;; Add init-hook so heaven-and-hell can load your theme
 (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
