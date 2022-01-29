@@ -154,6 +154,27 @@
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
 
+
+;; this breaks org-msg at the moment
+;; (setq +format-on-save-enabled-modes
+;;       '(not emacs-lisp-mode  ; elisp's mechanisms are good enough
+;;             sql-mode         ; sqlformat is currently broken
+;;             tex-mode         ; latexindent is broken
+;;             latex-mode
+;;             org-msg-edit-mode  ; this is just broken
+;;             org-msg-mode
+;;             mu4e-compose-mode
+;;             ))
+(add-hook 'python-mode-hook #'format-all-mode)
+(add-hook 'js-mode-hook #'format-all-mode)
+(add-hook 'typescript-mode-hook #'format-all-mode)
+;; (add-hook 'org-mode-hook #'format-all-mode)
+(add-hook 'markdown-mode-hook #'format-all-mode)
+(add-hook 'css-mode-hook #'format-all-mode)
+(add-hook 'html-mode-hook #'format-all-mode)
+(add-hook 'yaml-mode-hook #'format-all-mode)
+(add-hook 'rust-mode-hook #'format-all-mode)
+
 (use-package! orgit
   ;; Automatically copy orgit link to last commit after commit
   :hook (git-commit-post-finish . orgit-store-after-commit)
