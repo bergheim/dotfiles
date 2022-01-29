@@ -97,6 +97,13 @@
       vc-make-backup-files t
       backup-directory-alist '((".*" . "~/.emacs.d/backup")))
 
+(defun bergheim/save-some-buffers ()
+  (save-some-buffers t ))
+
+(if (version< emacs-version "27")
+    (add-hook! 'focus-out-hook 'bergheim/save-some-buffers)
+  (setq after-focus-change-function 'bergheim/save-some-buffers))
+
 ;; decrease the timeout before jumping around the buffer
 (setq avy-timeout-seconds 0.3)
 
