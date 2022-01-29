@@ -76,7 +76,9 @@
       (:desc "Last week by date personal" "p"
        (λ! (bergheim/org-agenda-recent-changes '("@life" "life"))))
       (:desc "Last month by category" "c"
-       (λ! (org-ql-view-recent-items :num-days 31 :type 'clocked))))
+       (λ! (org-ql-view-recent-items :num-days 31 :type 'clocked)))
+      (:desc "Recent tasks in buffer" "b"
+       (λ! (bergheim/org-recent-tasks-in-buffer))))
 
      "t" 'heaven-and-hell-toggle-theme
      "T" 'heaven-and-hell-load-default-theme)))

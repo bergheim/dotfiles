@@ -33,6 +33,7 @@
     (_ (progn (org-agenda-redo)
         (org-agenda-filter-apply '() 'tag)
         (put 'work 'state 'show-work)))))
+
 (defun bergheim/vertico--without-orderless (fn &rest args)
   (let ((completion-styles '(partial-completion)))
     (apply fn args)))
@@ -354,6 +355,32 @@
                    ;; (org-super-agenda-date-format "%A %-e %B %Y")
                    (org-agenda-span 1))
                   )))))
+
+(defun bergheim/org-recent-tasks-in-buffer ()
+  "Lists the recently worked on tasks for this buffer"
+  (interactive)
+  (let ((vertico-sort-function nil)
+        (data (seq-uniq
+               (mapcar
+                (lambda (elem)
+                  (cons (org-element-property :raw-value elem) elem))
+                (org-ql-query
+                  :select #'element-with-markers
+                  ;; :from (org-agenda-files)
+                  :where '(ts :from -100 :to today)
+                  :order-by '(reverse date)))
+               ;; only take the most recently clocked item
+               (lambda (a b) (string-equal
+                              (car a)
+                              (car b))))))
+    (org-goto-marker-or-bmk
+     (org-element-property
+      :org-marker
+      (cdr
+       (assoc
+        (completing-read "TODO: " data)
+        data
+        #'string-equal))))))
 
 (defun bergheim/org-agenda-recent-changes (&optional tags)
   (interactive)
