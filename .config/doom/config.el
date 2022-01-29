@@ -33,11 +33,14 @@
 (setq user-full-name "Thomas Bergheim"
       user-mail-address bergheim/email)
 
-(setq doom-font (font-spec :family "JetBrainsMono NerdFont" :size 32)
-      doom-big-font (font-spec :family "JetBrainsMono NerdFont" :size 40)
+(setq doom-font (font-spec :family "JetBrainsMono NerdFont" :size 28)
+      doom-big-font (font-spec :family "JetBrainsMono NerdFont" :size 36)
       doom-variable-pitch-font (font-spec :family "iMWritingDuoS Nerd Font")
       doom-unicode-font (font-spec :family "DejaVu Sans Mono NerdFont")
-      doom-serif-font (font-spec :family "Literation Serif NerdFont"))
+      doom-serif-font (font-spec :family "Literation Serif NerdFont")
+      )
+
+(setq doom-theme 'doom-material)
 
 (setq-default line-spacing 0.2)
 
