@@ -153,3 +153,16 @@
 
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
+
+(use-package! orgit
+  ;; Automatically copy orgit link to last commit after commit
+  :hook (git-commit-post-finish . orgit-store-after-commit)
+  :config
+  (defun orgit-store-after-commit ()
+    "Store orgit-link for latest commit after commit message editor is finished."
+    (let* ((repo (abbreviate-file-name default-directory))
+           (rev (magit-git-string "rev-parse" "HEAD"))
+           (link (format "orgit-rev:%s::%s" repo rev))
+           (summary (substring-no-properties (magit-format-rev-summary rev)))
+           (desc (format "%s (%s)" summary repo)))
+      (push (list link desc) org-stored-links))))
