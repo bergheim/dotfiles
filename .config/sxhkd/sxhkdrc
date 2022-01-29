@@ -10,18 +10,18 @@ super + shift + 1
 
 # kill an application
 super + shift + d
-	exec xkill
+  exec xkill
 
 # terminal emulator
 super + Return
   alacritty
 
 # alternate terminal emulator
-super + alt + Return
-  kitty
+super + shift + Return
+  emacsclient -nc
 
 # file manager
-super + shift + Return
+super + alt + Return
   alacritty -e vifmrun
 
 # edit whatever in emacs
@@ -30,7 +30,7 @@ super + shift + e
 
 # calculator
 super + shift + q
-  qualculate-gtk
+  qalculate-gtk
 
 # make sxhkd reload its configuration files:
 super + Escape
@@ -44,6 +44,7 @@ super + shift + @p
 super + alt + shift + @p
   screenshot -a && notify-send -u low 'Screenshot area captured'
 
+# FIXME these are terrible
 # lock screen
 super + shift + x
   exec fancylocki3
@@ -53,7 +54,7 @@ super + alt + shift + x
   exec desktop-locker toggle
 
 # run rofi
-super + {r,space}
+super + r
   rofi -show run -lines 10 -display-run "run: "
 
 super + shift + r
@@ -61,6 +62,11 @@ super + shift + r
 
 alt + Tab
   rofi -show window -display-window "Switch to window: "
+
+super + space
+  rofi-pass
+  # gopass ls --flat | rofi -dmenu | xargs --no-run-if-empty -- bash -c 'gopass show -f $0 Username' | head -n 1 | xdotool type --clearmodifiers --file -
+  # gopass ls --flat | dmenu | xargs --no-run-if-empty gopass show -o | xdotool type --clearmodifiers --file -
 
 super + v
   CM_LAUNCHER=rofi clipmenu
@@ -80,11 +86,8 @@ super + shift + {comma, period}
 {XF86AudioLowerVolume, XF86AudioRaiseVolume}
   pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
 
-super + shift + c
-  emacs-capture --eval '(progn(org-capture nil "t")(spacemacs/toggle-maximize-buffer))'
-
-super + shift + a
-  emacs-capture --eval '(progn(org-agenda-list)(spacemacs/toggle-maximize-buffer))'
+super + semicolon
+  ~/.emacs.d/bin/org-capture
 
 shift + F12
   alacritty-colorscheme -T
