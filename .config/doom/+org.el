@@ -141,11 +141,11 @@
 
       org-protocol-default-template-key "z")
 
-(advice-add 'org-refile :after 'org-save-all-org-buffers)
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
 (add-hook! '(org-clock-out-hook org-clock-in-hook) #'org-save-all-org-buffers)
 ;; this is handled by my/org-roam-copy-todo-to-today at the moment
 ;; (advice-add #'org-todo :after (lambda (&rest _) (org-save-all-org-buffers)))
+;; (advice-add 'org-refile :after 'org-save-all-org-buffers)
 
 ;; open new notes etc in insert mode
 (add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
