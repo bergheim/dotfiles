@@ -50,6 +50,7 @@
 
 (package! counsel-org-clock)
 (package! org-super-agenda)
+(package! org-ql)
 
 ;; https://github.com/IvanMalison/org-projectile
 ;; (package! org-projectile)
@@ -65,7 +66,6 @@
 ;; (package! engine-mode)
 (package! restclient)
 
-(package! telega)
 
 ;; this is useful for things like org repos
 (package! git-auto-commit-mode)
