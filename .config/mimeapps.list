@@ -1,6 +1,5 @@
 [Default Applications]
 application/octet-stream=emacs.desktop;
-application/pdf=zathura.desktop
 application/x-extension-htm=firefox-developer-edition.desktop
 application/x-extension-html=firefox-developer-edition.desktop
 application/x-extension-shtml=firefox-developer-edition.desktop
@@ -16,8 +15,9 @@ x-scheme-handler/ftp=firefox-developer-edition.desktop
 x-scheme-handler/http=firefox-developer-edition.desktop
 x-scheme-handler/https=firefox-developer-edition.desktop
 x-scheme-handler/msteams=teams.desktop
-x-scheme-handler/tg=telegramdesktop.desktop
+x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;
+application/pdf=org.pwmt.zathura.desktop
 
 [Added Associations]
-application/pdf=org.gnome.Evince.desktop;okularApplication_pdf.desktop;org.pwmt.zathura-pdf-mupdf.desktop;
 image/jpeg=vimiv.desktop;
+x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;
