@@ -49,7 +49,7 @@
 
 (defun bergheim/org-mru-clock-in ()
   (interactive)
-  (bergheim/vertico--without-orderless 'org-mru-clock-in))
+  (bergheim/vertico--without-sorting 'org-mru-clock-in))
 
 (setq org-deadline-warning-days 14
       ;; show tasks scheduled or due in next fortnight
