@@ -9,12 +9,6 @@
         doom-modeline-mu4e t ;; TODO where is this exactly?
         doom-modeline-buffer-encoding nil))
 
-(setq org-clock-history-length 20)
-
-(use-package! counsel-org-clock
-  :config
-  (setq counsel-org-clock-history-limit 20))
-
 ;; default to english.
 ;; TODO: add ispell-local-dictionary
 (setq ispell-dictionary "en")
@@ -27,7 +21,7 @@
 (load! "private")
 
 ;; this will draw a vertical line to indicate line length
-(global-display-fill-column-indicator-mode 1)
+(global-display-fill-column-indicator-mode 0)
 ;; (setq-default fill-column 100)
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
@@ -37,30 +31,14 @@
 
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 14))
+(setq doom-font (font-spec :family "JetBrainsMono NerdFont" :size 34)
+      doom-big-font (font-spec :family "JetBrainsMono NerdFont" :size 40)
+      doom-variable-pitch-font (font-spec :family "FiraCode NerdFont")
+      doom-unicode-font (font-spec :family "DejaVuSansMono NerdFont")
+      doom-serif-font (font-spec :family "Literation Serif NerdFont"))
 
-(setq doom-font (font-spec :family "Fira Code" :size 26)
-      doom-big-font (font-spec :family "Fira Code" :size 30)
-      doom-variable-pitch-font (font-spec :family "Fira Code" :size 26))
 
-;; enlarge numbers for ace-window
-(custom-set-faces!
-  '(aw-leading-char-face
-    :foreground "white" :background "red"
-    :weight bold :height 2.5 :box (:line-width 10 :color "red")))
 
-(when IS-LINUX
-  (font-put doom-font :weight 'semi-light))
 (when IS-MAC
   (setq ns-use-thin-smoothing t))
 
