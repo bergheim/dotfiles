@@ -22,21 +22,24 @@
 
 ;; this will draw a vertical line to indicate line length
 (global-display-fill-column-indicator-mode 0)
-;; (setq-default fill-column 100)
+(setq-default fill-column 100)
+
+;; TODO is this relevant anymore?
+(when IS-MAC
+  (setq ns-use-thin-smoothing t))
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Thomas Bergheim"
       user-mail-address bergheim/email)
 
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
-
-(setq doom-font (font-spec :family "JetBrainsMono NerdFont" :size 34)
+(setq doom-font (font-spec :family "JetBrainsMono NerdFont" :size 32)
       doom-big-font (font-spec :family "JetBrainsMono NerdFont" :size 40)
-      doom-variable-pitch-font (font-spec :family "FiraCode NerdFont")
-      doom-unicode-font (font-spec :family "DejaVuSansMono NerdFont")
+      doom-variable-pitch-font (font-spec :family "iMWritingDuoS Nerd Font")
+      doom-unicode-font (font-spec :family "DejaVu Sans Mono NerdFont")
       doom-serif-font (font-spec :family "Literation Serif NerdFont"))
 
+(setq-default line-spacing 0.2)
 
 
 (when IS-MAC
@@ -57,7 +60,7 @@
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
-;; - `use-package' for configuring packages
+;; - `use-package!' for configuring packages
 ;; - `after!' for running code after a package has loaded
 ;; - `add-load-path!' for adding directories to the `load-path', relative to
 ;;   this file. Emacs searches the `load-path' when you load packages with
@@ -65,10 +68,10 @@
 ;; - `map!' for binding new keys
 ;;
 ;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c g k').
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
 ;; This will open documentation for it, including demos of how they are used.
 ;;
-;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
+;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
 (global-visual-line-mode) ;; Always wrap long lines
@@ -92,6 +95,9 @@
 
 ;; decrease the timeout before jumping around the buffer
 (setq avy-timeout-seconds 0.3)
+
+;; If tooltips turned on, make tips appear promptly
+(setq tooltip-delay 0.1)  ; default is 0.7 second)
 
 (after! ivy
   ;; include recent files and bookmarks
@@ -130,12 +136,6 @@
 (load! "colors")
 (load! "keybindings")
 
-(after! engine-mode
-  ;; (engine/set-keymap-prefix (kbd "C-c s"))
-  (engine-mode t)
-  (defengine duckduckgo
-    "https://duckduckgo.com/?q=%s"
-    :keybinding "s"))
 
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
