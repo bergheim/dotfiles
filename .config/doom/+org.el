@@ -142,16 +142,18 @@
       org-protocol-default-template-key "z")
 
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
-(advice-add #'org-todo :after (lambda (&rest _)
-                                  (org-save-all-org-buffers)))
-(add-hook 'auto-save-hook 'org-save-all-org-buffers)
+(advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
+(add-hook! '(org-clock-out-hook org-clock-in-hook) #'org-save-all-org-buffers)
+;; this is handled by my/org-roam-copy-todo-to-today at the moment
+;; (advice-add #'org-todo :after (lambda (&rest _) (org-save-all-org-buffers)))
+
+;; open new notes etc in insert mode
+(add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
+
 (use-package! org-mru-clock
   :init
   (setq org-mru-clock-files #'org-agenda-files
       org-mru-clock-how-many 100))
-
-;; open new notes etc in insert mode
-(add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
 
 (setq org-todo-keywords
       '((sequence "TODO(t)"
@@ -741,5 +743,6 @@ Lisp programs can force the template by setting KEYS to a string."
   :config
   (add-to-list 'org-after-todo-state-change-hook
                (lambda ()
-                 (when (equal org-state "DONE")
-                   (my/org-roam-copy-todo-to-today)))))
+                 (if (equal org-state "DONE")
+                     (my/org-roam-copy-todo-to-today)
+                   (org-save-all-org-buffers)))))
