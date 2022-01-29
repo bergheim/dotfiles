@@ -37,8 +37,8 @@
        "l" 'org-clock-in-last
        "o" 'org-clock-out
        "c" 'org-capture
-       "r" #'org-mru-clock-in
-       "R" #'org-mru-clock-goto)
+       "r" 'bergheim/org-mru-clock-in
+       "R" 'bergheim/org-mru-goto)
 
      (:prefix ("d" . "dotfiles")
       (:desc "Magit" "d" (λ! (magit-status "/yadm::")))
@@ -64,11 +64,19 @@
 
      "e" 'elfeed
 
-     "r" 'rainbow-mode
-
-     (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive "P") (org-agenda arg "d")))
+     (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive) (org-agenda arg "d")))
      (:desc "Email Dashboard" "s" 'bergheim/mu4e-email-today)
-     (:desc "Orgmode Recent" "r" 'bergheim/org-agenda-recent-changes)
      (:desc "Orgmode Work" "w" 'bergheim/org-agenda-work-items)
+
+     (:prefix ("r" . "Recent")
+      (:desc "Last week by date" "r"
+       (λ! (bergheim/org-agenda-recent-changes)))
+      (:desc "Last week by date work" "w"
+       (λ! (bergheim/org-agenda-recent-changes '("@work" "work" "neptune"))))
+      (:desc "Last week by date personal" "p"
+       (λ! (bergheim/org-agenda-recent-changes '("@life" "life"))))
+      (:desc "Last month by category" "c"
+       (λ! (org-ql-view-recent-items :num-days 31 :type 'clocked))))
+
      "t" 'heaven-and-hell-toggle-theme
      "T" 'heaven-and-hell-load-default-theme)))
