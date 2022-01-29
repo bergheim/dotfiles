@@ -5,20 +5,17 @@
   (setq heaven-and-hell-theme-type color)
   (heaven-and-hell-clean-load-themes (heaven-and-hell-themes-switch-to)))
 
-;; Default is 'dark
-(setq heaven-and-hell-theme-type 'dark
-      heaven-and-hell-load-theme-no-confirm t)
+(after! heaven-and-hell
+  ;; Set preferred light and dark themes
+  (setq heaven-and-hell-themes
+        '((dark . doom-monokai-classic)
+          (light . doom-solarized-light)))
 
-;; Set preferred light and dark themes
-(setq heaven-and-hell-themes
-      '((dark . doom-material)
-        (light . doom-one-light)))
+  ;; Default is 'dark
+  (setq heaven-and-hell-theme-type 'dark
+        heaven-and-hell-load-theme-no-confirm t))
 
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-monokai-classic)
+(setq doom-theme 'doom-material)
 
 ;; Add init-hook so heaven-and-hell can load your theme
 (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
