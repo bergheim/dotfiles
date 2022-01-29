@@ -44,6 +44,12 @@
 
 (setq-default line-spacing 0.2)
 
+(use-package! mixed-pitch
+  :hook ((org-mode . mixed-pitch-mode)
+         (markdown-mode . mixed-pitch-mode)))
+  ;; :config
+  ;; (setq mixed-pitch-set-heigth t)
+  ;; (set-face-attribute 'variable-pitch nil :height 1.3))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
