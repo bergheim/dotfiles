@@ -1,36 +1,54 @@
 ;;; ~/.config/doom/+org.el -*- lexical-binding: t; -*-
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-
-(setq org-directory "~/org/")
-
-;; add the project TODO files to the agenda as well
-;; FIXME: this is an old relic before doom and I don't think it works anymore
-;; (with-eval-after-load 'org-agenda
-;;   (require 'org-projectile)
-;;   (mapcar #'(lambda (file)
-;;              (when (file-exists-p file)
-;;                (push file org-agenda-files)))
-;;           (org-projectile-todo-files)))
-
-;; org-journal. move TODOs from previous days to the current
-;; (defun my-old-carryover (old_carryover)
-;;   (save-excursion
-;;     (let ((matcher (cdr (org-make-tags-matcher org-journal-carryover-items))))
-;;       (dolist (entry (reverse old_carryover))
-;;         (save-restriction
-;;           (narrow-to-region (car entry) (cadr entry))
-;;           (goto-char (point-min))
-;;           (org-scan-tags '(lambda ()
-;;                             (org-set-tags ":carried:"))
-;;                          matcher org--matcher-tags-todo-only))))))
-;; (setq org-journal-handle-old-carryover 'my-old-carryover)
+(map! :after evil-org-agenda
+      :map evil-org-agenda-mode-map
+      :m "W" 'bergheim/org-agenda-toggle-work
+      :m "T" 'bergheim/org-agenda-mark-done-and-add-followup)
 
 (add-to-list 'org-modules 'org-habit)
 
 ;; I.. don't know what this comes from
 (setq org-agenda-text-search-extra-files '(agenda-archives))
+
+(defun bergheim/org-agenda-mark-done-and-add-followup ()
+  "Mark the current TODO as done and add another task after it.
+       Creates it at the same level as the previous task, so it's better to use
+       this with to-do items than with projects or headings."
+  (interactive)
+  (org-agenda-todo "DONE")
+  (org-agenda-switch-to)
+  (if (member "@work" (org-get-tags))
+      (org-capture 0 "wtt")
+    (org-capture 0 "ptt")))
+
+(defun bergheim/org-agenda-toggle-work ()
+  (interactive)
+  (pcase (get 'work 'state)
+      ('show-work (progn (org-agenda-redo)
+        (org-agenda-filter-apply '("+@work") 'tag)
+        (put 'work 'state 'show-private)))
+    ('show-private (progn (org-agenda-redo)
+        (org-agenda-filter-apply '("-@work") 'tag)
+        (put 'work 'state 'show-everything)))
+    (_ (progn (org-agenda-redo)
+        (org-agenda-filter-apply '() 'tag)
+        (put 'work 'state 'show-work)))))
+(defun bergheim/vertico--without-orderless (fn &rest args)
+  (let ((completion-styles '(partial-completion)))
+    (apply fn args)))
+
+(defun bergheim/vertico--without-sorting (fn &rest args)
+  (let ((vertico-sort-function 'nil))
+    (apply fn args)))
+
+(defun bergheim/org-mru-goto ()
+  (interactive)
+  (bergheim/vertico--without-sorting
+   (call-interactively 'org-mru-clock-goto)))
+
+(defun bergheim/org-mru-clock-in ()
+  (interactive)
+  (bergheim/vertico--without-orderless 'org-mru-clock-in))
 
 (setq org-deadline-warning-days 14
       ;; show tasks scheduled or due in next fortnight
@@ -130,7 +148,6 @@
   :init
   (setq org-mru-clock-files #'org-agenda-files
       org-mru-clock-how-many 100))
-
 
 ;; open new notes etc in insert mode
 (add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
@@ -337,6 +354,51 @@
                    ;; (org-super-agenda-date-format "%A %-e %B %Y")
                    (org-agenda-span 1))
                   )))))
+
+(defun bergheim/org-agenda-recent-changes (&optional tags)
+  (interactive)
+  (let (filter from)
+    (if current-prefix-arg
+        (setq from (org-read-date nil))
+      (setq from -7))
+    (when tags
+      (setq filter `(:discard (:not (:tag ,tags)))))
+    (org-ql-search (org-agenda-files)
+      `(ts :from ,from :to today)
+      :title "Recent Items"
+      :super-groups `(,filter
+                      (:name "Work" :auto-ts t)))))
+
+;; TODO maybe just bin this
+(defun bergheim/org-agenda-new-items ()
+  (interactive)
+  (org-ql-search (org-agenda-files)
+    '(ts :from -7 :to today)
+    :title "Recent Items"
+    :sort '(todo priority date)
+    :where '(and (property "CREATED")
+    ;;            (string-match "issue" (org-entry-get (point) "CUSTOM_ID"))))
+    :super-groups '((:auto-ts t)))))
+
+(defun bergheim/org-agenda-work-items ()
+  (interactive)
+  (org-ql-search (org-agenda-files)
+    '(not (done))
+    :title "Work related tasks"
+    :super-groups '((:name "Important tasks"
+                     :discard (:not (:tag ("@work" "planet9")))
+                     :priority ("A" "B"))
+                    (:name "Needs refiling"
+                     :tag "REFILE"
+                     :order 7)
+                    (:name "Habits"
+                     :habit t
+                     :order 3)
+                    (:todo "WAITING"
+                     :order 6)
+                    (:priority "A" :order 1)
+                    (:priority "B" :order 2)
+                    (:priority "C" :order 2))))
 
 ;; thanks tecosaur
 (defun +doct-icon-declaration-to-icon (declaration)
