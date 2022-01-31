@@ -9,7 +9,7 @@ bat # cat on steriods, syntax highlighting, git integration etc
 bspwm
 chromium
 community/awesome-terminal-fonts
-dnstools
+# dnstools
 colordiff
 dunst
 emacs
@@ -74,7 +74,6 @@ rsync
 scrot
 sxhkd
 syncthing
-syncthing-gtk
 terminus-font
 tig
 tmux
@@ -112,7 +111,6 @@ python-pip
 texlive-most
 kitty
 alacritty
-alacritty-terminfo
 pbzip2
 pigz
 pixz
@@ -121,10 +119,24 @@ xdotool
 pacman-contrib
 entr
 ruby
+aspell-en
+aspell-nb
 ruby-rdoc
 shellcheck
 tmuxp
 openbsd-netcat
 dex # run .desktop files
-kdeconnect
 parallel
+zoxide
+telegram-desktop
+xclip
+tidy
+isync
+gnuplot
+ncdu
+i3-gaps
+unclutter # hide the mouse when it is unused
+clipmenu # rofi clipboard history
+redshift
+picom
+otf-fira-mono

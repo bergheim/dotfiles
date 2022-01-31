@@ -15,4 +15,6 @@ epub-thumbnailer-git # displays epub in terminal ie vifm
 fontpreview-git # previews fonts in terminal ie vifm
 pqiv # light weight image browser and viewer
 yq2-bin # merge yaml files - for alacritty used in bspwm-scratchterm-toggle
-zoxide
+nerd-fonts-complete
+mu
+polybar
