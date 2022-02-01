@@ -17,6 +17,7 @@ feh
 ffmpeg
 ffmpegthumbnailer # show thumbnails from movies
 firefox-developer-edition
+firefox
 fzf
 gimp
 graphicsmagick
@@ -139,4 +140,8 @@ unclutter # hide the mouse when it is unused
 clipmenu # rofi clipboard history
 redshift
 picom
-otf-fira-mono
+otf-fera-mono
+go-yq
+gvfs
+pcmanfm
+bdf-unifont
