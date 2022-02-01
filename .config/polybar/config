@@ -41,17 +41,21 @@ module-margin-left = 1
 module-margin-right = 2
 
 font-0 = fixed:pixelsize=16;1
-font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-1 = unifont:size=8:antialias=false;0
 font-2 = Siji:style=Regular:pixelsize=10;1
 font-3 = fontawesome-webfont.ttf:size=12;1
 font-4 = Weather\Icons:pixelsize=16;1
+font-5 = Font Awesome 5 Free:pixelsize=16;1
+font-6 = Font Awesome 5 Brands:pixelsize=16;1
+font-7 = Material Icons:pixelsize=16;1
+font-8 = Noto Emoji Nerd Font:pixelsize=16;1
 
 # separator = |
 
 modules-left = bspwm i3
 ;modules-left = xworkspaces
 modules-center = xwindow
-modules-right = xbacklight notice org-mode spotify memory cpu eth battery temperature date xkeyboard pulseaudio
+modules-right = xbacklight notice org-mode spotify memory cpu eth battery temperature date xkeyboard pulseaudio-control
 
 tray-position = right
 tray-padding = 5
@@ -87,12 +91,12 @@ label = %title:0:30:...%
 type = internal/xkeyboard
 blacklist-0 = num lock
 
-format-prefix = " "
+format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
-format-prefix-underline = ${colors.foreground}
+; format-prefix-underline = ${colors.foreground}
 
 label-layout = %layout%
-label-layout-underline = ${colors.foreground}
+; label-layout-underline = ${colors.foreground}
 
 label-indicator-padding = 2
 label-indicator-margin = 1
@@ -345,6 +349,8 @@ ramp-volume-0 = " "
 ramp-volume-1 = " "
 ramp-volume-2 = " "
 
+click-right = pavucontrol
+
 [module/battery]
 type = internal/battery
 battery = BAT0
@@ -420,6 +426,20 @@ menu-2-0-exec = sudo poweroff
 menu-2-1 = cancel
 menu-2-1-exec = menu-open-0
 
+[module/pulseaudio-control]
+type = custom/script
+tail = true
+format-underline = ${colors.cyan}
+; label-padding = 2
+label-foreground = ${colors.foreground}
+
+exec = pulseaudio-control --sink-nicknames-from "device.description" --sink-nickname "alsa_output.pci-0000_00_1f.3.analog-stereo:🔈" --sink-nickname "alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.stereo-game:" listen
+click-right = exec pavucontrol &
+click-left = pulseaudio-control togmute
+click-middle = pulseaudio-control --sink-blacklist "alsa_output.pci-0000_02_00.1.hdmi-stereo,alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.mono-chat" next-sink
+scroll-up = pulseaudio-control --volume-max 130 up
+scroll-down = pulseaudio-control --volume-max 130 down
+
 [module/yr-weather]
 type = custom/script
 exec = ~/.config/polybar/yr.py
@@ -428,13 +448,14 @@ label = %output%
 format = <label>
 format-padding = 2
 click-left = qutebrowser-temp --float https://www.yr.no/place/Norway/Oslo/Oslo/Schous_Plass/hour_by_hour.html
+
 [module/spotify]
 type = custom/script
 exec = ~/.config/polybar/spotify.sh
 tail = true
 format-padding = 2
 
-format-prefix = "  "
+format-prefix = "  "
 format-prefix-foreground = ${colors.foreground-alt}
 click-left = playerctl play-pause
 
@@ -462,11 +483,28 @@ format-prefix-foreground = ${colors.foreground-alt}
 ; click-left = playerctl play-pause
 
 [settings]
+; The throttle settings lets the eventloop swallow up til X events
+; if they happen within Y millisecond after first event was received.
+; This is done to prevent flood of update event.
+;
+; For example if 5 modules emit an update event at the same time, we really
+; just care about the last one. But if we wait too long for events to swallow
+; the bar would appear sluggish so we continue if timeout
+; expires or limit is reached.
+throttle-output = 5
+throttle-output-for = 10
+
 screenchange-reload = true
-;compositing-background = xor
-;compositing-background = screen
-;compositing-foreground = source
-;compositing-border = over
+
+; compositing-background = source
+; compositing-foreground = over
+; compositing-overline = over
+; compositing-underline = over
+; compositing-border = over
+
+; ; Enables pseudo-transparency for the bar
+; ; If set to true the bar can be transparent without a compositor.
+; pseudo-transparency = false
 
 [global/wm]
 margin-top = 0
