@@ -1,11 +1,9 @@
 clipmenu
 # fc-font # this does not exist?
-i3-gaps-next-git
 i3ipc-glib-git
 kbdd-git # per window keylayout settings
 khal-git
 polybar-git
-redshift-git
 siji-git
 ttf-unifont
 ttf-weather-icons # for weather module
@@ -14,7 +12,7 @@ python-ueberzug # displays images in terminal, ie vifm
 epub-thumbnailer-git # displays epub in terminal ie vifm
 fontpreview-git # previews fonts in terminal ie vifm
 pqiv # light weight image browser and viewer
-yq2-bin # merge yaml files - for alacritty used in bspwm-scratchterm-toggle
 nerd-fonts-complete
 mu
 polybar
+pulseaudio-control
