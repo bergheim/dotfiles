@@ -25,7 +25,7 @@ echo "Num new mails ${NEW_MAILS_COUNT}"
 if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
     /usr/bin/emacsclient -e '(mu4e-update-index)' 2> /dev/null
     if [ "$NEW_MAILS_COUNT" -gt "1" ]; then
-        notify-send --icon=mail-unread --category email --app-name=mbsync "You've got mail" "You have $NEW_MAILS_COUNT new emails" &
+        notify-send --icon=emblem-documents --category email --app-name=mbsync "You've got mail" "You have $NEW_MAILS_COUNT new emails" &
     fi
     for file in $NEW_MAILS; do
         # Extract subject and sender from mail.
