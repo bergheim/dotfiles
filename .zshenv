@@ -39,7 +39,7 @@ export FCEDIT="$EDITOR"
 export VISUAL="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
 
-export MONITOR_PRIMARY="DP-0"
-export MONITOR_SECONDARY="DP-2"
+export MONITOR_PRIMARY="DP-2"
+export MONITOR_SECONDARY="DP-0"
 
 export GPG_TTY=$(tty)

@@ -28,7 +28,11 @@ xinput --set-prop 16 'libinput Accel Speed' -0.5
 
 (sleep 5 && kbdd) & # kbdd is buggy if it does not start after the WM
 
-feh --bg-fill ~/Pictures/wallpapers/active.png
+if [ -z "$MONITOR_SECONDARY" ]; then
+	feh --bg-fill ~/Pictures/wallpapers/active.png
+else
+	feh --bg-fill ~/Pictures/wallpapers/active_primary.png --bg-fill ~/Pictures/wallpapers/active_secondary.png
+fi
 
 if [ $(hostname -s) != 'berghome' ]; then
 	desktop-locker &

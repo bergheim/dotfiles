@@ -14,7 +14,7 @@ super + shift + d
 
 # terminal emulator
 super + Return
-  alacritty
+  ldpi alacritty
 
 # alternate terminal emulator
 super + shift + Return
