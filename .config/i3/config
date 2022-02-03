@@ -123,8 +123,8 @@ for_window [title="i3termscratchpad"] move scratchpad
 bindsym $mod+Shift+comma    move scratchpad
 bindsym $mod+comma          scratchpad show
 
-set $monitor1 DP-0
-set $monitor2 DP-2
+set $monitor1 DP-2
+set $monitor2 DP-0
 workspace $ws1 output $monitor1
 workspace $ws2 output $monitor1
 workspace $ws3 output $monitor1

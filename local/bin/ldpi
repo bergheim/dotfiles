@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+#
+# This is a wrapper script that handles different resolutions/DPI in X11
+#
+# For me I just hardcoded it, but basically it will switch from my default 163 (4k 27") to 109 (1440p 27") if it is run on that screen
+
+OLDDPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
+SCREEN=$(current-screen)
+
+if [[ $SCREEN == *"DP-0"* ]]; then
+    # DP-0 is my 1440p
+    xrdb -merge <(echo "Xft.dpi: 109")
+    "$*" &
+    xrdb -merge <(echo "Xft.dpi: $OLDDPI")
+else
+    "$*" &
+fi
