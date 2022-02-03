@@ -31,7 +31,7 @@
     origin = top-right
 
     # Offset from the origin
-    offset = 10x50
+    offset = 20x60
 
     # Scale factor. It is auto-detected if value is 0.
     scale = 0
@@ -66,15 +66,15 @@
     # The transparency of the window.  Range: [0; 100].
     # This option will only work if a compositing window manager is
     # present (e.g. xcompmgr, compiz, etc.). (X11 only)
-    transparency = 0
+    transparency = 5
 
     # Draw a line of "separator_height" pixel height between two
     # notifications.
     # Set to 0 to disable.
-    separator_height = 2
+    separator_height = 0
 
     # Padding between text and separator.
-    padding = 10
+    padding = 20
 
     # Horizontal padding.
     horizontal_padding = 10
@@ -157,7 +157,7 @@
 
     # Vertical alignment of message text and icon.
     # Possible values are "top", "center" and "bottom".
-    vertical_alignment = center
+    vertical_alignment = top
 
     # Show age of message if message is older than show_age_threshold
     # seconds.
@@ -191,10 +191,11 @@
     min_icon_size = 0
 
     # Scale larger icons down to this size, set to 0 to disable
-    max_icon_size = 64
+    max_icon_size = 96
 
     # Paths to default icons.
-    icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    icon_path = /usr/share/icons/Adwaita/96x96/
+    enable_recursive_icon_lookup = yes
 
     ### History ###
 
