@@ -18,7 +18,7 @@
 
 [colors]
 ; background = ${xrdb:background:#88222222}
-background = #e0282828
+background = #ee282828
 background-alt = ${xrdb:color0:#bb444444}
 foreground = ${xrdb:foreground:#00ff00}
 foreground-alt = ${xrdb:color7:#888}
@@ -29,7 +29,7 @@ alert = ${xrdb:color10:#bd2c40}
 [bar/tb]
 monitor = ${env:MONITOR_PRIMARY:DP-0}
 width = 100%
-height = 37
+height = 40
 ; offset-x = 1%
 ; offset-y = 1%
 radius = 0.0
@@ -50,13 +50,14 @@ padding-right = 2
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = Font Awesome 5 Free:pixelsize=16;1
-font-1 = Weather\Icons:pixelsize=16;1
-font-2 = unifont:size=8:antialias=false;0
-font-3 = Material Icons:pixelsize=16;1
-font-4 = Noto Emoji Nerd Font:pixelsize=16;1
-font-5 = fontawesome-webfont.ttf:size=12;1
-font-6 = Font Awesome 5 Brands:pixelsize=16;1
+font-0 = "Dejavu Sans:pixelsize=16"
+font-1 = "Noto Emoji Nerd Font:pixelsize=16;0"
+font-2 = "Weather\Icons:pixelsize=16"
+font-3 = "Font Awesome 5 Free:pixelsize=16"
+font-4 = "Font Awesome 5 Brands:pixelsize=16"
+font-5 = "fontawesome-webfont.ttf:pixelsize=16"
+font-6 = "Material Icons:pixelsize=16"
+font-7 = "Dejavu Sans:pixelsize=16"
 
 # separator = |
 
@@ -91,7 +92,7 @@ inherit = bar/tb
 monitor = ${env:MONITOR_SECONDARY:HDMI-0}
 modules-left = bspwm i3
 modules-center = xwindow
-modules-right = none
+modules-right = uptime
 tray-position = none
 
 [module/xwindow]
@@ -168,7 +169,7 @@ ws-icon-0 = 1; 
 ws-icon-1 = 2;
 ws-icon-2 = 3;
 ws-icon-3 = 4;
-ws-icon-4 = 5;
+ws-icon-4 = 5;
 
 ws-icon-5 = 6;
 
@@ -286,7 +287,7 @@ interface = enp0s31f6
 interval = 5.0
 
 ; format-connected-underline = #55aa55
-format-connected-prefix = " "
+format-connected-prefix = " "
 format-connected-prefix-foreground = ${colors.foreground-alt}
 label-connected = %downspeed% / %upspeed%
 
@@ -400,12 +401,15 @@ format-warn = <ramp> <label-warn>
 format-warn-underline = ${colors.secondary}
 
 label = %temperature-c%
-label-warn = %temperature-c%
+label-warn =  %temperature-c%
 label-warn-foreground = ${colors.secondary}
 
-ramp-0 = 
-ramp-1 = 
-ramp-2 = 
+ramp-0 = 
+ramp-1 = 
+ramp-2 = 
+ramp-3 = 
+ramp-4 = 
+
 ramp-foreground = ${colors.foreground-alt}
 
 [module/powermenu]
@@ -450,6 +454,19 @@ click-left = pulseaudio-control togmute
 click-middle = pulseaudio-control --sink-blacklist "alsa_output.pci-0000_02_00.1.hdmi-stereo,alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.mono-chat" next-sink
 scroll-up = pulseaudio-control --volume-max 130 up
 scroll-down = pulseaudio-control --volume-max 130 down
+
+[module/uptime]
+;https://github.com/jaagr/polybar/wiki/User-contributed-modules#uptime
+type = custom/script
+exec = uptime | awk -F, '{sub(".*up ",x,$1);print $1}'
+interval = 100
+label = Uptime : %output%
+
+format-foreground = ${colors.foreground}
+format-background = ${colors.background}
+format-prefix = " "
+format-prefix-foreground = ${colors.secondary}
+format-underline = ${colors.secondary}
 
 [module/yr-weather]
 type = custom/script
