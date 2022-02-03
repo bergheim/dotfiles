@@ -1,23 +1,23 @@
 [Default Applications]
 application/octet-stream=emacs.desktop;
-application/x-extension-htm=firefox-developer-edition.desktop
-application/x-extension-html=firefox-developer-edition.desktop
-application/x-extension-shtml=firefox-developer-edition.desktop
-application/x-extension-xht=firefox-developer-edition.desktop
-application/x-extension-xhtml=firefox-developer-edition.desktop
-application/xhtml+xml=firefox-developer-edition.desktop
+application/x-extension-htm=firefox.desktop
+application/x-extension-html=firefox.desktop
+application/x-extension-shtml=firefox.desktop
+application/x-extension-xht=firefox.desktop
+application/x-extension-xhtml=firefox.desktop
+application/xhtml+xml=firefox.desktop
 image/jpeg=feh.desktop;krita_jpeg.desktop;
 image/png=pqiv.desktop;
-text/html=firefox-developer-edition.desktop;emacs.desktop;vim.desktop;
+text/html=firefox.desktop;emacs.desktop;vim.desktop;
 text/plain=emacs.desktop;vim.desktop;
-x-scheme-handler/chrome=firefox-developer-edition.desktop
-x-scheme-handler/ftp=firefox-developer-edition.desktop
-x-scheme-handler/http=firefox-developer-edition.desktop
-x-scheme-handler/https=firefox-developer-edition.desktop
+x-scheme-handler/chrome=firefox.desktop
+x-scheme-handler/ftp=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
 x-scheme-handler/msteams=teams.desktop
-x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;
+x-scheme-handler/tg=userapp-Telegram Desktop-C3YMG1.desktop
 application/pdf=org.pwmt.zathura.desktop
 
 [Added Associations]
 image/jpeg=vimiv.desktop;
-x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;
+x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;userapp-Telegram Desktop-C3YMG1.desktop;
