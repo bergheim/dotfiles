@@ -182,8 +182,8 @@ alias help=run-help
 setopt no_beep
 
 HISTFILE=~/.histfile
-HISTSIZE=20000
-SAVEHIST=20000
+HISTSIZE=200000
+SAVEHIST=200000
 setopt extendedglob           # supports lots of globbing things
 setopt hist_ignore_dups       # ignore duplication command history list
 setopt hist_verify            # expand history onto the current line instead of executing it
