@@ -25,6 +25,19 @@ bindsym $mod+$alt+Escape restart
 # font pango:DejaVu Sans Mono 11
 font pango:Inconsolata 14
 
+# Start XDG autostart .desktop files using dex. See also
+# https://wiki.archlinux.org/index.php/XDG_Autostart
+# exec --no-startup-id dex --autostart --environment i3
+
+# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
+# screen before suspend. Use loginctl lock-session to lock your screen.
+# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# NetworkManager is the most popular way to manage wireless networks on Linux,
+# and nm-applet is a desktop environment-independent system tray GUI for it.
+# exec --no-startup-id nm-applet
+
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -66,9 +79,10 @@ bindsym $mod+bar split toggle
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+z layout stacking
 bindsym $mod+x layout tabbed
+bindsym $mod+Shift+x layout stacking
 bindsym $mod+c layout toggle split
+bindsym $mod+z focus parent
 
 # toggle tiling / floating
 bindsym $mod+s floating toggle
@@ -120,8 +134,9 @@ for_window [title="i3termscratchpad"] border none
 for_window [title="i3termscratchpad"] floating enable sticky disable
 for_window [title="i3termscratchpad"] move scratchpad
 
-bindsym $mod+Shift+comma    move scratchpad
-bindsym $mod+comma          scratchpad show
+# used by sxhkd, and that handled it anyway
+# bindsym $mod+Shift+comma    move scratchpad
+# bindsym $mod+comma          scratchpad show
 
 set $monitor1 DP-2
 set $monitor2 DP-0
@@ -243,35 +258,6 @@ bindsym $mod+equal          gaps inner current set 20; gaps outer current set 10
 bindsym $mod+shift+minus    gaps inner current set 40; gaps outer current set 20; border pixel $border_size
 bindsym $mod+shift+equal    gaps inner current set 60; gaps outer current set 30; border pixel $border_size
 
-# colors
-#set $bg-color #2f343f
-#set $inactive-bg-color #2f343f
-#set $text-color #f3f4f5
-#set $inactive-text-color $676e7d
-#set $urgent-bg-color #e53935
-#
-## class                 border              backgr.             text               indicator child_border
-#client.focused          $bg-color           $bg-color           $text-color        #2e9ef4   #285577
-#client.unfocused        $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #292d2e   #222222
-#client.focused_inactive $inactive-bg-color  $inactive-bg-color  $inactive-bg-color #484e50   #5f676a
-#client.urgent           $urgent-bg-color    $urgent-bg-color    $text-color        #900000   #900000
-#
-#client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
-#client.background       #ffffff
-
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-
-# class                 border  bground text    indicator child_border
-client.focused          #D89000 #F7A500 #444444 #FFED01   #B89000
-client.focused_inactive #333333 #5F676A #FFFFFF #484E50   #5F676A
-client.unfocused        #333333 #222222 #888888 #292D2E   #222222
-client.urgent           #2F343A #900000 #FFFFFF #900000   #900000
-client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
-
-client.background       #FFFFFF
-
-
 # Set colors from Xresources
 set_from_resource $bg background #2f343f
 set_from_resource $fg foreground #d8dee8
@@ -284,45 +270,17 @@ set_from_resource $c6 color6
 set_from_resource $c9 color9 #81a1c1
 set_from_resource $c15 color15 #81a1c1
 
+for_window [all] title_window_icon on
+for_window [all] title_window_icon padding 5px
+
 # see https://thomashunter.name/i3-configurator/
 # class                 border  backgr. text indicator child_border
-client.focused          $c3     $c3     $bg  $c1       $c3
+client.focused          $c3     $c3     $bg  $c4       $c3
 client.focused_inactive $fg     $bg     $fg  $fg       $bg
 client.unfocused        $fg     $bg     $fg  $fg       $bg
 client.urgent           $fg     $c1     $bg  $bg       $c1
 client.placeholder      $fg     $bg     $fg  $bg       $bg
 client.background       $fg
-
-# bar {
-#   i3bar_command i3bar -t
-#   status_command i3blocks
-#   position          top
-#   workspace_buttons yes
-#   tray_output       primary
-#   # tray_padding 0
-# #    colors {
-# #        background $bg-color
-# #        statusline #ffffff
-# #
-# #        #                   border              background          text
-# #        focused_workspace   $bg-color           $bg-color           $text-color
-# #        active_workspace    $bg-color           $bg-color           $text-color
-# #        inactive_workspace  $inactive-bg-color  $inactive-bg-color  $inactive-text-color
-# #        urgent_workspace    $urgent-bg-color    $urgent-bg-color    $text-color
-# #    }
-#   colors {
-#     background #000000cc
-#     statusline #cccccc
-#     separator  #666666
-
-#     focused_workspace  #B89000 #F7A500 #444444
-#     active_workspace   #333333 #222222 #FFFFFF
-#     inactive_workspace #333333 #222222 #888888
-#     urgent_workspace   #2F343A #900000 #FFFFFF
-#     binding_mode       #2F343A #900000 #FFFFFF
-#   }
-# }
-
 
 # new_window pixel 0
 # with i3-gaps this looks strange on apps like chromium
@@ -332,8 +290,10 @@ bindsym $alt+b border toggle
 # {{{ automatically put clients on specific workspaces
 # assign [class="^Firefox$"] $ws1
 assign [class="^TelegramDesktop$"] $ws2
-# assign [class="^Spotify$"] $ws3
 for_window [class="Spotify"] move to workspace $ws3
+assign [class="^Microsoft Teams"] $ws2
+assign [class="^discord$"] $ws2
+assign [class="Slack"] $ws2
 assign [class="^Chromium$"] $ws4
 # }}}
 
