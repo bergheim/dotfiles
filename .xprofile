@@ -16,9 +16,8 @@ clipmenud & # clipboard history
 redshift & # dim the screen at night
 
 telegram-desktop &
-sleep 3 && firefox-developer-edition &
+(sleep 5 && firefox) &
 spotify &
-sleep 3 && chromium &
 
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
@@ -39,4 +38,4 @@ if [ $(hostname -s) != 'berghome' ]; then
 fi
 picom -f &
 
-dunst & # notifications
+(sleep 5 && dunst) & # if it starts too soon we don't get HiDPI scaling
