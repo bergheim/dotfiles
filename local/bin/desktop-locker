@@ -1,30 +1,29 @@
 #!/bin/sh
 
 start() {
+  notice clear
   exec xautolock -detectsleep \
-     -time 5 -locker "$HOME/local/bin/fancylocki3" \
+     -time "$1" -locker "$HOME/local/bin/fancylocki3" \
      -notify 30 \
      -notifier "notify-send -u low -- 'LOCKING screen in 30 seconds'"
 }
 
-autolock_pid=`pidof xautolock`
-if [ "$1" == "toggle" ]; then
-  if [ -z "$autolock_pid" ]; then
-    echo "start $autolock_pid"
-    exec notify-send -u low -- "Starting xautolock" &
-    notice clear
-    exec xautolock -detectsleep \
-         -time 5 -locker "$HOME/local/bin/fancylocki3" \
-         -notify 30 \
-         -notifier "notify-send -u low -- 'LOCKING screen in 30 seconds'" &
+LONG_TIMER=60 # 60 is max
+DEFAULT_TIMER=5
+TIMER=$DEFAULT_TIMER
+
+if [ "$1" = "toggle" ]; then
+  ME=$(whoami)
+  IS_LONG_RUNNING=$(pgrep -u "$ME" -f "xautolock.*time $LONG_TIMER")
+  autolock_pid=`pidof xautolock`
+  kill "$autolock_pid"
+  if [ -z "$IS_LONG_RUNNING" ]; then
+    exec notify-send -u low -- "Starting relaxed xautolock" &
+    TIMER=$LONG_TIMER
   else
-    echo "stop $autolock_pid"
-    notice "autolock disabled"
-    exec notify-send -u low -- "Disabling xautolock" &
-    exec kill "$autolock_pid"
+    exec notify-send -u low -- "Starting xautolock" &
+    TIMER=5
   fi
-elif [ -z "$autolock_pid" ]; then
-  echo "Starting xautolock"
-  notice clear
-  start
 fi
+
+start $TIMER
