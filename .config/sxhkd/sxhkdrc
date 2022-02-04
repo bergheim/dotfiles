@@ -53,20 +53,14 @@ super + shift + x
 super + alt + shift + x
   exec desktop-locker toggle
 
-# run rofi
 super + r
-  rofi -show run -lines 10 -display-run "run: "
-
-super + shift + r
-  rofi -show combi -display-combi "combi: "
+  rofi -show combi -combi-modi "run,drun" -modi "combi,calc,emoji"
 
 alt + Tab
   rofi -show window -display-window "Switch to window: "
 
-super + space
+super + p
   rofi-pass
-  # gopass ls --flat | rofi -dmenu | xargs --no-run-if-empty -- bash -c 'gopass show -f $0 Username' | head -n 1 | xdotool type --clearmodifiers --file -
-  # gopass ls --flat | dmenu | xargs --no-run-if-empty gopass show -o | xdotool type --clearmodifiers --file -
 
 super + v
   CM_LAUNCHER=rofi clipmenu

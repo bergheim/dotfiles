@@ -151,5 +151,8 @@ jq
 vifm
 lxappearance-gtk3
 rofi-pass
+rofi-emoji
+rofi-calc
+bc
 qt5ct
 i3lock

@@ -1,0 +1,19 @@
+* {
+    background-color:   transparent;
+    bergheim-foreground:     #ebdbb2; // xrdb:background
+    bergheim-background:     #282828; // xrdb:background
+    bergheim-background-alt:     #928374; // xrdb:background
+
+    bergheim-primary:  #fabd2f; // xrdb:color3
+    bergheim-primary-alt:  #d79921; // xrdb:color11
+
+    bergheim-alert:  #fb4934; // xrdb:color9
+
+    text-color:         @bergheim-foreground;
+    accent-color:       @bergheim-primary-alt;
+    scrollbar-handle:  @bergheim-primary;
+
+    margin:     0px;
+    padding:    10px;
+    spacing:    0px;
+}
