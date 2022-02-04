@@ -12,7 +12,7 @@ set $down j
 set $left h
 
 # reload the configuration file
-bindsym $mod+$alt+r reload
+bindsym $mod+F5 reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+$alt+Escape restart
 
@@ -42,7 +42,8 @@ font pango:Inconsolata 14
 floating_modifier $mod
 
 # kill focused window
-bindsym $mod+d kill
+# TODO: move this maybe?
+bindsym $mod+BackSpace kill
 
 # change focus
 bindsym $mod+$left  exec --no-startup-id i3fullscreen_nav.sh focus left
@@ -78,26 +79,24 @@ bindsym $mod+bar split toggle
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
 
+# toggle tiling / floating
+bindsym $mod+$alt+f floating toggle
+
+# make window small and persist across desktops
+bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; move position center; sticky enable
+
+# stick windows between desktops etc
+# bindsym $mod+Shift+s sticky toggle
+
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+x layout tabbed
+# I never use stacking
 bindsym $mod+Shift+x layout stacking
 bindsym $mod+c layout toggle split
 bindsym $mod+z focus parent
 
-# toggle tiling / floating
-bindsym $mod+s floating toggle
-
-# make window small and persist across desktops
-bindsym $mod+y fullscreen disable; floating enable; resize set 1024 576; sticky enable; move position 870 225
-
-# stick windows between desktops etc
-bindsym $mod+Shift+s sticky toggle
-
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
-
-# focus the parent container
-bindsym $mod+p focus parent
 
 # switch to next/prev workspace
 bindsym $mod+Control+l workspace next
@@ -299,8 +298,7 @@ assign [class="^Chromium$"] $ws4
 # }}}
 
 # {{{ automatically starting applications on i3 startup
-# exec --no-startup-id feh --bg-fill ~/Pictures/wallpapers/active.png
-  exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 # }}}
 
 # don't tile popups

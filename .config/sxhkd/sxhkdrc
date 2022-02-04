@@ -5,11 +5,11 @@
 #
 
 # show keybindings
-super + shift + 1
+super + shift + r
   sxhkd-show-bindings
 
 # kill an application
-super + shift + d
+super + shift + BackSpace
   exec xkill
 
 # terminal emulator
@@ -20,71 +20,76 @@ super + Return
 super + shift + Return
   emacsclient -nc
 
-# file manager
+# vifm file manager
 super + alt + Return
   alacritty -e vifmrun
+
+# dolphin
+super + d
+  dolphin
 
 # edit whatever in emacs
 super + shift + e
   emacs-anywhere
 
-# calculator
-super + shift + q
-  qalculate-gtk
-
 # make sxhkd reload its configuration files:
-super + Escape
+super + F6
   pkill -USR1 -x sxhkd
 
 # screenshot
-super + shift + @p
+super + @F1
   screenshot && notify-send -u low 'Screenshot captured'
 
 # screenshot area
-super + alt + shift + @p
+super + @F2
   screenshot -a && notify-send -u low 'Screenshot area captured'
 
-# FIXME these are terrible
 # lock screen
-super + shift + x
+super + F12
   exec fancylocki3
 
 # toggle autolock
-super + alt + shift + x
+super + shift + F12
   exec desktop-locker toggle
 
+# run command
 super + r
-  rofi -show combi -combi-modi "run,drun" -modi "combi,calc,emoji"
+  rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji"
 
+# switch window
 alt + Tab
   rofi -show window -display-window "Switch to window: "
 
+# enter password
 super + p
   rofi-pass
 
+# clipboard manager
 super + v
   CM_LAUNCHER=rofi clipmenu
-
-alt + {comma, period, slash}
-  playerctl {previous, next, play-pause}
 
 {XF86AudioPrev, XF86AudioNext, XF86AudioPlay}
   playerctl {previous, next, play-pause}
 
+# toggle audio mute
 XF86AudioMute
   pactl set-sink-mute @DEFAULT_SINK@ toggle
-
-super + shift + {comma, period}
-  pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
 
 {XF86AudioLowerVolume, XF86AudioRaiseVolume}
   pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
 
+# org-capture
 super + semicolon
   ~/.emacs.d/bin/org-capture
 
-shift + F12
-  alacritty-colorscheme -T
+# toggle alacitty dark/white
+super + shift + F10
+  alacritty-colorscheme toggle "gruvbox_light.yaml" "nord.yaml"
 
-F12
+# toggle desktop dark/white
+super + F10
   desktop-toggle-color
+
+# toggle redshift
+super + F11
+  pkill -USR1 '^redshift$'
