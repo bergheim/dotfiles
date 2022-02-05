@@ -84,7 +84,7 @@ super + semicolon
 
 # toggle alacitty dark/white
 super + shift + F10
-  alacritty-colorscheme toggle "gruvbox_light.yaml" "nord.yaml"
+  notify-send "Toggling alacritty colors" --icon=utilities-terminal --category=os && alacritty-colorscheme toggle "gruvbox_light.yaml" "nord.yaml"
 
 # toggle desktop dark/white
 super + F10
@@ -92,7 +92,7 @@ super + F10
 
 # toggle redshift
 super + F11
-  pkill -USR1 '^redshift$'
+  notify-send "Toggling redshift" --icon=preferences-desktop-screensaver --category=os && pkill -USR1 '^redshift$'
 
 # close notification
 ctrl + alt + grave
