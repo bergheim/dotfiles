@@ -23,7 +23,8 @@ discord &
 spotify &
 
 setxkbmap -option caps:escape # use caps as esc
-setxkbmap -layout 'us,no' -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
+setxkbmap -layout 'us,no' -variant intl -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
+setxkbmap -option compose:ralt
 xset b off # don't beep
 xset r rate 180 60
 xinput --set-prop 16 'libinput Accel Speed' -0.5
