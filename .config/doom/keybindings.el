@@ -2,11 +2,6 @@
 
 (map!
  (:leader
-   "1" 'winum-select-window-1
-   "2" 'winum-select-window-2
-   "3" 'winum-select-window-3
-   "4" 'winum-select-window-4
-
    (:desc "Open journal"
     "n j o" #'org-journal-open-current-journal-file)
 
@@ -82,3 +77,83 @@
 
      "t" 'heaven-and-hell-toggle-theme
      "T" 'heaven-and-hell-load-default-theme)))
+
+(map!
+ ;; overrides (mark-paragraph)
+ :ni "M-h" #'evil-window-left
+ ;; overrides default-indent-new-line
+ :ni "M-j" #'evil-window-down
+ ;; overrides kill-sentence
+ :ni "M-k" #'evil-window-up
+ ;; overrides downcase-word
+ :ni "M-l" #'evil-window-right
+
+ ;; hold shift to drag the window with you
+ :ni "M-H" #'+evil/window-move-left
+ :ni "M-J" #'+evil/window-move-down
+ :ni "M-K" #'+evil/window-move-up
+ :ni "M-L" #'+evil/window-move-right
+
+ ;; easy splits
+ :ni "M-\\" #'evil-window-split
+ :ni "M-RET" #'evil-window-vsplit
+ :ni "M-DEL" #'+workspace/close-window-or-workspace
+
+ "M-o" #'evil-window-next)
+
+(map! :after evil-org
+      :map evil-org-mode-map
+      :niv "M-h" #'evil-window-left
+      :niv "M-j" #'evil-window-down
+      :niv "M-k" #'evil-window-up
+      :niv "M-l" #'evil-window-right
+
+      :niv "M-H" #'+evil/window-move-left
+      :niv "M-J" #'+evil/window-move-down
+      :niv "M-K" #'+evil/window-move-up
+      :niv "M-L" #'+evil/window-move-right
+
+      ;; these override things I never use
+      :niv "C-M-h" #'org-metaleft
+      :niv "C-M-j" #'org-metadown
+      :niv "C-M-k" #'org-metaup
+      :niv "C-M-l" #'org-metaright
+
+      ;; add shift to org-mode tree maniplations shortcuts
+      :niv "C-M-S-h" #'org-shiftmetaleft
+      :niv "C-M-S-j" #'org-shiftmetadown
+      :niv "C-M-S-k" #'org-shiftmetaup
+      :niv "C-M-S-l" #'org-shiftmetaright
+
+      :niv "M-\\" #'evil-window-split
+      :niv "M-RET" #'evil-window-vsplit
+      :niv "M-DEL" #'+workspace/close-window-or-workspace)
+
+(map! :after evil-org-agenda
+      :map evil-org-agenda-mode-map
+      ;; I never use the defaults
+      :m "M-h" #'evil-window-left
+      :m "M-j" #'evil-window-down
+      :m "M-k" #'evil-window-up
+      :m "M-l" #'evil-window-right
+
+      :m "M-H" #'+evil/window-move-left
+      :m "M-J" #'+evil/window-move-down
+      :m "M-K" #'+evil/window-move-up
+      :m "M-L" #'+evil/window-move-right
+
+      :m "M-\\" #'evil-window-split
+      :m "M-RET" #'evil-window-vsplit
+      :m "M-DEL" #'+workspace/close-window-or-workspace
+
+      :m "W" 'bergheim/org-agenda-toggle-work
+      :m "T" 'bergheim/org-agenda-mark-done-and-add-followup)
+
+(map! :after treemacs
+      :map treemacs-mode-map
+
+      ;; this overrides expand, but tab does that as well
+      "M-h" #'evil-window-left
+      "M-j" #'evil-window-down
+      "M-k" #'evil-window-up
+      "M-l" #'evil-window-right)
