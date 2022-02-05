@@ -54,7 +54,7 @@ super + shift + F12
 
 # run command
 super + r
-  rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji"
+  rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji,unifont:rofimoji,power:rofi-power-menu"
 
 # switch window
 alt + Tab
@@ -93,3 +93,18 @@ super + F10
 # toggle redshift
 super + F11
   pkill -USR1 '^redshift$'
+
+# close notification
+ctrl + alt + grave
+  dunstctl close
+
+# restore notification
+ctrl + alt + Tab
+  dunstctl history-pop
+
+# super + ctrl + grave
+  # dunstctl close-all
+
+# act on notificatoin
+super + alt + grave
+  dunstctl context
