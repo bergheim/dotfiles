@@ -54,7 +54,7 @@ super + shift + F12
 
 # run command
 super + r
-  rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji,unifont:rofimoji,power:rofi-power-menu"
+  rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji,unifont:rofimoji,Power Menu:rofi-power-menu"
 
 # switch window
 alt + Tab
