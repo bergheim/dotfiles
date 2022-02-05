@@ -198,3 +198,6 @@
       (progn
         (put 'bergheim/toggle-maximize 'enabled t)
         (doom/window-maximize-buffer))))
+
+(use-package! auto-dim-other-buffers
+  :hook (after-init . auto-dim-other-buffers-mode))
