@@ -59,6 +59,8 @@
 
 (package! mu4e-alert :disable t)
 
+(package! auto-dim-other-buffers)
+
 (package! heaven-and-hell)
 (package! doct)
 (package! rainbow-mode)
