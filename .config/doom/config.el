@@ -189,3 +189,12 @@
            (summary (substring-no-properties (magit-format-rev-summary rev)))
            (desc (format "%s (%s)" summary repo)))
       (push (list link desc) org-stored-links))))
+(defun bergheim/toggle-maximize ()
+  (interactive)
+  (if (get 'bergheim/toggle-maximize 'enabled)
+      (progn
+        (put 'bergheim/toggle-maximize 'enabled nil)
+        (winner-undo))
+      (progn
+        (put 'bergheim/toggle-maximize 'enabled t)
+        (doom/window-maximize-buffer))))
