@@ -146,10 +146,6 @@
                  (tramp-remote-shell "/bin/sh")
                  (tramp-remote-shell-args ("-c")))))
 
-;; what the fuck is winum
-;; (require 'winum)
-;; (winum-mode)
-
 (load! "colors")
 (load! "keybindings")
 

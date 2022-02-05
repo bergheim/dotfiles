@@ -1,10 +1,5 @@
 ;;; ~/.config/doom/+org.el -*- lexical-binding: t; -*-
 
-(map! :after evil-org-agenda
-      :map evil-org-agenda-mode-map
-      :m "W" 'bergheim/org-agenda-toggle-work
-      :m "T" 'bergheim/org-agenda-mark-done-and-add-followup)
-
 (add-to-list 'org-modules 'org-habit)
 
 ;; I.. don't know what this comes from
