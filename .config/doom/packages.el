@@ -48,7 +48,6 @@
 
 (package! org-mru-clock)
 
-(package! counsel-org-clock)
 (package! org-super-agenda)
 (package! org-ql)
 
@@ -56,13 +55,13 @@
 ;; (package! org-projectile)
 (package! org-fancy-priorities)
 ;; (package! helm-org-rifle)
+(package! doct)
 
 (package! mu4e-alert :disable t)
 
 (package! auto-dim-other-buffers)
 
 (package! heaven-and-hell)
-(package! doct)
 (package! rainbow-mode)
 ;; allows you to search in a browser from emacs
 ;; (package! engine-mode)
