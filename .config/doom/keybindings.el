@@ -99,7 +99,8 @@
  :ni "M-RET" #'evil-window-vsplit
  :ni "M-DEL" #'+workspace/close-window-or-workspace
 
- "M-o" #'evil-window-next)
+ "M-o" #'evil-window-next
+ "M-f" #'bergheim/toggle-maximize)
 
 (map! :after evil-org
       :map evil-org-mode-map
