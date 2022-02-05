@@ -134,6 +134,18 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                 (url-encode-url subject) (url-encode-url from) (url-encode-url to))))
       (_ (display-warning :warning (format "Account \"%s\" not found!" account))))))
 
+;; ;; http://www.emacswiki.org/emacs/FlySpell#toc5
+;; (defun fd-switch-dictionary()
+;;   (interactive)
+;;   (let* ((dic ispell-current-dictionary)
+;;          (change (if (string= dic "afrikaans") "english" "afrikaans")))
+;;     (ispell-change-dictionary change)
+;;     (message "Dictionary switched from %s to %s" dic change)))
+
+
+;; (add-hook 'message-send-hook (lambda () (org-store-link nil)))
+
+
 (defun bergheim/mu4e-read-later (msg)
   (interactive)
   (call-interactively 'org-store-link)
@@ -152,14 +164,21 @@ Includes BCC emails, but does not include CC, because that point just use from:a
     (call-interactively 'org-store-link)))
 
 ;; This makes mu4e buffers more prominent. Read doom-real-buffer-p
-;; (add-hook 'mu4e-headers-mode-hook #'doom-mark-buffer-as-real-h)
-;; (add-hook 'mu4e-view-mode-hook #'doom-mark-buffer-as-real-h)
+(add-hook 'mu4e-headers-mode-hook #'doom-mark-buffer-as-real-h)
+(add-hook 'mu4e-view-mode-hook #'doom-mark-buffer-as-real-h)
 
 (use-package! org-msg
   :init
   (setq org-msg-greeting-fmt "Hello%s,\n\n"
         org-msg-signature bergheim/signature-html
         org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil tex:dvipng \\n:t"))
+
+(use-package! mu4e-query-fragments
+  :init
+  (setq mu4e-query-fragments-list
+        '(("%junk" . "maildir:/Junk OR subject:SPAM")
+          ("%hidden" . "flag:trashed OR %junk")))
+  (setq mu4e-query-fragments-append "NOT %hidden"))
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name

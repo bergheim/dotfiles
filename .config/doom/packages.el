@@ -46,28 +46,37 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
+(package! tao-theme)
+
 (package! org-mru-clock)
 
-(package! counsel-org-clock)
+;; (package! counsel-org-clock)
+
 (package! org-super-agenda)
 (package! org-ql)
+(package! org-recent-headings)
 
 ;; https://github.com/IvanMalison/org-projectile
 ;; (package! org-projectile)
 (package! org-fancy-priorities)
 ;; (package! helm-org-rifle)
+(package! ox-report)
+(package! doct)
 
 (package! mu4e-alert :disable t)
+(package! mu4e-query-fragments)
+
+(package! affe)
 
 (package! auto-dim-other-buffers)
 
 (package! heaven-and-hell)
-(package! doct)
 (package! rainbow-mode)
 ;; allows you to search in a browser from emacs
 ;; (package! engine-mode)
 (package! restclient)
 
+;; (package! excorporate)
 
 ;; this is useful for things like org repos
 (package! git-auto-commit-mode)

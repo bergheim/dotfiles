@@ -63,7 +63,7 @@ font-6 = "Material Icons:pixelsize=16"
 modules-left = bspwm i3
 ;modules-left = xworkspaces
 modules-center = xwindow
-modules-right = xbacklight notice org-mode spotify memory cpu eth battery temperature date xkeyboard pulseaudio-control
+modules-right = xbacklight notice org-mode spotify yr-weather memory cpu eth battery temperature date xkeyboard pulseaudio-control
 
 cursor-click = pointer
 cursor-scroll = ns-resize
@@ -471,7 +471,7 @@ format-underline = ${colors.secondary}
 
 [module/yr-weather]
 type = custom/script
-exec = ~/.config/polybar/yr.py
+exec = ~/.config/polybar/yr/yr.sh
 interval = 1800
 label = %output%
 format = <label>

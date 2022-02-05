@@ -6,6 +6,23 @@
     "n j o" #'org-journal-open-current-journal-file)
 
    (:prefix ("d" . "custom bindings")
+
+    ;; "f" (lambda () (interactive) (progn (eval-defun) (doom/reload-font)))
+    ;; "f" (lambda () (interactive) (progn (execute-kbd-macro (kbd "C-M-x"))
+    ;;                                      (doom/reload-font)))
+
+    (:desc "Find a file in HOME" "f"
+     (λ! (affe-find "~/")))
+    (:desc "Grep in dev" "G"
+     (λ! (affe-grep "~/dev")))
+
+    ;; (:desc "Journal entry" "j" 'org-roam-dailies-capture-today)
+    (:prefix ("j" . "journal")
+      (:desc "Todays entry" "t" 'org-roam-dailies-goto-today)
+      (:desc "New entry" "j" 'org-roam-dailies-capture-today))
+
+    ;; (define-key org-agenda-mode-map "F" 'my-org-agenda-mark-done-and-add-followup)
+    ;; evil-find-char-to-backward
      (:prefix ("g" . "git")
        "y" 'bergheim-toggle-yadm
        "d" 'magit-diff-buffer-file
@@ -49,6 +66,8 @@
       (:desc "Today's email" "t" 'bergheim/mu4e-email-today)
       (:desc "Today's unhandled email" "T" 'bergheim-email-today-or-unread)
       (:desc "Today's work email" "w" 'bergheim-email-work-inbox)
+      ;; (:desc "Today's work email" "w" (lambda () (bergheim/mail-search "maildir:/neptune/Inbox/")))
+      ;; (:desc "Today's sent email" "w" '(my/mail-search "maildir:/Sent/"))
       (:desc "Today's personal email" "p" 'bergheim-email-personal-inbox)
       (:desc "This weeks email" "W" 'bergheim-email-week)
       (:desc "Update index" "u" 'mu4e-update-index)
@@ -60,7 +79,8 @@
      "e" 'elfeed
 
      (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive) (org-agenda arg "d")))
-     (:desc "Email Dashboard" "s" 'bergheim/mu4e-email-today)
+     (:desc "Email Dashboard today" "s" 'bergheim/mu4e-email-today)
+     (:desc "Email Dashboard week" "S" (λ! (bergheim/mu4e-email-today "1w")))
      (:desc "Orgmode Work" "w" 'bergheim/org-agenda-work-items)
 
      (:prefix ("r" . "Recent")
@@ -77,6 +97,15 @@
 
      "t" 'heaven-and-hell-toggle-theme
      "T" 'heaven-and-hell-load-default-theme)))
+
+;; lets try some hyper shortcuts
+(define-key (current-global-map) (kbd "H-h") 'evil-window-left)
+(define-key (current-global-map) (kbd "H-l") 'evil-window-right)
+(define-key (current-global-map) (kbd "H-j") 'evil-window-down)
+(define-key (current-global-map) (kbd "H-k") 'evil-window-up)
+(define-key (current-global-map) (kbd "H-k") 'evil-window-up)
+(define-key (current-global-map) (kbd "H-d") 'evil-window-delete)
+(define-key (current-global-map) (kbd "H-s") 'evil-window-vsplit)
 
 (map!
  ;; overrides (mark-paragraph)

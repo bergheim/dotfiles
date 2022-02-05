@@ -3,6 +3,10 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+(autoload #'+mu4e-colorize-str
+          (doom-module-path :email 'mu4e
+                            "autoload/email.el"))
+
 (after! doom-modeline
   (setq doom-modeline-display-default-persp-name t
         doom-modeline-persp-name t ;; TODO make it easier to see
@@ -17,12 +21,19 @@
 (setq which-key-idle-delay 0.3)
 ;; (which-key-mode 1)
 
+(global-auto-revert-mode 1)
+
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
 
 ;; this will draw a vertical line to indicate line length
 (global-display-fill-column-indicator-mode 0)
 (setq-default fill-column 100)
+
+;; (setq doom-localleader-key "M-SPC")
+
+;; Not sure if I want all the popups to be at the bottom
+(set-popup-rule! "^\\*\\([Hh]elp\\|Apropos\\)" :ignore t)
 
 ;; TODO is this relevant anymore?
 (when IS-MAC
@@ -146,16 +157,105 @@
                  (tramp-remote-shell "/bin/sh")
                  (tramp-remote-shell-args ("-c")))))
 
-(load! "colors")
+;; (load! "colors")
 (load! "keybindings")
+;; (load! "playground")
 
+;; (setq-default
+;;  ;; configure email address and office 365 exchange server adddress for exchange web services
+;;  excorporate-configuration (quote ("thomas.bergheim@neptune-software.com" . "https://outlook.office.com/EWS/Exchange.asmx"))
+;;  excorporate-calendar-show-day-function 'exco-calfw-show-day
+;;  ;; integrate emacs diary entries into org agenda
+;;  org-agenda-include-diary t)
+
+;; ;; activate excorporate and request user/password to start connection
+;; (excorporate)
+;; ;; enable the diary integration (i.e. write exchange calendar to emacs diary file -> ~/.emacs.d/diary must exist)
+;; (excorporate-diary-enable)
+
+(defun ab/agenda-update-diary ()
+  "call excorporate to update the diary for today"
+  (interactive)
+  (exco-diary-diary-advice (calendar-current-date) (calendar-current-date) #'message "diary updated"))
+
+;; update the diary every time the org agenda is refreshed
+;; (add-hook 'org-agenda-cleanup-fancy-diary-hook 'ab/agenda-update-diary)
+
+(after! calfw
+  (defun +calendar/open-calendar ()
+    "My calendar definition"
+    (interactive)
+    (cfw:open-calendar-buffer
+     :contents-sources
+     (list
+      (cfw:org-create-source "Green")  ; orgmode source
+      (cfw:cal-create-source "Orange") ; diary source
+      (cfw:ical-create-source "gcal" "https://outlook.office365.com/owa/calendar/208b4b6d7a684468b31d3ff871c8bd36@neptune-software.com/9a6efeb08d4147bfaba632c27ad8acae3535930821978552604/calendar.ics" "IndianRed")))))
 
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
 
+
+;; (load! "+mu4e")
+
+(use-package! mu4e
+  :config
+  (require 'mu4e-headers)
+  (defun bergheim/mail-search (query)
+    "Perform a mu4e query"
+    (interactive)
+    (mu4e-headers-search-bookmark query))
+
+  (defun bergheim/mu4e-email-today(&optional lookback)
+    "Opens the inbox with unread and by default shows todays email
+
+If LOOKBACK is specified, use that instead of 1d.
+If \\[universal-argument\] if called before this, show a week back."
+    (interactive)
+    (let ((mu4e-headers-include-related t)
+          (mu4e-headers-show-threads t)
+          (mu4e-headers-sort-field :date)
+          (mu4e-headers-sort-direction :ascending))
+
+      (when (not lookback)
+        (setq lookback "1d"))
+      (if current-prefix-arg
+        (setq lookback "1w"))
+
+      (mu4e-headers-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
+
+  (defun bergheim/mu4e-email-sent()
+    (interactive)
+    (mu4e-headers-search-bookmark "maildir:/Sent/")))
+
+;; note: this will kill your drafts and bulk actions!
+;; (map! :after mu4e-headers
+;;       :map mu4e-headers-mode-map
+;;       :n "q" 'mu4e-quit)
+
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
 
+;; (defun maybe-use-prettier ()
+;;   "Enable prettier-js-mode if .prettierrc or .prettierrc.json or .prettierrc.js file is located."
+;;   (if (or (locate-dominating-file default-directory ".prettierrc")
+;;        (or (locate-dominating-file default-directory ".prettierrc.json"))
+;;        (or (locate-dominating-file default-directory ".prettierrc.js")))
+;;         (prettier-js-mode +1)))
+;;
+;; (use-package! prettier-js)
+;; (after! prettier-js
+;;   :config
+;;   (setq! prettier-js-args '(
+;;                              "--trailing-comma" "all"
+;;                              "--bracket-spacing" "true"
+;;                              )))
+;; (add-hook! '(
+;;               js2-mode-hook
+;;               rjsx-mode-hook
+;;               web-mode-hook
+;;               typescript-mode-hook
+;;               typescript-tsx-mode-hook) 'maybe-use-prettier)
 
 ;; this breaks org-msg at the moment
 ;; (setq +format-on-save-enabled-modes
@@ -189,6 +289,12 @@
            (summary (substring-no-properties (magit-format-rev-summary rev)))
            (desc (format "%s (%s)" summary repo)))
       (push (list link desc) org-stored-links))))
+
+(use-package! affe
+  :config
+    ;; (setq affe-find-command "fd -HI -t f")
+    (setq affe-find-command "rg --color=never --hidden --files"))
+
 (defun bergheim/toggle-maximize ()
   (interactive)
   (if (get 'bergheim/toggle-maximize 'enabled)
