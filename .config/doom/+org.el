@@ -190,27 +190,28 @@
                       (org-agenda-start-day (org-today))
                       ;; (org-agenda-remove-tags t)
                       ;; (org-agenda-current-time-string "ᐊ┈┈┈┈┈┈┈ Now")
+                      ;; (org-agenda-show-log nil)
                       (org-super-agenda-groups
-                       '((:name "And make sure you keep up these 🔥"
+                       '((:name "Keep your habits up 🔥"
                           :habit t
-                          :order 3)
+                          :order 4)
                          (:name "Logged 📅" :log t :order 15)
-                         (:name "This is how your day looks "
-                          ;; :habit nil
-                          ;; :discard (:habit t)
-                          ;; :log '(closed clock)
+                         ;; (:name "Done today" :discard (:log t))
+                         (:name "This is how your day looks 🌞"
                           :time-grid t
                           :order 1)
-                         (:name "First, do one of these 🗲"
-                          ;; :discard (:not (:tag "@work"))
+                         (:name "First, do one of these 🐸"
                           :and (:deadline today :priority "A")
                           :deadline today
                           :and (:deadline past :priority "A")
                           :and (:scheduled t :priority "A")
                           :and (:scheduled past :priority "A")
                           :deadline past
-                          :scheduled past
                           :order 2)
+
+                         (:name "Waiting.. 鈴"
+                          :todo "WAITING"
+                          :order 4)
 
                          (:name "Scheduled for today ⏰"
                           :scheduled today
@@ -218,11 +219,11 @@
 
                          (:name "Upcoming deadlines 🚌"
                           :deadline future
-                          :order 4)
+                          :order 5)
                          (:name "Do you still need to do these? 🤔"
-                          :discard (:anything t)
+                          ;; :discard (:anything t)
                           :scheduled past
-                          :order 10)))))))
+                          :order 5)))))))
 
         ("W" "Dashboard for the week"
          ((agenda "" ((org-agenda-overriding-header "Dashboard")
