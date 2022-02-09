@@ -6,6 +6,10 @@
     "n j o" #'org-journal-open-current-journal-file)
 
    (:prefix ("d" . "custom bindings")
+
+    (:desc "Pop up dired" "b" 'bergheim/dired--other-window)
+    ;; norton commander style
+    (:desc "Pop up dired" "B" 'dired-jump-other-window)
      (:prefix ("g" . "git")
        "y" 'bergheim-toggle-yadm
        "d" 'magit-diff-buffer-file
