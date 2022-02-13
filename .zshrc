@@ -147,14 +147,18 @@ DEFAULT_USER=tsb # only show username, not username@hostname
 autoload colors && colors
 setopt prompt_subst # Make sure propt is able to be generated properly.
 
+my_grep_options=(--color=auto --exclude-dir=.cvs --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn)
+
 case `uname` in
   Darwin)
 	alias ls='ls -G'
 	alias o='open'
+	alias grep="ggrep"
   ;;
   Linux)
 	alias ls='ls --color'
 	alias o='xdg-open'
+	alias grep='grep $my_grep_options' egrep='grep -E $my_grep_options' fgrep='grep -F $my_grep_options'
   ;;
 esac
 
@@ -266,9 +270,6 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # preview
 export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -200'"
-
-my_grep_options=(--color=auto --exclude-dir=.cvs --exclude-dir=.git --exclude-dir=.hg --exclude-dir=.svn)
-alias grep='grep $my_grep_options' egrep='grep -E $my_grep_options' fgrep='grep -F $my_grep_options'
 
 # fd - cd to selected directory
 cdf() {
