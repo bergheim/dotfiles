@@ -44,6 +44,18 @@ super + @F1
 super + @F2
   screenshot -a && notify-send -u low 'Screenshot area captured'
 
+# toggle alacitty dark/white
+super + shift + F10
+  notify-send "Toggling alacritty colors" --icon=utilities-terminal --category=os && alacritty-colorscheme toggle "gruvbox_light.yaml" "nord.yaml"
+
+# toggle desktop dark/white
+super + F10
+  desktop-toggle-color
+
+# toggle redshift
+super + F7
+  notify-send "Toggling redshift" --icon=preferences-desktop-screensaver --category=os && pkill -USR1 '^redshift$'
+
 # lock screen
 super + F12
   exec fancylocki3
@@ -81,18 +93,6 @@ XF86AudioMute
 # org-capture
 super + semicolon
   ~/.emacs.d/bin/org-capture
-
-# toggle alacitty dark/white
-super + shift + F10
-  notify-send "Toggling alacritty colors" --icon=utilities-terminal --category=os && alacritty-colorscheme toggle "gruvbox_light.yaml" "nord.yaml"
-
-# toggle desktop dark/white
-super + F10
-  desktop-toggle-color
-
-# toggle redshift
-super + F11
-  notify-send "Toggling redshift" --icon=preferences-desktop-screensaver --category=os && pkill -USR1 '^redshift$'
 
 # close notification
 ctrl + alt + grave
