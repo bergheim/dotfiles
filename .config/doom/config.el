@@ -24,10 +24,6 @@
 (global-display-fill-column-indicator-mode 0)
 (setq-default fill-column 100)
 
-;; TODO is this relevant anymore?
-(when IS-MAC
-  (setq ns-use-thin-smoothing t))
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Thomas Bergheim"
@@ -39,6 +35,17 @@
       ;; this messes with all-the-icons, leave it
       ;; doom-unicode-font (font-spec :family "Input Mono")
       doom-serif-font (font-spec :family "Literation Serif NerdFont"))
+
+(when IS-MAC
+  ;; TODO is this relevant anymore?
+  (setq ns-use-thin-smoothing t)
+  (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 14)
+        doom-big-font (font-spec :family "JetBrainsMono Nerd Font" :size 22)
+        doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font")
+        ;; this messes with all-the-icons, leave it
+        ;; doom-unicode-font (font-spec :family "Input Mono")
+        doom-serif-font (font-spec :family "Noto Serif Myanmar"))
+  (add-hook 'window-setup-hook #'toggle-frame-maximized))
 
 (setq doom-theme 'doom-material)
 
