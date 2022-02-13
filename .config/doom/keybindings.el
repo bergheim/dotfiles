@@ -27,6 +27,10 @@
     (:desc "Grep in dev" "G"
      (λ! (affe-grep "~/dev")))
 
+    (:prefix ("j" . "journal")
+      (:desc "Todays entry" "t" 'org-roam-dailies-goto-today)
+      (:desc "New entry" "j" 'org-roam-dailies-capture-today))
+
      (:prefix ("g" . "git")
        "y" 'bergheim-toggle-yadm
        "d" 'magit-diff-buffer-file
@@ -34,6 +38,7 @@
 
      (:prefix ("o" . "org")
        "a" 'org-agenda
+       "b" 'bergheim/org--open-attachments
        "g" 'org-clock-goto
        "i" 'org-clock-in
        "n" 'org-add-note
@@ -81,7 +86,8 @@
      "e" 'elfeed
 
      (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive) (org-agenda arg "d")))
-     (:desc "Email Dashboard" "s" 'bergheim/mu4e-email-today)
+     (:desc "Email Dashboard today" "s" 'bergheim/mu4e-email-today)
+     (:desc "Email Dashboard week" "S" (λ! (bergheim/mu4e-email-today "1w")))
      (:desc "Orgmode Work" "w" 'bergheim/org-agenda-work-items)
 
      (:prefix ("r" . "Recent")
@@ -116,12 +122,13 @@
  :ni "M-L" #'+evil/window-move-right
 
  ;; easy splits
- :ni "M-\\" #'evil-window-split
- :ni "M-RET" #'evil-window-vsplit
+ :ni "M-\\" #'evil-window-vsplit
+ :ni "M-]" #'evil-window-split
  :ni "M-DEL" #'+workspace/close-window-or-workspace
 
  "M-o" #'evil-window-next
- "M-f" #'bergheim/toggle-maximize)
+ "M-f" #'doom/window-maximize-buffer
+ "M-F" #'winner-undo)
 
 (map! :after evil-org
       :map evil-org-mode-map
@@ -147,8 +154,8 @@
       :niv "C-M-S-k" #'org-shiftmetaup
       :niv "C-M-S-l" #'org-shiftmetaright
 
-      :niv "M-\\" #'evil-window-split
-      :niv "M-RET" #'evil-window-vsplit
+      :niv "M-\\" #'evil-window-vsplit
+      :niv "M-]" #'evil-window-split
       :niv "M-DEL" #'+workspace/close-window-or-workspace)
 
 (map! :after evil-org-agenda
@@ -164,8 +171,8 @@
       :m "M-K" #'+evil/window-move-up
       :m "M-L" #'+evil/window-move-right
 
-      :m "M-\\" #'evil-window-split
-      :m "M-RET" #'evil-window-vsplit
+      :m "M-\\" #'evil-window-vsplit
+      :m "M-RET" #'evil-window-split
       :m "M-DEL" #'+workspace/close-window-or-workspace
 
       :m "W" 'bergheim/org-agenda-toggle-work
@@ -179,3 +186,31 @@
       "M-j" #'evil-window-down
       "M-k" #'evil-window-up
       "M-l" #'evil-window-right)
+
+(map! :after dired
+
+      :map ranger-mode-map
+      "M-h" #'evil-window-left
+      "M-j" #'evil-window-down
+      "M-k" #'evil-window-up
+      "M-l" #'evil-window-right
+
+      "M-\\" #'evil-window-vsplit
+      "M-]" #'evil-window-split
+      "M-DEL" #'+workspace/close-window-or-workspace
+
+      "M-1" #'+workspace/switch-to-0
+      "M-2" #'+workspace/switch-to-1
+      "M-3" #'+workspace/switch-to-2
+
+      :map dired-mode-map
+
+      (:leader
+       (:prefix ("m" . "custom bindings")
+        (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
+        (:desc "Create empty file" "c" 'dired-create-empty-file)
+        (:desc "Attach to org node" "o" 'org-attach-dired-to-subtree)
+        (:desc "MOVE to org node" "O" 'bergheim/org--move-attach-dired-to-subtree)
+        (:desc "Attach to email" "m" 'gnus-dired-attach)
+        (:desc "Ranger to dired" "d" 'ranger-to-dired)
+        (:desc "Dired to ranger" "r" 'deer-from-dired))))

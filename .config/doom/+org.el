@@ -739,3 +739,23 @@ Lisp programs can force the template by setting KEYS to a string."
                  (if (equal org-state "DONE")
                      (my/org-roam-copy-todo-to-today)
                    (org-save-all-org-buffers)))))
+
+(defun bergheim/org--open-attachments ()
+  "Open an attachment of the current outline node using xdg-open"
+  (interactive)
+  (let ((attach-dir (org-attach-dir)))
+    (if attach-dir
+        (browse-url-xdg-open attach-dir)
+      (error "No attachment directory exist"))))
+
+(defun bergheim/org--move-attach-dired-to-subtree (files)
+  "Inserts the contents into the subtree, and deletes the FILES if it was successfull"
+  (interactive
+   (list (dired-get-marked-files)))
+  ;; (save-window-excursion
+    ;; (condition-case nil
+        (progn
+          (org-attach-dired-to-subtree files)
+          (dired-do-delete)
+          (message "Files moved to org")))
+      ;; (error nil)))
