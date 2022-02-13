@@ -52,6 +52,10 @@
       ;;don't show tasks as scheduled if they are already shown as a deadline
       org-agenda-skip-scheduled-if-deadline-is-shown t
 
+      ;; include things from Emacs' calendar diary
+      org-agenda-include-diary t
+      org-agenda-insert-diary-extract-time t
+
       org-agenda-skip-scheduled-if-done t
       org-agenda-skip-deadline-if-done t
       org-agenda-include-deadlines t
@@ -71,6 +75,9 @@
       org-agenda-start-with-log-mode t
 
       org-log-into-drawer t
+
+      ;; TODO: remove this if it results in too much slowdown. Time spc n S for instance
+      org-use-property-inheritance t
 
       org-journal-date-format "%B %d, %Y - %A"
       org-journal-file-format "%Y%m.org"
@@ -97,6 +104,7 @@
       ;; the agenda
       org-agenda-files (append (file-expand-wildcards "~/org/*.org")
                                (file-expand-wildcards "~/org/roam/*.org")
+                               (directory-files-recursively "~/org/neptune" "\\.org$")
                                (directory-files-recursively "~/org/projects" "\\.org$")
                                (directory-files-recursively "~/org/journal" "\\.org$"))
 
@@ -131,8 +139,11 @@
       org-clock-out-remove-zero-time-clocks nil
       ;; keep history between sessions
       org-clock-persist 'history
-
       ;; TODO: check out org-clock-persistence-insinuate
+
+      ;; org-archive-location "archive/%s_archive::datetree/"
+
+      org-attach-id-dir "data/"
 
       org-protocol-default-template-key "z")
 
@@ -194,7 +205,7 @@
                       (org-super-agenda-groups
                        '((:name "Keep your habits up 🔥"
                           :habit t
-                          :order 4)
+                          :order 3)
                          (:name "Logged 📅" :log t :order 15)
                          ;; (:name "Done today" :discard (:log t))
                          (:name "This is how your day looks 🌞"
@@ -207,11 +218,11 @@
                           :and (:scheduled t :priority "A")
                           :and (:scheduled past :priority "A")
                           :deadline past
-                          :order 2)
+                          :order 3)
 
                          (:name "Waiting.. 鈴"
                           :todo "WAITING"
-                          :order 4)
+                          :order 5)
 
                          (:name "Scheduled for today ⏰"
                           :scheduled today
@@ -219,11 +230,17 @@
 
                          (:name "Upcoming deadlines 🚌"
                           :deadline future
-                          :order 5)
+                          :order 6)
+
+                         (:name "Follow up 📝"
+                          :tag "email"
+                          :order 4)
+
                          (:name "Do you still need to do these? 🤔"
                           ;; :discard (:anything t)
                           :scheduled past
-                          :order 5)))))))
+                          :order 5)
+                         ))))))
 
         ("W" "Dashboard for the week"
          ((agenda "" ((org-agenda-overriding-header "Dashboard")
@@ -364,7 +381,7 @@
                   (cons (org-element-property :raw-value elem) elem))
                 (org-ql-query
                   :select #'element-with-markers
-                  ;; :from (org-agenda-files)
+                  :from (org-agenda-files)
                   :where '(ts :from -100 :to today)
                   :order-by '(reverse date)))
                ;; only take the most recently clocked item
@@ -532,9 +549,10 @@
                            :headline "Meetings"
                            :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
-              ("Quickly capture to clocked in task" :keys "c"
-               :icon ("email" :set "material" :color "silver")
+              ("Capture to clocked in task" :keys "c"
+               :icon ("email" :set "material" :color "green")
                :type entry
+               :prepend t
                :clock t
                :template-file ,(expand-file-name "clocked.org" org-capture-custom-template-directory))
 
@@ -548,32 +566,36 @@
                :default-tags "@work:interrupted"
                :template-file ,(expand-file-name "interrupted.org" org-capture-custom-template-directory))
 
-              ("Daily review"
-               :icon ("sticky-note-o" :set "faicon" :color "green")
-               :keys "n"
-               :file "~/org/review.org"
-               :headline "Daily"
+              ("Review"
+               :keys "r"
+               :icon ("rate_review" :set "material" :color "yellow")
                :type entry
                :clock-in t
                :clock-keep t
-               :jump-to-captured t
-               :default-tags "@work:daily:review"
-               :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
-
-              ("Weekly review"
-               :icon ("sticky-note-o" :set "faicon" :color "green")
-               :keys "m"
                :file "~/org/review.org"
-               :headline "Weekly"
-               :type entry
-               :clock-in t
-               :clock-keep t
                :jump-to-captured t
-               :default-tags "@work:weeklyreview:review"
-               :template-file ,(expand-file-name "review-weekly.org" org-capture-custom-template-directory))
+               :default-tags "review"
+               :children (("Daily review"
+                            :icon ("today" :set "material" :color "green")
+                            :keys "r"
+                            :headline "Daily"
+                            :default-tags "@work:daily:review"
+                            :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
+                           ("Weekly review"
+                            :icon ("weekend" :set "material" :color "green")
+                            :keys "w"
+                            :headline "Weekly"
+                            :default-tags "@work:weekly:review"
+                            :template-file ,(expand-file-name "review-weekly.org" org-capture-custom-template-directory))
+                           ("Monthly review"
+                            :icon ("lightbulb-o" :set "faicon" :color "green")
+                            :keys "m"
+                            :headline "Monthly"
+                            :default-tags "@work:monthly:review"
+                            :template-file ,(expand-file-name "review-monthly.org" org-capture-custom-template-directory))))
 
               ("Add contact" :keys "C"
-               :icon ("person" :set "octicon" :color "silver")
+               :icon ("person" :set "octicon" :color "green")
                :type entry
                :headline "People"
                :file "~/org/contacts.org"
@@ -586,7 +608,7 @@
 :END:"))
 
               ("Active project" :keys "a"
-               :icon ("repo" :set "octicon" :color "silver")
+               :icon ("repo" :set "octicon" :color "green")
                :prepend t
                :type entry
                :headline "Inbox"
@@ -608,7 +630,7 @@
 
 
               ("Protocol Link Marked" :keys "z"
-               :icon ("bookmark" :set "octicon" :color "silver")
+               :icon ("stop" :set "octicon" :color "red")
                :type entry
                :prepend t
                :headline "Protocol"
@@ -617,7 +639,7 @@
                :template-file ,(expand-file-name "protocol-marked.org" org-capture-custom-template-directory))
 
               ("Protocol Link Unmarked" :keys "Z"
-               :icon ("bookmark" :set "octicon" :color "silver")
+               :icon ("stop" :set "octicon" :color "red")
                :type entry
                :prepend t
                :headline "Protocol"
@@ -626,7 +648,7 @@
                :template-file ,(expand-file-name "protocol-unmarked.org" org-capture-custom-template-directory))
 
               ("Protocol Link Active Task" :keys "o"
-               :icon ("bookmark" :set "octicon" :color "silver")
+               :icon ("stop" :set "octicon" :color "red")
                :type entry
                :prepend t
                :clock t
@@ -634,7 +656,7 @@
                :template-file ,(expand-file-name "protocol-active-task.org" org-capture-custom-template-directory))
 
               ("Email Workflow" :keys "e"
-               :icon ("email" :set "material" :color "silver")
+               :icon ("stop" :set "octicon" :color "red")
                :type entry
                :file +org-capture-mail-file
                :immediate-finish t
@@ -645,32 +667,7 @@
                            )
                           ("Read Later" :keys "l"
                            :template-file ,(expand-file-name "email-read-later.org" org-capture-custom-template-directory)
-                           :headline "Read Later")))
-
-              ("Interesting"
-               :keys "i"
-               :icon ("eye" :set "faicon" :color "lcyan")
-               :file +org-capture-todo-file
-               :prepend t
-               :headline "Interesting"
-               :type entry
-               :template-file ,(expand-file-name "interesting.org" org-capture-custom-template-directory)
-               :children (("Webpage" :keys "w"
-                           :icon ("globe" :set "faicon" :color "green")
-                           :desc "%(org-cliplink-capture) "
-                           :i-type "read:web")
-                          ("Article" :keys "a"
-                           :icon ("file-text" :set "octicon" :color "yellow")
-                           :desc ""
-                           :i-type "read:reaserch")
-                          ("Information" :keys "i"
-                           :icon ("info-circle" :set "faicon" :color "blue")
-                           :desc ""
-                           :i-type "read:info")
-                          ("Idea" :keys "I"
-                           :icon ("bubble_chart" :set "material" :color "silver")
-                           :desc ""
-                           :i-type "idea"))))))
+                           :headline "Read Later"))))))
 
 (defun org-capture-select-template-prettier (&optional keys)
   "Select a capture template, in a prettier way than default
@@ -713,7 +710,7 @@ Lisp programs can force the template by setting KEYS to a string."
   (setq org-roam-dailies-directory "daily/"
         org-roam-dailies-capture-templates
         '(("d" "default" entry
-           "* %?"
+           "* %<%H:%M> %?\n%T"
            :target (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n"))))
 
