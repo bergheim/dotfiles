@@ -17,7 +17,8 @@ redshift & # dim the screen at night
 
 telegram-desktop &
 teams &
-discord &
+
+(sleep 5 && discord) &
 
 (sleep 5 && firefox) &
 spotify &
