@@ -189,6 +189,12 @@
            (summary (substring-no-properties (magit-format-rev-summary rev)))
            (desc (format "%s (%s)" summary repo)))
       (push (list link desc) org-stored-links))))
+
+(use-package! affe
+  :config
+    ;; (setq affe-find-command "fd -HI -t f")
+    (setq affe-find-command "rg --color=never --hidden --files"))
+
 (defun bergheim/toggle-maximize ()
   (interactive)
   (if (get 'bergheim/toggle-maximize 'enabled)

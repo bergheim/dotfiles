@@ -12,6 +12,21 @@
     (:desc "Pop up dired" "b" 'deer-jump-other-window)
     ;; norton commander style
     (:desc "Pop up dired" "B" 'deer-dual-pane)
+
+    ;; TODO: shouldn't this just be an embark command?
+    (:desc "Find a file in HOME" "f"
+     (λ! (affe-find "~/")))
+
+    ;; TODO: shouldn't this just be an embark command?
+    (:desc "Find a dir in HOME" "F"
+     (lambda (&optional arg)
+       (interactive)
+       (let ((affe-find-command "fd --color=never -t directory"))
+        (affe-find "~/"))))
+
+    (:desc "Grep in dev" "G"
+     (λ! (affe-grep "~/dev")))
+
      (:prefix ("g" . "git")
        "y" 'bergheim-toggle-yadm
        "d" 'magit-diff-buffer-file
