@@ -201,13 +201,3 @@
 
 (use-package! auto-dim-other-buffers
   :hook (after-init . auto-dim-other-buffers-mode))
-
-
-(use-package! dired
-  :config
-  (defun bergheim/dired--other-window ()
-    (interactive)
-    (if(one-window-p)
-        (evil-window-vsplit)
-      (other-window 1))
-    (dired-jump)))

@@ -8,8 +8,10 @@
    (:prefix ("d" . "custom bindings")
 
     (:desc "Pop up dired" "b" 'bergheim/dired--other-window)
+
+    (:desc "Pop up dired" "b" 'deer-jump-other-window)
     ;; norton commander style
-    (:desc "Pop up dired" "B" 'dired-jump-other-window)
+    (:desc "Pop up dired" "B" 'deer-dual-pane)
      (:prefix ("g" . "git")
        "y" 'bergheim-toggle-yadm
        "d" 'magit-diff-buffer-file
