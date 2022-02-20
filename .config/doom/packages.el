@@ -61,6 +61,8 @@
 
 (package! affe)
 
+(package! org-caldav)
+
 (package! auto-dim-other-buffers)
 
 (package! heaven-and-hell)

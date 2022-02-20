@@ -47,6 +47,10 @@
   (bergheim/vertico--without-sorting 'org-mru-clock-in))
 
 (setq org-deadline-warning-days 14
+
+      calendar-date-style 'european
+      org-icalendar-timezone "Europe/Oslo"
+      org-icalendar-alarm-time 30
       ;; show tasks scheduled or due in next fortnight
       org-agenda-span 14
       ;;don't show tasks as scheduled if they are already shown as a deadline
@@ -105,6 +109,7 @@
       org-agenda-files (append (file-expand-wildcards "~/org/*.org")
                                (file-expand-wildcards "~/org/roam/*.org")
                                (directory-files-recursively "~/org/neptune" "\\.org$")
+                               (directory-files-recursively "~/org/caldav" "\\.org$")
                                (directory-files-recursively "~/org/projects" "\\.org$")
                                (directory-files-recursively "~/org/journal" "\\.org$"))
 
@@ -146,6 +151,20 @@
       org-attach-id-dir "data/"
 
       org-protocol-default-template-key "z")
+
+(use-package! org-caldav
+  :init
+  (setq org-caldav-url bergheim/calendar-url
+        org-caldav-delete-calendar-entries 'ask
+        org-caldav-save-directory (concat org-directory "caldav")
+        org-caldav-calendar-id "personal"
+        org-caldav-inbox (concat org-directory "caldav/personal.org")
+        org-caldav-calendars `((:calendar-id "personal"
+                               :inbox ,(concat org-directory "caldav/personal.org"))
+                               (:calendar-id "outlookoffice365com"
+                                :inbox (concat org-directory "caldav/neptune.org"))
+                               )))
+
 
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
 (add-hook! '(org-clock-out-hook org-clock-in-hook) #'org-save-all-org-buffers)
