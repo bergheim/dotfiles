@@ -160,6 +160,36 @@
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
 
+(use-package! mu4e
+  :config
+  (require 'mu4e-headers)
+  (defun bergheim/mail-search (query)
+    "Perform a mu4e query"
+    (interactive)
+    (mu4e-headers-search-bookmark query))
+
+  (defun bergheim/mu4e-email-today(&optional lookback)
+    "Opens the inbox with unread and by default shows todays email
+
+If LOOKBACK is specified, use that instead of 1d.
+If \\[universal-argument\] if called before this, show a week back."
+    (interactive)
+    (let ((mu4e-headers-include-related t)
+          (mu4e-headers-show-threads t)
+          (mu4e-headers-sort-field :date)
+          (mu4e-headers-sort-direction :ascending))
+
+      (when (not lookback)
+        (setq lookback "1d"))
+      (if current-prefix-arg
+        (setq lookback "1w"))
+
+      (mu4e-headers-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
+
+  (defun bergheim/mu4e-email-sent()
+    (interactive)
+    (mu4e-headers-search-bookmark "maildir:/Sent/")))
+
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
 
