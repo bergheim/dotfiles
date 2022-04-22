@@ -25,6 +25,7 @@ foreground-alt = ${xrdb:color7:#888}
 primary = ${xrdb:color3:#ffb52a}
 secondary = ${xrdb:color2:#e60053}
 alert = ${xrdb:color9:#bd2c40}
+disabled = #707880
 
 [bar/tb]
 monitor = ${env:MONITOR_PRIMARY:DP-0}
@@ -52,7 +53,7 @@ module-margin-right = 2
 
 font-0 = "Dejavu Sans:pixelsize=16"
 font-1 = "Noto Emoji Nerd Font:pixelsize=16;0"
-font-2 = "Weather\Icons:pixelsize=16"
+font-2 = "Weather\\Icons:pixelsize=16"
 font-3 = "Font Awesome 5 Free:pixelsize=16"
 font-4 = "Font Awesome 5 Brands:pixelsize=16"
 font-5 = "fontawesome-webfont.ttf:pixelsize=16"
@@ -75,8 +76,8 @@ tray-padding = 5
 tray-background = ${colors.background}
 
 ; wm-restack = generic
-wm-restack = bspwm
-;wm-restack = i3
+; wm-restack = bspwm
+wm-restack = i3
 
 ;override-redirect = true
 
@@ -123,7 +124,7 @@ mount-0 = /
 ; label-mounted = %{F#0a81f5}%mountpoint%%{F-}: %free%
 label-mounted = %mountpoint%: %free%
 label-unmounted = %mountpoint% not mounted
-label-unmounted-foreground = ${colors.foreground-alt}
+label-unmounted-foreground = ${colors.disabled}
 
 [module/bspwm]
 type = internal/bspwm
@@ -444,7 +445,7 @@ menu-2-1-exec = menu-open-0
 
 [module/pulseaudio-control]
 type = custom/script
-tail = true
+tail = false
 ; format-underline = ${colors.alert}
 ; label-padding = 2
 label-foreground = ${colors.foreground}
@@ -481,7 +482,7 @@ click-left = qutebrowser-temp --float https://www.yr.no/place/Norway/Oslo/Oslo/S
 [module/spotify]
 type = custom/script
 exec = ~/.config/polybar/spotify.sh
-tail = true
+tail = false
 format-padding = 2
 
 format-prefix = "  "
@@ -491,7 +492,7 @@ click-left = playerctl play-pause
 [module/org-mode]
 type = custom/script
 exec = ~/local/bin/org-clock-status
-tail = true
+tail = false
 format-padding = 2
 format-underline = ${colors.primary}
 
@@ -503,7 +504,7 @@ format-prefix-foreground = ${colors.foreground-alt}
 type = custom/script
 exec = cat ~/.notice
 exec-if = [ -s ~/.notice ]
-tail = true
+tail = false
 format-padding = 2
 format-underline = ${colors.alert}
 
