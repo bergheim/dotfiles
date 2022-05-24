@@ -52,7 +52,7 @@ Channel neptune-sent
 Channel neptune
     Far :neptune-remote:
     Near :neptune-local:
-    Patterns * !"Deleted Items" !"Sent Items"
+    Patterns * !"Deleted Items" !"Sent Items" !"Sent" !"Trash"
     Expunge Both
 
 # glvortex account
@@ -160,3 +160,8 @@ Group gmail-inbox
     Channel gmail-sent
     Channel gmail-drafts
     Channel gmail-starred
+
+Group neptune
+    Channel neptune
+    Channel neptune-trash
+    Channel neptune-sent
