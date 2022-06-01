@@ -203,14 +203,12 @@
       "M-2" #'+workspace/switch-to-1
       "M-3" #'+workspace/switch-to-2
 
-      :map dired-mode-map
-
-      (:leader
-       (:prefix ("m" . "custom bindings")
-        (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
-        (:desc "Create empty file" "c" 'dired-create-empty-file)
-        (:desc "Attach to org node" "o" 'org-attach-dired-to-subtree)
-        (:desc "MOVE to org node" "O" 'bergheim/org--move-attach-dired-to-subtree)
-        (:desc "Attach to email" "m" 'gnus-dired-attach)
-        (:desc "Ranger to dired" "d" 'ranger-to-dired)
-        (:desc "Dired to ranger" "r" 'deer-from-dired))))
+      :map (dired-mode-map ranger-mode-map)
+      (:localleader
+       (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
+       (:desc "Create empty file" "c" 'dired-create-empty-file)
+       (:desc "Attach to org node" "o" 'org-attach-dired-to-subtree)
+       (:desc "MOVE to org node" "O" 'bergheim/org--move-attach-dired-to-subtree)
+       (:desc "Attach to email" "m" 'gnus-dired-attach)
+       (:desc "Ranger to dired" "d" 'ranger-to-dired)
+       (:desc "Dired to ranger" "r" 'deer-from-dired)))
