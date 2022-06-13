@@ -1,5 +1,5 @@
 [Added Associations]
-image/jpeg=vimiv.desktop;
+image/jpeg=org.kde.gwenview.desktop;vimiv.desktop;
 inode/directory=org.kde.dolphin.desktop;
 x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;userapp-Telegram Desktop-C3YMG1.desktop;
 
@@ -12,7 +12,7 @@ application/x-extension-shtml=firefox.desktop
 application/x-extension-xht=firefox.desktop
 application/x-extension-xhtml=firefox.desktop
 application/xhtml+xml=firefox.desktop
-image/jpeg=feh.desktop;krita_jpeg.desktop;
+image/jpeg=org.kde.gwenview.desktop;
 image/png=pqiv.desktop;
 inode/directory=org.kde.dolphin.desktop;
 text/html=firefox.desktop;emacs.desktop;vim.desktop;
