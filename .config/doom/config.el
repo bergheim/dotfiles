@@ -17,6 +17,9 @@
 (setq which-key-idle-delay 0.3)
 ;; (which-key-mode 1)
 
+;; helps avoid file sync issues
+(global-auto-revert-mode 1)
+
 ;; this sets up some stuff like name and emails etc that are not in the dotfiles
 (load! "private")
 
