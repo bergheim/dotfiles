@@ -151,9 +151,9 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   (let ((mu4e-org-link-query-in-headers-mode t))
     (call-interactively 'org-store-link)))
 
-;; This makes mu4e buffers more prominent. Read doom-real-buffer-p
-;; (add-hook 'mu4e-headers-mode-hook #'doom-mark-buffer-as-real-h)
-;; (add-hook 'mu4e-view-mode-hook #'doom-mark-buffer-as-real-h)
+;; Don't bury mu4e buffers
+(add-hook 'mu4e-headers-mode-hook #'doom-mark-buffer-as-real-h)
+(add-hook 'mu4e-view-mode-hook #'doom-mark-buffer-as-real-h)
 
 (use-package! org-msg
   :init
