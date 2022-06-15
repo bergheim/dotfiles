@@ -396,40 +396,26 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   ;; I prefer getting asked about what to do with the thread
   :n "T" #'mu4e-headers-mark-thread))
 
-(add-to-list 'mu4e-headers-actions
-             '("narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
+(setq mu4e-headers-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-headers-actions))
+(add-to-list 'mu4e-headers-actions '("narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
+(add-to-list 'mu4e-headers-actions '("follow up" . bergheim/mu4e-follow-up) t)
+(add-to-list 'mu4e-headers-actions '("later" . bergheim/mu4e-read-later) t)
+;; (add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
+(add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
+(add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain) t)
+(add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
+(add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
+(add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
 
-(add-to-list 'mu4e-headers-actions
-             '("email" . bergheim/mu4e-search-from-address) t)
-
-(add-to-list 'mu4e-headers-actions
-             '("domain" . bergheim/mu4e-search-from-domain) t)
-
-(add-to-list 'mu4e-headers-actions
-             '("me" . bergheim/mu4e-search-to-me) t)
-
-(add-to-list 'mu4e-headers-actions
-             '("Subject" . bergheim/mu4e-search-this-subject) t)
-
-(add-to-list 'mu4e-headers-actions
-             '("follow up" . bergheim/mu4e-follow-up) t)
-
-(add-to-list 'mu4e-headers-actions
-             '("later" . bergheim/mu4e-read-later) t)
-
-(add-to-list 'mu4e-headers-actions
-             '("browser" . bergheim/mu4e-open-message-in-webclient) t)
-
-
-(add-to-list 'mu4e-view-actions
-             '("follow up" . bergheim/mu4e-follow-up) t)
-
-(add-to-list 'mu4e-view-actions
-             '("later" . bergheim/mu4e-read-later) t)
-
-(add-to-list 'mu4e-view-actions
-             '("browser" . bergheim/mu4e-open-message-in-webclient) t)
-
+(setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
+(setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
+(add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
+(add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
+(add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
+(add-to-list 'mu4e-view-actions '("domain" . bergheim/mu4e-search-from-domain) t)
+(add-to-list 'mu4e-view-actions '("me" . bergheim/mu4e-search-to-me) t)
+(add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
+(add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
 
 ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
 
