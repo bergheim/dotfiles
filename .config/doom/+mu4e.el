@@ -432,14 +432,19 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                       (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
 
 (defun bergheim/org-subtree-to-mu4e ()
-  "Send the current subtree to mu4e"
+  "Send the current subtree to mu4e and promote it to level 1"
   (interactive)
   (org-copy-subtree)
   (mu4e-compose-new)
+  (org-msg-goto-body)
   (save-excursion
-    (message-goto-body)
     (yank)
-    (org-msg-mode)
-    (message-goto-body)
-    ;; not really elegant but it gets the job done..
-    (cl-loop repeat 10 do (org-promote-subtree))))
+    (insert ?\n))
+
+  ;; don't keep the subtree in the kill-ring
+  (when kill-ring
+    (setq kill-ring (cdr kill-ring)))
+
+  ;; not really elegant but it gets the job done..
+  (let* ((heading-level (- (count-matches "*" (line-beginning-position) (line-end-position)) 1)))
+    (cl-loop repeat heading-level do (org-promote-subtree))))
