@@ -430,3 +430,16 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                       ;; no +T before -N so the message is not marked as
                       ;; IMAP-deleted:
                       (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
+
+(defun bergheim/org-subtree-to-mu4e ()
+  "Send the current subtree to mu4e"
+  (interactive)
+  (org-copy-subtree)
+  (mu4e-compose-new)
+  (save-excursion
+    (message-goto-body)
+    (yank)
+    (org-msg-mode)
+    (message-goto-body)
+    ;; not really elegant but it gets the job done..
+    (cl-loop repeat 10 do (org-promote-subtree))))

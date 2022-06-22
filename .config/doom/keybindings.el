@@ -42,6 +42,7 @@
        "g" 'org-clock-goto
        "i" 'org-clock-in
        "n" 'org-add-note
+       "m" 'bergheim/org-subtree-to-mu4e
        "l" 'org-clock-in-last
        "o" 'org-clock-out
        "c" 'org-capture
