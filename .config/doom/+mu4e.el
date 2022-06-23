@@ -435,7 +435,9 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   "Send the current subtree to mu4e and promote it to level 1"
   (interactive)
   (org-copy-subtree)
-  (mu4e-compose-new)
+  (+mu4e/compose)
+  (unless (derived-mode-p 'org-msg-edit-mode)
+    (org-msg-edit-mode))
   (org-msg-goto-body)
   (save-excursion
     (yank)
