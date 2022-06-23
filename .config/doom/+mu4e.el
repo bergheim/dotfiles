@@ -448,5 +448,5 @@ Includes BCC emails, but does not include CC, because that point just use from:a
     (setq kill-ring (cdr kill-ring)))
 
   ;; not really elegant but it gets the job done..
-  (let* ((heading-level (- (count-matches "*" (line-beginning-position) (line-end-position)) 1)))
+  (let* ((heading-level (- (car (org-heading-components)) 1)))
     (cl-loop repeat heading-level do (org-promote-subtree))))
