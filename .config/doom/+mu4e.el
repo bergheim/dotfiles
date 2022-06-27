@@ -228,6 +228,9 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       ;; this makes html emails easier to read. in theory.
       shr-color-visible-luminance-min 80
 
+      ;; well that was naive. kill colors!
+      shr-use-colors nil
+
       ;; notification settings
       ;; TODO: move this to the sync script?
       ;; mu4e-alert-set-window-urgency nil
