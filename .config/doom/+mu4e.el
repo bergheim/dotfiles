@@ -129,9 +129,11 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       ("glvortex"
        ;; I am not seing any Message-Id or anything else in the headers on
        ;; ProtonMail - I assume they have filtered it
-       (browse-url
-        (format "https://mail.protonmail.com/u/0/all-mail#keyword=%s&from=%s&to=%s"
-                (url-encode-url subject) (url-encode-url from) (url-encode-url to))))
+       (browse-url (format "https://mail.proton.me/u/0/all-mail#keyword=%s&from=%s&to=%s"
+                ;; protonmail does not allow searches for [ ] etc so strip them
+                (url-encode-url (replace-regexp-in-string "\\W" " " subject))
+                (url-encode-url from)
+                (url-encode-url to))))
       (_ (display-warning :warning (format "Account \"%s\" not found!" account))))))
 
 (defun bergheim/mu4e-read-later (msg)
