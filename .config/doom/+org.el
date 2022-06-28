@@ -226,6 +226,7 @@
                           :habit t
                           :order 3)
                          (:name "Logged 📅" :log t :order 15)
+                         (:discard (:todo "SOMEDAY"))
                          ;; (:name "Done today" :discard (:log t))
                          (:name "This is how your day looks 🌞"
                           :time-grid t
