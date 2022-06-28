@@ -157,7 +157,10 @@
 
       :niv "M-\\" #'evil-window-vsplit
       :niv "M-]" #'evil-window-split
-      :niv "M-DEL" #'+workspace/close-window-or-workspace)
+      :niv "M-DEL" #'+workspace/close-window-or-workspace
+
+      (:prefix "[" (:desc "Previous note" :m "n" 'org-roam-dailies-goto-previous-note))
+      (:prefix "]" (:desc "Next note" :m "n" 'org-roam-dailies-goto-next-note)))
 
 (map! :after evil-org-agenda
       :map evil-org-agenda-mode-map
