@@ -14,22 +14,32 @@
         domain
       (format "%s.%s" (nth 1 parts) (nth 0 parts)))))
 
-(defun bergheim/mu4e-search-from-domain (msg)
+(defun bergheim/mu4e-search-from-domain (msg &optional inbox-only)
   "Quickly find all mails sent to or from this domain"
 
   (let* ((email (cdar (mu4e-message-field-at-point :from)))
         (msgid (mu4e-message-field msg :message-id))
         (domain (bergheim/utils--get-domain email))
-        (query-string "(from:/.*%s$/ or to:/.*%s$/)"))
+        (query-string "(from:/.*%s$/ or to:/.*%s$/)")
+        (maildir-filter))
+
+    (if inbox-only
+        (setq maildir-filter "maildir:/Inbox/")
+      (setq maildir-filter "NOT maildir:/Trash/"))
 
     (unless current-prefix-arg
-        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
+        (setq query-string (concat maildir-filter " AND " query-string)))
+
 
     (mu4e-headers-search
      (format query-string domain domain)
      nil nil nil
      msgid (and (eq major-mode 'mu4e-view-mode)
                 (not (eq mu4e-split-view 'single-window))))))
+
+(defun bergheim/mu4e-search-inbox-from-domain (msg)
+  "Quickly find all INBOX mails sent to or from this domain"
+  (bergheim/mu4e-search-from-domain msg t))
 
 (defun bergheim/mu4e-search-from-address (msg)
   "Quickly find all mails sent to or from this address"
@@ -412,6 +422,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 ;; (add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
 (add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
 (add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain) t)
+(add-to-list 'mu4e-headers-actions '("Domain inbox" . bergheim/mu4e-search-inbox-from-domain) t)
 (add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
