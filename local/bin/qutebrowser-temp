@@ -4,7 +4,6 @@ TMPBASEDIR=`mktemp -d`
 QBCONFIGDIR="$HOME/.config/qutebrowser"
 
 function cleanup {
-  echo Removing "$TMPBASEDIR"
   rm -rf "$TMPBASEDIR"
 }
 

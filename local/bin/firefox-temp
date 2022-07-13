@@ -1,0 +1,16 @@
+#!/bin/bash
+
+PROFILEDIR=$(mktemp -d tmp-fx-profile.XXXXXX.d)
+
+cleanup() {
+  rm -rf "$PROFILEDIR"
+}
+
+if [ "$1" == "--float" ]; then
+  shift
+  firefox --class floating -profile "$PROFILEDIR" -no-remote -new-instance $@
+else
+  firefox -profile "$PROFILEDIR" -no-remote -new-instance $@
+fi
+
+trap cleanup EXIT
