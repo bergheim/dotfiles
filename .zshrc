@@ -173,6 +173,7 @@ alias pacin='sudo pacman -S'
 alias pacs='pacman -Ss'
 
 alias f='vifmrun'
+alias shakemacs="pkill -USR2 emacs"
 
 # prefer vim to vi if it is installed
 if type vim >/dev/null 2>/dev/null; then
