@@ -861,6 +861,19 @@ Assumes the ID will be unique across all items."
 
 (after! org-attach
   (add-to-list 'org-attach-id-to-path-function-list 'bergheim/org-attach-id-uuid-folder-format))
+
+(org-add-link-type
+ "org-agenda"
+ (defun bergheim/org--open-dashboard (dashboard)
+   (org-agenda current-prefix-arg dashboard)))
+
+(org-add-link-type
+ "tag"
+ (defun endless/follow-tag-link (tag)
+   "Display a list of TODO headlines with tag TAG.
+With prefix argument, also display headlines without a TODO keyword."
+   (org-tags-view (null current-prefix-arg) tag)))
+
 ;; org roam stuff
 
 (use-package! org-roam-dailies
