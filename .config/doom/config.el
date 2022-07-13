@@ -163,6 +163,12 @@
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
 
+(after! dired
+  (setq dired-dwim-target t ;; guess default target directory
+        dired-recursive-copies 'always
+        dired-recursive-deletes 'always
+        dired-kill-when-opening-new-dired-buffer t))
+
 (use-package! mu4e
   :config
   (require 'mu4e-headers)
