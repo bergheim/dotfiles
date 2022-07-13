@@ -220,3 +220,8 @@
        (:desc "Attach to email" "m" 'gnus-dired-attach)
        (:desc "Ranger to dired" "d" 'ranger-to-dired)
        (:desc "Dired to ranger" "r" 'deer-from-dired)))
+
+(map! :after org-roam
+      :map org-mode-map
+
+      "C-c i" #'bergheim/org-roam-create-node)
