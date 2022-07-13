@@ -756,6 +756,111 @@ Lisp programs can force the template by setting KEYS to a string."
         (format "%s - %s" (org-duration-from-minutes (org-clock-get-clocked-time)) org-clock-heading)
       "")))
 
+
+;; this will create unique ids that are easy to read as well. works great.
+;; nicked from https://github.com/novoid/dot-emacs/blob/master/config.org
+(defun bergheim/~generate-sanitized-alnum-dash-string(str)
+  "Returns a string which contains only a-zA-Z0-9 with single dashes
+ replacing all other characters in-between them.
+
+ Some parts were copied and adapted from org-hugo-slug
+ from https://github.com/kaushalmodi/ox-hugo (GPLv3)."
+  (let* (;; Remove "<FOO>..</FOO>" HTML tags if present.
+         (str (replace-regexp-in-string "<\\(?1:[a-z]+\\)[^>]*>.*</\\1>" "" str))
+         ;; Remove URLs if present in the string.  The ")" in the
+         ;; below regexp is the closing parenthesis of a Markdown
+         ;; link: [Desc](Link).
+         (str (replace-regexp-in-string (concat "\\](" ffap-url-regexp "[^)]+)") "]" str))
+         ;; Replace "&" with " and ", "." with " dot ", "+" with
+         ;; " plus ".
+         (str (replace-regexp-in-string
+               "&" " and "
+               (replace-regexp-in-string
+                "\\." " dot "
+                (replace-regexp-in-string
+                 "\\+" " plus " str))))
+         (str (replace-regexp-in-string "æ" "ae" str nil))
+         (str (replace-regexp-in-string "ø" "ue" str nil))
+         (str (replace-regexp-in-string "å" "oe" str nil))
+         ;; Replace all characters except alphabets, numbers and
+         ;; parentheses with spaces.
+         (str (replace-regexp-in-string "[^[:alnum:]()]" " " str))
+         ;; Remove leading and trailing whitespace.
+         (str (replace-regexp-in-string "\\(^[[:space:]]*\\|[[:space:]]*$\\)" "" str))
+         ;; Replace 2 or more spaces with a single space.
+         (str (replace-regexp-in-string "[[:space:]]\\{2,\\}" " " str))
+         ;; Replace parentheses with double-hyphens.
+         (str (replace-regexp-in-string "\\s-*([[:space:]]*\\([^)]+?\\)[[:space:]]*)\\s-*" " -\\1- " str))
+         ;; Remove any remaining parentheses character.
+         (str (replace-regexp-in-string "[()]" "" str))
+         ;; Replace spaces with hyphens.
+         (str (replace-regexp-in-string " " "-" str))
+         ;; Remove leading and trailing hyphens.
+         (str (replace-regexp-in-string "\\(^[-]*\\|[-]*$\\)" "" str)))
+    str))
+
+(defun bergheim/~id-get-or-generate()
+  "Returns the ID property if set or generates and returns a new one if not set.
+ The generated ID is stripped off potential progress indicator cookies and
+ sanitized to get a slug. Furthermore, it is prepended with an ISO date-stamp
+ if none was found before."
+  (interactive)
+  (when (not (org-id-get))
+    (progn
+      (let* (
+             (my-heading-text (nth 4 (org-heading-components)));; retrieve heading string
+             (my-heading-text (replace-regexp-in-string "\\(\\[[0-9]+%\\]\\)" "" my-heading-text));; remove progress indicators like "[25%]"
+             (my-heading-text (replace-regexp-in-string "\\(\\[[0-9]+/[0-9]+\\]\\)" "" my-heading-text));; remove progress indicators like "[2/7]"
+             (my-heading-text (replace-regexp-in-string "\\(\\[#[ABC]\\]\\)" "" my-heading-text));; remove priority indicators like "[#A]"
+             (my-heading-text (replace-regexp-in-string "\\[\\[\\(.+?\\)\\]\\[" "" my-heading-text t));; removes links, keeps their description and ending brackets
+             ;;                      (my-heading-text (replace-regexp-in-string "[<\\[][12][0-9]\\{3\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\( .*?\\)[>\\]]" "" my-heading-text t));; removes day of week and time from date- and time-stamps (doesn't work somehow)
+             (my-heading-text (replace-regexp-in-string "<[12][0-9]\\{3\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\( .*?\\)>" "" my-heading-text t));; removes day of week and time from active date- and time-stamps
+             (my-heading-text (replace-regexp-in-string "\\[[12][0-9]\\{3\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\( .*?\\)\\]" "" my-heading-text t));; removes day of week and time from inactive date- and time-stamps
+             (new-id (bergheim/~generate-sanitized-alnum-dash-string my-heading-text));; get slug from heading text
+             (my-created-property (assoc "CREATED" (org-entry-properties))) ;; nil or content of CREATED time-stamp
+             )
+        (when (not (string-match "[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]-.+" new-id))
+          ;; only if no ISO date-stamp is found at the beginning of the new id:
+          (if my-created-property (progn
+                                    ;; prefer date-stamp of CREATED property (if found):
+                                    (setq my-created-datestamp (substring (org-entry-get nil "CREATED" nil) 1 11)) ;; returns "2021-12-16" or nil (if no CREATED property)
+                                    (setq new-id (concat my-created-datestamp "-" new-id))
+                                    )
+            ;; use today's date-stamp if no CREATED property is found:
+            (setq new-id (concat (format-time-string "%Y-%m-%d-") new-id))))
+        (org-set-property "ID" new-id)
+        )
+      )
+    )
+  (kill-new (concat "id:" (org-id-get)));; put ID in kill-ring
+  (org-id-get);; retrieve the current ID in any case as return value
+  )
+
+(setq org-id-link-to-org-use-id t)
+(defun bergheim/org-id-advice (&rest args)
+  "Add unique and clear IDs to everything, except modes where it does not make sense"
+
+  ;; (unless (string-match "^\\(magit\\|mu4e\\)-.*" (format "%s" major-mode))
+  ;; (message "Current ID %s" (org-entry-get (point) "ID" t))
+
+  (if (string-prefix-p "org-" (format "%s" major-mode))
+      (bergheim/~id-get-or-generate)
+    (org-id-update-id-locations))
+  args)
+
+(advice-add 'org-store-link :before #'bergheim/org-id-advice)
+;; (advice-remove 'org-store-link #'bergheim/org-id-advice)
+;; FIXME: if we find an ID in parent, use that
+(advice-add 'org-attach-attach :before #'bergheim/org-id-advice)
+
+(defun bergheim/org-attach-id-uuid-folder-format (id)
+  "Puts everything in the same path, in the folder ID.
+
+Assumes the ID will be unique across all items."
+  (format "%s" id))
+
+(after! org-attach
+  (add-to-list 'org-attach-id-to-path-function-list 'bergheim/org-attach-id-uuid-folder-format))
 ;; org roam stuff
 
 (use-package! org-roam-dailies
@@ -796,7 +901,8 @@ Lisp programs can force the template by setting KEYS to a string."
 (defun bergheim/org--open-attachments ()
   "Open an attachment of the current outline node using xdg-open"
   (interactive)
-  (let ((attach-dir (org-attach-dir)))
+  (let ((attach-dir (concat org-attach-id-dir (bergheim/~id-get-or-generate))))
+    ;; TODO with universal argument, make dir
     (if attach-dir
         (browse-url-xdg-open attach-dir)
       (error "No attachment directory exist"))))
