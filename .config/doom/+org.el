@@ -876,6 +876,21 @@ With prefix argument, also display headlines without a TODO keyword."
 
 ;; org roam stuff
 
+(use-package! org-roam
+  :config
+  (setq org-roam-capture-templates
+        '(("d" "default" plain "%?" :target
+          (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+          :unnarrowed t)
+          ("m" "meeting" plain "%?" :target
+           (file+head "work/meetings.org" "#+title: ${title}\n")
+           :headline "Meetings"
+           :jump-to-captured t
+           :unnarrowed t)
+          )
+        )
+  )
+
 (use-package! org-roam-dailies
   :init
   (setq org-roam-dailies-directory "daily/"
