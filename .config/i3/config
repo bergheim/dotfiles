@@ -301,7 +301,7 @@ bindsym $alt+b border toggle
 # assign [class="^Firefox$"] $ws1
 assign [class="^TelegramDesktop$"] $ws2
 for_window [class="Spotify"] move to workspace $ws3
-assign [class="^Microsoft Teams"] $ws2
+assign [class="^Microsoft Teams - Preview$"] $ws2
 assign [class="^discord$"] $ws2
 assign [class="Slack"] $ws2
 assign [class="^Chromium$"] $ws4
