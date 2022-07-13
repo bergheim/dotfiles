@@ -900,6 +900,18 @@ With prefix argument, also display headlines without a TODO keyword."
            :target (file+head "%<%Y-%m-%d>.org"
                               "#+title: %<%Y-%m-%d>\n"))))
 
+  (defun bergheim/org-id-remove-entry ()
+    "Remove/delete the ID entry and update the databases.
+Update the `org-id-locations' global hash-table, and update the
+`org-id-locations-file'.  `org-id-track-globally' must be `t`."
+    (interactive)
+    (save-excursion
+      (org-back-to-heading t)
+      (when (org-entry-delete (point) "ID")
+        ;; TODO if we start seeing errors here maybe just use current file
+        (org-id-update-id-locations nil 'silent))))
+
+  ;; nicked from systemcrafters
   (defun my/org-roam-copy-todo-to-today ()
     (interactive)
     (let ((org-refile-keep t) ;; Set this to nil to delete the original!
@@ -917,14 +929,28 @@ With prefix argument, also display headlines without a TODO keyword."
       ;; Only refile if the target file is different than the current file
       (unless (equal (file-truename today-file)
                      (file-truename (buffer-file-name)))
-        (org-refile nil nil (list "Tasks" today-file nil pos)))))
+        (org-refile nil nil (list "Tasks" today-file nil pos))
+
+        ;; (save-window-excursion
+        ;;   (switch-to-buffer today-file)
+        ;;   (goto-char pos)
+        ;;   (bergheim/org-id-remove-entry))
+        )))
 
   :config
   (add-to-list 'org-after-todo-state-change-hook
                (lambda ()
-                 (if (equal org-state "DONE")
-                     (my/org-roam-copy-todo-to-today)
-                   (org-save-all-org-buffers)))))
+                 ;; this messes up all kinds of things because it copies the ID as well
+                 ;; (if (equal org-state "DONE")
+                 ;;     (my/org-roam-copy-todo-to-today)
+                   (org-save-all-org-buffers))))
+
+;; (after! org-roam-dailies
+;;   (add-to-list 'org-after-todo-state-change-hook
+;;                (lambda ()
+;;                  (when (equal org-state "DONE")
+;;                    (my/org-roam-copy-todo-to-today)))))
+
 
 (defun bergheim/org--open-attachments ()
   "Open an attachment of the current outline node using xdg-open"
