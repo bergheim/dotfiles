@@ -162,10 +162,11 @@ case `uname` in
   ;;
 esac
 
-alias l='ls'
+alias l='exa'
 alias sl='ls'
-alias la='ls -a'
-alias ll='ls -l'
+alias la='exa -a'
+alias lt='exa --tree --long'
+alias ll='exa -l'
 alias llh='ls -lh'
 
 alias pacup='sudo pacman -Syu'
