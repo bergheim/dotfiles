@@ -51,6 +51,7 @@
       calendar-date-style 'european
       org-icalendar-timezone "Europe/Oslo"
       org-icalendar-alarm-time 30
+
       ;; show tasks scheduled or due in next fortnight
       org-agenda-span 14
       ;;don't show tasks as scheduled if they are already shown as a deadline
@@ -165,7 +166,6 @@
                                 :inbox (concat org-directory "caldav/neptune.org"))
                                )))
 
-
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
 (add-hook! '(org-clock-out-hook org-clock-in-hook) #'org-save-all-org-buffers)
 ;; this is handled by my/org-roam-copy-todo-to-today at the moment
@@ -188,6 +188,11 @@
                   "SOMEDAY(s!)"
                   "|" "DONE(d@)" "CANCELLED(c@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")))
+
+;; indent items that span lines in the agenda. it's not perfect but it's better (divinedominion)
+(defun ct/org-agenda-set-wrap-prefix ()
+  (setq-local wrap-prefix "                          "))
+(add-hook 'org-agenda-mode-hook #'ct/org-agenda-set-wrap-prefix)
 
 ;; this should work.. not that it matters much
 ;; (use-package! org-super-agenda
