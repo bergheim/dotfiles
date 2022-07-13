@@ -189,9 +189,9 @@ If \\[universal-argument\] if called before this, show a week back."
           (mu4e-headers-sort-direction :ascending))
 
       (when (not lookback)
-        (setq lookback "1d"))
+        (setq lookback "2d"))
       (if current-prefix-arg
-        (setq lookback "1w"))
+        (setq lookback "1m"))
 
       (mu4e-headers-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
 
