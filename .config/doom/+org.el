@@ -396,6 +396,7 @@
                    (org-agenda-span 1))
                   )))))
 
+;; FIXME: this does not list items in the latest order
 (defun bergheim/org-recent-tasks-in-buffer ()
   "Lists the recently worked on tasks for this buffer"
   (interactive)
@@ -406,7 +407,8 @@
                   (cons (org-element-property :raw-value elem) elem))
                 (org-ql-query
                   :select #'element-with-markers
-                  :from (org-agenda-files)
+                  ;; :from (org-agenda-files)
+                  :from (buffer-file-name)
                   :where '(ts :from -100 :to today)
                   :order-by '(reverse date)))
                ;; only take the most recently clocked item
@@ -571,6 +573,8 @@
                           ("Meeting"
                            :icon ("repo" :set "octicon" :color "silver")
                            :keys "m"
+                           :jump-to-captured t
+                           :file "~/org/roam/work/meetings.org"
                            :headline "Meetings"
                            :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
