@@ -657,6 +657,30 @@
                            :headline "Unreleased"
                            :file +org-capture-project-changelog-file)))
 
+              ("Interesting"
+               :keys "i"
+               :icon ("eye" :set "faicon" :color "lcyan")
+               :file +org-capture-todo-file
+               :prepend t
+               :headline "Interesting"
+               :type entry
+               :template-file ,(expand-file-name "interesting.org" org-capture-custom-template-directory)
+               :children (("Webpage" :keys "w"
+                           :icon ("globe" :set "faicon" :color "green")
+                           :desc "%(org-cliplink-capture) "
+                           :i-type "read:web")
+                          ("Article" :keys "a"
+                           :icon ("file-text" :set "octicon" :color "yellow")
+                           :desc ""
+                           :i-type "read:research")
+                          ("Information" :keys "i"
+                           :icon ("info-circle" :set "faicon" :color "blue")
+                           :desc ""
+                           :i-type "read:info")
+                          ("Idea" :keys "I"
+                           :icon ("bubble_chart" :set "material" :color "silver")
+                           :desc ""
+                           :i-type "idea")))
 
               ("Protocol Link Marked" :keys "z"
                :icon ("stop" :set "octicon" :color "red")
