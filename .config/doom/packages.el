@@ -46,8 +46,9 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-(package! org-mru-clock)
+(package! tao-theme) ;; uncolored back and white themes
 
+(package! org-mru-clock)
 (package! org-super-agenda)
 (package! org-ql)
 
