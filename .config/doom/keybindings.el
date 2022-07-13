@@ -193,6 +193,9 @@
       "M-l" #'evil-window-right)
 
 (map! :after dired
+      :map dired-mode-map
+      "l" #'dired-find-file
+      "h" #'dired-up-directory
 
       :map ranger-mode-map
       "M-h" #'evil-window-left
