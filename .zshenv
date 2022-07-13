@@ -46,4 +46,13 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 
 export GPG_TTY=$(tty)
 
+export PAGER=bat
+
+# Set temporary files locations
+if [[ ! -d "$TMPDIR" ]]
+then
+    export TMPDIR="/tmp/$LOGNAME"
+    mkdir -p -m 700 "$TMPDIR"
+fi
+
 export N_PREFIX=~/local
