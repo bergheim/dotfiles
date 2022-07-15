@@ -41,13 +41,13 @@
        "b" 'bergheim/org--open-attachments
        "g" 'org-clock-goto
        "i" 'org-clock-in
-       "n" 'org-add-note
-       "m" 'bergheim/org-subtree-to-mu4e
        "l" 'org-clock-in-last
        "o" 'org-clock-out
        "c" 'org-capture
-       "r" #'org-mru-clock-in
-       "R" #'org-mru-clock-goto
+       "r" 'bergheim/org-mru-clock-in
+       "R" 'bergheim/org-mru-goto
+       "n" 'org-add-note
+       "m" 'bergheim/org-subtree-to-mu4e
        "s" 'org-store-link
        "l" 'org-insert-link)
 
