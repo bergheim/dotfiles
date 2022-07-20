@@ -992,3 +992,42 @@ Update the `org-id-locations' global hash-table, and update the
           (dired-do-delete)
           (message "Files moved to org")))
       ;; (error nil)))
+
+;; Idea taken from org-attach-dired-to-subtree
+(cl-defun bergheim/org-attach-dired-to-subtree (files &optional (attach-method 'cp))
+  "Attach FILES to current Org heading.
+
+Attaches to heading at point in most recently selected Org buffer
+using ATTACH-METHOD (interactively, with prefix, move, otherwise
+copy).  Interactively, FILES is the file at point or all marked
+files.  To be called in a `dired' buffer, or one in a major mode
+derived from `dired-mode'."
+  (interactive
+   (list (dired-get-marked-files) (when current-prefix-arg 'mv)))
+  (unless (derived-mode-p 'dired-mode)
+    (user-error "This command must be triggered in a `dired-derived' buffer"))
+  (message (format "arg %s" current-prefix-arg))
+  (if current-prefix-arg
+      (setq attach-method 'mv))
+  (let ((dirvish-buffer (current-buffer))
+        (current-org-heading)
+        ;; `buffer-list' is MRU-ordered, so pick the first Org buffer we find.
+        (org-node-target
+         (or (cl-loop for buffer in (buffer-list)
+                      when (eq 'org-mode (buffer-local-value 'major-mode buffer))
+                      return buffer)
+             (user-error "Can't attach to subtree.  No window displaying an Org buffer"))))
+    (with-current-buffer org-node-target
+      (setq current-org-heading (substring-no-properties (org-get-heading)))
+      (when (yes-or-no-p (format "%s selected files to %S?"
+                                 (if (eq 'mv attach-method)
+                                     "Move"
+                                   "Copy")
+                                 current-org-heading))
+        (let ((org-attach-method attach-method))
+          (dolist (file files)
+            (org-attach-attach file)))))
+    (when (eq 'mv attach-method)
+      ;; Revert the Dired buffer to show that the file is moved
+      (revert-buffer)
+      (message (format "Files moved to %S" current-org-heading)))))

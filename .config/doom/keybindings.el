@@ -215,8 +215,11 @@
       (:localleader
        (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
        (:desc "Create empty file" "c" 'dired-create-empty-file)
-       (:desc "Attach to org node" "o" 'org-attach-dired-to-subtree)
-       (:desc "MOVE to org node" "O" 'bergheim/org--move-attach-dired-to-subtree)
+       (:desc "Attach to org node" "o" 'bergheim/org-attach-dired-to-subtree)
+       (:desc "MOVE to org node" "O" (lambda ()
+                                       (interactive)
+                                       (let ((current-prefix-arg 4))
+                                         (call-interactively 'bergheim/org-attach-dired-to-subtree))))
        (:desc "Attach to email" "m" 'gnus-dired-attach)
        (:desc "Ranger to dired" "d" 'ranger-to-dired)
        (:desc "Dired to ranger" "r" 'deer-from-dired)))
