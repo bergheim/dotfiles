@@ -71,7 +71,7 @@
 
        :emacs
        (dired             ; making dired pretty [functional]
-        +ranger
+        +dirvish
         +icons)
        electric          ; smarter, keyword-based electric-indent
        (ibuffer +icons)  ; interactive buffer management

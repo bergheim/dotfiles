@@ -7,11 +7,8 @@
 
    (:prefix ("d" . "custom bindings")
 
-    (:desc "Pop up dired" "b" 'bergheim/dired--other-window)
-
-    (:desc "Pop up dired" "b" 'deer-jump-other-window)
-    ;; norton commander style
-    (:desc "Pop up dired" "B" 'deer-dual-pane)
+    (:desc "Browse dired" "b" 'dired-jump)
+    (:desc "Browse dired other-window" "B" 'dired-jump-other-window)
 
     ;; TODO: shouldn't this just be an embark command?
     (:desc "Find a file in HOME" "f"
@@ -180,6 +177,7 @@
       :m "M-RET" #'evil-window-split
       :m "M-DEL" #'+workspace/close-window-or-workspace
 
+      ;; TODO since always func, use # correct?
       :m "W" 'bergheim/org-agenda-toggle-work
       :m "T" 'bergheim/org-agenda-mark-done-and-add-followup)
 
@@ -193,36 +191,17 @@
       "M-l" #'evil-window-right)
 
 (map! :after dired
-      :map dired-mode-map
-      "l" #'dired-find-file
-      "h" #'dired-up-directory
-
-      :map ranger-mode-map
-      "M-h" #'evil-window-left
-      "M-j" #'evil-window-down
-      "M-k" #'evil-window-up
-      "M-l" #'evil-window-right
-
-      "M-\\" #'evil-window-vsplit
-      "M-]" #'evil-window-split
-      "M-DEL" #'+workspace/close-window-or-workspace
-
-      "M-1" #'+workspace/switch-to-0
-      "M-2" #'+workspace/switch-to-1
-      "M-3" #'+workspace/switch-to-2
-
-      :map (dired-mode-map ranger-mode-map)
-      (:localleader
-       (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
-       (:desc "Create empty file" "c" 'dired-create-empty-file)
-       (:desc "Attach to org node" "o" 'bergheim/org-attach-dired-to-subtree)
-       (:desc "MOVE to org node" "O" (lambda ()
-                                       (interactive)
-                                       (let ((current-prefix-arg 4))
-                                         (call-interactively 'bergheim/org-attach-dired-to-subtree))))
-       (:desc "Attach to email" "m" 'gnus-dired-attach)
-       (:desc "Ranger to dired" "d" 'ranger-to-dired)
-       (:desc "Dired to ranger" "r" 'deer-from-dired)))
+      :localleader
+       (:map dired-mode-map
+        (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
+        (:desc "Create empty file" "c" 'dired-create-empty-file)
+        (:desc "Attach to org node" "o" 'bergheim/org-attach-dired-to-subtree)
+        (:desc "MOVE to org node" "O" (lambda ()
+                                        (interactive)
+                                        ;; (universal-argument)
+                                        (let ((current-prefix-arg 4))
+                                          (call-interactively 'bergheim/org-attach-dired-to-subtree))))
+        (:desc "Attach to email" "m" 'gnus-dired-attach)))
 
 (map! :after org-roam
       :map org-mode-map
