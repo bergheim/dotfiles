@@ -396,6 +396,12 @@
                    (org-agenda-span 1))
                   )))))
 
+(use-package! org-sticky-header
+  :config
+  (setq org-sticky-header-full-path 'full)
+  :hook
+  (org-mode . org-sticky-header-mode))
+
 ;; FIXME: this does not list items in the latest order
 (defun bergheim/org-recent-tasks-in-buffer ()
   "Lists the recently worked on tasks for this buffer"

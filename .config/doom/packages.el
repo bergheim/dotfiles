@@ -52,6 +52,7 @@
 (package! org-super-agenda)
 (package! org-ql)
 
+(package! org-sticky-header)
 ;; https://github.com/IvanMalison/org-projectile
 ;; (package! org-projectile)
 (package! org-fancy-priorities)
