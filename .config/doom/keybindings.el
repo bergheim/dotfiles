@@ -7,8 +7,8 @@
 
    (:prefix ("d" . "custom bindings")
 
-    (:desc "Browse dired" "b" 'dired-jump)
-    (:desc "Browse dired other-window" "B" 'dired-jump-other-window)
+    (:desc "Browse dired" "b" #'dired-jump)
+    (:desc "Browse dired other-window" "B" #'dired-jump-other-window)
 
     ;; TODO: shouldn't this just be an embark command?
     (:desc "Find a file in HOME" "f"
@@ -66,8 +66,13 @@
 
      (:prefix ("m" . "E-mail")
       "m" '=mu4e
-      ;; TODO figure out how to load mu4e if this is called
-      (:desc "Compose" "c" #'+mu4e/compose)
+      ;; FIXME figure out how to load mu4e if this is called
+      ;; I can wrap this and call `mu4e~start' but that feels iffy
+      (:desc "Compose" "c" (lambda ()
+                             (interactive)
+                             (let ((current-prefix-arg 4))
+                               (mu4e-compose-new))))
+      (:desc "Compose" "C" #'+mu4e/compose)
       (:desc "Mail org subtree" "o" #'bergheim/org-subtree-to-mu4e)
       (:desc "Search" "s" #'mu4e-headers-search)
       (:desc "Sent" "S" 'bergheim/mu4e-email-sent)
