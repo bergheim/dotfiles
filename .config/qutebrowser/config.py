@@ -166,13 +166,6 @@ c.fonts.statusbar = monospace
 #   - never: Never show a confirmation.
 c.confirm_quit = ["downloads"]
 
-# Validate SSL handshakes.
-# Valid values:
-#   - true
-#   - false
-#   - ask
-c.content.ssl_strict = True
-
 # A list of user stylesheet filenames to use.
 c.content.user_stylesheets = "user.css"
 
