@@ -3,7 +3,7 @@
 (defun bergheim/mu4e-narrow-to-sender (_)
   "Quickly narrow view to emails sent from the selected email"
 
-  (mu4e-headers-search-narrow (concat "from:" (cdar (mu4e-message-field-at-point :from)))))
+  (mu4e-headers-search-narrow (concat "from:" (plist-get (car (mu4e-message-field-at-point :from)) :email))))
 
 (defun bergheim/utils--get-domain (email)
   "Get the main domain of an email address"
@@ -17,7 +17,7 @@
 (defun bergheim/mu4e-search-from-domain (msg &optional inbox-only)
   "Quickly find all mails sent to or from this domain"
 
-  (let* ((email (cdar (mu4e-message-field-at-point :from)))
+  (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
         (msgid (mu4e-message-field msg :message-id))
         (domain (bergheim/utils--get-domain email))
         (query-string "(from:/.*%s$/ or to:/.*%s$/)")
@@ -42,7 +42,7 @@
 (defun bergheim/mu4e-search-from-address (msg)
   "Quickly find all mails sent to or from this address"
 
-  (let ((email (cdar (mu4e-message-field-at-point :from)))
+  (let ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
         (msgid (mu4e-message-field msg :message-id))
         (query-string "(from:%s or to:%s)"))
 
@@ -87,7 +87,8 @@ If \\[universal-argument\] is called before this, include the trash."
 
 Includes BCC emails, but does not include CC, because that point just use from:address"
 
-  (let* ((from (cdar (mu4e-message-field-at-point :from)))
+  ;; TODO: consider using `mu4e-message-contact-field-matches-me'
+  (let* ((from (plist-get (car (mu4e-message-field-at-point :from)) :email))
          (maildir (mu4e-message-field msg :maildir))
          (msgid (mu4e-message-field msg :message-id))
          (my-email (bergheim/mu4e--get-account-email maildir))
@@ -449,7 +450,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                       ;; Here's the main difference to the regular trash mark,
                       ;; no +T before -N so the message is not marked as
                       ;; IMAP-deleted:
-                      (mu4e~proc-move docid (mu4e~mark-check-target target) "+S-u-N"))))
+                      (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
 (defun bergheim/org-subtree-to-mu4e ()
   "Send the current subtree to mu4e and promote it to level 1"
