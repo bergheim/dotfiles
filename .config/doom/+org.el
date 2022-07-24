@@ -227,7 +227,10 @@
                       ;; (org-agenda-current-time-string "ᐊ┈┈┈┈┈┈┈ Now")
                       ;; (org-agenda-show-log nil)
                       (org-super-agenda-groups
-                       '((:name "Keep your habits up 🔥"
+                       '((:name "Happy birthday 🎂"
+                          :property "BIRTHDAY"
+                          :order 2)
+                         (:name "Keep your habits up 🔥"
                           :habit t
                           :order 3)
                          (:name "Logged 📅" :log t :order 15)
@@ -262,7 +265,6 @@
                           :order 4)
 
                          (:name "Do you still need to do these? 🤔"
-                          ;; :discard (:anything t)
                           :scheduled past
                           :order 5)
                          ))))))
