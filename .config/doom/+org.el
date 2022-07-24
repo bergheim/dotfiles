@@ -989,18 +989,6 @@ Update the `org-id-locations' global hash-table, and update the
         (browse-url-xdg-open attach-dir)
       (error "No attachment directory exist"))))
 
-(defun bergheim/org--move-attach-dired-to-subtree (files)
-  "Inserts the contents into the subtree, and deletes the FILES if it was successfull"
-  (interactive
-   (list (dired-get-marked-files)))
-  ;; (save-window-excursion
-    ;; (condition-case nil
-        (progn
-          (org-attach-dired-to-subtree files)
-          (dired-do-delete)
-          (message "Files moved to org")))
-      ;; (error nil)))
-
 ;; Idea taken from org-attach-dired-to-subtree
 (cl-defun bergheim/org-attach-dired-to-subtree (files &optional (attach-method 'cp))
   "Attach FILES to current Org heading.
@@ -1015,8 +1003,6 @@ derived from `dired-mode'."
   (unless (derived-mode-p 'dired-mode)
     (user-error "This command must be triggered in a `dired-derived' buffer"))
   (message (format "arg %s" current-prefix-arg))
-  (if current-prefix-arg
-      (setq attach-method 'mv))
   (let ((dirvish-buffer (current-buffer))
         (current-org-heading)
         ;; `buffer-list' is MRU-ordered, so pick the first Org buffer we find.
