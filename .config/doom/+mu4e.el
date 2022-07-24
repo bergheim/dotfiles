@@ -27,9 +27,7 @@
         (setq maildir-filter "maildir:/Inbox/")
       (setq maildir-filter "NOT maildir:/Trash/"))
 
-    (unless current-prefix-arg
-        (setq query-string (concat maildir-filter " AND " query-string)))
-
+    (setq query-string (concat maildir-filter " AND " query-string))
 
     (mu4e-headers-search
      (format query-string domain domain)

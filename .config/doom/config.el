@@ -193,6 +193,7 @@ If \\[universal-argument\] if called before this, show a week back."
       (if current-prefix-arg
         (setq lookback "1m"))
 
+      (mu4e~start)
       (mu4e-headers-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
 
   (defun bergheim/mu4e-email-sent()
