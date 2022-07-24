@@ -19,3 +19,6 @@
 
 ;; Add init-hook so heaven-and-hell can load your theme
 (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
+
+;; make it easy to understand where the current line is
+(setq modus-themes-completions 'opinionated)
