@@ -129,6 +129,7 @@
  :ni "M-\\" #'evil-window-vsplit
  :ni "M-]" #'evil-window-split
  :ni "M-DEL" #'+workspace/close-window-or-workspace
+ :ni "M-S-<backspace>" #'kill-current-buffer
 
  "M-o" #'evil-window-next
  "M-f" #'doom/window-maximize-buffer
