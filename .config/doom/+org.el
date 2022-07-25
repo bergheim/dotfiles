@@ -720,14 +720,14 @@
                :icon ("stop" :set "octicon" :color "red")
                :type entry
                :file +org-capture-mail-file
-               :immediate-finish t
                :children (("Follow Up" :keys "f"
                            :headline "Follow Up"
+                           :clock-in t
                            :file +org-capture-mail-file
-                           :template-file ,(expand-file-name "email-follow-up.org" org-capture-custom-template-directory)
-                           )
+                           :template-file ,(expand-file-name "email-follow-up.org" org-capture-custom-template-directory))
                           ("Read Later" :keys "l"
                            :template-file ,(expand-file-name "email-read-later.org" org-capture-custom-template-directory)
+                           :immediate-finish t
                            :headline "Read Later"))))))
 
 (defun org-capture-select-template-prettier (&optional keys)
