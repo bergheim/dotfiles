@@ -239,6 +239,11 @@
                          (:name "This is how your day looks 🌞"
                           :time-grid t
                           :order 1)
+
+                         (:name "Waiting.. 鈴"
+                          :todo "WAITING"
+                          :order 5)
+
                          (:name "First, do one of these 🐸"
                           :and (:deadline today :priority "A")
                           :deadline today
@@ -247,10 +252,6 @@
                           :and (:scheduled past :priority "A")
                           :deadline past
                           :order 3)
-
-                         (:name "Waiting.. 鈴"
-                          :todo "WAITING"
-                          :order 5)
 
                          (:name "Scheduled for today ⏰"
                           :scheduled today
