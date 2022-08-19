@@ -400,8 +400,9 @@
                   )))))
 
 (use-package! org-sticky-header
-  :config
-  (setq org-sticky-header-full-path 'full)
+  :custom
+  (org-sticky-header-full-path 'full)
+  ;; (org-sticky-header-always-show-header 'nil)
   :hook
   (org-mode . org-sticky-header-mode))
 
