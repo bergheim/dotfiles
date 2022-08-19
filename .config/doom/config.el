@@ -32,12 +32,12 @@
 (setq user-full-name "Thomas Bergheim"
       user-mail-address bergheim/email)
 
-(setq doom-font (font-spec :family "JetBrainsMono NerdFont" :size 28)
-      doom-big-font (font-spec :family "JetBrainsMono NerdFont" :size 36)
-      doom-variable-pitch-font (font-spec :family "iMWritingDuoS Nerd Font")
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 14)
+      doom-big-font (font-spec :family "JetBrainsMono Nerd Font" :size 22)
+      doom-variable-pitch-font (font-spec :family "FiraCode Nerd Font")
       ;; this messes with all-the-icons, leave it
       ;; doom-unicode-font (font-spec :family "Input Mono")
-      doom-serif-font (font-spec :family "Literation Serif NerdFont"))
+      doom-serif-font (font-spec :family "Noto Serif Myanmar"))
 
 (when IS-MAC
   ;; TODO is this relevant anymore?
