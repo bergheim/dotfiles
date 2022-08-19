@@ -855,7 +855,10 @@ Lisp programs can force the template by setting KEYS to a string."
 
   (if (string-prefix-p "org-" (format "%s" major-mode))
       (bergheim/~id-get-or-generate)
-    (org-id-update-id-locations))
+    ;; this will keep things more up to date but will make capturing a lot slower
+    ;; I've not noticed any downsides, though
+    ;; (org-id-update-id-locations)
+    )
   args)
 
 (advice-add 'org-store-link :before #'bergheim/org-id-advice)
