@@ -75,6 +75,8 @@ If \\[universal-argument\] is called before this, include the trash."
     ;; remove characters that make mu unhappy
     (setq subject (replace-regexp-in-string "\\W" " " subject))
 
+    (setq subject (s-trim subject))
+
     (mu4e-headers-search
      (format query-string subject)
      nil nil nil
