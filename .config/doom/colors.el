@@ -22,3 +22,4 @@
 
 ;; make it easy to understand where the current line is
 (setq modus-themes-completions 'opinionated)
+(setq modus-themes-hl-line '(underline accented))
