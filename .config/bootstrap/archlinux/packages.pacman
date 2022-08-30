@@ -12,7 +12,7 @@ community/awesome-terminal-fonts
 # dnstools
 colordiff
 dunst
-emacs
+emacs-nativecomp
 feh
 ffmpeg
 ffmpegthumbnailer # show thumbnails from movies
@@ -39,7 +39,6 @@ libxcb xcb-util xcb-util-keysyms xcb-util-wm
 linux-headers
 linux-lts
 linux-lts-headers
-markdown
 mlocate
 msmtp
 msmtp-mta
@@ -140,11 +139,9 @@ unclutter # hide the mouse when it is unused
 clipmenu # rofi clipboard history
 redshift
 picom
-otf-fera-mono
 go-yq
 gvfs
 pcmanfm
-bdf-unifont
 ttf-ubuntu-font-family
 wget
 jq
@@ -156,5 +153,7 @@ rofi-calc
 bc
 qt5ct
 i3lock
-paparius-icon-theme
 exa
+go-yq
+parallel
+dolphin
