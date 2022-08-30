@@ -158,10 +158,10 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (defun bergheim/mu4e-follow-up (msg)
   (interactive)
   (call-interactively 'org-store-link)
-  (org-capture nil "ef")
   (if (eq major-mode 'mu4e-headers-mode)
       (mu4e-headers-mark-for-refile)
-    (mu4e-view-mark-for-refile)))
+    (mu4e-view-mark-for-refile))
+  (org-capture nil "ef"))
 
 (defun bergheim/mu4e-store-link-to-query ()
   (interactive)
