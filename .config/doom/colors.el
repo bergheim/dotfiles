@@ -21,5 +21,7 @@
 (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
 
 ;; make it easy to understand where the current line is
-(setq modus-themes-completions 'opinionated)
-(setq modus-themes-hl-line '(underline accented))
+(setq modus-themes-completions 'opinionated
+      modus-themes-intense-hl-line t
+      modus-themes-hl-line '(underline accented intense)
+      x-underline-at-descent-line t)
