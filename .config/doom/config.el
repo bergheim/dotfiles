@@ -163,7 +163,9 @@
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
 
-(after! dired
+(use-package! dired
+  :hook (dired-mode . dired-hide-details-mode)
+  :custom
   (setq dired-dwim-target t ;; guess default target directory
         dired-recursive-copies 'always
         dired-recursive-deletes 'always
