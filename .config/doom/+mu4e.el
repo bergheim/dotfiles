@@ -60,7 +60,7 @@
 
 Strips away subject action prefixes and special characters to capture more emails.
 
-If \\[universal-argument\] is called before this, include the trash."
+If \\[universal-argument] is called before this, include the trash."
 
   (let ((subject (mu4e-message-field msg :subject))
         (msgid (mu4e-message-field msg :message-id))
