@@ -91,7 +91,7 @@
 
      (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive) (org-agenda arg "d")))
      (:desc "Email Dashboard today" "s" 'bergheim/mu4e-email-today)
-     (:desc "Email Dashboard week" "S" (λ! (bergheim/mu4e-email-today "1w")))
+     (:desc "Email Dashboard month" "S" (λ! (bergheim/mu4e-email-today "1m")))
      (:desc "Orgmode Work" "w" 'bergheim/org-agenda-work-items)
 
      (:prefix ("r" . "Recent")
