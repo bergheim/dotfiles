@@ -992,7 +992,9 @@ Update the `org-id-locations' global hash-table, and update the
   (let ((attach-dir (concat org-attach-id-dir (bergheim/~id-get-or-generate))))
     ;; TODO with universal argument, make dir
     (if attach-dir
-        (browse-url-xdg-open attach-dir)
+        (if IS-MAC
+            (call-process "open" nil 0 nil attach-dir)
+          (browse-url-xdg-open attach-dir))
       (error "No attachment directory exist"))))
 
 ;; Idea taken from org-attach-dired-to-subtree
