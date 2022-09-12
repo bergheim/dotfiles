@@ -203,10 +203,11 @@
        (:map dired-mode-map
         (:desc "Browse externally" "b" (λ! (browse-url-xdg-open dired-directory)))
         (:desc "Create empty file" "c" 'dired-create-empty-file)
-        (:desc "Attach to org node" "o" 'bergheim/org-attach-dired-to-subtree)
+        (:desc "Attach to org node" "o" (lambda ()
+                                          (interactive)
+                                          (call-interactively 'bergheim/org-attach-dired-to-subtree)))
         (:desc "MOVE to org node" "O" (lambda ()
                                         (interactive)
-                                        ;; (universal-argument)
                                         (let ((current-prefix-arg 4))
                                           (call-interactively 'bergheim/org-attach-dired-to-subtree))))
         (:desc "Attach to email" "m" 'gnus-dired-attach)))
