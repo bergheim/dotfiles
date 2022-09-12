@@ -29,7 +29,7 @@
       (:desc "New entry" "j" 'org-roam-dailies-capture-today))
 
      (:prefix ("g" . "git")
-       "y" 'bergheim-toggle-yadm
+       "y" 'bergheim/toggle-yadm
        "d" 'magit-diff-buffer-file
        "l" 'magit-log-buffer-file)
 
@@ -77,15 +77,15 @@
       (:desc "Search" "s" #'mu4e-headers-search)
       (:desc "Sent" "S" 'bergheim/mu4e-email-sent)
       (:desc "Today's email" "t" 'bergheim/mu4e-email-today)
-      (:desc "Today's unhandled email" "T" 'bergheim-email-today-or-unread)
-      (:desc "Today's work email" "w" 'bergheim-email-work-inbox)
-      (:desc "Today's personal email" "p" 'bergheim-email-personal-inbox)
-      (:desc "This weeks email" "W" 'bergheim-email-week)
+      (:desc "Today's unhandled email" "T" 'bergheim/email-today-or-unread)
+      (:desc "Work email inbox" "w" 'bergheim/email-work-inbox)
+      (:desc "Today's personal email" "p" 'bergheim/email-personal-inbox)
+      (:desc "This weeks email" "W" 'bergheim/email-week)
       (:desc "Update index" "u" 'mu4e-update-index)
       (:desc "Update index and mail" "U" 'mu4e-update-mail-and-index)
-      (:desc "Trash" "x" 'bergheim-email-trash)
-      (:desc "Important" "I" 'bergheim-email-important)
-      (:desc "Inbox" "i" 'bergheim-email-inbox))
+      (:desc "Trash" "x" 'bergheim/email-trash)
+      (:desc "Important" "I" 'bergheim/email-important)
+      (:desc "Inbox" "i" 'bergheim/email-inbox))
 
      "e" 'elfeed
 
