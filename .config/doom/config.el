@@ -183,17 +183,17 @@
     "Opens the inbox with unread and by default shows todays email
 
 If LOOKBACK is specified, use that instead of 1d.
-If \\[universal-argument\] if called before this, show a week back."
+If \\[universal-argument] if called before this, show a week back."
     (interactive)
     (let ((mu4e-headers-include-related t)
-          (mu4e-headers-show-threads t)
+          (mu4e-search-threads t)
           (mu4e-headers-sort-field :date)
           (mu4e-headers-sort-direction :ascending))
 
       (when (not lookback)
         (setq lookback "2d"))
       (if current-prefix-arg
-        (setq lookback "1m"))
+          (setq lookback "1m"))
 
       (mu4e t)
       (mu4e-headers-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
