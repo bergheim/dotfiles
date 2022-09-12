@@ -235,3 +235,11 @@ If \\[universal-argument\] if called before this, show a week back."
 
 (use-package! auto-dim-other-buffers
   :hook (after-init . auto-dim-other-buffers-mode))
+
+(defun bergheim/open-calendar ()
+  (interactive)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:ical-create-source "outlook" bergheim/calendar/neptune/test "Orange")
+    (cfw:org-create-file-source "personal" bergheim/calendar/nextcloud/local "DarkGreen"))))

@@ -111,6 +111,7 @@
                                (file-expand-wildcards "~/org/roam/*.org")
                                (directory-files-recursively "~/org/neptune" "\\.org$")
                                (directory-files-recursively "~/org/caldav" "\\.org$")
+                               (directory-files-recursively "~/org/ical" "\\.org$")
                                (directory-files-recursively "~/org/projects" "\\.org$")
                                (directory-files-recursively "~/org/journal" "\\.org$"))
 
@@ -155,15 +156,15 @@
 
 (use-package! org-caldav
   :init
-  (setq org-caldav-url bergheim/calendar-url
+  (setq org-caldav-url bergheim/calendar/nextcloud
         org-caldav-delete-calendar-entries 'ask
         org-caldav-save-directory (concat org-directory "caldav")
         org-caldav-calendar-id "personal"
         org-caldav-inbox (concat org-directory "caldav/personal.org")
         org-caldav-calendars `((:calendar-id "personal"
-                               :inbox ,(concat org-directory "caldav/personal.org"))
+                                :inbox ,(concat org-directory "caldav/personal.org"))
                                (:calendar-id "outlookoffice365com"
-                                :inbox (concat org-directory "caldav/neptune.org"))
+                                :inbox ,(concat org-directory "caldav/neptune.org"))
                                )))
 
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)

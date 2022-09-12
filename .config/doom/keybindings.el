@@ -106,6 +106,8 @@
       (:desc "Recent tasks in buffer" "b"
        (λ! (bergheim/org-recent-tasks-in-buffer))))
 
+     "u" 'bergheim/open-calendar
+
      "t" 'heaven-and-hell-toggle-theme
      "T" 'heaven-and-hell-load-default-theme)))
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+WGET=wget
+ICS2ORG=ical2orgpy
+ICSFILE=$(mktemp)
+ORGFILE=~/org/ical/neptune.org
+URL=$(pass show calendar/neptune)
+
+$WGET -O $ICSFILE $URL
+$ICS2ORG $ICSFILE $ORGFILE
+rm -f $ICSFILE
