@@ -21,7 +21,10 @@
         (msgid (mu4e-message-field msg :message-id))
         (domain (bergheim/utils--get-domain email))
         (query-string "(from:/.*%s$/ or to:/.*%s$/)")
-        (maildir-filter))
+        (maildir-filter)
+        ;; always sort descending as there might be thousands of emails
+        (mu4e-headers-sort-field :date)
+        (mu4e-headers-sort-direction 'descending))
 
     (if inbox-only
         (setq maildir-filter "maildir:/Inbox/")
