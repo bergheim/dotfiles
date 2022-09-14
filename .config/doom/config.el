@@ -241,5 +241,5 @@ If \\[universal-argument] if called before this, show a week back."
   (cfw:open-calendar-buffer
    :contents-sources
    (list
-    (cfw:ical-create-source "outlook" bergheim/calendar/neptune/test "Orange")
+    (cfw:ical-create-source "outlook" bergheim/calendar/neptune/default "Orange")
     (cfw:org-create-file-source "personal" bergheim/calendar/nextcloud/local "DarkGreen"))))
