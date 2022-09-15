@@ -190,6 +190,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 
       mu4e-view-show-images t
       mu4e-view-show-addresses t
+
       ;; this fixes some sync issues with mbsync and office365
       mu4e-change-filenames-when-moving t
       ;; the servers handle this
@@ -211,7 +212,8 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       mu4e-hide-index-messages t
 
       mu4e-headers-include-related nil
-      mu4e-headers-show-threads nil
+      mu4e-search-threads nil
+      ;; mu4e-headers-sort-direction 'ascending
 
       ;; set up a more concise timestamp
       mu4e-headers-date-format "%d/%m/%y %H:%M"
