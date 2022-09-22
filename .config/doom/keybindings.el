@@ -31,6 +31,7 @@
      (:prefix ("g" . "git")
        "y" 'bergheim/toggle-yadm
        "d" 'magit-diff-buffer-file
+       "v" 'magit-blob-visit-file
        "l" 'magit-log-buffer-file)
 
      (:prefix ("o" . "org")
