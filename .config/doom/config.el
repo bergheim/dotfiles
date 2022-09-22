@@ -177,7 +177,8 @@
   (defun bergheim/mail-search (query)
     "Perform a mu4e query"
     (interactive)
-    (mu4e-headers-search-bookmark query))
+    (=mu4e)
+    (mu4e-search-bookmark query))
 
   (defun bergheim/mu4e-email-today(&optional lookback)
     "Opens the inbox with unread and by default shows todays email
@@ -195,12 +196,13 @@ If \\[universal-argument] if called before this, show a week back."
       (if current-prefix-arg
           (setq lookback "1m"))
 
-      (mu4e t)
-      (mu4e-headers-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
+      (=mu4e)
+      (mu4e-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
 
   (defun bergheim/mu4e-email-sent()
     (interactive)
-    (mu4e-headers-search-bookmark "maildir:/Sent/")))
+    (=mu4e)
+    (mu4e-search-bookmark "maildir:/Sent/")))
 
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
