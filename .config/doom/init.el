@@ -45,7 +45,7 @@
        ;;tabs              ; a tab bar for Emacs
        (treemacs +lsp)          ; a project drawer, like neotree but cooler
        ;;unicode           ; extended unicode support for various languages
-       vc-gutter         ; vcs diff in the fringe
+       vc-gutter         ; vcs diff in the fringe (+pretty)
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        (window-select     ; visually switch windows
         +numbers)
@@ -156,6 +156,7 @@
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        (org                ; organize your plain life in plain text
+        +contacts          ; add support for org-contacts
         +dragndrop         ; drag & drop files/images into org buffers
         +hugo              ; use Emacs for hugo blogging
         +journal

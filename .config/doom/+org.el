@@ -986,6 +986,9 @@ Update the `org-id-locations' global hash-table, and update the
 ;;                    (my/org-roam-copy-todo-to-today)))))
 
 
+
+(use-package! org-contacts
+  :init (setq org-contacts-files '("~/org/contacts.org")))
 (defun bergheim/org--open-attachments ()
   "Open an attachment of the current outline node using xdg-open"
   (interactive)
