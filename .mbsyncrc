@@ -80,7 +80,7 @@ Channel glvortex-inbox
     Far :glvortex-remote:
     Near :glvortex-local:
     # this setup ignores all mail because I do not want all the email lists etc..
-    Patterns "INBOX" "Archive" "Spam" "Sent" "Trash" "Folders/git"
+    Patterns "INBOX" "Archive" "Spam" "Sent" "Trash" "Folders/git" "Drafts"
     Expunge Both # sync changes like delete to server
 
 Channel glvortex
@@ -143,7 +143,7 @@ Channel gmail
     Far :gmail-remote:
     Near :gmail-local:
     # Patterns *
-    Patterns  "Archives" "INBOX" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
+    Patterns  "Archives" "INBOX" "Spam" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
 
 Group neptune-inbox
