@@ -238,6 +238,22 @@ If \\[universal-argument] if called before this, show a week back."
 (use-package! auto-dim-other-buffers
   :hook (after-init . auto-dim-other-buffers-mode))
 
+(use-package! calendar-norway
+  :config
+  (setq calendar-holidays
+        (append
+         ;; Include days where you don't have to work:
+         calendar-norway-raude-dagar
+         ;; Include other days that people celebrate:
+         calendar-norway-andre-merkedagar
+         ;; Include daylight savings time:
+         calendar-norway-dst
+         ;; And then you can add some non-Norwegian holidays etc. if you like:
+         '((holiday-fixed 3 17 "St. Patrick's Day")
+           (holiday-fixed 10 31 "Halloween")
+           (holiday-float 11 4 4 "Thanksgiving")
+           (solar-equinoxes-solstices)))))
+
 (defun bergheim/open-calendar ()
   (interactive)
   (cfw:open-calendar-buffer

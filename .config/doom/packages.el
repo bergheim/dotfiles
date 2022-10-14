@@ -64,6 +64,7 @@
 (package! affe)
 
 (package! org-caldav)
+(package! calendar-norway)
 
 (package! auto-dim-other-buffers)
 
