@@ -80,7 +80,7 @@ If \\[universal-argument] is called before this, include the trash."
 
     (setq subject (s-trim subject))
 
-    (mu4e-headers-search
+    (mu4e-search
      (format query-string subject)
      nil nil nil
      msgid (and (eq major-mode 'mu4e-view-mode)

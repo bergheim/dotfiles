@@ -234,7 +234,13 @@
                          (:name "Keep your habits up 🔥"
                           :habit t
                           :order 3)
+
+                         (:name "Currently working on 🏋"
+                          :todo "INPROGRESS"
+                          :order 2)
+
                          (:name "Logged 📅" :log t :order 15)
+
                          (:discard (:todo "SOMEDAY"))
                          ;; (:name "Done today" :discard (:log t))
                          (:name "This is how your day looks 🌞"
