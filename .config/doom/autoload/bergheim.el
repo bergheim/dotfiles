@@ -76,3 +76,9 @@
   "Opens the inbox with unread and todays email"
   (interactive)
   (mu4e-headers-search-bookmark "maildir:/Inbox/ AND (date:1d..now OR flag:unread)"))
+
+;;;###autoload
+(defun bergheim/email-spam()
+  "Show the spam mail from all accounts"
+  (interactive)
+  (mu4e-search-bookmark "maildir:/Spam/"))

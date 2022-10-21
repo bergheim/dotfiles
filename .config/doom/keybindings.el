@@ -77,6 +77,7 @@
       (:desc "Mail org subtree" "o" #'bergheim/org-subtree-to-mu4e)
       (:desc "Search" "s" #'mu4e-headers-search)
       (:desc "Sent" "S" 'bergheim/mu4e-email-sent)
+      (:desc "Spam" "j" 'bergheim/email-spam)
       (:desc "Today's email" "t" 'bergheim/mu4e-email-today)
       (:desc "Today's unhandled email" "T" 'bergheim/email-today-or-unread)
       (:desc "Work email inbox" "w" 'bergheim/email-work-inbox)
