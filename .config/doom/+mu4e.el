@@ -350,12 +350,12 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 
         (:name "Messages with images"
                ;; everybody has some huge image in their sig. sigh..
-               :query "mime:image/* AND size:50K..100M"
+               :query "mime:image/* AND size:100K..100M"
                :key ?i)
 
         (:name "Messages with attachments"
                ;; everybody has some huge image in their sig. sigh..
-               :query "flag:attach AND size:50K..1000M"
+               :query "flag:attach AND NOT mime:application/ics AND NOT ((mime:image/jpg OR mime:image/jpeg OR mime:image/png) AND size:0..2m)"
                :key ?a)
 
         (:name "Trash"
