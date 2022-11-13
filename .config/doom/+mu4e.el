@@ -3,7 +3,7 @@
 (defun bergheim/mu4e-narrow-to-sender (_)
   "Quickly narrow view to emails sent from the selected email"
 
-  (mu4e-headers-search-narrow (concat "from:" (plist-get (car (mu4e-message-field-at-point :from)) :email))))
+  (mu4e-search-narrow (concat "from:" (plist-get (car (mu4e-message-field-at-point :from)) :email))))
 
 (defun bergheim/utils--get-domain (email)
   "Get the main domain of an email address"
@@ -32,7 +32,7 @@
 
     (setq query-string (concat maildir-filter " AND " query-string))
 
-    (mu4e-headers-search
+    (mu4e-search
      (format query-string domain domain)
      nil nil nil
      msgid (and (eq major-mode 'mu4e-view-mode)
@@ -52,7 +52,7 @@
     (unless current-prefix-arg
         (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
 
-    (mu4e-headers-search
+    (mu4e-search
      (format query-string email email)
      nil nil nil
      msgid (and (eq major-mode 'mu4e-view-mode)
@@ -124,7 +124,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
     (unless current-prefix-arg
         (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
 
-    (mu4e-headers-search
+    (mu4e-search
      query-string
      nil nil nil
      msgid (and (eq major-mode 'mu4e-view-mode)
@@ -211,9 +211,6 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       mu4e-get-mail-command "sync-mail"
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil
-
-      mu4e-view-show-images t
-      mu4e-view-show-addresses t
 
       ;; this fixes some sync issues with mbsync and office365
       mu4e-change-filenames-when-moving t
