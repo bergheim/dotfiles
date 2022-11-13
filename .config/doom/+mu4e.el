@@ -109,6 +109,24 @@ With \\[universal-argument], include all contexts"
                  msgid (and (eq major-mode 'mu4e-view-mode)
                             (not (eq mu4e-split-view 'single-window))))))
 
+(add-to-list 'mu4e-marks
+             '(spam
+               :char       "X"
+               :prompt     "spam"
+               :dyn-target (lambda (target msg)
+                             (with-mu4e-context-vars (mu4e-context-determine msg nil)
+                                 mu4e-spam-folder))
+               :action      (lambda (docid msg target)
+                              (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
+
+(mu4e~headers-defun-mark-for spam)
+(mu4e~view-defun-mark-for spam)
+
+(defun bergheim/mu4e-refile-as-spam (msg)
+  (if (eq major-mode 'mu4e-headers-mode)
+      (mu4e-headers-mark-for-spam)
+    (mu4e-view-mark-for-spam)))
+
 (defun bergheim/mu4e-search-to-me (msg)
   "Quickly find all mails sent to me from this address.
 
@@ -371,6 +389,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                 (mu4e-trash-folder  . "/neptune/Trash")
                 (mu4e-drafts-folder . "/neptune/Drafts")
                 (mu4e-refile-folder . "/neptune/Archive")
+                (mu4e-spam-folder   . "/neptune/Spam")
 
                 (mu4e-maildir-shortcuts . ( ("/neptune/Inbox"         . ?i)
                                             ("/neptune/Sent"    . ?s)
@@ -395,6 +414,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                 (mu4e-trash-folder  . "/gmail/Trash")
                 (mu4e-drafts-folder . "/gmail/Drafts")
                 (mu4e-refile-folder . "/gmail/Archives")
+                (mu4e-spam-folder   . "/gmail/Spam")
 
                 (mu4e-maildir-shortcuts . ( ("/gmail/Inbox"            . ?i)
                                             ("/gmail/Sent" . ?s)
@@ -419,6 +439,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                 (mu4e-trash-folder  . "/glvortex/Trash")
                 (mu4e-drafts-folder . "/glvortex/Drafts")
                 (mu4e-refile-folder . "/glvortex/Archive")
+                (mu4e-spam-folder   . "/glvortex/Spam")
 
                 (mu4e-maildir-shortcuts . ( ("/glvortex/Inbox" . ?i)
                                             ("/glvortex/Sent"     . ?s)
@@ -453,6 +474,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
+(add-to-list 'mu4e-headers-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
 (add-to-list 'mu4e-headers-actions '("around" . bergheim/mu4e-search-around-message) t)
 
 (setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
@@ -466,6 +488,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-view-actions '("me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
+(add-to-list 'mu4e-view-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
 (add-to-list 'mu4e-view-actions '("around" . bergheim/mu4e-search-around-message) t)
 
 ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
