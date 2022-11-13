@@ -221,7 +221,12 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   :init
   (setq org-msg-greeting-fmt "Hello%s,\n\n"
         org-msg-signature bergheim/signature-html
-        org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil tex:dvipng \\n:t"))
+        org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil tex:dvipng \\n:t"
+        org-msg-default-alternatives '((new             . (text html))
+                                       (reply-to-html	. (text html))
+        ;; replies are currently broken with mu 1.8. this hack prioritizes work mail. From https://github.com/jeremy-compostella/org-msg/issues/157#issuecomment-1233791513
+                                       (reply-to-text	. (text html)))
+        ))
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
