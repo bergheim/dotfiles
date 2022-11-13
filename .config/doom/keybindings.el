@@ -133,6 +133,7 @@
  :ni "M-\\" #'evil-window-vsplit
  :ni "M-]" #'evil-window-split
  :ni "M-DEL" #'+workspace/close-window-or-workspace
+ :ni "M-<backspace>" #'+workspace/close-window-or-workspace ;; for osx
  :ni "M-S-<backspace>" #'kill-current-buffer
 
  "M-o" #'evil-window-next
@@ -166,6 +167,7 @@
       :niv "M-\\" #'evil-window-vsplit
       :niv "M-]" #'evil-window-split
       :niv "M-DEL" #'+workspace/close-window-or-workspace
+      :niv "M-<backspace>" #'+workspace/close-window-or-workspace ;; for osx
 
       (:prefix "[" (:desc "Previous note" :m "n" 'org-roam-dailies-goto-previous-note))
       (:prefix "]" (:desc "Next note" :m "n" 'org-roam-dailies-goto-next-note)))
@@ -186,6 +188,7 @@
       :m "M-\\" #'evil-window-vsplit
       :m "M-RET" #'evil-window-split
       :m "M-DEL" #'+workspace/close-window-or-workspace
+      :m "M-<backspace>" #'+workspace/close-window-or-workspace ;; for osx
 
       ;; TODO since always func, use # correct?
       :m "W" 'bergheim/org-agenda-toggle-work
