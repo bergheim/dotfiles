@@ -86,6 +86,28 @@ If \\[universal-argument] is called before this, include the trash."
      msgid (and (eq major-mode 'mu4e-view-mode)
                 (not (eq mu4e-split-view 'single-window))))))
 
+(defun bergheim/mu4e-search-around-message (msg)
+  "Show messages around the time of the selected MSG in the given context
+
+With \\[universal-argument], include all contexts"
+
+  (let* ((days-around 10)
+         (msgid (mu4e-message-field msg :message-id))
+         (email-date (mu4e-message-field msg :date))
+         (account (bergheim/mu4e--get-account (mu4e-message-field msg :maildir)))
+         (date-range-from (decode-time (time-subtract email-date (days-to-time days-around))))
+         (date-range-to (decode-time (time-add email-date (days-to-time days-around))))
+         (query-string (format "NOT maildir:/Trash/ AND date:%s..%s"
+                               (format "%d%02d%02d" (nth 5 date-range-from) (nth 4 date-range-from) (nth 3 date-range-from))
+                               (format "%d%02d%02d" (nth 5 date-range-to) (nth 4 date-range-to) (nth 3 date-range-to)))))
+
+    (unless current-prefix-arg
+      (setq query-string (concat (format "maildir:/%s/ AND " account) query-string)))
+
+    (mu4e-search query-string
+                 nil nil nil
+                 msgid (and (eq major-mode 'mu4e-view-mode)
+                            (not (eq mu4e-split-view 'single-window))))))
 
 (defun bergheim/mu4e-search-to-me (msg)
   "Quickly find all mails sent to me from this address.
@@ -434,6 +456,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
+(add-to-list 'mu4e-headers-actions '("around" . bergheim/mu4e-search-around-message) t)
 
 (setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
 (setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
@@ -446,6 +469,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-view-actions '("me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
+(add-to-list 'mu4e-view-actions '("around" . bergheim/mu4e-search-around-message) t)
 
 ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
 
