@@ -110,6 +110,8 @@
 
      "u" 'bergheim/open-calendar
 
+     "p" #'consult-project-buffer
+
      "t" 'heaven-and-hell-toggle-theme
      "T" 'heaven-and-hell-load-default-theme)))
 
