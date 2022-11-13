@@ -75,7 +75,7 @@
                                (mu4e-compose-new))))
       (:desc "Compose" "C" #'+mu4e/compose)
       (:desc "Mail org subtree" "o" #'bergheim/org-subtree-to-mu4e)
-      (:desc "Search" "s" #'mu4e-headers-search)
+      (:desc "Search" "s" #'mu4e-search)
       (:desc "Sent" "S" 'bergheim/mu4e-email-sent)
       (:desc "Spam" "j" 'bergheim/email-spam)
       (:desc "Today's email" "t" 'bergheim/mu4e-email-today)
@@ -93,7 +93,7 @@
 
      (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive) (org-agenda arg "d")))
      (:desc "Email Dashboard today" "s" 'bergheim/mu4e-email-today)
-     (:desc "Email Dashboard month" "S" (λ! (bergheim/mu4e-email-today "1m")))
+     (:desc "Email Dashboard year" "S" (λ! (bergheim/mu4e-email-today "1y")))
      (:desc "Orgmode Work" "w" 'bergheim/org-agenda-work-items)
 
      (:prefix ("r" . "Recent")
