@@ -43,14 +43,18 @@
   (bergheim/mu4e-search-from-domain msg t))
 
 (defun bergheim/mu4e-search-from-address (msg)
-  "Quickly find all mails sent to or from this address"
+  "Quickly find all mails sent from the current address
+
+With \\[universal-argument], include emails to this address as well"
 
   (let ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
         (msgid (mu4e-message-field msg :message-id))
-        (query-string "(from:%s or to:%s)"))
+        (query-string "NOT maildir:/Trash/ AND (from:%s"))
 
-    (unless current-prefix-arg
-        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
+    (when current-prefix-arg
+        (setq query-string (concat query-string " OR to:%s")))
+
+    (setq query-string (concat query-string ")"))
 
     (mu4e-search
      (format query-string email email)
