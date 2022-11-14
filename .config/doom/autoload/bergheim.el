@@ -82,3 +82,10 @@
   "Show the spam mail from all accounts"
   (interactive)
   (mu4e-search-bookmark "maildir:/Spam/"))
+
+;;;###autoload
+(defun bergheim/lookup-anything ()
+  "Look up a word in some way"
+  (interactive)
+  (require 'powerthesaurus nil t)
+  (powerthesaurus-lookup-dwim))
