@@ -137,7 +137,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
          (maildir (mu4e-message-field msg :maildir))
          (msgid (mu4e-message-field msg :message-id))
          (my-email (bergheim/mu4e--get-account-email maildir))
-         (query-string (format "(from:%s AND (to:%s OR NOT to:*)" from my-email)))
+         (query-string (format "(from:%s AND (to:%s OR cc:%s)" from my-email my-email)))
 
     (unless current-prefix-arg
         (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
