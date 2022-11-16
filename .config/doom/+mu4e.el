@@ -62,6 +62,28 @@ With \\[universal-argument], include emails to this address as well"
      msgid (and (eq major-mode 'mu4e-view-mode)
                 (not (eq mu4e-split-view 'single-window))))))
 
+(defun bergheim/mu4e-search-from-name (msg)
+  "Quickly find all mails sent from the current name.
+
+This might have more matches than `bergheim/mu4e-search-from-address' as people can have multiple email addresses.
+
+With \\[universal-argument], include emails to this name as well"
+
+  (let ((name (plist-get (car (mu4e-message-field-at-point :from)) :name))
+        (msgid (mu4e-message-field msg :message-id))
+        (query-string "NOT maildir:/Trash/ AND (from:%s"))
+
+    (when current-prefix-arg
+        (setq query-string (concat query-string " OR to:%s")))
+
+    (setq query-string (concat query-string ")"))
+
+    (mu4e-search
+     (format query-string name name)
+     nil nil nil
+     msgid (and (eq major-mode 'mu4e-view-mode)
+                (not (eq mu4e-split-view 'single-window))))))
+
 (defun bergheim/mu4e-search-this-subject (msg)
   "Quickly find all mails sent to or from this address
 
@@ -473,11 +495,12 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   :n "T" #'mu4e-headers-mark-thread))
 
 (setq mu4e-headers-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-headers-actions))
-(add-to-list 'mu4e-headers-actions '("narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
+(add-to-list 'mu4e-headers-actions '("Narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
 (add-to-list 'mu4e-headers-actions '("follow up" . bergheim/mu4e-follow-up) t)
 (add-to-list 'mu4e-headers-actions '("later" . bergheim/mu4e-read-later) t)
 (add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
 (add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
+(add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
 (add-to-list 'mu4e-headers-actions '("Domain" . bergheim/mu4e-search-from-domain) t)
 (add-to-list 'mu4e-headers-actions '("domain inbox" . bergheim/mu4e-search-inbox-from-domain) t)
 (add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
@@ -492,6 +515,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
 (add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
 (add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
+(add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
 (add-to-list 'mu4e-view-actions '("Domain" . bergheim/mu4e-search-from-domain) t)
 (add-to-list 'mu4e-view-actions '("domain inbox" . bergheim/mu4e-search-inbox-from-domain) t)
 (add-to-list 'mu4e-view-actions '("me" . bergheim/mu4e-search-to-me) t)
