@@ -85,7 +85,7 @@ With \\[universal-argument], include emails to this name as well"
                 (not (eq mu4e-split-view 'single-window))))))
 
 (defun bergheim/mu4e-search-this-subject (msg)
-  "Quickly find all mails sent to or from this address
+  "Quickly find all mails containing words from this subject
 
 Strips away subject action prefixes and special characters to capture more emails.
 
