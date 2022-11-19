@@ -102,7 +102,7 @@ If \\[universal-argument] is called before this, include the trash."
     (setq subject (replace-regexp-in-string "^\\(\\ca\\{2,3\\}: ?\\)+" "" subject))
 
     ;; remove characters that make mu unhappy
-    (setq subject (replace-regexp-in-string "\\W" " " subject))
+    (setq subject (replace-regexp-in-string "[^[:alnum:]-_]" " " subject))
 
     (setq subject (s-trim subject))
 
