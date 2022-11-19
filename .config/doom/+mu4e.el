@@ -102,7 +102,12 @@ If \\[universal-argument] is called before this, include the trash."
     (setq subject (replace-regexp-in-string "^\\(\\ca\\{2,3\\}: ?\\)+" "" subject))
 
     ;; remove characters that make mu unhappy
-    (setq subject (replace-regexp-in-string "[^[:alnum:]_]" " " subject))
+    ;; often if a subject has something like "#34234" in it, that is a better identifier as it
+    ;; allows tracking the ticket issue across subjects
+    (if (string-match "\#\\([0-9]+\\)" subject)
+        ;; if we find a number, only match the subject
+        (setq subject (concat "subject:" (match-string 1 subject)))
+      (setq subject (replace-regexp-in-string "[^[:alnum:]_]" " " subject)))
 
     (setq subject (s-trim subject))
 
