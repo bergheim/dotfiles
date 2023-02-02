@@ -638,7 +638,13 @@
                             :keys "m"
                             :headline "Monthly"
                             :default-tags "@work:monthly:review"
-                            :template-file ,(expand-file-name "review-monthly.org" org-capture-custom-template-directory))))
+                            :template-file ,(expand-file-name "review-monthly.org" org-capture-custom-template-directory))
+                           ("Yearly review"
+                            :icon ("today" :set "material" :color "green")
+                            :keys "y"
+                            :headline "Yearly"
+                            :default-tags "yearly:review"
+                            :template-file ,(expand-file-name "review-yearly.org" org-capture-custom-template-directory))))
 
               ("Add contact" :keys "C"
                :icon ("person" :set "octicon" :color "green")
