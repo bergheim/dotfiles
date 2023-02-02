@@ -107,13 +107,13 @@
 
       ;; once you've used org for a while, you start to chose which files go to
       ;; the agenda
-      org-agenda-files (append (file-expand-wildcards "~/org/*.org")
-                               (file-expand-wildcards "~/org/roam/*.org")
-                               (directory-files-recursively "~/org/neptune" "\\.org$")
-                               (directory-files-recursively "~/org/caldav" "\\.org$")
-                               (directory-files-recursively "~/org/ical" "\\.org$")
-                               (directory-files-recursively "~/org/projects" "\\.org$")
-                               (directory-files-recursively "~/org/journal" "\\.org$"))
+      org-agenda-files (append (file-expand-wildcards (concat org-directory "*.org"))
+                               (file-expand-wildcards (concat org-directory "roam/*.org"))
+                               (directory-files-recursively (concat org-directory "neptune") "\\.org$")
+                               (directory-files-recursively (concat org-directory "caldav") "\\.org$")
+                               (directory-files-recursively (concat org-directory "ical") "\\.org$")
+                               (directory-files-recursively (concat org-directory "projects") "\\.org$")
+                               (directory-files-recursively (concat org-directory "journal") "\\.org$"))
 
       ;; org-agenda-clockreport-parameter-plist
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))
