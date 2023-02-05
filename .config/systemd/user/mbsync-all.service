@@ -6,6 +6,7 @@ After=network-online.target
 
 [Service]
 Type=simple
+Environment="PATH=%h/local/bin:/usr/local/bin:/usr/bin"
 ExecStart=%h/local/bin/sync-mail all
 # ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
 

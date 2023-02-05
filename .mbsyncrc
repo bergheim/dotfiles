@@ -19,9 +19,9 @@ IMAPAccount neptune
     Host outlook.office365.com
     Port 993
     UserCmd "pass show email/neptune/address"
-    PassCmd "pass show email/neptune/me"
+    PassCmd oauth2ms
     SSLType IMAPS
-    AuthMechs PLAIN
+    AuthMechs XOAUTH2
     SSLVersions TLSv1.2
     CertificateFile /etc/ssl/certs/ca-certificates.crt
 

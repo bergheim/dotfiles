@@ -7,6 +7,7 @@ After=network-online.target
 [Service]
 # Type=simple
 Type=oneshot
+Environment="PATH=%h/local/bin:/usr/local/bin:/usr/bin"
 ExecStart=%h/local/bin/sync-mail
 # don't do this - only update index if we have new emails
 # ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
