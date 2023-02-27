@@ -74,6 +74,19 @@
 ;; (package! engine-mode)
 (package! restclient)
 
+(unpin! org-roam)
+(package! org-roam-ui)
+
+;; should improve auto-complete (in theory)
+(package! company :disable t)
+(package! corfu)
+(package! corfu-doc
+  :recipe (:host github :repo "galeo/corfu-doc"))
+(package! orderless)
+(package! cape)
+(package! kind-icon)
 
 ;; this is useful for things like org repos
 (package! git-auto-commit-mode)
+
+(package! deadgrep)

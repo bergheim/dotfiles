@@ -90,6 +90,7 @@
       (:desc "Inbox" "i" 'bergheim/email-inbox))
 
      "e" 'elfeed
+     "/" 'deadgrep
 
      (:desc "Orgmode Dashboard" "a" (lambda (&optional arg) (interactive) (org-agenda arg "d")))
      (:desc "Email Dashboard today" "s" 'bergheim/mu4e-email-today)
