@@ -469,7 +469,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       )
 
 (setq mu4e-bookmarks
-      '((:name  "Unread messages"
+      `((:name  "Unread messages"
                 :query "flag:unread AND NOT (flag:trashed OR maildir:/Trash/)"
                 :key ?u)
 
@@ -498,7 +498,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                 :key ?Q)
 
         (:name  "Support"
-                :query (concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
+                :query ,(concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
                 :key ?s)
 
         (:name "Today's messages"

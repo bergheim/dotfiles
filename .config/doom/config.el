@@ -200,18 +200,10 @@ If \\[universal-argument] if called before this, show a week back."
       (if current-prefix-arg
           (setq lookback "1y"))
 
-      ;; delete current workspace if empty
-      ;; this is useful when mu4e is in the daemon
-      ;; as otherwise you can accumulate empty workspaces
-      (unless (+workspace-buffer-list)
-        (+workspace-delete (+workspace-current-name)))
-      (+workspace-switch +mu4e-workspace-name t)
-      (setq +mu4e--old-wconf (current-window-configuration))
-      (delete-other-windows)
-      (switch-to-buffer (doom-fallback-buffer))
-      (mu4e t)
       ;; Add the hook temporarily
       (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
+      ;; FIXME: maybe fix this upstream?
+      (=mu4e t)
       (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
 
   (defun bergheim/mu4e-email-sent()
