@@ -186,18 +186,34 @@
 If LOOKBACK is specified, use that instead of 1d.
 If \\[universal-argument] if called before this, show a week back."
     (interactive)
-    (let ((mu4e-headers-include-related t)
+    (require 'mu4e)
+    (let ((mu4e-search-include-related t)
           (mu4e-search-threads t)
-          (mu4e-headers-sort-field :date)
-          (mu4e-headers-sort-direction :ascending))
+          (mu4e-search-sort-field :date)
+          (mu4e-search-sort-direction :ascending))
+
+      ;; ask if you want to apply any changes made before leaving
+      (mu4e-mark-handle-when-leaving)
 
       (when (not lookback)
         (setq lookback "2m"))
       (if current-prefix-arg
           (setq lookback "1y"))
 
-      (=mu4e)
-      (mu4e-search-bookmark (concat "maildir:/Inbox/ AND (date:" lookback "..now)"))))
+      ;; delete current workspace if empty
+      ;; this is useful when mu4e is in the daemon
+      ;; as otherwise you can accumulate empty workspaces
+      (progn
+        (unless (+workspace-buffer-list)
+          (+workspace-delete (+workspace-current-name)))
+        (+workspace-switch +mu4e-workspace-name t))
+      (setq +mu4e--old-wconf (current-window-configuration))
+      (delete-other-windows)
+      (switch-to-buffer (doom-fallback-buffer))
+      (mu4e t)
+      ;; Add the hook temporarily
+      (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
+      (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
 
   (defun bergheim/mu4e-email-sent()
     (interactive)

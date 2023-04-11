@@ -706,3 +706,13 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   ;; not really elegant but it gets the job done..
   (let* ((heading-level (- (car (org-heading-components)) 1)))
     (cl-loop repeat heading-level do (org-promote-subtree))))
+
+(defun bergheim/mu4e--headers-goto-bottom ()
+ "Move point to the last email in the mu4e-headers buffer.
+
+Since the headers display is async, and we only want this for some functions,
+remove the hook after invocation"
+  (with-current-buffer (get-buffer "*mu4e-headers*")
+    (goto-char (point-max))
+    (remove-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
+    (mu4e-headers-prev)))
