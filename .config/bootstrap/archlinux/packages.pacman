@@ -159,4 +159,5 @@ parallel
 dolphin
 noto-fonts-emoji
 unicode-emoji
-
+shfmt
+inotify-tools
