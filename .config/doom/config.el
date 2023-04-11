@@ -195,7 +195,7 @@ If \\[universal-argument] if called before this, show a week back."
       ;; ask if you want to apply any changes made before leaving
       (mu4e-mark-handle-when-leaving)
 
-      (when (not lookback)
+      (unless lookback
         (setq lookback "2m"))
       (if current-prefix-arg
           (setq lookback "1y"))
@@ -203,10 +203,9 @@ If \\[universal-argument] if called before this, show a week back."
       ;; delete current workspace if empty
       ;; this is useful when mu4e is in the daemon
       ;; as otherwise you can accumulate empty workspaces
-      (progn
-        (unless (+workspace-buffer-list)
-          (+workspace-delete (+workspace-current-name)))
-        (+workspace-switch +mu4e-workspace-name t))
+      (unless (+workspace-buffer-list)
+        (+workspace-delete (+workspace-current-name)))
+      (+workspace-switch +mu4e-workspace-name t)
       (setq +mu4e--old-wconf (current-window-configuration))
       (delete-other-windows)
       (switch-to-buffer (doom-fallback-buffer))
