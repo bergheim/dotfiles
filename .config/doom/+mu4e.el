@@ -272,7 +272,7 @@ With \\[universal-argument], include all contexts"
                               (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
 (mu4e~headers-defun-mark-for spam)
-(mu4e~view-defun-mark-for spam)
+(mu4e--view-defun-mark-for spam)
 
 (defun bergheim/mu4e-refile-as-spam (msg)
   (if (eq major-mode 'mu4e-headers-mode)

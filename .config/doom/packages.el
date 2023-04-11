@@ -60,6 +60,10 @@
 (package! doct)
 
 (package! mu4e-alert :disable t)
+;; TODO: just here while 1.10 settles..
+(package! evil-collection
+  :recipe (:host github :repo "meliache/evil-collection"))
+(unpin! mu4e)
 
 (package! affe)
 
