@@ -5,9 +5,11 @@ Xft.lcdfilter: lcddefault
 Xft.antialias: 1
 Xft.autohint: 0
 Xft.hinting: 1
-Xft.hintstyle: hintfull
+! from how_to_achieve_macos_font_rendering_in_linux_in
+Xft.hintstyle: hintslight
 Xft.rgba: rgb
 ! about right for a 27 inch 1440p monitor
 ! Xft.dpi: 120
+! and this for a 4k
 Xft.dpi: 163
 ! Xcursor.size: 16
