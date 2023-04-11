@@ -18,7 +18,6 @@
 (defun bergheim/mu4e-search-from-domain (msg &optional everything custom-domain)
   "Quickly find all mails sent to or from this domain"
 
-
   ;; TODO: this can be cleaner
   (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
         (msgid (mu4e-message-field msg :message-id))
@@ -32,7 +31,8 @@
     (when custom-domain
       (setq domain custom-domain))
 
-    (if everything
+    (if (or everything
+            current-prefix-arg)
         (setq maildir-filter "NOT maildir:/Trash/")
       (setq maildir-filter "maildir:/Inbox/"))
 
@@ -94,80 +94,93 @@ With \\[universal-argument], include emails to this name as well"
      msgid (and (eq major-mode 'mu4e-view-mode)
                 (not (eq mu4e-split-view 'single-window))))))
 
-(defun match-subject (subject)
+(defun bergheim/mu4e--clean-subject-for-mu (subject)
+  "Clean up the subject before sending it to mu4e.
+
+This is because xapian has a lot of characters that will break the search. I could not find docs on
+it, and this mess has just evolved over time.."
+
+  (let* (;; remove any "Re: ", "Fwd: " etc
+         (subject (replace-regexp-in-string "^\\(\\ca\\{2,3\\}: ?\\)+" "" subject))
+         ;; remove characters that make mu unhappy and breaks xapian keywords
+         (subject (replace-regexp-in-string "’" "'" subject))
+         (subject (replace-regexp-in-string "[^[:alnum:]_'\.]" " " subject))
+         ;; (subject (replace-regexp-in-string "[[:nonascii:]]" " " subject))
+         ;; (subject (replace-regexp-in-string "[[:punct:]]" " " subject))
+         ;; (subject (replace-regexp-in-string "[[:graph:]]" " " subject))
+         ;; remove more breaking xapian keywords
+         (subject (replace-regexp-in-string "[-:]" " " subject))
+         ;; apparently surrounding 's is a nono
+         (subject (replace-regexp-in-string "\\('\\)[[:blank:]]" "" subject nil nil 1))
+         (subject (replace-regexp-in-string "[[:blank:]]\\('\\)" "" subject nil nil 1))
+         ;; xapian matches 10.10 but not foo.bar
+         (subject (replace-regexp-in-string "[^[:digit:]]\\(\\\.+\\)" " " subject nil nil 1))
+         (subject (replace-regexp-in-string "[[:digit:]]\\(\\\.+\\)" "\\\\." subject nil nil 1)))
+
+         (s-trim subject)))
+
+(defun bergheim/mu4e--pattern-match-subject (subject &optional only-match)
+  "Match the SUBJECT for anything interesting, and return that.
+If ONLY-MATCH is non-nil, only return if anything actually matched
+
+Used to quickly match similar messages"
+
+  (let* ((escaped-subject (string-replace "\\" "\\\\" subject))
+         (trimmed-escaped-subject (string-replace " " "\\ " escaped-subject))
+         (match (or (seq-some
+                     (lambda (r)
+                       (when (string-match-p r subject)
+                         (format "subject:/%s/" (s-trim trimmed-escaped-subject))))
+                     bergheim/email-dwim-subjects)
+                    (unless only-match
+                      subject))))
+    match))
+
+(defun bergheim/mu4e--pattern-match-subject (subject &optional only-match)
   "Match the subject for anything interesting, and return that.
 Used to quickly match similar messages"
 
-  (let ((match (or (seq-some (lambda (r) (and
-                                          (string-match-p r subject)
-                                          (concat "subject:/" (s-trim (string-replace " " "\\ " (string-replace "\\" "\\\\" r))) "/")))
-                             '("sent a message"
-                               "You have \\w+ new message"
-                               "You have \\w+ new invitations"
-                               "You appeared in \\w+ searches this week"
-                               "just messaged you"
-                               "is hiring"
-                               "share their thoughts on LinkedIn"))
-                   subject)))
-    match))
-
-(defun clamp-subject (subject)
-  "Remove parts of the subject that do not matter.
-Makes matching of similar subjects better"
-
-  (let ((match (or (seq-do (lambda (r) (and
-                                          (string-match-p r subject)
-                                          (concat (s-trim (replace-regexp-in-string r "" subject)))))
-                             '("Resolution expected for"
-                               "^\\(\\ca\\{2,3\\}: ?\\)+"
-                               ))
-                   subject)))
+  (let ((match
+         (or (seq-some (lambda (r) (and (string-match-p r subject)
+                                        (concat "subject:/" (s-trim (string-replace " " "\\ " (string-replace "\\" "\\\\" r))) "/")))
+              bergheim/email-dwim-subjects)
+          subject)))
     match))
 
 (defun bergheim/mu4e-search-dwim (msg)
-;; this matches by order:
-;; 1. domain
-;; 2. sent from
-;; 3. subject, which has specialized rules
-;; TODO: maybe switch the ordering?
   (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
          (email-list (mu4e-message-field-at-point :list))
          (email-references (car (mu4e-message-field-at-point :references)))
          (msgid (mu4e-message-field msg :message-id))
+         (subject (mu4e-message-field msg :subject))
          (domain (bergheim/utils--get-domain email t)))
 
-    ;; if things are sent on behalf of something it is usually what we want to focus on
-    ;; (when email-references
-    ;;   (setq domain (bergheim/utils--get-domain email-references)))
+    (cond
+     ;; if we match on a specific subject pattern, assume that is the most important
+     ((bergheim/mu4e--pattern-match-subject subject t)
+      (bergheim/mu4e-search-this-subject msg t))
 
-    ;; if it is a mailing list, just show everything from that
-    ;; TODO often they will have "List-Unsubscribe" but not the list. if they have, take the from: and search on that
-    (if email-list
-        (mu4e-search
-         (format "maildir:/Inbox/ AND list:%s" email-list)
-         nil nil nil
-         msgid (and (eq major-mode 'mu4e-view-mode)
-                    (not (eq mu4e-split-view 'single-window))))
-      ;; filter on domains if they all send the same kind of emaild..
-      (if (seq-some (lambda (r) (string-match-p r domain))
-                    '("matrix.org"
-                      "finn.no"
-                      "goodreads.com"
-                      "freshdesk.com"
-                      ;; "linkedin.com"
-                      ;; "emeaemail.teams.microsoft.com"
-                      "crowded.community"))
-          (bergheim/mu4e-search-from-domain msg)
-        ;; filter on the other "email lists"
-        (if (seq-some (lambda (r) (string-match-p r email))
-                      '("jobs-listings@linkedin.com"
-                        "messages-noreply@linkedin.com"
-                        "noreply@emeaemail.teams.microsoft.com"
-                        "notifications@crowded.community"
-                        "noreply@github.com"
-                        "notifications@github.com"))
-            (bergheim/mu4e-search-from-address msg)
-          (bergheim/mu4e-search-this-subject msg t))))))
+     ;; if it is a mailing list, just show everything from that
+     ;; (unforunately, many provide a "List-Unsubscribe", but not the List-Id itself)
+     (email-list
+      (mu4e-search
+       (format "maildir:/Inbox/ AND list:%s" email-list)
+       nil nil nil
+       msgid (and (eq major-mode 'mu4e-view-mode)
+                  (not (eq mu4e-split-view 'single-window)))))
+
+     ;; filter on the other "email lists"
+     ((seq-some (lambda (r) (string-match-p r email))
+                bergheim/email-dwim-lists)
+      (bergheim/mu4e-search-from-address msg))
+
+     ;; filter on domains if they all send the same kind of emails
+     ((seq-some (lambda (r) (string-match-p r domain))
+                bergheim/email-dwim-domains)
+      (bergheim/mu4e-search-from-domain msg))
+
+     ;; fallback to search this subject
+     (t (bergheim/mu4e-search-this-subject msg t)))))
 
 (defun bergheim/mu4e-search-this-subject (msg &optional match-partial-subject)
   "Quickly find all mails containing words from this subject
@@ -182,56 +195,31 @@ If \\[universal-argument] is called before this, include the trash."
         (email (plist-get (car (mu4e-message-field-at-point :from)) :email))
         (domain (bergheim/utils--get-domain email))
         (query-string "%s")
-        (num))
+        (num 0))
 
-    (unless current-prefix-arg
-        (setq query-string (concat "maildir:/Inbox/ AND " query-string)))
+    ;; (unless current-prefix-arg
+    ;;     (setq query-string (concat "maildir:/Inbox/ AND " query-string)))
 
-    (if current-prefix-arg
-      (setq subject (replace-regexp-in-string "[^[:alpha:]_']" " " subject)))
+    ;; (if current-prefix-arg
+    ;;   (setq subject (replace-regexp-in-string "[^[:alpha:]_']" " " subject)))
 
-    ;; remove any "Re: ", "Fwd: " etc
-    (setq subject (replace-regexp-in-string "^\\(\\ca\\{2,3\\}: ?\\)+" "" subject))
+    (setq subject (bergheim/mu4e--clean-subject-for-mu subject))
 
-    ;; remove characters that make mu unhappy
-    ;; TODO this will replace "'" with " " which will break the search even though the former works. Search for
-    ;; Subject: We're giving you extra storage to say thanks
-    ;; often if a subject has something like "#34234" in it, that is a better identifier as it
-    ;; allows tracking the ticket issue across subjects
-    (setq subject (replace-regexp-in-string "[^[:alnum:]_'\.]" " " subject))
-    ;; (setq subject (replace-regexp-in-string "[[:nonascii:]]" " " subject))
-    ;; (setq subject (replace-regexp-in-string "[[:punct:]]" " " subject))
-    ;; (setq subject (replace-regexp-in-string "[[:graph:]]" " " subject))
-    ;; remove breaking xapian keywords
-    (setq subject (replace-regexp-in-string "[-:]" " " subject))
-    ;; apparently surrounding 's is a nono
-    (setq subject (replace-regexp-in-string "\\('\\)[[:blank:]]" "" subject nil nil 1))
-    (setq subject (replace-regexp-in-string "[[:blank:]]\\('\\)" "" subject nil nil 1))
-    ;; this is some crazy stuff - xapian matches 10.10 but not foo.bar
-    (setq subject (replace-regexp-in-string "[^[:digit:]]\\(\\\.+\\)" " " subject nil nil 1))
-    (setq subject (replace-regexp-in-string "[[:digit:]]\\(\\\.+\\)" "\\\\." subject nil nil 1))
-    ;; (setq subject (replace-regexp-in-string "[[:digit:]]\\(\\\.+\\)[[:digit:]]?" "\\\\." subject nil nil 1))
-
-    (setq subject (s-trim subject))
+    (when match-partial-subject
+      (setq subject (bergheim/mu4e--pattern-match-subject subject)))
 
     ;; numbers usually make a pretty good differentiator
     (when (string-match "\\(\\b[0-9][0-9]+\\b\\)" subject)
-        ;; if we find a number, only match the subject
-      (setq num (string-to-number (match-string 1 subject)))
+      ;; often if a subject has something like "#34234" in it, that is a good identifier as it
+      ;; allows tracking the ticket issue across subjects
+      (setq num (string-to-number (match-string 1 subject))))
+
+    (when (> num 2050)
       ;; larger numbers are more likely to be unique, so full text search them. chose a number
       ;; larger than our year because they are more common
-      (when (> num 2050)
-          (setq subject (number-to-string num))))
-
-    ;; (setq subject (s-trim subject))
-    ;; FIXME: this should only be called from dwim
-    (when match-partial-subject
-      (setq subject (match-subject subject)))
+      (setq subject (number-to-string num)))
 
     (mu4e-search
-     ;; sometimes the numbers are in links but not the subject
-     ;; but sometimes it will be too broad a search.. should make this optional
-     ;; so TODO: use prefix for this, and drop the optional trash - I never use it
      ;; (format query-string (concat "subject:" subject))
      (format query-string subject)
      nil nil nil
@@ -657,7 +645,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-headers-actions '("Around" . bergheim/mu4e-search-around-message) t)
 (add-to-list 'mu4e-headers-actions '("adwim" . bergheim/mu4e-search-dwim) t)
 
-;; (setq mu4e-view-actions (delete '("view in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
+(setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
 (setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
 (add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
 (add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
