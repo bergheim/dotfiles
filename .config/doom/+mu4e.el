@@ -55,13 +55,14 @@ With \\[universal-argument], include emails to this address as well"
 
   (let ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
         (msgid (mu4e-message-field msg :message-id))
-        (query-string "NOT maildir:/Trash/ AND (from:%s"))
+        (query-string "(from:%s"))
 
     (when from-address
       (setq email from-address))
 
-    (when current-prefix-arg
-        (setq query-string (concat query-string " OR to:%s")))
+    (if current-prefix-arg
+        (setq query-string (concat query-string " OR to:%s"))
+      (setq query-string (concat "maildir:/Inbox/ AND " query-string " OR to:%s")))
 
     (setq query-string (concat query-string ")"))
 
