@@ -265,3 +265,11 @@ If \\[universal-argument] if called before this, show a week back."
    (list
     (cfw:ical-create-source "outlook" bergheim/calendar/neptune/default "Orange")
     (cfw:org-create-file-source "personal" bergheim/calendar/nextcloud/local "DarkGreen"))))
+
+(defun bergheim/switch-dictionary ()
+  (interactive)
+  (let* ((dic (if (string= ispell-local-dictionary "nb")
+                  "english"
+                "nb")))
+    (ispell-change-dictionary dic)
+    (message "Dictionary switched to %s" dic)))

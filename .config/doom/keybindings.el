@@ -116,7 +116,7 @@
      "w" #'bergheim/lookup-anything
 
      "t" 'heaven-and-hell-toggle-theme
-     "T" 'heaven-and-hell-load-default-theme)))
+     "T" 'bergheim/switch-dictionary)))
 
 (map!
  ;; overrides (mark-paragraph)
