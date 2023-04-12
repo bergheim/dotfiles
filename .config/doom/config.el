@@ -10,7 +10,6 @@
         doom-modeline-buffer-encoding nil))
 
 ;; default to english.
-;; TODO: add ispell-local-dictionary
 (setq ispell-dictionary "en")
 
 ;; default is 1 second which is a bit slow
@@ -129,14 +128,6 @@
 ;; If tooltips turned on, make tips appear promptly
 (setq tooltip-delay 0.1)  ; default is 0.7 second)
 
-(after! ivy
-  ;; include recent files and bookmarks
-  (setq ivy-use-virtual-buffers t
-        ;; show index/total in the minibuf prompt
-        ivy-count-format "(%d/%d) "
-        ;; show the abbreviated path for files, not just project relative
-        ivy-rich-path-style 'abbrev))
-
 ;; this is a hack that allows us to use lookups to other windows
 ;; https://github.com/hlissner/doom-emacs/issues/3397
 (dolist (fn '(definition references))
@@ -203,10 +194,9 @@ If \\[universal-argument] if called before this, show a week back."
       (if current-prefix-arg
           (setq lookback "1y"))
 
+      (=mu4e t)
       ;; Add the hook temporarily
       (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
-      ;; FIXME: maybe fix this upstream?
-      (=mu4e t)
       (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
 
   (defun bergheim/mu4e-email-sent()
@@ -216,6 +206,8 @@ If \\[universal-argument] if called before this, show a week back."
 
 (after! mu4e (load! "+mu4e"))
 (after! org (load! "+org"))
+
+(load! "completion")
 
 (use-package! orgit
   ;; Automatically copy orgit link to last commit after commit
