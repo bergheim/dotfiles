@@ -18,6 +18,7 @@
     (:desc "Find a dir in HOME" "F"
      (lambda (&optional arg)
        (interactive)
+       ;; -H includes hidden
        (let ((affe-find-command "fd --color=never -t directory"))
         (affe-find "~/"))))
 

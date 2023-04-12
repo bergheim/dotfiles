@@ -34,13 +34,12 @@
     (apply fn args)))
 
 (defun bergheim/vertico--without-sorting (fn &rest args)
-  (let ((vertico-sort-function 'nil))
+  (let ((vertico-sort-function nil))
     (apply fn args)))
 
 (defun bergheim/org-mru-goto ()
   (interactive)
-  (bergheim/vertico--without-sorting
-   (call-interactively 'org-mru-clock-goto)))
+  (bergheim/vertico--without-sorting 'org-mru-clock-goto (org-mru-clock--completing-read)))
 
 (defun bergheim/org-mru-clock-in ()
   (interactive)
@@ -453,7 +452,8 @@
       `(ts :from ,from :to today)
       :title "Recent Items"
       :super-groups `(,filter
-                      (:name "Work" :auto-ts t)))))
+                      (:name "Work" :auto-bergheim/clocked-or-created t)
+                      (:discard (:anything t))))))
 
 ;; TODO maybe just bin this
 (defun bergheim/org-agenda-new-items ()
@@ -1048,3 +1048,36 @@ derived from `dired-mode'."
       ;; Revert the Dired buffer to show that the file is moved
       (revert-buffer)
       (message (format "Files moved to %S" current-org-heading)))))
+
+(org-super-agenda--def-auto-group bergheim/clocked-or-created
+  "Group items based on the latest CLOCK or CREATED timestamp in the entry.
+The date is formatted according to `org-super-agenda-date-format'."
+  ;; :keyword :auto-
+  :key-form (cl-labels ((latest-ts-up-to
+                         (limit) ;; FIXME: What if the logbook is empty?
+                         (-some->> (cl-loop for next-ts = (when (re-search-forward org-element--timestamp-regexp limit t)
+                                                            (ts-parse-org (match-string 1)))
+                                            while next-ts
+                                            collect next-ts)
+                           (-sort #'ts>)
+                           car)))
+              (org-super-agenda--when-with-marker-buffer (org-super-agenda--get-marker item)
+                (let* ((created (when (org-entry-get (point) "CREATED")
+                                  (ts-parse-org (org-entry-get (point) "CREATED"))))
+                       (clocked (let ((drawer-name (org-clock-drawer-name))
+                                      (entry-end (org-entry-end-position))
+                                      ts)
+                                  (when (and drawer-name
+                                             (re-search-forward (rx-to-string `(seq bol (0+ blank) ":" ,drawer-name ":"))
+                                                                entry-end 'noerror)
+                                             (org-at-drawer-p))
+                                    (latest-ts-up-to (save-excursion
+                                                       ;; End of drawer.
+                                                       (re-search-forward (rx bol (0+ blank) ":END:") entry-end))))))
+                       (latest-ts (car (sort (remq nil (list created clocked)) #'ts>))))
+                  (when latest-ts
+                    (propertize (ts-format org-super-agenda-date-format latest-ts)
+                                'org-super-agenda-ts latest-ts)))))
+  :key-sort-fn (lambda (a b)
+                 (ts> (get-text-property 0 'org-super-agenda-ts a)
+                      (get-text-property 0 'org-super-agenda-ts b))))
