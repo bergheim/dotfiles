@@ -44,6 +44,8 @@ export MONITOR_SECONDARY="DP-0"
 
 export QT_QPA_PLATFORMTHEME=qt5ct
 
+# allow using the GnuPG agent as an SSH agent
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket) 
 export GPG_TTY=$(tty)
 
 export PAGER=bat
