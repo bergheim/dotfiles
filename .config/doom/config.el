@@ -27,6 +27,9 @@
 (global-display-fill-column-indicator-mode 0)
 (setq-default fill-column 100)
 
+;; help entries are often more long form. put them in a proper window
+(set-popup-rule! "^\\*\\([Hh]elp\\|Apropos\\)" :ignore t)
+
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Thomas Bergheim"
