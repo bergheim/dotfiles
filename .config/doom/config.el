@@ -165,6 +165,8 @@
         dired-recursive-deletes 'always
         dired-kill-when-opening-new-dired-buffer t))
 
+(use-package! evil-collection)
+
 (use-package! mu4e
   :config
   (require 'mu4e-headers)

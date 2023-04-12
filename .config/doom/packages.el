@@ -46,51 +46,52 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
-(package! tao-theme) ;; uncolored back and white themes
-
 (package! org-mru-clock)
 (package! org-super-agenda)
 (package! org-ql)
-
 (package! org-sticky-header)
+(package! doct)
 ;; https://github.com/IvanMalison/org-projectile
 ;; (package! org-projectile)
 (package! org-fancy-priorities)
 ;; (package! helm-org-rifle)
-(package! doct)
+(package! org-roam-ui)
+(unpin! org-roam)
+
+(package! org-caldav)
+(package! calendar-norway)
+;; (package! excorporate)
 
 (package! mu4e-alert :disable t)
+(package! mu4e-thread
+  :recipe (:host github :repo "rougier/mu4e-thread"))
 ;; TODO: just here while 1.10 settles..
+(unpin! evil-collection)
 (package! evil-collection
   :recipe (:host github :repo "meliache/evil-collection"))
 (unpin! mu4e)
 
-(package! affe)
-
-(package! org-caldav)
-(package! calendar-norway)
+;; should improve auto-complete (in theory)
+(package! company :disable t)
+(unpin! corfu)
+(package! corfu)
+(package! orderless)
+(package! cape)
 
 (package! auto-dim-other-buffers)
-
+(package! tao-theme) ;; uncolored back and white themes
 (package! heaven-and-hell)
 (package! rainbow-mode)
 ;; allows you to search in a browser from emacs
 ;; (package! engine-mode)
+
 (package! restclient)
-
-(unpin! org-roam)
-(package! org-roam-ui)
-
-;; should improve auto-complete (in theory)
-(package! company :disable t)
-(package! corfu)
-(package! corfu-doc
-  :recipe (:host github :repo "galeo/corfu-doc"))
-(package! orderless)
-(package! cape)
-(package! kind-icon)
-
 ;; this is useful for things like org repos
 (package! git-auto-commit-mode)
 
+;; TODO: trials
+
+(package! org-recent-headings)
+(package! ox-report)
+(package! affe)
 (package! deadgrep)
