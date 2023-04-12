@@ -1,7 +1,7 @@
 [Added Associations]
 image/jpeg=org.kde.gwenview.desktop;vimiv.desktop;
 inode/directory=org.kde.dolphin.desktop;
-x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;userapp-Telegram Desktop-C3YMG1.desktop;
+x-scheme-handler/tg=userapp-Telegram Desktop-21VOF1.desktop;userapp-Telegram Desktop-C3YMG1.desktop;userapp-Telegram Desktop-9MOHW1.desktop;
 
 [Default Applications]
 application/octet-stream=emacs.desktop;
@@ -22,4 +22,4 @@ x-scheme-handler/ftp=firefox.desktop
 x-scheme-handler/http=firefox.desktop
 x-scheme-handler/https=firefox.desktop
 x-scheme-handler/msteams=teams.desktop
-x-scheme-handler/tg=userapp-Telegram Desktop-C3YMG1.desktop
+x-scheme-handler/tg=userapp-Telegram Desktop-9MOHW1.desktop
