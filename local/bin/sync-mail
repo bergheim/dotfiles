@@ -17,6 +17,7 @@ fi
 # NEW_MAILS_COUNT=$(mu find "(maildir:/Inbox/ OR maildir:/Trash/ OR maildir:/Archive/ OR maildir:/Sent/) AND (date:${LAST_SYNC}..now)" 2>/dev/null | wc -l)
 
 NEW_MAILS=$(find ${MAIL_DIR}/*/{Inbox,Sent,Archive,Trash,Drafts}/new/ -type f -newer ${MAIL_SYNC_FILE})
+touch $MAIL_SYNC_FILE
 NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
 
 echo "Num new mails ${NEW_MAILS_COUNT}"
@@ -36,5 +37,3 @@ if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
 fi
 
 wait
-
-touch $MAIL_SYNC_FILE
