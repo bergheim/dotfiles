@@ -126,26 +126,12 @@ If ONLY-MATCH is non-nil, only return if anything actually matched
 
 Used to quickly match similar messages"
 
-  (let* ((escaped-subject (string-replace "\\" "\\\\" subject))
-         (trimmed-escaped-subject (string-replace " " "\\ " escaped-subject))
-         (match (or (seq-some
-                     (lambda (r)
-                       (when (string-match-p r subject)
-                         (format "subject:/%s/" (s-trim trimmed-escaped-subject))))
-                     bergheim/email-dwim-subjects)
-                    (unless only-match
-                      subject))))
-    match))
-
-(defun bergheim/mu4e--pattern-match-subject (subject &optional only-match)
-  "Match the subject for anything interesting, and return that.
-Used to quickly match similar messages"
-
   (let ((match
          (or (seq-some (lambda (r) (and (string-match-p r subject)
                                         (concat "subject:/" (s-trim (string-replace " " "\\ " (string-replace "\\" "\\\\" r))) "/")))
-              bergheim/email-dwim-subjects)
-          subject)))
+                       bergheim/email-dwim-subjects)
+             (unless only-match
+               subject))))
     match))
 
 (defun bergheim/mu4e-search-dwim (msg)
@@ -157,6 +143,10 @@ Used to quickly match similar messages"
          (domain (bergheim/utils--get-domain email t)))
 
     (cond
+     ;; if we are on a thread, show that.. maybe?
+     (email-references
+      (mu4e-action-show-thread msg))
+
      ;; if we match on a specific subject pattern, assume that is the most important
      ((bergheim/mu4e--pattern-match-subject subject t)
       (bergheim/mu4e-search-this-subject msg t))
@@ -171,13 +161,11 @@ Used to quickly match similar messages"
                   (not (eq mu4e-split-view 'single-window)))))
 
      ;; filter on the other "email lists"
-     ((seq-some (lambda (r) (string-match-p r email))
-                bergheim/email-dwim-lists)
+     ((seq-contains-p bergheim/email-dwim-lists email)
       (bergheim/mu4e-search-from-address msg))
 
      ;; filter on domains if they all send the same kind of emails
-     ((seq-some (lambda (r) (string-match-p r domain))
-                bergheim/email-dwim-domains)
+     ((seq-contains-p bergheim/email-dwim-domains domain)
       (bergheim/mu4e-search-from-domain msg))
 
      ;; fallback to search this subject
@@ -206,7 +194,7 @@ If \\[universal-argument] is called before this, include the trash."
 
     (setq subject (bergheim/mu4e--clean-subject-for-mu subject))
 
-    (when match-partial-subject
+    (when (and match-partial-subject (not (string-empty-p subject)))
       (setq subject (bergheim/mu4e--pattern-match-subject subject)))
 
     ;; numbers usually make a pretty good differentiator
