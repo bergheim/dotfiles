@@ -617,8 +617,8 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
 (add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
 (add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
-(add-to-list 'mu4e-headers-actions '("domain inbox" . bergheim/mu4e-search-from-domain) t)
-(add-to-list 'mu4e-headers-actions '("Domain" . bergheim/mu4e-search-from-domain-all) t)
+(add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
+(add-to-list 'mu4e-headers-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
 (add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
 
 ;; TODO: make a general universal arg wrapper
@@ -641,8 +641,8 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
 (add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
 (add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
-(add-to-list 'mu4e-view-actions '("domain inbox" . bergheim/mu4e-search-from-domain) t)
-(add-to-list 'mu4e-view-actions '("Domain" . bergheim/mu4e-search-from-domain-all) t)
+(add-to-list 'mu4e-view-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
+(add-to-list 'mu4e-view-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
 (add-to-list 'mu4e-view-actions '("me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
