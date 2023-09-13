@@ -69,6 +69,7 @@
 (unpin! evil-collection)
 (package! evil-collection
   :recipe (:host github :repo "meliache/evil-collection"))
+(package! evil-matchit)
 (unpin! mu4e)
 
 ;; should improve auto-complete (in theory)

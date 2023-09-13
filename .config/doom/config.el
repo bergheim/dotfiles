@@ -258,6 +258,10 @@ If \\[universal-argument] if called before this, show a week back."
            (holiday-float 11 4 4 "Thanksgiving")
            (solar-equinoxes-solstices)))))
 
+(use-package! evil-matchit
+  :config
+  (global-evil-matchit-mode 1))
+
 (defun bergheim/open-calendar ()
   (interactive)
   (cfw:open-calendar-buffer
