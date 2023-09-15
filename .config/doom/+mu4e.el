@@ -8,7 +8,7 @@
 (cl-defun bergheim/utils--get-domain (email &optional full-domain)
   "Get the main domain of an email address"
   (let* ((domain (cadr (split-string email "@")))
-        (parts (reverse (split-string domain "\\."))))
+         (parts (reverse (split-string domain "\\."))))
 
     ;; FIXME: do not always use full domain
     (if (or current-prefix-arg full-domain)
@@ -20,13 +20,13 @@
 
   ;; TODO: this can be cleaner
   (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
-        (msgid (mu4e-message-field msg :message-id))
-        (domain (bergheim/utils--get-domain email))
-        (query-string "(from:/.*%s$/ or to:/.*%s$/)")
-        (maildir-filter)
-        ;; always sort descending as there might be thousands of emails
-        (mu4e-headers-sort-field :date)
-        (mu4e-headers-sort-direction 'descending))
+         (msgid (mu4e-message-field msg :message-id))
+         (domain (bergheim/utils--get-domain email))
+         (query-string "(from:/.*%s$/ or to:/.*%s$/)")
+         (maildir-filter)
+         ;; always sort descending as there might be thousands of emails
+         (mu4e-headers-sort-field :date)
+         (mu4e-headers-sort-direction 'descending))
 
     (when custom-domain
       (setq domain custom-domain))
@@ -99,7 +99,7 @@ With \\[universal-argument], include emails to this name as well"
         (query-string "NOT maildir:/Trash/ AND (from:%s"))
 
     (when current-prefix-arg
-        (setq query-string (concat query-string " OR to:%s")))
+      (setq query-string (concat query-string " OR to:%s")))
 
     (setq query-string (concat query-string ")"))
 
@@ -132,7 +132,7 @@ it, and this mess has just evolved over time.."
          (subject (replace-regexp-in-string "[^[:digit:]]\\(\\\.+\\)" " " subject nil nil 1))
          (subject (replace-regexp-in-string "[[:digit:]]\\(\\\.+\\)" "\\\\." subject nil nil 1)))
 
-         (s-trim subject)))
+    (s-trim subject)))
 
 (defun bergheim/mu4e--pattern-match-subject (subject &optional only-match)
   "Match the SUBJECT for anything interesting, and return that.
@@ -194,12 +194,11 @@ Strips away subject action prefixes and special characters to capture more email
 If \\[universal-argument] is called before this, include the trash."
 
   (let* ((subject (mu4e-message-field msg :subject))
-        (msgid (mu4e-message-field msg :message-id))
-        ;; TODO serch for domain if it is an interesting one?
-        (email (plist-get (car (mu4e-message-field-at-point :from)) :email))
-        (domain (bergheim/utils--get-domain email))
-        (query-string "%s")
-        (num 0))
+         (msgid (mu4e-message-field msg :message-id))
+         ;; TODO serch for domain if it is an interesting one?
+         (email (plist-get (car (mu4e-message-field-at-point :from)) :email))
+         (query-string "%s")
+         (num 0))
 
     ;; (unless current-prefix-arg
     ;;     (setq query-string (concat "maildir:/Inbox/ AND " query-string)))
@@ -296,7 +295,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
          (query-string (format "(from:%s AND (%s)" from my-email)))
 
     (unless current-prefix-arg
-        (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
+      (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
 
     (mu4e-search
      query-string
@@ -311,9 +310,9 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (defun bergheim/mu4e--get-account-email (maildir)
   (let ((account (bergheim/mu4e--get-account maildir)))
     (pcase account
-        ("neptune" bergheim/neptune/email)
-        ("gmail" bergheim/gmail/email)
-        ("glvortex" bergheim/glvortex/email))))
+      ("neptune" bergheim/neptune/email)
+      ("gmail" bergheim/gmail/email)
+      ("glvortex" bergheim/glvortex/email))))
 
 (defun bergheim/mu4e-open-message-in-webclient (msg)
   (let* ((maildir (mu4e-message-field msg :maildir))
@@ -340,10 +339,10 @@ Includes BCC emails, but does not include CC, because that point just use from:a
        ;; I am not seing any Message-Id or anything else in the headers on
        ;; ProtonMail - I assume they have filtered it
        (browse-url (format "https://mail.proton.me/u/0/all-mail#keyword=%s&from=%s&to=%s"
-                ;; protonmail does not allow searches for [ ] etc so strip them
-                (url-encode-url (replace-regexp-in-string "\\W" " " subject))
-                (url-encode-url from)
-                (url-encode-url to))))
+                           ;; protonmail does not allow searches for [ ] etc so strip them
+                           (url-encode-url (replace-regexp-in-string "\\W" " " subject))
+                           (url-encode-url from)
+                           (url-encode-url to))))
       (_ (display-warning :warning (format "Account \"%s\" not found!" account))))))
 
 (defun bergheim/mu4e-read-later (msg)
@@ -462,74 +461,74 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 
 (setq mu4e-bookmarks
       `((:name  "Unread messages"
-                :query "flag:unread AND NOT (flag:trashed OR maildir:/Trash/)"
-                :key ?u)
+         :query "flag:unread AND NOT (flag:trashed OR maildir:/Trash/)"
+         :key ?u)
 
         (:name  "Inbox work"
-                :query "maildir:/neptune/Inbox"
-                :key ?n)
+         :query "maildir:/neptune/Inbox"
+         :key ?n)
 
         (:name  "Inbox work unread"
-                :query "flag:unread AND maildir:/neptune/Inbox"
-                :key ?N)
+         :query "flag:unread AND maildir:/neptune/Inbox"
+         :key ?N)
 
         (:name  "Inbox glvortex"
-                :query "maildir:/glvortex/Inbox"
-                :key ?g)
+         :query "maildir:/glvortex/Inbox"
+         :key ?g)
 
         (:name  "Inbox glvortex unread"
-                :query "flag:unread AND maildir:/glvortex/Inbox"
-                :key ?G)
+         :query "flag:unread AND maildir:/glvortex/Inbox"
+         :key ?G)
 
         (:name  "Inbox gmail"
-                :query "maildir:/gmail/Inbox"
-                :key ?q)
+         :query "maildir:/gmail/Inbox"
+         :key ?q)
 
         (:name  "Inbox gmail unread"
-                :query "flag:unread AND maildir:/gmail/Inbox"
-                :key ?Q)
+         :query "flag:unread AND maildir:/gmail/Inbox"
+         :key ?Q)
 
         (:name  "Support"
-                :query ,(concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
-                :key ?s)
+         :query ,(concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
+         :key ?s)
 
         (:name "Today's messages"
-               :query "maildir:/Inbox/ AND (date:1d..now)"
-               :key ?t)
+         :query "maildir:/Inbox/ AND (date:1d..now)"
+         :key ?t)
 
         (:name "Today's unhandled messages"
-               :query "maildir:/Inbox/ AND (flag:unread OR date:1d..now)"
-               :key ?T)
+         :query "maildir:/Inbox/ AND (flag:unread OR date:1d..now)"
+         :key ?T)
 
         (:name "Last week"
-               :query "maildir:/Inbox/ AND date:1w..now"
-               :key ?W)
+         :query "maildir:/Inbox/ AND date:1w..now"
+         :key ?W)
 
         (:name "Recent personal messages"
-               :query "(maildir:/gmail/Inbox/ OR maildir:/glvortex/Inbox) AND (flag:unread OR date:1w..now)"
-               :key ?T)
+         :query "(maildir:/gmail/Inbox/ OR maildir:/glvortex/Inbox) AND (flag:unread OR date:1w..now)"
+         :key ?T)
 
         (:name "Messages with images"
-               ;; everybody has some huge image in their sig. sigh..
-               :query "mime:image/* AND size:100K..100M"
-               :key ?i)
+         ;; everybody has some huge image in their sig. sigh..
+         :query "mime:image/* AND size:100K..100M"
+         :key ?i)
 
         (:name "Messages with attachments"
-               ;; everybody has some huge image in their sig. sigh..
-               :query "flag:attach AND NOT mime:application/ics AND NOT ((mime:image/jpg OR mime:image/jpeg OR mime:image/png) AND size:0..2m)"
-               :key ?a)
+         ;; everybody has some huge image in their sig. sigh..
+         :query "flag:attach AND NOT mime:application/ics AND NOT ((mime:image/jpg OR mime:image/jpeg OR mime:image/png) AND size:0..2m)"
+         :key ?a)
 
         (:name "Trash"
-               :query "maildir:/Trash/ OR flag:trashed"
-               :key ?x)
+         :query "maildir:/Trash/ OR flag:trashed"
+         :key ?x)
 
         (:name "Focus inbox"
-               :query "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"
-               :key ?I)
+         :query "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"
+         :key ?I)
 
         (:name "Sent items"
-               :query "maildir:/Sent/"
-               :key ?S)))
+         :query "maildir:/Sent/"
+         :key ?S)))
 
 (setq mu4e-contexts
       (list
@@ -704,7 +703,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
     (cl-loop repeat heading-level do (org-promote-subtree))))
 
 (defun bergheim/mu4e--headers-goto-bottom ()
- "Move point to the last email in the mu4e-headers buffer.
+  "Move point to the last email in the mu4e-headers buffer.
 
 Since the headers display is async, and we only want this for some functions,
 remove the hook after invocation"
