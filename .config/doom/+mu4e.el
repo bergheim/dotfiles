@@ -165,8 +165,9 @@ Used to quickly match similar messages"
       (bergheim/mu4e-search-from-address msg))
 
      ;; filter on domains if they all send the same kind of emails
-     ((seq-contains-p bergheim/email-dwim-domains domain)
-      (bergheim/mu4e-search-from-domain msg))
+     ((when (cl-some (lambda (d) (string-match-p d domain))
+                     bergheim/email-dwim-domains)
+        (bergheim/mu4e-search-from-domain msg)))
 
      ;; fallback to search this subject
      (t (bergheim/mu4e-search-this-subject msg t)))))
