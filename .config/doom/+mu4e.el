@@ -694,3 +694,68 @@ remove the hook after invocation"
     (goto-char (point-max))
     (remove-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
     (mu4e-headers-prev)))
+
+;; this is a bit nuts, but it works! opens a link on a predefined spot from the entire list
+;; its a lot of async stuff going on, and I couldn't get the hooks to work..
+(defun bergheim/mu4e--wait-for-email-body (callback)
+  "Wait until the email body is rendered, then execute CALLBACK."
+  (let ((max-attempts 10))
+    (unless (eq major-mode 'mu4e-view-mode)
+      (error "Not in mu4e-view-mode"))
+    (run-with-timer
+     0.1 nil
+     (lambda ()
+       (unless (or (zerop max-attempts)
+                   (bergheim/mu4e--email-body-rendered-p))
+         (setq max-attempts (1- max-attempts))
+         (bergheim/mu4e--wait-for-email-body callback))
+       (when (bergheim/mu4e--email-body-rendered-p)
+         (funcall callback))))))
+
+(defun bergheim/mu4e--email-body-rendered-p ()
+  "Check if the email body is rendered in mu4e."
+  (or (text-property-any (point-min) (point-max) 'shr-url nil)
+      (text-property-any (point-min) (point-max) 'mu4e-url nil)))
+
+(defvar bergheim/current-navigate-fn nil
+  "Current function used to navigate links in mu4e message view.")
+
+(defun bergheim/mu4e--process-single-message ()
+  "Process the current mu4e message based on bergheim/current-navigate-fn."
+  (bergheim/mu4e--wait-for-email-body
+   (lambda ()
+     (funcall bergheim/current-navigate-fn)
+     (shr-browse-url)
+     (remove-hook 'mu4e-view-mode-hook 'bergheim/mu4e--process-single-message)
+     (if (mu4e-view-headers-next)
+         (progn
+           (setq bergheim/current-navigate-fn bergheim/current-navigate-fn)
+           (add-hook 'mu4e-view-mode-hook 'bergheim/mu4e--process-single-message))
+       (mu4e-view-quit)))))
+
+(defun bergheim/mu4e--open-links (&optional navigate-function)
+  "Visit each mu4e message, open the first link, and move to the next message."
+  (interactive)
+  (setq bergheim/current-navigate-fn (or navigate-function 'bergheim/mu4e-navigate-first-link))
+  (when (eq major-mode 'mu4e-headers-mode)
+    (add-hook 'mu4e-view-mode-hook 'bergheim/mu4e--process-single-message)
+    (mu4e-headers-view-message)))
+
+(defun bergheim/mu4e--navigate-first-link ()
+  "Navigate to the first link in mu4e message view and open it."
+  (shr-next-link))
+
+(defun bergheim/mu4e--navigate-second-to-last-links ()
+  "Navigate to the second-to-last link in mu4e message view and open it."
+  (goto-char (point-max))
+  (shr-previous-link))
+
+(defun bergheim/mu4e-open-first-links (&optional navigate-function)
+  "Visit each mu4e message, open the first link, and move to the next message."
+  (interactive)
+  (bergheim/mu4e--open-links 'bergheim/mu4e--navigate-first-link))
+
+(defun bergheim/mu4e-open-second-last-links ()
+  "Visit each mu4e message, open the second to last link, and move to the next message."
+  (interactive)
+  (bergheim/mu4e--open-links 'bergheim/mu4e--navigate-second-to-last-links))
