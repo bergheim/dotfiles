@@ -490,8 +490,8 @@
 (defun +doct-icon-declaration-to-icon (declaration)
   "Convert :icon declaration to icon"
   (let ((name (pop declaration))
-        (set  (intern (concat "all-the-icons-" (plist-get declaration :set))))
-        (face (intern (concat "all-the-icons-" (plist-get declaration :color))))
+        (set  (intern (concat "nerd-icons-" (plist-get declaration :set))))
+        (face (intern (concat "nerd-icons-" (plist-get declaration :color))))
         (v-adjust (or (plist-get declaration :v-adjust) 0.01)))
     (apply set `(,name :face ,face :v-adjust ,v-adjust))))
 
@@ -511,7 +511,7 @@
 
 (setq org-capture-templates
       (doct `(("Personal"
-               :icon ("person" :set "material" :color "green")
+               :icon ("nf-cod-person" :set "codicon" :color "green")
                :keys "p"
                :prepend true
                :file +org-capture-personal-file
@@ -520,36 +520,36 @@
                :clock-in t
                :clock-resume t
                :children (("Tasks"
-                           :icon ("inbox" :set "octicon" :color "yellow")
+                           :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
                            :keys "t"
                            :extra ""
                            :headline "Tasks"
                            :template-file ,(expand-file-name "task.org" org-capture-custom-template-directory)
                            :children (("General Task" :keys "t"
-                                       :icon ("inbox" :set "octicon" :color "yellow")
+                                       :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
                                        :extra "")
                                       ("Task with deadline" :keys "d"
-                                       :icon ("timer" :set "material" :color "orange" :v-adjust -0.1)
+                                       :icon ("nf-md-timer" :set "mdicon" :color "orange" :v-adjust -0.1)
                                        :extra "\nDEADLINE: %^{Deadline:}t")
                                       ("Scheduled Task" :keys "s"
-                                       :icon ("calendar" :set "octicon" :color "orange")
+                                       :icon ("nf-oct-calendar" :set "octicon" :color "orange")
                                        :extra "\nSCHEDULED: %^{Start time:}t")))
 
                           ("Enter a note"
-                           :icon ("sticky-note-o" :set "faicon" :color "green")
+                           :icon ("nf-fa-sticky_note_o" :set "faicon" :color "green")
                            :keys "n"
                            :headline "Notes"
                            :template-file ,(expand-file-name "note.org" org-capture-custom-template-directory))
 
                           ("Meeting"
-                           :icon ("repo" :set "octicon" :color "silver")
+                           :icon ("nf-oct-repo" :set "octicon" :color "silver")
                            :keys "m"
                            :headline "Meetings"
                            :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
               ("Work"
                :keys "w"
-               :icon ("work" :set "material" :color "yellow")
+               :icon ("nf-fae-planet" :set "faicon" :color "yellow")
                :prepend t
                :file +org-capture-work-file
                :type entry
@@ -558,37 +558,37 @@
                :default-tags "@work"
                :children (("Tasks"
                            :keys "t"
-                           :icon ("inbox" :set "octicon" :color "yellow")
+                           :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
                            :headline "Tasks"
                            :template-file ,(expand-file-name "task.org" org-capture-custom-template-directory)
                            :children (("General Task" :keys "t"
-                                       :icon ("inbox" :set "octicon" :color "yellow")
+                                       :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
                                        :extra "")
                                       ("Task with deadline" :keys "d"
-                                       :icon ("timer" :set "material" :color "orange" :v-adjust -0.1)
+                                       :icon ("nf-md-timer" :set "mdicon" :color "orange" :v-adjust -0.1)
                                        :extra "\nDEADLINE: %^{Deadline:}t")
                                       ("Scheduled Task" :keys "s"
-                                       :icon ("calendar" :set "octicon" :color "orange")
+                                       :icon ("nf-oct-calendar" :set "octicon" :color "orange")
                                        :extra "\nSCHEDULED: %^{Start time:}t")))
                           ("Bug"
-                           :icon ("bug" :set "octicon" :color "green")
+                           :icon ("nf-oct-bug" :set "octicon" :color "green")
                            :keys "b"
                            :headline "Bugs"
                            :template-file ,(expand-file-name "bug.org" org-capture-custom-template-directory)
                            :children (("General bug"
-                                       :icon ("inbox" :set "octicon" :color "yellow")
+                                       :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
                                        :keys "b"
                                        :extra "")
                                       ("Bug with deadline"
-                                       :icon ("timer" :set "material" :color "orange")
+                                       :icon ("nf-md-timer" :set "mdicon" :color "orange")
                                        :keys "d"
                                        :extra "\nDEADLINE: %^{Deadline:}t")
                                       ("Scheduled bug"
-                                       :icon ("calendar" :set "octicon" :color "orange")
+                                       :icon ("nf-oct-calendar" :set "octicon" :color "orange")
                                        :keys "s"
                                        :extra "\nSCHEDULED: %^{Start time:}t")))
                           ("Meeting"
-                           :icon ("repo" :set "octicon" :color "silver")
+                           :icon ("nf-oct-repo" :set "octicon" :color "silver")
                            :keys "m"
                            :jump-to-captured t
                            :file "~/org/roam/work/meetings.org"
@@ -596,14 +596,14 @@
                            :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
               ("Capture to clocked in task" :keys "c"
-               :icon ("email" :set "material" :color "green")
+               :icon ("nf-md-email" :set "mdicon" :color "green")
                :type entry
                :prepend t
                :clock t
                :template-file ,(expand-file-name "clocked.org" org-capture-custom-template-directory))
 
               ("Interrupted" :keys "I"
-               :icon ("stop-circle" :set "faicon" :color "red")
+               :icon ("nf-fa-stop_circle" :set "faicon" :color "red")
                :file +org-capture-work-file
                :type entry
                :clock-in t
@@ -614,7 +614,7 @@
 
               ("Review"
                :keys "r"
-               :icon ("rate_review" :set "material" :color "yellow")
+               :icon ("nf-oct-code_review" :set "octicon" :color "yellow")
                :type entry
                :clock-in t
                :clock-keep t
@@ -622,32 +622,32 @@
                :jump-to-captured t
                :default-tags "review"
                :children (("Daily review"
-                            :icon ("today" :set "material" :color "green")
+                            :icon ("nf-md-calendar_today" :set "mdicon" :color "green")
                             :keys "r"
                             :headline "Daily"
                             :default-tags "@work:daily:review"
                             :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
                            ("Weekly review"
-                            :icon ("weekend" :set "material" :color "green")
+                            :icon ("nf-md-calendar_weekend" :set "mdicon" :color "green")
                             :keys "w"
                             :headline "Weekly"
                             :default-tags "@work:weekly:review"
                             :template-file ,(expand-file-name "review-weekly.org" org-capture-custom-template-directory))
                            ("Monthly review"
-                            :icon ("lightbulb-o" :set "faicon" :color "green")
+                            :icon ("nf-fa-lightbulb_o" :set "faicon" :color "green")
                             :keys "m"
                             :headline "Monthly"
                             :default-tags "@work:monthly:review"
                             :template-file ,(expand-file-name "review-monthly.org" org-capture-custom-template-directory))
                            ("Yearly review"
-                            :icon ("today" :set "material" :color "green")
+                            :icon ("nf-md-calendar_today" :set "mdicon" :color "green")
                             :keys "y"
                             :headline "Yearly"
                             :default-tags "yearly:review"
                             :template-file ,(expand-file-name "review-yearly.org" org-capture-custom-template-directory))))
 
               ("Add contact" :keys "C"
-               :icon ("person" :set "octicon" :color "green")
+               :icon ("nf-oct-person" :set "octicon" :color "green")
                :type entry
                :headline "People"
                :file "~/org/contacts.org"
@@ -660,53 +660,53 @@
 :END:"))
 
               ("Active project" :keys "a"
-               :icon ("repo" :set "octicon" :color "green")
+               :icon ("nf-oct-repo" :set "octicon" :color "green")
                :prepend t
                :type entry
                :headline "Inbox"
                :template-file ,(expand-file-name "active-project.org" org-capture-custom-template-directory)
                :custom (:time-or-todo "")
                :children (("Project-local todo" :keys "t"
-                           :icon ("checklist" :set "octicon" :color "green")
+                           :icon ("nf-oct-checklist" :set "octicon" :color "green")
                            :time-or-todo "TODO"
                            :file +org-capture-project-todo-file)
                           ("Project-local note" :keys "n"
-                           :icon ("sticky-note" :set "faicon" :color "yellow")
+                           :icon ("nf-fa-sticky_note" :set "faicon" :color "yellow")
                            :time-or-todo "%U"
                            :file +org-capture-project-notes-file)
                           ("Project-local changelog" :keys "c"
-                           :icon ("list" :set "faicon" :color "blue")
+                           :icon ("nf-fa-list" :set "faicon" :color "blue")
                            :time-or-todo "%U"
                            :headline "Unreleased"
                            :file +org-capture-project-changelog-file)))
 
               ("Interesting"
                :keys "i"
-               :icon ("eye" :set "faicon" :color "lcyan")
+               :icon ("nf-fa-eye" :set "faicon" :color "lcyan")
                :file +org-capture-todo-file
                :prepend t
                :headline "Interesting"
                :type entry
                :template-file ,(expand-file-name "interesting.org" org-capture-custom-template-directory)
                :children (("Webpage" :keys "w"
-                           :icon ("globe" :set "faicon" :color "green")
+                           :icon ("nf-fa-globe" :set "faicon" :color "green")
                            :desc "%(org-cliplink-capture) "
                            :i-type "read:web")
                           ("Article" :keys "a"
-                           :icon ("file-text" :set "octicon" :color "yellow")
+                           :icon ("nf-fa-file_text" :set "faicon" :color "yellow")
                            :desc ""
                            :i-type "read:research")
                           ("Information" :keys "i"
-                           :icon ("info-circle" :set "faicon" :color "blue")
+                           :icon ("nf-fa-info_circle" :set "faicon" :color "blue")
                            :desc ""
                            :i-type "read:info")
                           ("Idea" :keys "I"
-                           :icon ("bubble_chart" :set "material" :color "silver")
+                           :icon ("nf-md-chart_bubble" :set "mdicon" :color "silver")
                            :desc ""
                            :i-type "idea")))
 
               ("Protocol Link Marked" :keys "z"
-               :icon ("stop" :set "octicon" :color "red")
+               :icon ("nf-oct-stop" :set "octicon" :color "red")
                :type entry
                :prepend t
                :headline "Protocol"
@@ -715,7 +715,7 @@
                :template-file ,(expand-file-name "protocol-marked.org" org-capture-custom-template-directory))
 
               ("Protocol Link Unmarked" :keys "Z"
-               :icon ("stop" :set "octicon" :color "red")
+               :icon ("nf-oct-stop" :set "octicon" :color "red")
                :type entry
                :prepend t
                :headline "Protocol"
@@ -724,7 +724,7 @@
                :template-file ,(expand-file-name "protocol-unmarked.org" org-capture-custom-template-directory))
 
               ("Protocol Link Active Task" :keys "o"
-               :icon ("stop" :set "octicon" :color "red")
+               :icon ("nf-oct-stop" :set "octicon" :color "red")
                :type entry
                :prepend t
                :clock t
@@ -732,7 +732,7 @@
                :template-file ,(expand-file-name "protocol-active-task.org" org-capture-custom-template-directory))
 
               ("Email Workflow" :keys "e"
-               :icon ("stop" :set "octicon" :color "red")
+               :icon ("nf-oct-stop" :set "octicon" :color "red")
                :type entry
                :file +org-capture-mail-file
                :children (("Follow Up" :keys "f"
@@ -760,7 +760,7 @@ Lisp programs can force the template by setting KEYS to a string."
       (org-mks org-capture-templates
                "Select a capture template\n━━━━━━━━━━━━━━━━━━━━━━━━━"
                "Template key: "
-               `(("q" ,(concat (all-the-icons-octicon "stop" :face 'all-the-icons-red :v-adjust 0.01) "\tAbort")))))))
+               `(("q" ,(concat (nerd-icons-octicon "stop" :face 'all-the-icons-red :v-adjust 0.01) "\tAbort")))))))
 (advice-add 'org-capture-select-template :override #'org-capture-select-template-prettier)
 
 (defun bergheim/org-clock-status ()
