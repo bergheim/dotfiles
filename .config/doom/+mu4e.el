@@ -44,6 +44,20 @@
      msgid (and (eq major-mode 'mu4e-view-mode)
                 (not (eq mu4e-split-view 'single-window))))))
 
+(defun bergheim/mu4e-search-from-mail-list (msg)
+  "Open the whole email list, if any"
+
+  (let ((msgid (mu4e-message-field msg :message-id))
+        (email-list (mu4e-message-field-at-point :list)))
+
+    (if email-list
+        (mu4e-search
+         (format "maildir:/Inbox/ AND list:%s" email-list)
+         nil nil nil
+         msgid (and (eq major-mode 'mu4e-view-mode)
+                    (not (eq mu4e-split-view 'single-window)))))
+    (message "Not part of a list")))
+
 (defun bergheim/mu4e-search-from-domain-all (msg)
   "Quickly find all INBOX mails sent to or from this domain"
   (bergheim/mu4e-search-from-domain msg t))
@@ -620,7 +634,8 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
 (add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
 (add-to-list 'mu4e-headers-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
-(add-to-list 'mu4e-headers-actions '("me" . bergheim/mu4e-search-to-me) t)
+(add-to-list 'mu4e-headers-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
+(add-to-list 'mu4e-headers-actions '("Me" . bergheim/mu4e-search-to-me) t)
 
 ;; TODO: make a general universal arg wrapper
 (add-to-list 'mu4e-headers-actions '("Me" . (lambda (msg)
@@ -639,12 +654,15 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
 (add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
 (add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
+(add-to-list 'mu4e-view-actions '("List" . bergheim/mu4e-search-from-list) t)
 (add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
 (add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
 (add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
 (add-to-list 'mu4e-view-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
 (add-to-list 'mu4e-view-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
-(add-to-list 'mu4e-view-actions '("me" . bergheim/mu4e-search-to-me) t)
+(add-to-list 'mu4e-view-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
+
+(add-to-list 'mu4e-view-actions '("Me" . bergheim/mu4e-search-to-me) t)
 (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
 (add-to-list 'mu4e-view-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
