@@ -22,6 +22,9 @@
 
 ;; make it easy to understand where the current line is
 (setq modus-themes-completions 'opinionated
+      modus-themes-completions
+      '((matches . (extrabold))
+        (selection . (semibold italic text-also)))
       modus-themes-intense-hl-line t
       modus-themes-hl-line '(underline accented intense)
       x-underline-at-descent-line t)

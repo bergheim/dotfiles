@@ -19,6 +19,7 @@
 ;;
 ;;; Code:
 
+;; COmpletion in Region FUnction
 (use-package! corfu
   :ensure t
   ;; Optional customizations
@@ -42,9 +43,12 @@
   ;; This is recommended since Dabbrev can be used globally (M-/).
   ;; See also `corfu-excluded-modes'.
   :init
-  (global-corfu-mode)
+  ;; (setq corfu-auto-delay 0) ;; Happens also without this, but makes it easier to notice the issue
+  ;; (setq corfu-auto-prefix 1) ;; Happens also without this, but makes it easier to notice the issue
+  ;; (setq corfu-quit-no-match t) ;; Happens also without this, but makes it easier to notice the issue
   ;; show helpful docs after some idle time
-  (corfu-popupinfo-mode))
+  (corfu-popupinfo-mode)
+  (global-corfu-mode))
 
 (use-package! orderless
   :ensure t
