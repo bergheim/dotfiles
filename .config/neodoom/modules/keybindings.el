@@ -11,19 +11,20 @@
 ;; Homepage: https://github.com/bergheim/dotfiles
 ;; Package-Requires: ((emacs "29.1"))
 ;;
-;; This file is not part of GNU Emacs.
-;;
-;;; Commentary:
-;;
-;;  Description
-;;
-;;; Code:
+
+
+;; https://www.masteringemacs.org/article/mastering-key-bindings-emacs
+;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone
+;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
+
+
 
 (use-package which-key
   :ensure t
   :config
   (which-key-mode)
-  (setq which-key-idle-delay 0.3))  ; Adjust the delay as you see fit
+  (setq which-key-idle-delay 0.3)
+  (setq which-key-idle-secondary-delay 0.3))
 
 (use-package general
   :ensure t
@@ -32,11 +33,16 @@
    :states '(normal visual insert emacs)
    :prefix "SPC"
    :non-normal-prefix "M-SPC"
-   "b" '(switch-to-buffer :which-key "buffers")
-   "f" '(:ignore t :which-key "files")
-   "ff" '(find-file :which-key "find file")
-   "fs" '(save-buffer :which-key "save buffer")
-   ; ... and so on
+   "b" '(switch-to-buffer :which-key "Buffers")
+   "f" '(:ignore t :which-key "Files")
+   "ff" '(find-file :which-key "Find file")
+   "fs" '(save-buffer :which-key "Save buffer")
+   "hv" '(helpful-variable :which-key "Variable")
+   "hf" '(helpful-callable :which-key "Function")
+   "ha" '(apropos :which-key "Apropos")
+
+   "qq" '(save-buffers-kill-terminal :which-key "Quit")
+   "qr" '(restart-emacs :which-key "Restart")
    ))
 
 

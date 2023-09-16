@@ -10,7 +10,7 @@
       gc-cons-threshold 100000000 ; 100 mb
       read-process-output-max (* 1024 1024) ; 1mb
 
-      initial-major-mode 'fundamental-mode  ; default mode for the *scratch* buffer
+      initial-major-mode 'emacs-lisp-mode  ; default mode for the *scratch* buffer
       display-time-default-load-average nil ; this information is useless for most
 
       sentence-end-double-space nil ;; Fix archaic defaults
