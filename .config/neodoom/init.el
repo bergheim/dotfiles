@@ -55,8 +55,9 @@
 (require 'vc-use-package)
 
 (require 'style) ;; stylez!
-(require 'keybindings) ;; stylez!
-(require 'completion) ;; stylez!
+(require 'keybindings)
+(require 'completion)
+(require 'workspace)
 
 ;; LSP support
 (use-package eglot

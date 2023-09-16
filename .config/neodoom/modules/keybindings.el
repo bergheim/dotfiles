@@ -43,11 +43,17 @@
    "hf" '(helpful-callable :which-key "Function")
    "ha" '(apropos :which-key "Apropos")
 
+   "p" '(:ignore t :which-key "Project")
+   "pa" '(projectile-add-known-project :which-key "Add project")
+   ;; TODO: make this switch persps
+   "pp" '(projectile-switch-project :which-key "Switch project")
+
    "m" '(:ignore t :which-key "Mode specific")
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
    "qr" '(restart-emacs :which-key "Restart")
    ))
+
 
 (general-create-definer bergheim/emacs-lisp-keys
   :prefix "SPC m"
