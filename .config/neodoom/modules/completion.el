@@ -25,15 +25,27 @@
   :ensure t
   :demand t
   :bind (("C-c j" . avy-goto-line)
-         ("s-j"   . avy-goto-char-timer)))
+         ("C-c u"   . avy-goto-char-timer)))
 
 ;; right click from your keyboard
 (use-package embark
   :ensure t
   :demand t
   :after avy
-  :bind (("C-c a" . embark-act))        ; bind this to an easy key to hit
+  :bind (("C-c a" . embark-act))
+  :bind (("C-c b" . embark-bindings))
   :init
+  ;; use embark to search the help menu
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; if you still want which-key for general..
+  ;; (setq embark-act-pre-display-hook
+  ;;       (lambda () (which-key--hide-popup-ignore-command))
+  ;;       embark-post-action-hook
+  ;;       (lambda () (which-key--show-popup which-key--buffer))
+  ;;       prefix-help-command 'which-key-show-top-level)
+
+
   ;; Add the option to run embark when using avy
   (defun bedrock/avy-action-embark (pt)
     (unwind-protect

@@ -37,14 +37,28 @@
    "f" '(:ignore t :which-key "Files")
    "ff" '(find-file :which-key "Find file")
    "fs" '(save-buffer :which-key "Save buffer")
+
+   "h" '(:ignore t :which-key "Help")
    "hv" '(helpful-variable :which-key "Variable")
    "hf" '(helpful-callable :which-key "Function")
    "ha" '(apropos :which-key "Apropos")
 
+   "m" '(:ignore t :which-key "Mode specific")
+   "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
    "qr" '(restart-emacs :which-key "Restart")
    ))
 
+(general-create-definer bergheim/emacs-lisp-keys
+  :prefix "SPC m"
+  :states '(normal visual emacs)
+  :keymaps 'emacs-lisp-mode-map)
+
+(bergheim/emacs-lisp-keys
+ "e" '(:ignore t :which-key "Eval")
+ "e d" '(eval-last-sexp :which-key "eval last sexp")
+ "e b" '(eval-last-sexp :which-key "eval buffer")
+ "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
 
 (provide 'keybindings)
 ;;; keybindings.el ends here
