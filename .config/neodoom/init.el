@@ -2,39 +2,38 @@
 
 (message "Hello World!")
 
+(add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
+
 (setq visible-bell t ;; flash
       inhibit-startup-message t
 
       gc-cons-threshold 100000000 ; 100 mb
       read-process-output-max (* 1024 1024) ; 1mb
 
-;; Note: height = px * 100
-(set-face-attribute 'default nil :font "Ubuntu Mono" :height 120)
-(load-theme 'modus-vivendi t)
+      initial-major-mode 'fundamental-mode  ; default mode for the *scratch* buffer
+      display-time-default-load-average nil ; this information is useless for most
 
-;; Make same named buffers unique
-(require 'uniquify)
+      sentence-end-double-space nil ;; Fix archaic defaults
+)
 
-;; Automatically insert closing parens
-(electric-pair-mode t)
+;; Make right-click do something sensible
+(when (display-graphic-p)
+  (context-menu-mode))
 
-;; Visualize matching parens
-(show-paren-mode 1)
+(require 'uniquify) ;; Make same named buffers unique
 
-;; Prefer spaces to tabs
-(setq-default indent-tabs-mode nil)
+(electric-pair-mode t) ;; insert closing parens
 
-;; Automatically save your place in files
-(save-place-mode t)
+(setq-default indent-tabs-mode nil) ;; I have given up on tabs
 
-;; Save history in minibuffer to keep recent commands easily accessible
-(savehist-mode t)
-
-;; Keep track of open files
-(recentf-mode t)
+(save-place-mode t) ;; jump back in old files
+(recentf-mode t) ;; recent files
+(savehist-mode t) ;; save minibuffer history
 
 ;; Reload files that are changed outside of Emacs
-(global-auto-revert-mode t)
+(setq auto-revert-interval 1)
+(setq auto-revert-check-vc-info t)
+(global-auto-revert-mode)
 
 (setq uniquify-buffer-name-style 'forward
       window-resize-pixelwise t
@@ -45,60 +44,19 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       custom-file (expand-file-name "custom.el" user-emacs-directory))
 
+
 ;; Bring in package utilities so we can install packages from the web.
-(require 'package)
+(with-eval-after-load 'package
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
 
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
-(unless package-archive-contents
-  (package-refresh-contents))
-
-;; Add the :vc keyword to use-package, making it easy to install
-;; packages directly from git repositories.
+;; adds :vc keyword to use-package
 (unless (package-installed-p 'vc-use-package)
   (package-vc-install "https://github.com/slotThe/vc-use-package"))
 (require 'vc-use-package)
 
-;; (use-package my-package-name
-;;   :ensure t    ; Ensure my-package is installed
-;;   :after foo   ; Load my-package after foo is loaded (seldom used)
-;;   :init        ; Run this code before my-package is loaded
-;;   :bind        ; Bind these keys to these functions
-;;   :custom      ; Set these variables
-;;   :config      ; Run this code after my-package is loaded
-
-(use-package ef-themes
-  :ensure t
-  :config
-  (ef-themes-select 'ef-autumn))
-
-;; Minibuffer completion
-(use-package vertico
-  :ensure t
-  :custom
-  (vertico-cycle t)
-  (read-buffer-completion-ignore-case t)
-  (read-file-name-completion-ignore-case t)
-  (completion-styles '(basic substring partial-completion flex))
-  :init
-  (vertico-mode))
-
-;; Add descriptions to completion
-(use-package marginalia
-  :after vertico
-  :ensure t
-  :init
-  (marginalia-mode))
-
-;; COmpletion in Region FUnction (code completion)
-(use-package corfu
-  :ensure t
-  :init
-  (global-corfu-mode)
-  :custom
-  (corfu-auto t)
-  (corfu-auto-delay 0)
-  (corfu-auto-prefix 0)
-  (completion-styles '(basic)))
+(require 'style) ;; stylez!
+(require 'keybindings) ;; stylez!
+(require 'completion) ;; stylez!
 
 ;; LSP support
 (use-package eglot
