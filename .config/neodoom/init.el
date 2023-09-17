@@ -45,6 +45,14 @@
       custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 
+(defun bergheim/reload-init-file ()
+  (interactive)
+  (load-file user-init-file)
+  (message "Emacs configuration reloaded successfully!"))
+
+;; Show the help buffer after startup
+;; (add-hook 'after-init-hook 'help-quick)
+
 ;; Bring in package utilities so we can install packages from the web.
 (with-eval-after-load 'package
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
@@ -54,10 +62,16 @@
   (package-vc-install "https://github.com/slotThe/vc-use-package"))
 (require 'vc-use-package)
 
+;; In your .emacs or init.el or whatever your main configuration file is
+(let ((private-file (expand-file-name "private.el" user-emacs-directory)))
+  (when (file-exists-p private-file)
+    (load private-file)))
+
 (require 'style) ;; stylez!
 (require 'keybindings)
 (require 'completion)
 (require 'workspace)
+(require 'formating)
 
 ;; LSP support
 (use-package eglot
