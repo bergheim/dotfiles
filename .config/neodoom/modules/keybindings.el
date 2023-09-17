@@ -73,14 +73,18 @@
    "fR" '(rename-visited-file :which-key "Rename file")
    "fs" '(save-buffer :which-key "Save buffer")
 
+   "g" '(:ignore t :which-key "git")
+   "gg" '(magit :which-key "magit")
+
    "h" '(:ignore t :which-key "Help")
-   "hv" '(helpful-variable :which-key "Variable")
+   "ha" '(apropos :which-key "Apropos")
+   "hb" '(embark-bindings :which-key "Bindings")
    "hf" '(helpful-callable :which-key "Function")
    "hk" '(helpful-key :which-key "Key")
-   "ha" '(apropos :which-key "Apropos")
    "hm" '(describe-mode :which-key "Describe mode")
    "hr" '(bergheim/reload-init-file :which-key "Reload")
    "ht" '(consult-theme :which-key "Switch theme")
+   "hv" '(helpful-variable :which-key "Variable")
 
    "m" '(:ignore t :which-key "Mode specific")
 

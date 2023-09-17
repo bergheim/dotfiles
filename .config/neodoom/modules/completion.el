@@ -32,8 +32,9 @@
   :ensure t
   :demand t
   :after avy
-  :bind (("C-c a" . embark-act))
-  :bind (("C-c b" . embark-bindings))
+  :bind (("C-c a" . embark-act)
+         ("C-c b" . embark-bindings)
+         ("C-;" . embark-dwim))
   :init
   ;; use embark to search the help menu
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -56,6 +57,7 @@
        (cdr (ring-ref avy-ring 0))))
     t)
 
+  ;; FIXME: this does not work
   ;; After invoking avy-goto-char-timer, hit "." to run embark at the next
   ;; candidate you select
   (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark))
@@ -137,7 +139,18 @@
 (use-package orderless
   :ensure t
   :config
-  (setq completion-styles '(orderless)))
+  (setq completion-styles '(orderless))
+  ;; (setq completion-styles '(orderless basic))
+  ;; ;; (setq orderless-matching-styles '(orderless-initialism)))
+  ;; (setq orderless-matching-styles '(orderless-regexp orderless-literal orderless-initialism))
+  )
+
+;; TODO: use this? I want MRU and then alphanumeric sorting
+;; (use-package vertico-prescient
+;;   :ensure t
+;;   :after vertico
+;;   :config
+;;   (vertico-prescient-mode))
 
 ;; Pretty icons for corfu
 (use-package kind-icon
