@@ -79,9 +79,8 @@
   (load-file (concat module-dir "/formating.el"))
   (load-file (concat module-dir "/nav.el"))
   (load-file (concat module-dir "/orgmode.el"))
-  (load-file (concat module-dir "/keybindings.el"))
-  ;; (load-file (concat module-dir "/email.el"))
-  )
+  (load-file (concat module-dir "/email.el"))
+  (load-file (concat module-dir "/keybindings.el")))
 
 ;; or maybe just auto it?
 ;; (let ((module-dir (expand-file-name "modules" user-emacs-directory)))

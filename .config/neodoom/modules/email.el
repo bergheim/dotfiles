@@ -1,6 +1,5 @@
 ;;; ~/.config/doom/+mu4e.el -*- lexical-binding: t; -*-
 
-
 (use-package mu4e
   :config
   (require 'mu4e-headers)
@@ -427,18 +426,18 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 ;;                                        (reply-to-text   . (text html)))))
 
 
-(defun safe-mu4e-get-account (msg)
+(defun bergheim/mu4e--get-account (msg)
   "Retrieve the top-level directory (account) from the :maildir field of MSG."
   (let* ((maildir (mu4e-message-field msg :maildir))
          (account (and maildir (car (split-string maildir "/" t)))))
     (or account "")))
 
 (add-to-list 'mu4e-header-info-custom
-             '(:account-string .
+             '(:account .
                (:name "Account"
                 :shortname "Acc"
                 :help "Account the message belongs to"
-                :function safe-mu4e-get-account)))
+                :function bergheim/mu4e--get-account)))
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
@@ -476,13 +475,14 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       mu4e-headers-time-format "%H:%M"
 
       ;; and make room for the subject
-      mu4e-headers-fields '((:account-string      .  8)
+      mu4e-headers-fields '((:account      .  8)
                             (:human-date   . 14)
                             (:flags        .  4)
-                            (:maildir      .  17)
+                            (:maildir     .  17)
+                            ;; TODO: find a way to toggle this - it is sometimes useful
                             ;; (:mailing-list . 10)
                             (:from         . 25)
-                            (:subject      ))
+                            (:subject))
 
       ;; show overview to left, email to the right
       ;; mu4e-split-view 'single-window
@@ -839,5 +839,3 @@ remove the hook after invocation"
   "Visit each mu4e message, open the second to last link, and move to the next message."
   (interactive)
   (bergheim/mu4e--open-links 'bergheim/mu4e--navigate-second-to-last-links))
-
-(provide 'email)
