@@ -434,7 +434,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 (add-to-list 'mu4e-header-info-custom
              '(:account .
                (:name "Account"
-                :shortname "Acc"
+                :shortname "Account"
                 :help "Account the message belongs to"
                 :function bergheim/mu4e--msg-get-account)))
 
@@ -443,6 +443,22 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   (let* ((maildir (mu4e-message-field msg :maildir))
          (account (and maildir (car (split-string maildir "/" t)))))
     (or account "")))
+
+(add-to-list 'mu4e-header-info-custom
+             '(:shortened-maildir .
+               (:name "Maildir"
+                :shortname "Maildir"
+                :help "Modified Maildir"
+                :function bergheim/mu4e--msg-get-modified-maildir)))
+
+(defun bergheim/mu4e--msg-get-modified-maildir (msg)
+  "Retrieve the maildir after the top-level directory (account) from the :maildir field of MSG."
+  (let* ((maildir (mu4e-message-field msg :maildir))
+         (maildir-parts (and maildir (split-string maildir "/" t))))
+    (if (> (length maildir-parts) 1)
+        (concat "/" (mapconcat 'identity (cdr maildir-parts) "/"))
+      maildir)))
+
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
@@ -482,8 +498,8 @@ Includes BCC emails, but does not include CC, because that point just use from:a
       ;; and make room for the subject
       mu4e-headers-fields '((:account      .  8)
                             (:human-date   . 14)
-                            (:flags        .  4)
-                            (:maildir     .  17)
+                            (:flags        .  6)
+                            (:shortened-maildir     .  10)
                             ;; TODO: find a way to toggle this - it is sometimes useful
                             ;; (:mailing-list . 10)
                             (:from         . 25)
