@@ -161,12 +161,20 @@
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
    "qr" '(restart-emacs :which-key "Restart")
 
-   "w" '(:ignore t :which-key "Window")
+   "w" '(:ignore t :which-key "Workspace and windows")
    "ws" '(evil-window-split :which-key "split horizontally")
    "wv" '(evil-window-vsplit :which-key "split vertically")
    "wd" '(evil-window-delete :which-key "delete window")
-   )
 
+   "wb" '(:ignore t :which-key "Burly")
+   "wbf" '(burly-bookmark-frames :which-key "Bookmark frames")
+   "wbw" '(burly-bookmark-windows :which-key "Bookmark windows and frames")
+   "wbo" '(burly-open-bookmark :which-key "Open a bookmark")
+   "wbl" '(burly-open-last-bookmark :which-key "Open last bookmark")
+
+   "wB" '(:ignore t :which-key "Bufler")
+   "wBb" '(bufler :which-key "Show buffers")
+   "wBs" '(bufler-switch-buffer :which-key "Switch to buffer"))
 
   (defun my-define-common-keys (&optional keymap states)
     (let ((target-keymap (or keymap 'global)))

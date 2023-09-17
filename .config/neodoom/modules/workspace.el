@@ -9,7 +9,17 @@
 
 
 (use-package bufler
-  :ensure t)
+  :ensure t
+  :config
+  (bufler-mode)
+  (when (bound-and-true-p tab-bar-mode)
+    (burly-tabs-mode)))
+
+(use-package burly
+  :ensure t
+  :config
+  (when (bound-and-true-p tab-bar-mode)
+    (burly-tabs-mode)))
 
 (use-package projectile
   :ensure t
