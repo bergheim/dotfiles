@@ -57,8 +57,13 @@
   (general-define-key
    :states '(normal visual insert emacs motion)
    :prefix "SPC"
-   :keymaps '(global-map org-agenda-mode-map help-map)
+   :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
    :non-normal-prefix "M-SPC"
+
+   "a" '(:ignore t :which-key "Applications")
+   "ad" '(dirvish :which-key "Dirvish")
+   "ae" '(elfeed :which-key "Elfeed")
+
 
    "b" '(:ignore t :which-key "Buffers")
    "bb" '(consult-buffer :which-key "Switch")

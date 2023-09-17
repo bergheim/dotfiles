@@ -18,17 +18,37 @@
       sentence-end-double-space nil ;; Fix archaic defaults
 )
 
-;; TODO: refactor this. we need the macro before the autoloads
-(load (expand-file-name "modules/email.macros.el" user-emacs-directory))
+(defvar bergheim/cache-dir
+  (let ((xdg-cache (or (getenv "XDG_CACHE_HOME")
+                       (expand-file-name "~/.cache/"))))
+    (expand-file-name "neodoom/" xdg-cache)))
 
-(add-to-list 'load-path (expand-file-name "autoloads" user-emacs-directory))
+(defvar bergheim/config-dir
+  (let ((xdg-config (or (getenv "XDG_CONFIG_HOME")
+                       (expand-file-name "~/.config/"))))
+    (expand-file-name "neodoom/" xdg-config)))
+
+(defvar bergheim/home-dir
+  (let ((xdg-home (or (getenv "HOME")
+                       (expand-file-name "~/"))))
+    xdg-home))
+
+(unless (file-exists-p bergheim/cache-dir)
+  (make-directory bergheim/cache-dir t))
+
+
+;; TODO: refactor this. we need the macro before the autoloads
+(load (expand-file-name "modules/email.macros.el" bergheim/config-dir))
+
+
+(add-to-list 'load-path (expand-file-name "autoloads" bergheim/config-dir))
 
 ;; TODO: remove this once the config settles
-(let ((autoloads-dir (expand-file-name "autoloads" user-emacs-directory)))
+(let ((autoloads-dir (expand-file-name "autoloads" bergheim/config-dir)))
   (setq generated-autoload-file (concat autoloads-dir "autoloads.el"))
   (update-directory-autoloads autoloads-dir))
 
-(load (expand-file-name "autoloads/autoloads.el" user-emacs-directory))
+(load (expand-file-name "autoloads/autoloads.el" bergheim/config-dir))
 
 ;; Make right-click do something sensible
 (when (display-graphic-p)
@@ -61,7 +81,9 @@
 
 (defun bergheim/reload-init-file ()
   (interactive)
-  (load-file user-init-file)
+  (load-file (expand-file-name "init.el" bergheim/config-dir))
+
+
   (message "Emacs configuration reloaded successfully!"))
 
 ;; Show the help buffer after startup
@@ -77,15 +99,15 @@
 (require 'vc-use-package)
 
 ;; In your .emacs or init.el or whatever your main configuration file is
-(let ((private-file (expand-file-name "private.el" user-emacs-directory)))
+(let ((private-file (expand-file-name "private.el" bergheim/config-dir)))
   (when (file-exists-p private-file)
     (load private-file)))
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(setq custom-file (expand-file-name "custom.el" bergheim/config-dir))
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(let ((module-dir (expand-file-name "modules" user-emacs-directory)))
+(let ((module-dir (expand-file-name "modules" bergheim/config-dir)))
   (load-file (concat module-dir "/base.el"))
   (load-file (concat module-dir "/style.el"))
   (load-file (concat module-dir "/completion.el"))
@@ -206,3 +228,12 @@
   (web-mode-css-indent-offset 4)
   (web-mode-markup-indent-offset 4)
   (web-mode-enable-auto-quoting nil))
+
+(defun display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                    (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(add-hook 'emacs-startup-hook 'display-startup-time)
