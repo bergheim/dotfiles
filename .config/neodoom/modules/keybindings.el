@@ -63,9 +63,12 @@
    :non-normal-prefix "M-SPC"
 
    "b" '(:ignore t :which-key "Buffers")
-   "bb" '(switch-to-buffer :which-key "Switch")
+   "bb" '(consult-buffer :which-key "Switch")
    "bd" '(evil-delete-buffer :which-key "Delete")
    "bn" '(evil-buffer-new :which-key "New")
+
+   "e" '(:ignore t :which-key "Email")
+   "ee" '(bergheim/mu4e-email-today :which-key "default inbox")
 
    "f" '(:ignore t :which-key "Files")
    "ff" '(find-file :which-key "Find file")
@@ -155,6 +158,7 @@
   ;; (my-define-common-keys 'org-agenda-mode-map '(normal insert visual))
 
   (my-define-common-keys '(org-mode-map org-agenda-mode-map) 'motion)
+  (my-define-common-keys '(helpful))
 
 
   ;; (general-define-key
