@@ -2,6 +2,7 @@
 
 (use-package dired
   :commands dired-jump
+  :after general
   :init
   (setq dired-dwim-target t  ; suggest a target for moving/copying intelligently
         ;; don't prompt to revert, just do it
@@ -28,6 +29,7 @@
 (use-package dirvish
   :ensure t
   :defer t
+  :after general
   :config
   (dirvish-override-dired-mode)
   (setq dirvish-cache-dir (concat bergheim/cache-dir "dirvish/"))
