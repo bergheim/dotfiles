@@ -18,6 +18,8 @@
       sentence-end-double-space nil ;; Fix archaic defaults
 )
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (defvar bergheim/cache-dir
   (let ((xdg-cache (or (getenv "XDG_CACHE_HOME")
                        (expand-file-name "~/.cache/"))))

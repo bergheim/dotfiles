@@ -105,6 +105,8 @@
 (use-package corfu
   :ensure t
   :init
+  ;; (setq corfu-max-width 150)
+  ;; (setq corfu-max-height 35)
   (global-corfu-mode)
   :bind
   (:map corfu-map
@@ -158,6 +160,8 @@
   :ensure t
   :after corfu
   :config
+  (setq kind-icon-default-style
+         '(:padding -1 :stroke 0 :margin 0 :radius 0 :height 0.5 :scale 1.0))
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package eshell
