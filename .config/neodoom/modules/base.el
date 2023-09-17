@@ -33,3 +33,11 @@
   :after elfeed
   :config
   (elfeed-goodies/setup))
+
+(use-package minibuffer
+  :after general
+  :config
+  (general-define-key
+   :keymaps 'minibuffer-local-map
+   "C-w" 'backward-kill-word
+   "C-u" 'backward-kill-sentence))
