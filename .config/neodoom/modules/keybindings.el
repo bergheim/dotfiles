@@ -57,7 +57,7 @@
   (general-define-key
    :states '(normal visual insert emacs motion)
    :prefix "SPC"
-   :keymaps '(global-map org-agenda-mode-map)
+   :keymaps '(global-map org-agenda-mode-map help-map)
    :non-normal-prefix "M-SPC"
 
    "b" '(:ignore t :which-key "Buffers")

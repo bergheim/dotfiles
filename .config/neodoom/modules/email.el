@@ -37,8 +37,7 @@ If \\[universal-argument] if called before this, show a week back."
       ;; (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
       (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
   (setq mu4e-read-option-use-builtin nil
-        mu4e-completing-read-function 'completing-read)
-  )
+        mu4e-completing-read-function 'completing-read))
 
 (defun bergheim/mu4e-narrow-to-sender (_)
   "Quickly narrow view to emails sent from the selected email"

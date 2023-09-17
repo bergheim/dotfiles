@@ -13,6 +13,8 @@
       initial-major-mode 'emacs-lisp-mode  ; default mode for the *scratch* buffer
       display-time-default-load-average nil ; this information is useless for most
 
+      read-answer-short t ;; y means yes
+
       sentence-end-double-space nil ;; Fix archaic defaults
 )
 
