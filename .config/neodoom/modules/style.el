@@ -30,6 +30,25 @@
   :config
   (ef-themes-select 'ef-cyprus))
 
+(use-package doom-modeline
+  :ensure t
+  :init
+  (setq doom-modeline-support-imenu t)
+  (doom-modeline-mode 1)
+  :config
+  ;; apparently `file-name' is faster than `auto'
+  ;; see https://github.com/seagle0128/doom-modeline#customize
+  (setq doom-modeline-buffer-file-name-style 'file-name)
+  (setq doom-modeline-buffer-encoding nil))
+
+;; display match info in the modeline
+;; has some replace stuff as well, not sure how useful
+(use-package evil-anzu
+  :ensure t
+  :after evil-collection
+  :config
+  (global-anzu-mode +1))
+
 ;; Mode line information
 (setq line-number-mode t)                        ; Show current line in modeline
 (setq column-number-mode t)                      ; Show column as well

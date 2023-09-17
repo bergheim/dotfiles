@@ -1,6 +1,7 @@
 ;;; ~/.config/doom/+mu4e.el -*- lexical-binding: t; -*-
 
 (use-package mu4e
+  ;; :commands mu4e ;; TODO: lazy load this
   :config
   (require 'mu4e-headers)
   (defun bergheim/mail-search (query)
