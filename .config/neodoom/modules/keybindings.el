@@ -67,8 +67,7 @@
 
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
-   "qr" '(restart-emacs :which-key "Restart")
-   )
+   "qr" '(restart-emacs :which-key "Restart"))
 
   (general-define-key
    :states '(normal insert)
@@ -88,8 +87,46 @@
    "M-o" #'evil-window-next
    "M-f" #'maximize-window
    "M-F" #'winner-undo)
-  )
 
+;; (general-define-key
+;;  :states 'motion
+;;  :keymaps 'org-agenda-mode-map
+;;  "M-h" nil)
+
+  (general-define-key
+   :states 'motion
+   :keymaps 'org-agenda-mode-map
+   "M-h" #'evil-window-left
+   "M-j" #'evil-window-down
+   "M-k" #'evil-window-up
+   "M-l" #'evil-window-right
+
+   "M-H" #'+evil/window-move-left
+   "M-J" #'+evil/window-move-down
+   "M-K" #'+evil/window-move-up
+   "M-L" #'+evil/window-move-right
+
+   "C-M-h" #'org-metaleft
+   "C-M-j" #'org-metadown
+   "C-M-k" #'org-metaup
+   "C-M-l" #'org-metaright
+
+   "C-M-S-h" #'org-shiftmetaleft
+   "C-M-S-j" #'org-shiftmetadown
+   "C-M-S-k" #'org-shiftmetaup
+   "C-M-S-l" #'org-shiftmetaright
+
+   "M-\\" #'evil-window-vsplit
+   "M-]"  #'evil-window-split
+   "M-DEL" #'evil-window-delete
+   "M-<backspace>" #'+workspace/close-window-or-workspace
+   ))
+
+  ;; (general-define-key
+  ;;  :states 'normal
+  ;;  :package 'evil-org-agenda
+  ;;  :keymaps 'evil-org-agenda-mode-map
+  ;;  "M-h" #'evil-window-left)
 
 (general-create-definer bergheim/emacs-lisp-keys
   :prefix "SPC m"

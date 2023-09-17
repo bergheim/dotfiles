@@ -67,17 +67,19 @@
   (when (file-exists-p private-file)
     (load private-file)))
 
-
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (let ((module-dir (expand-file-name "modules" user-emacs-directory)))
   (load-file (concat module-dir "/base.el"))
   (load-file (concat module-dir "/style.el"))
-  (load-file (concat module-dir "/keybindings.el"))
   (load-file (concat module-dir "/completion.el"))
   (load-file (concat module-dir "/workspace.el"))
   (load-file (concat module-dir "/formating.el"))
   (load-file (concat module-dir "/nav.el"))
   (load-file (concat module-dir "/orgmode.el"))
+  (load-file (concat module-dir "/keybindings.el"))
   ;; (load-file (concat module-dir "/email.el"))
   )
 
@@ -118,10 +120,23 @@
   (evil-mode 1))
 
 (use-package evil-collection
-  :after evil
   :ensure t
+  :after evil
   :config
   (evil-collection-init))
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook
+  (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+
+;; (use-package evil-surround
+;;   :config
+;;   (global-evil-surround-mode 1))
 
 ;; maybe actually try this
 (use-package denote
