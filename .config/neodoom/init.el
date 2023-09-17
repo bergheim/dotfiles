@@ -75,9 +75,8 @@
       load-prefer-newer t
       backup-by-copying t
       ;; I _think_ this should be something else (ie the cache directory)
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      custom-file (expand-file-name "custom.el" user-emacs-directory))
-
+      backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
+      custom-file (expand-file-name "custom.el" bergheim/config-dir))
 
 (defun bergheim/reload-init-file ()
   (interactive)
@@ -109,6 +108,7 @@
 
 (let ((module-dir (expand-file-name "modules" bergheim/config-dir)))
   (load-file (concat module-dir "/base.el"))
+  (load-file (concat module-dir "/session.el"))
   (load-file (concat module-dir "/style.el"))
   (load-file (concat module-dir "/completion.el"))
   (load-file (concat module-dir "/workspace.el"))
