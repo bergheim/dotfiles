@@ -82,6 +82,8 @@
    "hr" '(bergheim/reload-init-file :which-key "Reload")
    "ht" '(consult-theme :which-key "Switch theme")
 
+   "m" '(:ignore t :which-key "Mode specific")
+
    "o" '(:ignore t :which-key "Org Mode")
    "od" '((lambda (&optional arg) (interactive) (org-agenda arg "d")) :which-key "Orgmode Dashboard")
 
@@ -104,11 +106,16 @@
    "sp" '(consult-project-buffer :which-key "project buffers")
    "ss" '(consult-line :which-key "buffer")
 
-   "m" '(:ignore t :which-key "Mode specific")
 
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
-   "qr" '(restart-emacs :which-key "Restart"))
+   "qr" '(restart-emacs :which-key "Restart")
+
+   "w" '(:ignore t :which-key "Window")
+   "ws" '(evil-window-split :which-key "split horizontally")
+   "wv" '(evil-window-vsplit :which-key "split vertically")
+   "wd" '(evil-window-delete :which-key "delete window")
+   )
 
 
   (defun my-define-common-keys (&optional keymap states)
@@ -157,9 +164,13 @@
 
 
   (general-define-key
-   :states 'motion
+   :states '(normal insert visual)
    :keymaps 'org-mode-map
-   ;; TODO: do I still use these
+   "M-h" #'evil-window-left
+   "M-j" #'evil-window-down
+   "M-k" #'evil-window-up
+   "M-l" #'evil-window-right
+
    "C-M-h" #'org-metaleft
    "C-M-j" #'org-metadown
    "C-M-k" #'org-metaup
