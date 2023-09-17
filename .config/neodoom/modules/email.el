@@ -36,11 +36,9 @@ If \\[universal-argument] if called before this, show a week back."
       ;;   (setq bergheim/mu4e--headers-goto-bottom-counter 1))
       ;; (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
       (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
-
-  (defun bergheim/mu4e-email-sent()
-    (interactive)
-    (mu4e)
-    (mu4e-search-bookmark "maildir:/Sent/")))
+  (setq mu4e-read-option-use-builtin nil
+        mu4e-completing-read-function 'completing-read)
+  )
 
 (defun bergheim/mu4e-narrow-to-sender (_)
   "Quickly narrow view to emails sent from the selected email"
@@ -385,7 +383,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                            (url-encode-url (replace-regexp-in-string "\\W" " " subject))
                            (url-encode-url from)
                            (url-encode-url to))))
-      (_ (display-warning :warning (format "Account \"%s\" not found!" account))))))
+      (_ (display-warning :warning (format "Account \"%s\" based on dir \"%s\"not found!" account maildir))))))
 
 ;; TODO: see if this works when sending works again
 ;; message-id is apparently not generated on the server..? which sounds strange
@@ -414,30 +412,37 @@ Includes BCC emails, but does not include CC, because that point just use from:a
   (let ((mu4e-org-link-query-in-headers-mode t))
     (call-interactively 'org-store-link)))
 
-;; (use-package org-msg
-;;   :ensure t)
-;;   :init
-;;   (setq org-msg-greeting-fmt "Hello%s,\n\n"
-;;         org-msg-signature bergheim/signature-html
-;;         org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil tex:dvipng \\n:t"
-;;         org-msg-default-alternatives '((new             . (text html))
-;;                                        (reply-to-html   . (text html))
-;;         ;; replies are currently broken with mu 1.8. this hack prioritizes work mail. From https://github.com/jeremy-compostella/org-msg/issues/157#issuecomment-1233791513
-;;                                        (reply-to-text   . (text html)))))
 
-
-(defun bergheim/mu4e--get-account (msg)
-  "Retrieve the top-level directory (account) from the :maildir field of MSG."
-  (let* ((maildir (mu4e-message-field msg :maildir))
-         (account (and maildir (car (split-string maildir "/" t)))))
-    (or account "")))
+(setq mail-user-agent 'mu4e-user-agent)
+(use-package org-msg
+  :ensure t
+  :after mu4e
+  :hook ((mu4e-compose-pre . org-msg-mode))
+  :init
+  (setq ;; mail-user-agent 'mu4e-user-agent
+        org-msg-greeting-fmt "Hello%s,\n\n"
+        org-msg-signature bergheim/signature-html
+        org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t"
+        org-msg-greeting-name-limit 3
+        org-msg-default-alternatives '((new		. (text html))
+                                       (reply-to-html	. (text html))
+                                       (reply-to-text	. (text)))
+        ;; TODO: what does this do
+        ;; org-msg-convert-citation t)
+  ))
 
 (add-to-list 'mu4e-header-info-custom
              '(:account .
                (:name "Account"
                 :shortname "Acc"
                 :help "Account the message belongs to"
-                :function bergheim/mu4e--get-account)))
+                :function bergheim/mu4e--msg-get-account)))
+
+(defun bergheim/mu4e--msg-get-account (msg)
+  "Retrieve the top-level directory (account) from the :maildir field of MSG."
+  (let* ((maildir (mu4e-message-field msg :maildir))
+         (account (and maildir (car (split-string maildir "/" t)))))
+    (or account "")))
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name

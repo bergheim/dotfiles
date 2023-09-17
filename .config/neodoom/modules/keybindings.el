@@ -17,8 +17,6 @@
 ;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone
 ;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
 
-
-
 (use-package which-key
   :ensure t
   :config
@@ -240,6 +238,3 @@
  "e e" '(eval-last-sexp :which-key "eval last sexp")
  "e b" '(eval-last-sexp :which-key "eval buffer")
  "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
-
-(provide 'keybindings)
-;;; keybindings.el ends here

@@ -16,6 +16,18 @@
       sentence-end-double-space nil ;; Fix archaic defaults
 )
 
+;; TODO: refactor this. we need the macro before the autoloads
+(load (expand-file-name "modules/email.macros.el" user-emacs-directory))
+
+(add-to-list 'load-path (expand-file-name "autoloads" user-emacs-directory))
+
+;; TODO: remove this once the config settles
+(let ((autoloads-dir (expand-file-name "autoloads" user-emacs-directory)))
+  (setq generated-autoload-file (concat autoloads-dir "autoloads.el"))
+  (update-directory-autoloads autoloads-dir))
+
+(load (expand-file-name "autoloads/autoloads.el" user-emacs-directory))
+
 ;; Make right-click do something sensible
 (when (display-graphic-p)
   (context-menu-mode))
