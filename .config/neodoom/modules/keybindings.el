@@ -41,6 +41,8 @@
 
    "f" '(:ignore t :which-key "Files")
    "ff" '(find-file :which-key "Find file")
+   "fr" '(consult-recent-file :which-key "Recent files")
+   "fR" '(rename-visited-file :which-key "Rename file")
    "fs" '(save-buffer :which-key "Save buffer")
 
    "h" '(:ignore t :which-key "Help")
@@ -50,6 +52,9 @@
    "ha" '(apropos :which-key "Apropos")
    "hk" '(describe-mode :which-key "Desibe mode")
    "hr" '(bergheim/reload-init-file :which-key "Reload")
+
+   "o" '(:ignore t :which-key "Org Mode")
+   "od" '((lambda (&optional arg) (interactive) (org-agenda arg "d")) :which-key "Orgmode Dashboard")
 
    "p" '(:ignore t :which-key "Project")
    "pa" '(projectile-add-known-project :which-key "Add project")
@@ -63,7 +68,27 @@
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
    "qr" '(restart-emacs :which-key "Restart")
-   ))
+   )
+
+  (general-define-key
+   :states '(normal insert)
+   "M-h" #'evil-window-left
+   "M-j" #'evil-window-down
+   "M-k" #'evil-window-up
+   "M-l" #'evil-window-right
+   "M-H" #'+evil/window-move-left
+   "M-J" #'+evil/window-move-down
+   "M-K" #'+evil/window-move-up
+   "M-L" #'+evil/window-move-right
+   "M-\\" #'evil-window-vsplit
+   "M-]" #'evil-window-split
+   "M-DEL" #'evil-window-delete
+   ;; "M-<backspace>" #'+workspace/close-window-or-workspace
+   "M-S-<backspace>" #'kill-current-buffer
+   "M-o" #'evil-window-next
+   "M-f" #'maximize-window
+   "M-F" #'winner-undo)
+  )
 
 
 (general-create-definer bergheim/emacs-lisp-keys

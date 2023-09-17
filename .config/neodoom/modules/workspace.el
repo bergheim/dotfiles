@@ -14,6 +14,7 @@
 (use-package projectile
   :ensure t
   :config
+  (setq projectile-project-search-path (list (concat bergheim/home-directory "dev")))
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   )

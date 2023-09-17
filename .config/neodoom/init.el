@@ -2,10 +2,10 @@
 
 (message "Hello World!")
 
-(add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
-
 (setq visible-bell t ;; flash
       inhibit-startup-message t
+
+      bergheim/home-directory (expand-file-name "~/")
 
       gc-cons-threshold 100000000 ; 100 mb
       read-process-output-max (* 1024 1024) ; 1mb
@@ -67,11 +67,25 @@
   (when (file-exists-p private-file)
     (load private-file)))
 
-(require 'style) ;; stylez!
-(require 'keybindings)
-(require 'completion)
-(require 'workspace)
-(require 'formating)
+
+
+(let ((module-dir (expand-file-name "modules" user-emacs-directory)))
+  (load-file (concat module-dir "/base.el"))
+  (load-file (concat module-dir "/style.el"))
+  (load-file (concat module-dir "/keybindings.el"))
+  (load-file (concat module-dir "/completion.el"))
+  (load-file (concat module-dir "/workspace.el"))
+  (load-file (concat module-dir "/formating.el"))
+  (load-file (concat module-dir "/nav.el"))
+  (load-file (concat module-dir "/orgmode.el"))
+  ;; (load-file (concat module-dir "/email.el"))
+  )
+
+;; or maybe just auto it?
+;; (let ((module-dir (expand-file-name "modules" user-emacs-directory)))
+;;   (dolist (module (directory-files module-dir t "\\.el$"))
+;;     (load-file module)))
+
 
 ;; LSP support
 (use-package eglot
