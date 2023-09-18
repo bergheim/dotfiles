@@ -21,14 +21,21 @@
 
 
 ;; Note: height = px * 100
-(set-face-attribute 'default nil :font "Ubuntu Mono" :height 120)
+(cond
+ ((>= (display-pixel-height) 2160)  ; 4K screens
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 180))
+ ((>= (display-pixel-height) 1440)  ; 1440p screens
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 140))
+ (t
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 120)))
+
 (show-paren-mode 1) ;; Visualize matching parens
 
 (use-package ef-themes
   :ensure t
   :config
-  ;; (ef-themes-select 'ef-cyprus))
-  (ef-themes-select 'ef-elea-dark))
+  (ef-themes-select 'ef-cyprus))
+  ;; (ef-themes-select 'ef-elea-dark))
 
 ;; (use-package doom-themes
 ;;   :ensure t
