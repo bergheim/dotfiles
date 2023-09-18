@@ -45,3 +45,12 @@
 (use-package restclient
   :ensure t
   :defer t)
+
+(use-package vundo
+  :ensure t
+  :after general
+  :config
+  (setq vundo-dir bergheim/cache-dir)
+  (general-define-key
+   :states 'normal
+   "U" 'vundo))
