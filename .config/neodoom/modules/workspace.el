@@ -28,6 +28,17 @@
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
 
+(use-package winner
+  :init
+  (winner-mode 1))
+
+(defun bergheim/zoom-window ()
+  "Maximize the window or restore the previous layout."
+  (interactive)
+  (if (one-window-p)
+      (winner-undo)
+    (delete-other-windows)))
+
 (use-package bufler
   :ensure t
   :config

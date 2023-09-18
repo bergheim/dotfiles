@@ -25,9 +25,9 @@
  ((>= (display-pixel-height) 2160)  ; 4K screens
   (set-face-attribute 'default nil :font "Ubuntu Mono" :height 180))
  ((>= (display-pixel-height) 1440)  ; 1440p screens
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 140))
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 120))
  (t
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 120)))
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 100)))
 
 (show-paren-mode 1) ;; Visualize matching parens
 

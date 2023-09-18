@@ -81,6 +81,7 @@
    "g o" 'browse-at-remote
    "g l" 'browse-at-remote-kill
    "g y" 'browse-at-remote-kill
+   "g s" 'magit-stage-file
 
    "h" '(:ignore t :which-key "Help")
    "ha" '(apropos :which-key "Apropos")
@@ -139,6 +140,8 @@
    "sp" '(consult-project-buffer :which-key "project buffers")
    "ss" '(consult-line :which-key "buffer")
 
+   "u" '(universal-argument :which-key "Universal argument")
+
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
    "qr" '(restart-emacs :which-key "Restart")
@@ -153,6 +156,9 @@
    "wbw" '(burly-bookmark-windows :which-key "Bookmark windows and frames")
    "wbo" '(burly-open-bookmark :which-key "Open a bookmark")
    "wbl" '(burly-open-last-bookmark :which-key "Open last bookmark")
+   "wu" '(winner-undo :which-key "Winner undo")
+   "wr" '(winner-redo :which-key "Winner redo")
+   "wm" '(bergheim/zoom-window :which-key "Maximize window")
 
    "wB" '(:ignore t :which-key "Bufler")
    "wBb" '(bufler :which-key "Show buffers")
