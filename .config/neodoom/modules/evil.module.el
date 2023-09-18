@@ -40,4 +40,10 @@
 ;; (use-package evil-textobj-tree-sitter
 ;;   :ensure t)
 
+(use-package evil-surround
+  :ensure t
+  :after evil
+  :config
+  (global-evil-surround-mode 1))
+
 ;;; evil.module.el ends here
