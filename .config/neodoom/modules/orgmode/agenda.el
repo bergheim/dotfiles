@@ -2,6 +2,20 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(use-package org-agenda
+  ;; :ensure org-plus-contrib
+  :commands (org-agenda)
+  :general
+  (bergheim/global-keys
+   "mt" 'org-agenda-todo
+   "mq" 'org-agenda-set-tags
+   ;; TODO add clock here
+   "me"  'org-agenda-set-effort))
+
+;; This drove me nuts! Unbind SPC in org-agenda-mode
+(with-eval-after-load 'org-agenda
+  (evil-define-key 'motion org-agenda-mode-map (kbd "SPC") nil))
+
 (setq org-agenda-custom-commands
       '(("d" "Dashboard for today"
          ((agenda "" ((org-agenda-overriding-header "Dashboard")

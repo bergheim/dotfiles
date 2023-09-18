@@ -6,8 +6,16 @@
 
 (use-package org
   :defer t
+  :after general
   ;; :init
   ;; (bergheim/load-file "modules/mu4e/keybindings.el")
+
+  :general
+  (bergheim/global-keys
+   ;; FIXME: we need to reset `m' on every mode
+   "mn" 'org-store-link
+   "mq" 'org-set-tags-command)
+
   :config
   (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/keybindings.el")
