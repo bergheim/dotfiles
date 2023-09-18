@@ -25,6 +25,8 @@
   :ensure t
   :config
   (setq projectile-project-search-path (list (concat bergheim/home-directory "dev")))
+  (setq projectile-cache-file (concat bergheim/cache-dir "/projectile.cache")
+        projectile-known-projects-file (concat bergheim/cache-dir "/projectile-bookmarks.eld"))
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
