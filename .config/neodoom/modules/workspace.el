@@ -7,6 +7,26 @@
 ;; Created: September 16, 2023
 ;; Modified: September 16, 2023
 
+(use-package popper
+  :ensure t
+  :bind (("C-`"   . popper-toggle)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          compilation-mode))
+  (setq popper-reference-buffers
+        (append popper-reference-buffers
+                '("^\\*Flymake diagnostics.*\\*$" flymake-diagnostics-buffer-mode
+                  )))
+  (setq popper-window-height 15)
+  (setq popper-display-function #'popper-display-popup-at-bottom)
+  (popper-mode +1)
+  (popper-echo-mode +1))                ; For echo area hints
 
 (use-package bufler
   :ensure t

@@ -7,6 +7,18 @@
   ;; To prevent any graphical interface to pop-up.
   :custom (esup-depth 0))
 
+;; Add extra context to Emacs documentation to help make it easier to
+;; search and understand. This configuration uses the keybindings
+;; recommended by the package author.
+(use-package helpful
+  :ensure t
+  :bind (("C-h f" . #'helpful-callable)
+         ("C-h v" . #'helpful-variable)
+         ("C-h k" . #'helpful-key)
+         ("C-c C-d" . #'helpful-at-point)
+         ("C-h F" . #'helpful-function)
+         ("C-h C" . #'helpful-command)))
+
 (use-package elfeed
   :ensure t
   :commands elfeed
