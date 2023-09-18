@@ -22,24 +22,13 @@
 
 ;; Note: height = px * 100
 (set-face-attribute 'default nil :font "Ubuntu Mono" :height 120)
-(load-theme 'modus-vivendi t)
 (show-paren-mode 1) ;; Visualize matching parens
 
 (use-package ef-themes
   :ensure t
   :config
-  (ef-themes-select 'ef-cyprus))
-
-(use-package doom-modeline
-  :ensure t
-  :init
-  (setq doom-modeline-support-imenu t)
-  (doom-modeline-mode 1)
-  :config
-  ;; apparently `file-name' is faster than `auto'
-  ;; see https://github.com/seagle0128/doom-modeline#customize
-  (setq doom-modeline-buffer-file-name-style 'file-name)
-  (setq doom-modeline-buffer-encoding nil))
+  ;; (ef-themes-select 'ef-cyprus))
+  (ef-themes-select 'ef-elea-dark))
 
 ;; (use-package doom-themes
 ;;   :ensure t
@@ -58,6 +47,25 @@
 ;;   (doom-themes-treemacs-config)
 ;;   ;; Corrects (and improves) org-mode's native fontification.
 ;;   (doom-themes-org-config))
+
+;; (load-theme 'modus-vivendi t)
+
+(use-package doom-modeline
+  :ensure t
+  :init
+  (setq doom-modeline-support-imenu t)
+  (doom-modeline-mode 1)
+  :config
+  ;; apparently `file-name' is faster than `auto'
+  ;; see https://github.com/seagle0128/doom-modeline#customize
+  (setq doom-modeline-buffer-file-name-style 'file-name)
+  (setq doom-modeline-buffer-encoding nil))
+
+
+;; foo -> bar -> baz
+(use-package breadcrumb
+  :vc (:fetcher github :repo joaotavora/breadcrumb)
+  :init (breadcrumb-mode))
 
 ;; display match info in the modeline
 ;; has some replace stuff as well, not sure how useful

@@ -148,28 +148,6 @@
          ("C-h F" . #'helpful-function)
          ("C-h C" . #'helpful-command)))
 
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package evil-org
-  :ensure t
-  :after org
-  :hook
-  (org-mode . (lambda () evil-org-mode))
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
 
 ;; (use-package evil-surround
 ;;   :config
@@ -187,11 +165,6 @@
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
 
-
-;; foo -> bar -> baz
-(use-package breadcrumb
-  :vc (:fetcher github :repo joaotavora/breadcrumb)
-  :init (breadcrumb-mode))
 
 (use-package paredit
   :ensure t

@@ -41,3 +41,7 @@
    :keymaps 'minibuffer-local-map
    "C-w" 'backward-kill-word
    "C-u" 'backward-kill-sentence))
+
+(use-package restclient
+  :ensure t
+  :defer t)
