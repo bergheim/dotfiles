@@ -2,12 +2,7 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-(general-define-key
- :states '(normal visual insert emacs motion)
- :prefix "SPC"
- :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
- :non-normal-prefix "M-SPC"
-
+(bergheim/global-keys
  "e" '(:ignore t :which-key "E-mail")
  "e e" '(bergheim/email-today :which-key "Today's unhandled email")
  ;; TODO: rename this

@@ -19,12 +19,7 @@
 (use-package general
   :ensure t
   :config
-  (general-define-key
-   :states '(normal visual insert emacs motion)
-   :prefix "SPC"
-   :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
-   :non-normal-prefix "M-SPC"
-
+  (bergheim/global-keys
    "c" '(:ignore t :which-key "Code")
    "c a" '(eglot-code-actions :which-key "Format region")
    "c e" '(flymake-show-buffer-diagnostics :which-key "Errors")

@@ -54,12 +54,13 @@
   ;;  :non-normal-prefix "M-SPC"
   ;;  "b" '(:ignore t :which-key "Buffers"))
 
-  (general-define-key
-   :states '(normal visual insert emacs motion)
-   :prefix "SPC"
-   :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
-   :non-normal-prefix "M-SPC"
+  (general-create-definer bergheim/global-keys
+    :states '(normal visual insert emacs motion)
+    :prefix "SPC"
+    :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
+    :non-normal-prefix "M-SPC")
 
+  (bergheim/global-keys
    "a" '(:ignore t :which-key "Applications")
    "ad" '(dirvish :which-key "Dirvish")
    "ae" '(elfeed :which-key "Elfeed")
@@ -232,12 +233,12 @@
   (general-create-definer bergheim/emacs-lisp-keys
     :prefix "SPC m"
     :states '(normal visual emacs)
-    :keymaps 'emacs-lisp-mode-map))
+    :keymaps 'emacs-lisp-mode-map)
 
-
-(bergheim/emacs-lisp-keys
- "e" '(:ignore t :which-key "Eval")
- "e d" '(eval-defun :which-key "eval last defun")
- "e e" '(eval-last-sexp :which-key "eval last sexp")
- "e b" '(eval-last-sexp :which-key "eval buffer")
- "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
+  (bergheim/emacs-lisp-keys
+   "e" '(:ignore t :which-key "Eval")
+   "e d" '(eval-defun :which-key "eval last defun")
+   "e e" '(eval-last-sexp :which-key "eval last sexp")
+   "e b" '(eval-last-sexp :which-key "eval buffer")
+   "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
+  )
