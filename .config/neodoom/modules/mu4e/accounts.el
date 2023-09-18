@@ -9,10 +9,10 @@
         :match-func (lambda (msg)
                       (when msg
                         (string-match-p "^/neptune" (mu4e-message-field msg :maildir))))
-        :vars `((user-full-name     . ,bergheim/neptune/name)
-                (user-mail-address  . ,bergheim/neptune/email )
+        :vars `((user-full-name         . ,bergheim/neptune/name)
+                (user-mail-address      . ,bergheim/neptune/email )
                 (mu4e-compose-signature . ,bergheim/neptune/signature)
-                (org-msg-signature . ,bergheim/neptune/signature-html)
+                (org-msg-signature      . ,bergheim/neptune/signature-html)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -22,12 +22,11 @@
                 (mu4e-refile-folder . "/neptune/Archive")
                 (mu4e-spam-folder   . "/neptune/Spam")
 
-                ;; TODO: test lion here
-                (mu4e-maildir-shortcuts . ( ("/neptune/Inbox"         . ?i)
+                (mu4e-maildir-shortcuts  . (("/neptune/Inbox"   . ?i)
                                             ("/neptune/Sent"    . ?s)
-                                            ("/neptune/Trash" . ?t)
-                                            ("/neptune/Drafts"        . ?d)
-                                            ("/neptune/Archive"       . ?a)
+                                            ("/neptune/Trash"   . ?t)
+                                            ("/neptune/Drafts"  . ?d)
+                                            ("/neptune/Archive" . ?a)
                                             ))))
        (make-mu4e-context
         :name "gmail"
@@ -35,10 +34,10 @@
                       (when msg
                         (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
         :vars `(
-                (user-full-name      . ,bergheim/gmail/name)
-                (user-mail-address   . ,bergheim/gmail/email)
+                (user-full-name         . ,bergheim/gmail/name)
+                (user-mail-address      . ,bergheim/gmail/email)
                 (mu4e-compose-signature . ,bergheim/gmail/signature)
-                (org-msg-signature . ,bergheim/gmail/signature-html)
+                (org-msg-signature      . ,bergheim/gmail/signature-html)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -48,10 +47,10 @@
                 (mu4e-refile-folder . "/gmail/Archives")
                 (mu4e-spam-folder   . "/gmail/Spam")
 
-                (mu4e-maildir-shortcuts . ( ("/gmail/Inbox"            . ?i)
-                                            ("/gmail/Sent" . ?s)
-                                            ("/gmail/Trash"       . ?t)
-                                            ("/gmail/Drafts"    . ?d)
+                (mu4e-maildir-shortcuts  . (("/gmail/Inbox"  . ?i)
+                                            ("/gmail/Sent"   . ?s)
+                                            ("/gmail/Trash"  . ?t)
+                                            ("/gmail/Drafts" . ?d)
                                             ))))
        (make-mu4e-context
         :name "private"
@@ -60,10 +59,10 @@
                       (when msg
                         (string-match-p "^/glvortex" (mu4e-message-field msg :maildir))))
         :vars `(
-                (user-full-name     . ,bergheim/glvortex/name)
-                (user-mail-address  . ,bergheim/glvortex/email)
+                (user-full-name         . ,bergheim/glvortex/name)
+                (user-mail-address      . ,bergheim/glvortex/email)
                 (mu4e-compose-signature . ,bergheim/glvortex/signature)
-                (org-msg-signature . ,bergheim/glvortex/signature-html)
+                (org-msg-signature      . ,bergheim/glvortex/signature-html)
 
                 (mu4e-compose-format-flowed . t)
 
@@ -73,11 +72,11 @@
                 (mu4e-refile-folder . "/glvortex/Archive")
                 (mu4e-spam-folder   . "/glvortex/Spam")
 
-                (mu4e-maildir-shortcuts . ( ("/glvortex/Inbox" . ?i)
-                                            ("/glvortex/Sent"     . ?s)
-                                            ("/glvortex/Trash"    . ?t)
-                                            ("/glvortex/Drafts"   . ?d)
-                                            ("/glvortex/Archive"  . ?a)
+                (mu4e-maildir-shortcuts  . (("/glvortex/Inbox"   . ?i)
+                                            ("/glvortex/Sent"    . ?s)
+                                            ("/glvortex/Trash"   . ?t)
+                                            ("/glvortex/Drafts"  . ?d)
+                                            ("/glvortex/Archive" . ?a)
                                             ))))
        ))
 
