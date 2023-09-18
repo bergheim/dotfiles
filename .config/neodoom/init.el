@@ -133,7 +133,7 @@
   (load-file (concat module-dir "/workspace.el"))
   (load-file (concat module-dir "/formating.el"))
   (load-file (concat module-dir "/nav.el"))
-  (load-file (concat module-dir "/orgmode.el"))
+  (load-file (concat module-dir "/orgmode/init.el"))
   (load-file (concat module-dir "/mu4e/init.el"))
   (load-file (concat module-dir "/evil.module.el"))
   (load-file (concat module-dir "/keybindings.el")))
