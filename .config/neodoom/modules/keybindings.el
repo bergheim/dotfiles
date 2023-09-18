@@ -229,11 +229,13 @@
   ;;  "s" 'evil-surround-region)
   ;;
 
-  ;; TODO: this is what should be used for the shared global keys
   (general-create-definer bergheim/emacs-lisp-keys
     :prefix "SPC m"
     :states '(normal visual emacs)
     :keymaps 'emacs-lisp-mode-map)
+
+  (general-create-definer bergheim/evil-keys
+    :states '(normal visual operator))
 
   (bergheim/emacs-lisp-keys
    "e" '(:ignore t :which-key "Eval")

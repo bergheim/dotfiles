@@ -56,17 +56,18 @@
   :config
   (global-evil-surround-mode 1))
 
+;; Just use evil-avy-goto-char-2?
 ;; use `z' or `x' in operator mode
-(use-package evil-snipe
-  :ensure t
-  :after evil
-  :config
-  (setq evil-snipe-scope 'whole-visible)
-  (push '(?\[ "[[{(]") evil-snipe-aliases)
-  (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
-  (evil-snipe-mode +1)
-  ;; I find `s' (and to a lesser degree `S') pretty useless tbh, so just override it
-  (evil-snipe-override-mode +1))
+;; (use-package evil-snipe
+;;   :ensure t
+;;   :after evil
+;;   :config
+;;   (setq evil-snipe-scope 'whole-visible)
+;;   (push '(?\[ "[[{(]") evil-snipe-aliases)
+;;   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
+;;   (evil-snipe-mode +1)
+;;   ;; I find `s' (and to a lesser degree `S') pretty useless tbh, so just override it
+;;   (evil-snipe-override-mode +1))
 
 (use-package vimish-fold
   :ensure t
@@ -82,6 +83,31 @@
   (setq evil-vimish-fold-target-modes '(prog-mode conf-mode text-mode))
   :config
   (global-evil-vimish-fold-mode))
+
+(use-package evil-owl
+  :ensure t
+  :config
+  (setq evil-owl-max-string-length 500)
+  (add-to-list 'display-buffer-alist
+               '("*evil-owl*"
+                 (display-buffer-in-side-window)
+                 (side . bottom)
+                 (window-height . 0.3)))
+  (evil-owl-mode))
+
+;; posframe is.. kinda cool I guess? but it does not contain all the text..
+;; (use-package posframe
+;;   :ensure t
+;;   :config
+;;   (setq posframe-width 80))
+
+;; (use-package evil-owl
+;;   :ensure t
+;;   :config
+;;   (setq evil-owl-display-method 'posframe
+;;         evil-owl-extra-posframe-args '(:width 50 :height 20)
+;;         evil-owl-max-string-length 50)
+;;   (evil-owl-mode))
 
 
 ;;; evil.module.el ends here
