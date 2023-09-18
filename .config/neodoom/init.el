@@ -112,12 +112,14 @@
   (load-file (concat module-dir "/base.el"))
   (load-file (concat module-dir "/session.el"))
   (load-file (concat module-dir "/style.el"))
+  (load-file (concat module-dir "/vcs.el"))
   (load-file (concat module-dir "/completion.el"))
   (load-file (concat module-dir "/workspace.el"))
   (load-file (concat module-dir "/formating.el"))
   (load-file (concat module-dir "/nav.el"))
   (load-file (concat module-dir "/orgmode.el"))
   (load-file (concat module-dir "/email.el"))
+  (load-file (concat module-dir "/evil.module.el"))
   (load-file (concat module-dir "/keybindings.el")))
 
 ;; or maybe just auto it?
