@@ -40,6 +40,15 @@
 ;; (use-package evil-textobj-tree-sitter
 ;;   :ensure t)
 
+;; gc  evil-commentary
+;; gy  evil-commentary-yank
+;; s-/ evil-commentary-line
+;;     evil-commentary-yank-line
+(use-package evil-commentary
+  :ensure t
+  :after evil
+  :config
+  (evil-commentary-mode))
 (use-package evil-surround
   :ensure t
   :after evil
