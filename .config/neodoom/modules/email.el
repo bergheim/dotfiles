@@ -2,6 +2,7 @@
 
 (use-package mu4e
   ;; :commands mu4e ;; TODO: lazy load this
+  :defer t
   :config
   (require 'mu4e-headers)
   (defun bergheim/mail-search (query)
@@ -38,7 +39,176 @@ If \\[universal-argument] if called before this, show a week back."
       ;; (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
       (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
   (setq mu4e-read-option-use-builtin nil
-        mu4e-completing-read-function 'completing-read))
+        mu4e-completing-read-function 'completing-read)
+
+
+  (add-to-list 'mu4e-marks
+               '(spam
+                 :char       "X"
+                 :prompt     "spam"
+                 :dyn-target (lambda (target msg)
+                               (with-mu4e-context-vars (mu4e-context-determine msg nil)
+                                   mu4e-spam-folder))
+                 :action      (lambda (docid msg target)
+                                (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
+
+  (mu4e~headers-defun-mark-for spam)
+  (mu4e--view-defun-mark-for spam)
+
+
+  (add-to-list 'mu4e-header-info-custom
+               '(:account .
+                 (:name "Account"
+                  :shortname "Account"
+                  :help "Account the message belongs to"
+                  :function bergheim/mu4e--msg-get-account)))
+
+  (add-to-list 'mu4e-header-info-custom
+               '(:shortened-maildir .
+                 (:name "Maildir"
+                  :shortname "Maildir"
+                  :help "Modified Maildir"
+                  :function bergheim/mu4e--msg-get-modified-maildir)))
+
+
+  (setq mu4e-contexts
+        (list
+         (make-mu4e-context
+          :name "work"
+          :match-func (lambda (msg)
+                        (when msg
+                          (string-match-p "^/neptune" (mu4e-message-field msg :maildir))))
+          :vars `(
+                  (user-full-name     . ,bergheim/neptune/name)
+                  (user-mail-address  . ,bergheim/neptune/email )
+                  (mu4e-compose-signature . ,bergheim/neptune/signature)
+                  (org-msg-signature . ,bergheim/neptune/signature-html)
+
+                  (mu4e-compose-format-flowed . t)
+
+                  (mu4e-sent-folder   . "/neptune/Sent")
+                  (mu4e-trash-folder  . "/neptune/Trash")
+                  (mu4e-drafts-folder . "/neptune/Drafts")
+                  (mu4e-refile-folder . "/neptune/Archive")
+                  (mu4e-spam-folder   . "/neptune/Spam")
+
+                  (mu4e-maildir-shortcuts . ( ("/neptune/Inbox"         . ?i)
+                                              ("/neptune/Sent"    . ?s)
+                                              ("/neptune/Trash" . ?t)
+                                              ("/neptune/Drafts"        . ?d)
+                                              ("/neptune/Archive"       . ?a)
+                                              ))))
+         (make-mu4e-context
+          :name "gmail"
+          :match-func (lambda (msg)
+                        (when msg
+                          (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
+          :vars `(
+                  (user-full-name      . ,bergheim/gmail/name)
+                  (user-mail-address   . ,bergheim/gmail/email)
+                  (mu4e-compose-signature . ,bergheim/gmail/signature)
+                  (org-msg-signature . ,bergheim/gmail/signature-html)
+
+                  (mu4e-compose-format-flowed . t)
+
+                  (mu4e-sent-folder   . "/gmail/Sent")
+                  (mu4e-trash-folder  . "/gmail/Trash")
+                  (mu4e-drafts-folder . "/gmail/Drafts")
+                  (mu4e-refile-folder . "/gmail/Archives")
+                  (mu4e-spam-folder   . "/gmail/Spam")
+
+                  (mu4e-maildir-shortcuts . ( ("/gmail/Inbox"            . ?i)
+                                              ("/gmail/Sent" . ?s)
+                                              ("/gmail/Trash"       . ?t)
+                                              ("/gmail/Drafts"    . ?d)
+                                              ))))
+         (make-mu4e-context
+          :name "private"
+          :enter-func (lambda () (mu4e-message "Switch to Personal Context"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (string-match-p "^/glvortex" (mu4e-message-field msg :maildir))))
+          :vars `(
+                  (user-full-name     . ,bergheim/glvortex/name)
+                  (user-mail-address  . ,bergheim/glvortex/email)
+                  (mu4e-compose-signature . ,bergheim/glvortex/signature)
+                  (org-msg-signature . ,bergheim/glvortex/signature-html)
+
+                  (mu4e-compose-format-flowed . t)
+
+                  (mu4e-sent-folder   . "/glvortex/Sent")
+                  (mu4e-trash-folder  . "/glvortex/Trash")
+                  (mu4e-drafts-folder . "/glvortex/Drafts")
+                  (mu4e-refile-folder . "/glvortex/Archive")
+                  (mu4e-spam-folder   . "/glvortex/Spam")
+
+                  (mu4e-maildir-shortcuts . ( ("/glvortex/Inbox" . ?i)
+                                              ("/glvortex/Sent"     . ?s)
+                                              ("/glvortex/Trash"    . ?t)
+                                              ("/glvortex/Drafts"   . ?d)
+                                              ("/glvortex/Archive"  . ?a)
+                                              ))))
+         ))
+
+
+  ;; TODO in general, lower-case should match /Inbox/, upper-case should mean everything but /Trash/
+  (setq mu4e-headers-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-headers-actions))
+  (add-to-list 'mu4e-headers-actions '("Narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
+  (add-to-list 'mu4e-headers-actions '("follow up" . bergheim/mu4e-follow-up) t)
+  (add-to-list 'mu4e-headers-actions '("later" . bergheim/mu4e-read-later) t)
+  (add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
+  (add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
+  (add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
+  (add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
+  (add-to-list 'mu4e-headers-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
+  (add-to-list 'mu4e-headers-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
+  (add-to-list 'mu4e-headers-actions '("Me" . bergheim/mu4e-search-to-me) t)
+
+  ;; TODO: make a general universal arg wrapper
+  (add-to-list 'mu4e-headers-actions '("Me" . (lambda (msg)
+                                                (interactive)
+                                                (let ((current-prefix-arg '(4))) ; C-u
+                                                  (bergheim/mu4e-search-to-me msg)))) t)
+
+
+  (add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
+  (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
+  (add-to-list 'mu4e-headers-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
+  (add-to-list 'mu4e-headers-actions '("Around" . bergheim/mu4e-search-around-message) t)
+  (add-to-list 'mu4e-headers-actions '("adwim" . bergheim/mu4e-search-dwim) t)
+
+  (setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
+  (setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
+  (add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
+  (add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
+  (add-to-list 'mu4e-view-actions '("List" . bergheim/mu4e-search-from-list) t)
+  (add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
+  (add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
+  (add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
+  (add-to-list 'mu4e-view-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
+  (add-to-list 'mu4e-view-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
+  (add-to-list 'mu4e-view-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
+
+  (add-to-list 'mu4e-view-actions '("Me" . bergheim/mu4e-search-to-me) t)
+  (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
+  (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
+  (add-to-list 'mu4e-view-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
+  (add-to-list 'mu4e-view-actions '("Around" . bergheim/mu4e-search-around-message) t)
+  (add-to-list 'mu4e-view-actions '("adwim" . bergheim/mu4e-search-dwim) t)
+
+  ;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
+
+  ;; based on https://github.com/djcb/mu/issues/1136#issuecomment-486177435
+  (setf (alist-get 'trash mu4e-marks)
+        (list :char '("d" . "▼")
+              :prompt "dtrash"
+              :dyn-target (lambda (target msg)
+                            (mu4e-get-trash-folder msg))
+              :action (lambda (docid msg target)
+                        ;; Here's the main difference to the regular trash mark,
+                        ;; no +T before -N so the message is not marked as
+                        ;; IMAP-deleted:
+                        (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N")))))
 
 (defun bergheim/mu4e-narrow-to-sender (_)
   "Quickly narrow view to emails sent from the selected email"
@@ -292,19 +462,6 @@ With \\[universal-argument], include all contexts"
                  msgid (and (eq major-mode 'mu4e-view-mode)
                             (not (eq mu4e-split-view 'single-window))))))
 
-(add-to-list 'mu4e-marks
-             '(spam
-               :char       "X"
-               :prompt     "spam"
-               :dyn-target (lambda (target msg)
-                             (with-mu4e-context-vars (mu4e-context-determine msg nil)
-                                 mu4e-spam-folder))
-               :action      (lambda (docid msg target)
-                              (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
-
-(mu4e~headers-defun-mark-for spam)
-(mu4e--view-defun-mark-for spam)
-
 (defun bergheim/mu4e-refile-as-spam (msg)
   (if (eq major-mode 'mu4e-headers-mode)
       (mu4e-headers-mark-for-spam)
@@ -431,25 +588,12 @@ Includes BCC emails, but does not include CC, because that point just use from:a
         ;; org-msg-convert-citation t)
   ))
 
-(add-to-list 'mu4e-header-info-custom
-             '(:account .
-               (:name "Account"
-                :shortname "Account"
-                :help "Account the message belongs to"
-                :function bergheim/mu4e--msg-get-account)))
-
 (defun bergheim/mu4e--msg-get-account (msg)
   "Retrieve the top-level directory (account) from the :maildir field of MSG."
   (let* ((maildir (mu4e-message-field msg :maildir))
          (account (and maildir (car (split-string maildir "/" t)))))
     (or account "")))
 
-(add-to-list 'mu4e-header-info-custom
-             '(:shortened-maildir .
-               (:name "Maildir"
-                :shortname "Maildir"
-                :help "Modified Maildir"
-                :function bergheim/mu4e--msg-get-modified-maildir)))
 
 (defun bergheim/mu4e--msg-get-modified-maildir (msg)
   "Retrieve the maildir after the top-level directory (account) from the :maildir field of MSG."
@@ -613,85 +757,6 @@ Includes BCC emails, but does not include CC, because that point just use from:a
          :query "maildir:/Sent/"
          :key ?S)))
 
-(message "hallaisn %s" bergheim/neptune/email)
-(setq mu4e-contexts
-      (list
-       (make-mu4e-context
-        :name "work"
-        :match-func (lambda (msg)
-                      (when msg
-                        (string-match-p "^/neptune" (mu4e-message-field msg :maildir))))
-        :vars `(
-                (user-full-name     . ,bergheim/neptune/name)
-                (user-mail-address  . ,bergheim/neptune/email )
-                (mu4e-compose-signature . ,bergheim/neptune/signature)
-                (org-msg-signature . ,bergheim/neptune/signature-html)
-
-                (mu4e-compose-format-flowed . t)
-
-                (mu4e-sent-folder   . "/neptune/Sent")
-                (mu4e-trash-folder  . "/neptune/Trash")
-                (mu4e-drafts-folder . "/neptune/Drafts")
-                (mu4e-refile-folder . "/neptune/Archive")
-                (mu4e-spam-folder   . "/neptune/Spam")
-
-                (mu4e-maildir-shortcuts . ( ("/neptune/Inbox"         . ?i)
-                                            ("/neptune/Sent"    . ?s)
-                                            ("/neptune/Trash" . ?t)
-                                            ("/neptune/Drafts"        . ?d)
-                                            ("/neptune/Archive"       . ?a)
-                                            ))))
-       (make-mu4e-context
-        :name "gmail"
-        :match-func (lambda (msg)
-                      (when msg
-                        (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
-        :vars `(
-                (user-full-name      . ,bergheim/gmail/name)
-                (user-mail-address   . ,bergheim/gmail/email)
-                (mu4e-compose-signature . ,bergheim/gmail/signature)
-                (org-msg-signature . ,bergheim/gmail/signature-html)
-
-                (mu4e-compose-format-flowed . t)
-
-                (mu4e-sent-folder   . "/gmail/Sent")
-                (mu4e-trash-folder  . "/gmail/Trash")
-                (mu4e-drafts-folder . "/gmail/Drafts")
-                (mu4e-refile-folder . "/gmail/Archives")
-                (mu4e-spam-folder   . "/gmail/Spam")
-
-                (mu4e-maildir-shortcuts . ( ("/gmail/Inbox"            . ?i)
-                                            ("/gmail/Sent" . ?s)
-                                            ("/gmail/Trash"       . ?t)
-                                            ("/gmail/Drafts"    . ?d)
-                                            ))))
-       (make-mu4e-context
-        :name "private"
-        :enter-func (lambda () (mu4e-message "Switch to Personal Context"))
-        :match-func (lambda (msg)
-                      (when msg
-                        (string-match-p "^/glvortex" (mu4e-message-field msg :maildir))))
-        :vars `(
-                (user-full-name     . ,bergheim/glvortex/name)
-                (user-mail-address  . ,bergheim/glvortex/email)
-                (mu4e-compose-signature . ,bergheim/glvortex/signature)
-                (org-msg-signature . ,bergheim/glvortex/signature-html)
-
-                (mu4e-compose-format-flowed . t)
-
-                (mu4e-sent-folder   . "/glvortex/Sent")
-                (mu4e-trash-folder  . "/glvortex/Trash")
-                (mu4e-drafts-folder . "/glvortex/Drafts")
-                (mu4e-refile-folder . "/glvortex/Archive")
-                (mu4e-spam-folder   . "/glvortex/Spam")
-
-                (mu4e-maildir-shortcuts . ( ("/glvortex/Inbox" . ?i)
-                                            ("/glvortex/Sent"     . ?s)
-                                            ("/glvortex/Trash"    . ?t)
-                                            ("/glvortex/Drafts"   . ?d)
-                                            ("/glvortex/Archive"  . ?a)
-                                            ))))
-       ))
 
 ;; this seems nice - requires xwidgets support
 ;; (defun mu4e-action-view-in-browser-webkit (msg)
@@ -706,65 +771,6 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 ;;  (:map (mu4e-headers-mode-map mu4e-view-mode-map)
 ;;   ;; I prefer getting asked about what to do with the thread
 ;;   :n "T" #'mu4e-headers-mark-thread))
-
-;; TODO in general, lower-case should match /Inbox/, upper-case should mean everything but /Trash/
-(setq mu4e-headers-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-headers-actions))
-(add-to-list 'mu4e-headers-actions '("Narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
-(add-to-list 'mu4e-headers-actions '("follow up" . bergheim/mu4e-follow-up) t)
-(add-to-list 'mu4e-headers-actions '("later" . bergheim/mu4e-read-later) t)
-(add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
-(add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
-(add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
-(add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
-(add-to-list 'mu4e-headers-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
-(add-to-list 'mu4e-headers-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
-(add-to-list 'mu4e-headers-actions '("Me" . bergheim/mu4e-search-to-me) t)
-
-;; TODO: make a general universal arg wrapper
-(add-to-list 'mu4e-headers-actions '("Me" . (lambda (msg)
-                                              (interactive)
-                                              (let ((current-prefix-arg '(4))) ; C-u
-                                                (bergheim/mu4e-search-to-me msg)))) t)
-
-
-(add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
-(add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
-(add-to-list 'mu4e-headers-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
-(add-to-list 'mu4e-headers-actions '("Around" . bergheim/mu4e-search-around-message) t)
-(add-to-list 'mu4e-headers-actions '("adwim" . bergheim/mu4e-search-dwim) t)
-
-(setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
-(setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
-(add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
-(add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
-(add-to-list 'mu4e-view-actions '("List" . bergheim/mu4e-search-from-list) t)
-(add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
-(add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
-(add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
-(add-to-list 'mu4e-view-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
-(add-to-list 'mu4e-view-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
-(add-to-list 'mu4e-view-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
-
-(add-to-list 'mu4e-view-actions '("Me" . bergheim/mu4e-search-to-me) t)
-(add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
-(add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
-(add-to-list 'mu4e-view-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
-(add-to-list 'mu4e-view-actions '("Around" . bergheim/mu4e-search-around-message) t)
-(add-to-list 'mu4e-view-actions '("adwim" . bergheim/mu4e-search-dwim) t)
-
-;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
-
-;; based on https://github.com/djcb/mu/issues/1136#issuecomment-486177435
-(setf (alist-get 'trash mu4e-marks)
-      (list :char '("d" . "▼")
-            :prompt "dtrash"
-            :dyn-target (lambda (target msg)
-                          (mu4e-get-trash-folder msg))
-            :action (lambda (docid msg target)
-                      ;; Here's the main difference to the regular trash mark,
-                      ;; no +T before -N so the message is not marked as
-                      ;; IMAP-deleted:
-                      (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
 (defun bergheim/org-subtree-to-mu4e ()
   "Send the current subtree to mu4e and promote it to level 1"

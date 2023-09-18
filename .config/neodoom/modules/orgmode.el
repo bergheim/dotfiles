@@ -175,7 +175,8 @@
 
 (use-package org-caldav
   :ensure t
-  :init
+  :defer t
+  :config
   (setq org-caldav-url bergheim/calendar/nextcloud
         org-caldav-delete-calendar-entries 'ask
         org-caldav-save-directory (concat org-directory "caldav")
@@ -468,6 +469,7 @@ The date is formatted according to `org-super-agenda-date-format'."
 ;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
   :ensure t
+  :defer t
   :config
   (org-recent-headings-mode))
 
@@ -1092,6 +1094,7 @@ With prefix argument, also display headlines without a TODO keyword."
 
 (use-package org-contacts
   :ensure t
+  :defer t
   :init (setq org-contacts-files '("~/org/contacts.org")))
 
 (defun org-agenda-custom-fn ()
