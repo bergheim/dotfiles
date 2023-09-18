@@ -49,10 +49,27 @@
   :after evil
   :config
   (evil-commentary-mode))
+
 (use-package evil-surround
   :ensure t
   :after evil
   :config
   (global-evil-surround-mode 1))
+
+(use-package vimish-fold
+  :ensure t
+  :defer t
+  :after evil)
+
+(use-package evil-vimish-fold
+  :ensure t
+  :defer t
+  :after vimish-fold
+  :init
+  (setq evil-vimish-fold-mode-lighter " ⮒")
+  (setq evil-vimish-fold-target-modes '(prog-mode conf-mode text-mode))
+  :config
+  (global-evil-vimish-fold-mode))
+
 
 ;;; evil.module.el ends here

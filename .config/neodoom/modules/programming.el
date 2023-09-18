@@ -7,6 +7,10 @@
 ;; Created: September 18, 2023
 ;; Modified: September 18, 2023
 
+;; used by vimish-fold
+(use-package hideshow
+  :hook (prog-mode . hs-minor-mode))
+
 (use-package paredit
   :ensure t
   :hook ((emacs-lisp-mode . enable-paredit-mode)
