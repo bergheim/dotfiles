@@ -56,6 +56,18 @@
   :config
   (global-evil-surround-mode 1))
 
+;; use `z' or `x' in operator mode
+(use-package evil-snipe
+  :ensure t
+  :after evil
+  :config
+  (setq evil-snipe-scope 'whole-visible)
+  (push '(?\[ "[[{(]") evil-snipe-aliases)
+  (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
+  (evil-snipe-mode +1)
+  ;; I find `s' (and to a lesser degree `S') pretty useless tbh, so just override it
+  (evil-snipe-override-mode +1))
+
 (use-package vimish-fold
   :ensure t
   :defer t
