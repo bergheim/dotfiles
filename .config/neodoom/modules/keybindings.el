@@ -64,31 +64,10 @@
    "ad" '(dirvish :which-key "Dirvish")
    "ae" '(elfeed :which-key "Elfeed")
 
-
    "b" '(:ignore t :which-key "Buffers")
    "bb" '(consult-buffer :which-key "Switch")
    "bd" '(evil-delete-buffer :which-key "Delete")
    "bn" '(evil-buffer-new :which-key "New")
-
-   "e" '(:ignore t :which-key "E-mail")
-   "ee" '(bergheim/email-today :which-key "Today's unhandled email")
-   ;; TODO: rename this
-   "ed" '(bergheim/mu4e-email-today :which-key "Dashboard")
-   "ec" '(mu4e-compose-new :which-key "Compose") ; this is a category for the next set of keybindings
-
-   "ei" '(bergheim/email-important :which-key "Important")
-   "eI" '(bergheim/email-inbox :which-key "Inbox")
-   "ej" '(bergheim/email-junk :which-key "Junk")
-   "eo" '(bergheim/org-subtree-to-mu4e :which-key "Mail org subtree")
-   "ep" '(bergheim/email-inbox-personal :which-key "Today's personal email")
-   "eS" '(bergheim/email-sent :which-key "Sent")
-   "es" '(mu4e-search :which-key "Search")
-
-   "eu" '(mu4e-update-mail-and-index :which-key "Update index and mail")
-   "eU" '(mu4e-update-index :which-key "Update index")
-   "ew" '(bergheim/email-inbox-work :which-key "Work email inbox")
-   "eW" '(bergheim/email-week :which-key "This week's email")
-   "et" '(bergheim/email-trash :which-key "Trash")
 
    "f" '(:ignore t :which-key "Files")
    "ff" '(find-file :which-key "Find file")
@@ -158,7 +137,6 @@
    "sm" '(consult-man :which-key "man")
    "sp" '(consult-project-buffer :which-key "project buffers")
    "ss" '(consult-line :which-key "buffer")
-
 
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")

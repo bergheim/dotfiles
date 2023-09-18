@@ -35,6 +35,11 @@
                        (expand-file-name "~/"))))
     xdg-home))
 
+(defun bergheim/load-file (filename)
+  "Load a file from the `bergheim/config-dir` directory."
+  (let ((full-path (expand-file-name filename bergheim/config-dir)))
+    (load-file full-path)))
+
 (unless (file-exists-p bergheim/cache-dir)
   (make-directory bergheim/cache-dir t))
 
@@ -129,7 +134,7 @@
   (load-file (concat module-dir "/formating.el"))
   (load-file (concat module-dir "/nav.el"))
   (load-file (concat module-dir "/orgmode.el"))
-  (load-file (concat module-dir "/email.el"))
+  (load-file (concat module-dir "/mu4e/init.el"))
   (load-file (concat module-dir "/evil.module.el"))
   (load-file (concat module-dir "/keybindings.el")))
 
