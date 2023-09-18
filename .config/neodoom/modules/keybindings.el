@@ -97,7 +97,10 @@
    "fs" '(save-buffer :which-key "Save buffer")
 
    "g" '(:ignore t :which-key "git")
-   "gg" '(magit :which-key "magit")
+   "g g" '(magit :which-key "magit")
+   "g o" 'browse-at-remote
+   "g l" 'browse-at-remote-kill
+   "g y" 'browse-at-remote-kill
 
    "h" '(:ignore t :which-key "Help")
    "ha" '(apropos :which-key "Apropos")

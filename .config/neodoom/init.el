@@ -187,9 +187,6 @@
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
 
-(use-package magit
-  :ensure t
-  :bind (("C-c g" . magit-status)))
 
 ;; foo -> bar -> baz
 (use-package breadcrumb
