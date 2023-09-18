@@ -124,20 +124,21 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(let ((module-dir (expand-file-name "modules" bergheim/config-dir)))
-  (load-file (concat module-dir "/base.el"))
-  (load-file (concat module-dir "/session.el"))
-  (load-file (concat module-dir "/style.el"))
-  (load-file (concat module-dir "/vcs.el"))
-  (load-file (concat module-dir "/completion.el"))
-  (load-file (concat module-dir "/workspace.el"))
-  (load-file (concat module-dir "/formating.el"))
-  (load-file (concat module-dir "/nav.el"))
-  (load-file (concat module-dir "/keybindings.el"))
-  (load-file (concat module-dir "/bergheim-eglot.el"))
-  (load-file (concat module-dir "/orgmode/init.el"))
-  (load-file (concat module-dir "/mu4e/init.el"))
-  (load-file (concat module-dir "/evil.module.el")))
+(let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
+  (load-file (concat module-dir "base.el"))
+  (load-file (concat module-dir "session.el"))
+  (load-file (concat module-dir "style.el"))
+  (load-file (concat module-dir "vcs.el"))
+  (load-file (concat module-dir "completion.el"))
+  (load-file (concat module-dir "workspace.el"))
+  (load-file (concat module-dir "formating.el"))
+  (load-file (concat module-dir "nav.el"))
+  (load-file (concat module-dir "keybindings.el"))
+  (load-file (concat module-dir "bergheim-eglot.el"))
+  (load-file (concat module-dir "orgmode/init.el"))
+  (load-file (concat module-dir "mu4e/init.el"))
+  (load-file (concat module-dir "programming.el"))
+  (load-file (concat module-dir "evil.module.el")))
 
 ;; (use-package evil-surround
 ;;   :config
@@ -154,41 +155,6 @@
   (("C-c n n" . denote)
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
-
-(use-package paredit
-  :ensure t
-  :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode . enable-paredit-mode)
-         (ielm-mode . enable-paredit-mode)
-         (lisp-interaction-mode . enable-paredit-mode)
-         (scheme-mode . enable-paredit-mode)))
-
-(use-package elixir-mode
-  :ensure t)
-
-(use-package yaml-mode
-  :ensure t)
-
-(use-package markdown-mode
-  :ensure t
-  :hook ((markdown-mode . visual-line-mode)
-         (markdown-mode . flyspell-mode))
-  :init
-  (setq markdown-command "multimarkdown"))
-
-(use-package web-mode
-  :ensure t
-  :mode (("\\.ts\\'" . web-mode)
-         ("\\.js\\'" . web-mode)
-         ("\\.mjs\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
-  :custom
-  (web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
-  (web-mode-code-indent-offset 4)
-  (web-mode-css-indent-offset 4)
-  (web-mode-markup-indent-offset 4)
-  (web-mode-enable-auto-quoting nil))
 
 (defun display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."

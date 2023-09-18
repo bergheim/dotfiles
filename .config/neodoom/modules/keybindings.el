@@ -219,12 +219,21 @@
    "C-M-S-h" #'org-shiftmetaleft
    "C-M-S-j" #'org-shiftmetadown
    "C-M-S-k" #'org-shiftmetaup
-   "C-M-S-l" #'org-shiftmetaright))
+   "C-M-S-l" #'org-shiftmetaright)
 
-(general-create-definer bergheim/emacs-lisp-keys
-  :prefix "SPC m"
-  :states '(normal visual emacs)
-  :keymaps 'emacs-lisp-mode-map)
+  ;; (general-define-key
+  ;;  :states '(normal visual)
+  ;;  "gc" 'evil-commentary
+  ;;  "gy" 'evil-commentary-yank
+  ;;  "s" 'evil-surround-region)
+  ;;
+
+  ;; TODO: this is what should be used for the shared global keys
+  (general-create-definer bergheim/emacs-lisp-keys
+    :prefix "SPC m"
+    :states '(normal visual emacs)
+    :keymaps 'emacs-lisp-mode-map))
+
 
 (bergheim/emacs-lisp-keys
  "e" '(:ignore t :which-key "Eval")

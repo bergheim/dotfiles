@@ -28,7 +28,7 @@
    "c" '(:ignore t :which-key "Code")
    "c a" '(eglot-code-actions :which-key "Format region")
    "c e" '(flymake-show-buffer-diagnostics :which-key "Errors")
-   "c r" '(eglot-rename :which-key "Errors")
+   "c r" '(eglot-rename :which-key "Rename")
    "c f" '(eglot-format-buffer :which-key "Format buffer")
    "c F" '(eglot-format :which-key "Format region")
    "c i" '(eglot-find-implementation :which-key "Find implementation")
