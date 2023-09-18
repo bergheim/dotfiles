@@ -63,7 +63,8 @@
   (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark))
 
 (use-package embark-consult
-  :ensure t)
+  :ensure t
+  :after embark)
 
 ;; lots of more filtering options for completing-read
 (use-package consult

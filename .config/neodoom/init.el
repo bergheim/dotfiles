@@ -133,10 +133,11 @@
   (load-file (concat module-dir "/workspace.el"))
   (load-file (concat module-dir "/formating.el"))
   (load-file (concat module-dir "/nav.el"))
+  (load-file (concat module-dir "/keybindings.el"))
+  (load-file (concat module-dir "/bergheim-eglot.el"))
   (load-file (concat module-dir "/orgmode/init.el"))
   (load-file (concat module-dir "/mu4e/init.el"))
-  (load-file (concat module-dir "/evil.module.el"))
-  (load-file (concat module-dir "/keybindings.el")))
+  (load-file (concat module-dir "/evil.module.el")))
 
 ;; or maybe just auto it?
 ;; (let ((module-dir (expand-file-name "modules" user-emacs-directory)))
@@ -144,15 +145,6 @@
 ;;     (load-file module)))
 
 
-;; LSP support
-(use-package eglot
-  :ensure t
-  :bind (("s-<mouse-1>" . eglot-find-implementation)
-         ("C-c ." . eglot-code-action-quickfix))
-  :hook ((web-mode . eglot-ensure))
-  :config
-  (add-to-list 'eglot-server-programs
-               '(web-mode . ("typescript-language-server" "--stdio"))))
 
 ;; Add extra context to Emacs documentation to help make it easier to
 ;; search and understand. This configuration uses the keybindings
