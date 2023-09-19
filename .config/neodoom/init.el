@@ -56,15 +56,13 @@
 ;; TODO: refactor this. we need the macro before the autoloads
 (load (expand-file-name "modules/email.macros.el" bergheim/config-dir))
 
+(loaddefs-generate (concat bergheim/config-dir "modules")
+                   (concat bergheim/cache-dir "neodoom-autoloads.el"))
 
-(add-to-list 'load-path (expand-file-name "autoloads" bergheim/config-dir))
-
-;; TODO: remove this once the config settles
-(let ((autoloads-dir (expand-file-name "autoloads" bergheim/config-dir)))
-  (setq generated-autoload-file (concat autoloads-dir "autoloads.el"))
-  (update-directory-autoloads autoloads-dir))
-
-(load (expand-file-name "autoloads/autoloads.el" bergheim/config-dir))
+(let ((autoloads-file (expand-file-name "neodoom-autoloads.el" bergheim/cache-dir)))
+  (message "Loading neodoom-autoloads.el")
+  (when (file-exists-p autoloads-file)
+    (load-file autoloads-file)))
 
 ;; Make right-click do something sensible
 (when (display-graphic-p)
