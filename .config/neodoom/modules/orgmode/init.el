@@ -10,12 +10,29 @@
   ;; (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
   (bergheim/load-file "modules/orgmode/base.el")
+  (bergheim/load-file "modules/orgmode/keybindings.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/agenda.el")
   (bergheim/load-file "modules/orgmode/capture.el")
   (bergheim/load-file "modules/orgmode/roam.el")
-  (bergheim/load-file "modules/orgmode/style.el"))
+  (bergheim/load-file "modules/orgmode/style.el")
+
+  :general
+  (general-define-key
+   :states '(normal insert visual)
+   :keymaps 'org-mode-map
+   "C-M-h" #'org-metaleft
+   "C-M-j" #'org-metadown
+   "C-M-k" #'org-metaup
+   "C-M-l" #'org-metaright
+
+   "C-M-S-h" #'org-shiftmetaleft
+   "C-M-S-j" #'org-shiftmetadown
+   "C-M-S-k" #'org-shiftmetaup
+   "C-M-S-l" #'org-shiftmetaright
+
+   "RET" #'org-open-at-point))
 
 (use-package org-caldav
   :ensure t
@@ -37,7 +54,7 @@
   :defer t
   :init
   (setq org-mru-clock-files #'org-agenda-files
-      org-mru-clock-how-many 100))
+        org-mru-clock-how-many 100))
 
 
 ;; FIXME: remove that pesky line length sorting in vertico

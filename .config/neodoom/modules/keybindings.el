@@ -25,7 +25,6 @@
   (general-create-definer bergheim/global-menu-keys
     :states '(normal visual insert motion emacs)
     :prefix "SPC"
-    ;; :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
     :keymaps 'override
     :non-normal-prefix "M-SPC")
 
@@ -77,32 +76,6 @@
    "hv" '(helpful-variable :which-key "Variable")
 
    "m" '(:ignore t :which-key "Mode specific")
-
-   "o" '(:ignore t :which-key "Org Mode")
-   "od" '((lambda (&optional arg) (interactive) (org-agenda arg "d")) :which-key "Orgmode Dashboard")
-
-   "oa" '(org-agenda :which-key "org-agenda")
-   "ob" '(bergheim/org--open-attachments :which-key "open attachments")
-   "og" '(org-clock-goto :which-key "clock goto")
-   "oi" '(org-clock-in :which-key "clock in")
-   "ol" '(org-clock-in-last :which-key "clock in last")
-   "oo" '(org-clock-out :which-key "clock out")
-   "oC" '(org-capture :which-key "capture")
-   "or" '(bergheim/org-mru-clock-in :which-key "mru clock in")
-   "oR" '(bergheim/org-mru-goto :which-key "mru goto")
-   "on" '(org-add-note :which-key "add note")
-   "om" '(bergheim/org-subtree-to-mu4e :which-key "subtree to mu4e")
-   "os" '(org-store-link :which-key "store link")
-   "ou" '(bergheim/org-copy-url-only :which-key "copy url only")
-   "ol" '(org-insert-link :which-key "insert link")
-
-   "oc" '(:ignore t :which-key "org-clock")
-   "ocg" '(org-clock-goto :which-key "clock goto")
-   "oci" '(org-clock-in :which-key "clock in")
-   "ocl" '(org-clock-in-last :which-key "clock in last")
-   "oco" '(org-clock-out :which-key "clock out")
-   "ocr" '(bergheim/org-mru-clock-in :which-key "mru clock in")
-   "ocR" '(bergheim/org-mru-goto :which-key "mru goto")
 
    "p" '(:ignore t :which-key "Project")
    "pa" '(projectile-add-known-project :which-key "Add project")
@@ -168,26 +141,6 @@
    "M-o" #'evil-window-next
    "M-f" #'maximize-window
    "M-F" #'winner-undo)
-
-  (general-define-key
-   :states '(normal insert visual emacs)
-   :keymaps 'org-mode-map
-   "M-h" #'evil-window-left
-   "M-j" #'evil-window-down
-   "M-k" #'evil-window-up
-   "M-l" #'evil-window-right
-
-   "C-M-h" #'org-metaleft
-   "C-M-j" #'org-metadown
-   "C-M-k" #'org-metaup
-   "C-M-l" #'org-metaright
-
-   "C-M-S-h" #'org-shiftmetaleft
-   "C-M-S-j" #'org-shiftmetadown
-   "C-M-S-k" #'org-shiftmetaup
-   "C-M-S-l" #'org-shiftmetaright
-
-   "RET" #'org-open-at-point)
 
   ;; (general-define-key
   ;;  :states '(normal visual)
