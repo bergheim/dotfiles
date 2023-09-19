@@ -43,6 +43,7 @@
   :demand t
   :after avy
   :bind (("C-c a" . embark-act)
+         ("C-'" . embark-act)
          ("C-c b" . embark-bindings)
          ("C-;" . embark-dwim))
   :init
@@ -99,11 +100,28 @@
   :init
   (vertico-mode))
 
-;; lets try this. also look at buffer etc - https://github.com/minad/vertico/blob/main/extensions/
+;; FIXME: this is so terrible..
+(add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))
+(require 'vertico-directory)
 (use-package vertico-directory
+  :ensure nil
   :after vertico
+  ;; More convenient directory navigation commands
   :bind (:map vertico-map
-              ("M-DEL" . vertico-directory-delete-word)))
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  ;; Tidy shadowed file names
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+
+;; this loads it up into `other-buffer'.
+;; like that crazy japanese guys vim extension years ago! de..polete?
+;; (require 'vertico-buffer)
+;; (use-package vertico-buffer
+;;   :ensure nil
+;;   :after vertico
+;;   :config
+;;   (vertico-buffer-mode))
 
 ;; Add descriptions to completion
 (use-package marginalia

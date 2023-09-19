@@ -3,7 +3,7 @@
 
 (use-package magit
   :ensure t
-  :bind (("C-c g" . magit-status)))
+  :hook (with-editor-mode . evil-insert-state))
 
 (use-package browse-at-remote
   :ensure t
