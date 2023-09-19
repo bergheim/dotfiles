@@ -5,6 +5,13 @@
   (setq no-littering-var-directory (concat bergheim/cache-dir "/var")))
   ;;       no-littering-etc-directory (concat bergheim/config-dir "/etc")))
 
+(use-package recentf
+  :config
+  (setq recentf-save-file (concat bergheim/cache-dir "/recentf"))
+  (setq recentf-max-menu-items 50)
+  (setq recentf-max-saved-items 200)
+  (recentf-mode t))
+
 (use-package which-key
   :ensure t
   :config
@@ -85,6 +92,21 @@
 (use-package restclient
   :ensure t
   :defer t)
+
+(use-package tramp
+  :defer t
+  :config
+  (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
+  ;; Use `ssh` by default instead of the default `scp`
+  (setq tramp-default-method "ssh")
+
+  (add-to-list 'tramp-methods
+               '("yadm"
+                 (tramp-login-program "yadm")
+                 (tramp-login-args (("enter")))
+                 (tramp-login-env (("SHELL") ("/bin/sh")))
+                 (tramp-remote-shell "/bin/sh")
+                 (tramp-remote-shell-args ("-c")))))
 
 (use-package vundo
   :ensure t
