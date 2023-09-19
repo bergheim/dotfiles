@@ -196,5 +196,14 @@
 (use-package eshell
   :bind (("C-r" . consult-history)))
 
+
+;; `~' returns home
+(defun bergheim/find-file-recognize-home (orig-fun &rest args)
+  (let ((input (car args)))
+    (if (and input (string-equal input "~/~"))
+        (apply orig-fun "~" (cdr args))
+      (apply orig-fun args))))
+
+(advice-add 'find-file :around #'bergheim/find-file-recognize-home)
 (provide 'completion)
 ;;; completion.el ends here
