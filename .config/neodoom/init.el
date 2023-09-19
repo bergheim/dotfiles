@@ -15,8 +15,10 @@
 
       read-answer-short t ;; y means yes
 
+      use-dialog-box nil ;; plz no
+
       sentence-end-double-space nil ;; Fix archaic defaults
-)
+      )
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -126,7 +128,6 @@
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
   (load-file (concat module-dir "base.el"))
-  (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "session.el"))
   (load-file (concat module-dir "style.el"))
   (load-file (concat module-dir "vcs.el"))
@@ -138,8 +139,8 @@
   (load-file (concat module-dir "bergheim-eglot.el"))
   (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "mu4e/init.el"))
-  (load-file (concat module-dir "programming.el"))
-  )
+  (load-file (concat module-dir "evil.module.el"))
+  (load-file (concat module-dir "programming.el")))
 
 ;; (use-package evil-surround
 ;;   :config
