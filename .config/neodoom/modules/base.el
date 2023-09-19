@@ -39,6 +39,7 @@
 
 (use-package esup
   :ensure t
+  :defer t
   ;; To prevent any graphical interface to pop-up.
   :custom (esup-depth 0))
 

@@ -3,6 +3,8 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (bergheim/global-menu-keys
+ "C" '(org-capture :which-key "capture")
+
  "o" '(:ignore t :which-key "Org Mode")
 
  "od" '((lambda (&optional arg) (interactive) (org-agenda arg "d")) :which-key "Orgmode Dashboard")
