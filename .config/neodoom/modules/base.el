@@ -34,6 +34,15 @@
   :config
   (evil-mode 1))
 
+(use-package default-text-scale
+  :ensure t
+  :config
+  (general-define-key
+   :states '(normal visual)
+   "C-+" 'default-text-scale-increase
+   "C-=" 'default-text-scale-reset
+   "C--" 'default-text-scale-decrease))
+
 (use-package git-auto-commit-mode
   :ensure t)
 
