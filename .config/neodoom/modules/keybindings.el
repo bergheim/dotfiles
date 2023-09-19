@@ -93,6 +93,7 @@
    "s" '(:ignore t :which-key "Search")
    "sa" '(consult-org-agenda :which-key "org agenda")
    "sb" '(consult-line-multi :which-key "open buffers")
+   "sd" '(consult-ripgrep :which-key "grep current directory")
    "sh" '(consult-org-heading :which-key "org heading")
    "sh" '(consult-recent-file :which-key "recent files")
    "sI" '(consult-imenu-multi :which-key "imenu items in all buffers")

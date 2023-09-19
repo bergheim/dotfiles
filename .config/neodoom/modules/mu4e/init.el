@@ -2,13 +2,16 @@
 
 (use-package mu4e
   :commands mu4e
+  :init
+  (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
   (bergheim/load-file "modules/mu4e/settings.el")
   (bergheim/load-file "modules/mu4e/helpers.el")
   (bergheim/load-file "modules/mu4e/accounts.el")
   (bergheim/load-file "modules/mu4e/view.el")
   (bergheim/load-file "modules/mu4e/actions.el")
-  (bergheim/load-file "modules/mu4e/search.el"))
+  (bergheim/load-file "modules/mu4e/search.el")
+  )
 
 (use-package mu4e-org
   :after mu4e)

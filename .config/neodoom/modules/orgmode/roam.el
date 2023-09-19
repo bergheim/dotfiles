@@ -37,5 +37,4 @@
             ;; (downcase-region pt (point))
             (org-roam-node-insert)))))))
 
-
 ;;; roam.el ends here
