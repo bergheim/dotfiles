@@ -51,6 +51,12 @@
    "bb" '(consult-buffer :which-key "Switch")
    "bd" '(evil-delete-buffer :which-key "Delete")
    "bn" '(evil-buffer-new :which-key "New")
+   "bS" '(switch-to-buffer "*scratch*" :which-key "switch to scratch")
+   "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
+   :which-key "switch to scratch")
+   "bm" '(bookmark-set :which-key "Bookmark set")
+   "bj" '(bookmark-jump :which-key "Bookmark jump")
+   "bu" '(undo-tree-visualize :which-key "Undo tree")
 
    "d" '(:ignore t :which-key "dotfiles")
    "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
