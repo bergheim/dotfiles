@@ -54,8 +54,8 @@
 
    "d" '(:ignore t :which-key "dotfiles")
    "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
-   "df" '('bergheim/find-in-dotfiles :which-key "Find a file")
-   "db" '('bergheim/browse-dotfiles :which-key "Browse")
+   "df" '(bergheim/find-in-dotfiles :which-key "Find a file")
+   "db" '(bergheim/browse-dotfiles :which-key "Browse")
 
    "f" '(:ignore t :which-key "Files")
    "ff" '(find-file :which-key "Find file")

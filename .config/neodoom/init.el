@@ -23,9 +23,13 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (defvar bergheim/cache-dir
-  (let ((xdg-cache (or (getenv "XDG_CACHE_HOME")
-                       (expand-file-name "~/.cache/"))))
-    (expand-file-name "neodoom/" xdg-cache)))
+  (let* ((xdg-cache (or (getenv "XDG_CACHE_HOME")
+                       (expand-file-name "~/.cache/")))
+        (cache-dir (concat xdg-cache "neodoom/")))
+
+    (unless (file-exists-p cache-dir)
+      (make-directory cache-dir))
+    cache-dir))
 
 (defvar bergheim/config-dir
   (let ((xdg-config (or (getenv "XDG_CONFIG_HOME")
@@ -45,6 +49,9 @@
 (unless (file-exists-p bergheim/cache-dir)
   (make-directory bergheim/cache-dir t))
 
+(setq lock-directory (expand-file-name "lock/" bergheim/cache-dir))
+(unless (file-exists-p lock-directory)
+  (make-directory lock-directory t))
 
 ;; TODO: refactor this. we need the macro before the autoloads
 (load (expand-file-name "modules/email.macros.el" bergheim/config-dir))
@@ -136,11 +143,12 @@
   (load-file (concat module-dir "formating.el"))
   (load-file (concat module-dir "nav.el"))
   (load-file (concat module-dir "keybindings.el"))
-  (load-file (concat module-dir "bergheim-eglot.el"))
   (load-file (concat module-dir "orgmode/init.el"))
+  (load-file (concat module-dir "bergheim-eglot.el"))
   (load-file (concat module-dir "mu4e/init.el"))
   (load-file (concat module-dir "evil.module.el"))
-  (load-file (concat module-dir "programming.el")))
+  (load-file (concat module-dir "programming.el"))
+  (load-file (concat module-dir "evil.module.el")))
 
 ;; (use-package evil-surround
 ;;   :config

@@ -165,26 +165,27 @@
 :NOTE: %^{NOTE}
 :END:"))
 
-              ("Active project" :keys "a"
-               :icon ("nf-oct-repo" :set "octicon" :color "green")
-               :prepend t
-               :type entry
-               :headline "Inbox"
-               :template-file ,(expand-file-name "active-project.org" org-capture-custom-template-directory)
-               :custom (:time-or-todo "")
-               :children (("Project-local todo" :keys "t"
-                           :icon ("nf-oct-checklist" :set "octicon" :color "green")
-                           :time-or-todo "TODO"
-                           :file +org-capture-project-todo-file)
-                          ("Project-local note" :keys "n"
-                           :icon ("nf-fa-sticky_note" :set "faicon" :color "yellow")
-                           :time-or-todo "%U"
-                           :file +org-capture-project-notes-file)
-                          ("Project-local changelog" :keys "c"
-                           :icon ("nf-fa-list" :set "faicon" :color "blue")
-                           :time-or-todo "%U"
-                           :headline "Unreleased"
-                           :file +org-capture-project-changelog-file)))
+              ;; TODO: add back once we have a working setup
+              ;; ("Active project" :keys "a"
+              ;;  :icon ("nf-oct-repo" :set "octicon" :color "green")
+              ;;  :prepend t
+              ;;  :type entry
+              ;;  :headline "Inbox"
+              ;;  :template-file ,(expand-file-name "active-project.org" org-capture-custom-template-directory)
+              ;;  :custom (:time-or-todo "")
+              ;;  :children (("Project-local todo" :keys "t"
+              ;;              :icon ("nf-oct-checklist" :set "octicon" :color "green")
+              ;;              :time-or-todo "TODO"
+              ;;              :file +org-capture-project-todo-file)
+              ;;             ("Project-local note" :keys "n"
+              ;;              :icon ("nf-fa-sticky_note" :set "faicon" :color "yellow")
+              ;;              :time-or-todo "%U"
+              ;;              :file +org-capture-project-notes-file)
+              ;;             ("Project-local changelog" :keys "c"
+              ;;              :icon ("nf-fa-list" :set "faicon" :color "blue")
+              ;;              :time-or-todo "%U"
+              ;;              :headline "Unreleased"
+              ;;              :file +org-capture-project-changelog-file)))
 
               ("Interesting"
                :keys "i"

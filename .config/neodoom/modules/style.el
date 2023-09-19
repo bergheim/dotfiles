@@ -23,11 +23,11 @@
 ;; Note: height = px * 100
 (cond
  ((>= (display-pixel-height) 2160)  ; 4K screens
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 180))
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 150))
  ((>= (display-pixel-height) 1440)  ; 1440p screens
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 120))
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 100))
  (t
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 100)))
+  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 80)))
 
 (show-paren-mode 1) ;; Visualize matching parens
 
@@ -63,6 +63,29 @@
   (setq doom-modeline-support-imenu t)
   (doom-modeline-mode 1)
   :config
+
+  ;; Disable icons for a performance boost
+  ;; (setq doom-modeline-icon nil)
+
+  ;; Disable major mode icons for additional speedup
+  ;; (setq doom-modeline-major-mode-icon nil)
+  ;; (setq doom-modeline-major-mode-color-icon nil)
+
+  ;; Use a simpler version checker format
+  (setq doom-modeline-checker-simple-format t)
+
+  ;; Disable buffer encoding display
+  (setq doom-modeline-buffer-encoding nil)
+
+  ;; If you don't use LSP, or don't want to display its status
+  (setq doom-modeline-lsp t)
+
+  ;; Set a fixed width for the modeline for consistency and performance
+  (setq doom-modeline-width 40)
+
+  ;; Set the cache directory for doom-modeline
+  (setq doom-modeline-cache-directory (expand-file-name "doom-modeline/" bergheim/cache-dir))
+
   ;; apparently `file-name' is faster than `auto'
   ;; see https://github.com/seagle0128/doom-modeline#customize
   (setq doom-modeline-buffer-file-name-style 'file-name)

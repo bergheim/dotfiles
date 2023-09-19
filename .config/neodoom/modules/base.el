@@ -62,7 +62,11 @@
          ("C-h k" . #'helpful-key)
          ("C-c C-d" . #'helpful-at-point)
          ("C-h F" . #'helpful-function)
-         ("C-h C" . #'helpful-command)))
+         ("C-h C" . #'helpful-command))
+  :general
+  (general-define-key
+   :states 'normal
+   "K" #'helpful-at-point))
 
 (use-package elfeed
   :ensure t
