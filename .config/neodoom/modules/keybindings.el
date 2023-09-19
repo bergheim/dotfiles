@@ -100,7 +100,7 @@
 
    "q" '(:ignore t :which-key "Quit")
    "qq" '(save-buffers-kill-terminal :which-key "Quit")
-   "qr" '(restart-emacs :which-key "Restart")
+   "qr" '(bergheim/restart-emacs :which-key "Restart")
 
    "w" '(:ignore t :which-key "Workspace and windows")
    "ws" '(evil-window-split :which-key "split horizontally")

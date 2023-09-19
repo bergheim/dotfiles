@@ -23,6 +23,6 @@
     (interactive)
     (desktop-save bergheim/cache-dir)
     (let ((restart-args `("--init-directory" ,(expand-file-name "~/.config/neodoom"))))
-      (apply #'restart-emacs restart-args))))
+      (restart-emacs restart-args))))
 
 ;;; session.el ends here

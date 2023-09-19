@@ -1,8 +1,8 @@
 (use-package no-littering
   :ensure t
-  :demand t)
-  ;; :config
-  ;; (setq no-littering-var-directory bergheim/cache-dir
+  :demand t
+  :config
+  (setq no-littering-var-directory (concat bergheim/cache-dir "/var")))
   ;;       no-littering-etc-directory (concat bergheim/config-dir "/etc")))
 
 (use-package which-key
