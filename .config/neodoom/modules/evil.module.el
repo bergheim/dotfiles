@@ -18,13 +18,14 @@
 ;; much better node matching
 (use-package evil-matchit
   :ensure t
+  :after evil
   :config
   (global-evil-matchit-mode 1))
 
 ;; gl/gL text-object char
 (use-package evil-lion
   :ensure t
-  :defer t
+  :after evil
   :config
   (evil-lion-mode))
 
@@ -38,13 +39,13 @@
 ;;     evil-commentary-yank-line
 (use-package evil-commentary
   :ensure t
-  :defer t
+  :after evil
   :config
   (evil-commentary-mode))
 
 (use-package evil-surround
   :ensure t
-  :defer t
+  :after evil
   :config
   (global-evil-surround-mode 1))
 
@@ -63,7 +64,6 @@
 
 (use-package vimish-fold
   :ensure t
-  :defer t
   :after evil)
 
 (use-package evil-vimish-fold
@@ -77,7 +77,7 @@
 
 (use-package evil-owl
   :ensure t
-  :defer t
+  :after evil
   :config
   (setq evil-owl-max-string-length 500)
   (add-to-list 'display-buffer-alist
