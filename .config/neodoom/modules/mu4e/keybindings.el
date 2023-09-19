@@ -2,7 +2,7 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-(bergheim/global-keys
+(bergheim/global-menu-keys
  "e" '(:ignore t :which-key "E-mail")
  "e e" '(bergheim/email-today :which-key "Today's unhandled email")
  ;; TODO: rename this

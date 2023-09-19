@@ -1,3 +1,24 @@
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode)
+  (setq which-key-idle-delay 0.3)
+  (setq which-key-idle-secondary-delay 0.3))
+
+(use-package general
+  :ensure t
+  :demand t
+  :config
+  (general-override-mode))
+
+(use-package evil
+  :ensure t
+  :demand t
+  :init
+  (setq evil-want-keybinding nil)
+  (setq evil-want-integration t)
+  :config
+  (evil-mode 1))
 
 (use-package git-auto-commit-mode
   :ensure t)

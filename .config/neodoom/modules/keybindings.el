@@ -17,50 +17,33 @@
 ;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone
 ;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
 
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-mode)
-  (setq which-key-idle-delay 0.3)
-  (setq which-key-idle-secondary-delay 0.3))
-
 (use-package general
-  :ensure t
-  ;; :after evil-org-agenda
   :config
   ;; TODO: make this work with reloads
   ;; (general-unbind :prefix "SPC")
+
+  (general-create-definer bergheim/global-menu-keys
+    :states '(normal visual insert motion emacs)
+    :prefix "SPC"
+    ;; :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
+    :keymaps 'override
+    :non-normal-prefix "M-SPC")
+
+  (general-create-definer bergheim/global-evil-keys
+    :states '(normal visual motion operator)
+    :keymaps 'override)
+
+  (general-create-definer bergheim/emacs-lisp-keys
+    :prefix "SPC m"
+    :states '(normal visual emacs)
+    :keymaps 'emacs-lisp-mode-map)
 
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map)
     "C-S-u" 'universal-argument
     "C-u" 'evil-scroll-up)
 
-
-  ;; (general-unbind 'org-agenda-mode-map
-  ;;   "SPC")
-  ;; (general-create-definer my-leader-def
-  ;;   :prefix "SPC")
-  ;; (my-leader-def
-  ;;  :states '(normal visual motion)
-  ;;  :prefix "SPC"
-  ;;  :keymaps 'org-agenda-mode-map
-  ;;  "bb" '(switch-to-buffer :which-key "Switch"))
-
-  ;; (general-def 'emacs org-agenda-mode-map
-  ;;  ;; :states 'motion
-  ;;  :prefix "SPC"
-  ;;  ;; :keymaps '(emacs evil-normal-state-map org-agenda-mode-map)
-  ;;  :non-normal-prefix "M-SPC"
-  ;;  "b" '(:ignore t :which-key "Buffers"))
-
-  (general-create-definer bergheim/global-keys
-    :states '(normal visual insert emacs motion)
-    :prefix "SPC"
-    :keymaps '(global-map org-agenda-mode-map help-map dired-mode-map dirvish-mode-map)
-    :non-normal-prefix "M-SPC")
-
-  (bergheim/global-keys
+  (bergheim/global-menu-keys
    "a" '(:ignore t :which-key "Applications")
    "ad" '(dirvish :which-key "Dirvish")
    "ae" '(elfeed :which-key "Elfeed")
@@ -164,54 +147,30 @@
    "wBb" '(bufler :which-key "Show buffers")
    "wBs" '(bufler-switch-buffer :which-key "Switch to buffer"))
 
-  (defun my-define-common-keys (&optional keymap states)
-    (let ((target-keymap (or keymap 'global)))
-      (general-define-key
-       :states (or states '(normal insert))
-       :keymaps target-keymap
-       "M-h" #'evil-window-left
-       "M-j" #'evil-window-down
-       "M-k" #'evil-window-up
-       "M-l" #'evil-window-right
+  (bergheim/global-evil-keys
+   "M-h" #'evil-window-left
+   "M-j" #'evil-window-down
+   "M-k" #'evil-window-up
+   "M-l" #'evil-window-right
 
-       "M-H" #'+evil/window-move-left
-       "M-J" #'+evil/window-move-down
-       "M-K" #'+evil/window-move-up
-       "M-L" #'+evil/window-move-right
+   "M-H" #'+evil/window-move-left
+   "M-J" #'+evil/window-move-down
+   "M-K" #'+evil/window-move-up
+   "M-L" #'+evil/window-move-right
 
-       "M-\\" #'evil-window-vsplit
-       "M-]" #'evil-window-split
+   "M-\\" #'evil-window-vsplit
+   "M-]" #'evil-window-split
 
-       "M-DEL" #'evil-window-delete
-       ;; "M-<backspace>" #'+workspace/close-window-or-workspace
-       "M-S-<backspace>" #'kill-current-buffer
+   "M-DEL" #'evil-window-delete
+   ;; "M-<backspace>" #'+workspace/close-window-or-workspace
+   "M-S-<backspace>" #'kill-current-buffer
 
-       "M-o" #'evil-window-next
-       "M-f" #'maximize-window
-       "M-F" #'winner-undo
-       )))
-
-  (my-define-common-keys)
-
-  ;; ;; Apply to org-agenda-mode-map for normal, insert, and visual states:
-  ;; (my-define-common-keys 'org-agenda-mode-map '(normal insert visual))
-
-  (my-define-common-keys '(org-mode-map org-agenda-mode-map) 'motion)
-  (my-define-common-keys '(helpful))
-
-
-  ;; (general-define-key
-  ;;  :states 'motion
-  ;;  :keymaps 'org-agenda-mode-map
-  ;;  :prefix "SPC"
-  ;;  :non-normal-prefix "M-SPC"
-
-  ;;  "b" '(:ignore t :which-key "Buffers")
-  ;;  "bb" '(switch-to-buffer :which-key "Switch"))
-
+   "M-o" #'evil-window-next
+   "M-f" #'maximize-window
+   "M-F" #'winner-undo)
 
   (general-define-key
-   :states '(normal insert visual)
+   :states '(normal insert visual emacs)
    :keymaps 'org-mode-map
    "M-h" #'evil-window-left
    "M-j" #'evil-window-down
@@ -226,7 +185,9 @@
    "C-M-S-h" #'org-shiftmetaleft
    "C-M-S-j" #'org-shiftmetadown
    "C-M-S-k" #'org-shiftmetaup
-   "C-M-S-l" #'org-shiftmetaright)
+   "C-M-S-l" #'org-shiftmetaright
+
+   "RET" #'org-open-at-point)
 
   ;; (general-define-key
   ;;  :states '(normal visual)
@@ -234,14 +195,6 @@
   ;;  "gy" 'evil-commentary-yank
   ;;  "s" 'evil-surround-region)
   ;;
-
-  (general-create-definer bergheim/emacs-lisp-keys
-    :prefix "SPC m"
-    :states '(normal visual emacs)
-    :keymaps 'emacs-lisp-mode-map)
-
-  (general-create-definer bergheim/evil-keys
-    :states '(normal visual operator))
 
   (bergheim/emacs-lisp-keys
    "e" '(:ignore t :which-key "Eval")

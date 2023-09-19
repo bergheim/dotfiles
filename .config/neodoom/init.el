@@ -27,12 +27,12 @@
 
 (defvar bergheim/config-dir
   (let ((xdg-config (or (getenv "XDG_CONFIG_HOME")
-                       (expand-file-name "~/.config/"))))
+                        (expand-file-name "~/.config/"))))
     (expand-file-name "neodoom/" xdg-config)))
 
 (defvar bergheim/home-dir
   (let ((xdg-home (or (getenv "HOME")
-                       (expand-file-name "~/"))))
+                      (expand-file-name "~/"))))
     xdg-home))
 
 (defun bergheim/load-file (filename)
@@ -126,6 +126,7 @@
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
   (load-file (concat module-dir "base.el"))
+  (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "session.el"))
   (load-file (concat module-dir "style.el"))
   (load-file (concat module-dir "vcs.el"))
@@ -138,7 +139,7 @@
   (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "mu4e/init.el"))
   (load-file (concat module-dir "programming.el"))
-  (load-file (concat module-dir "evil.module.el")))
+  )
 
 ;; (use-package evil-surround
 ;;   :config

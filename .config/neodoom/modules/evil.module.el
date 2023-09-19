@@ -1,13 +1,5 @@
 ;;; evil.module.el --- Description -*- lexical-binding: t; -*-
 
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :config
-  (evil-mode 1))
-
 (use-package evil-collection
   :ensure t
   :after evil
@@ -32,7 +24,7 @@
 ;; gl/gL text-object char
 (use-package evil-lion
   :ensure t
-  ;; :defer t
+  :defer t
   :config
   (evil-lion-mode))
 
@@ -46,13 +38,13 @@
 ;;     evil-commentary-yank-line
 (use-package evil-commentary
   :ensure t
-  :after evil
+  :defer t
   :config
   (evil-commentary-mode))
 
 (use-package evil-surround
   :ensure t
-  :after evil
+  :defer t
   :config
   (global-evil-surround-mode 1))
 
@@ -76,7 +68,6 @@
 
 (use-package evil-vimish-fold
   :ensure t
-  :defer t
   :after vimish-fold
   :init
   (setq evil-vimish-fold-mode-lighter " ⮒")
@@ -86,6 +77,7 @@
 
 (use-package evil-owl
   :ensure t
+  :defer t
   :config
   (setq evil-owl-max-string-length 500)
   (add-to-list 'display-buffer-alist

@@ -72,6 +72,7 @@
 ;; foo -> bar -> baz
 (use-package breadcrumb
   :vc (:fetcher github :repo joaotavora/breadcrumb)
+  :defer t
   :init (breadcrumb-mode))
 
 ;; display match info in the modeline
@@ -104,8 +105,6 @@
 ;; Misc. UI tweaks
 (blink-cursor-mode -1)                                ; Steady cursor
 (pixel-scroll-precision-mode)                         ; Smooth scrolling
-
-(message "pixel")
 
 ;; Use common keystrokes by default
 (cua-mode)
