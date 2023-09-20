@@ -83,11 +83,22 @@
   ;; Other good things to bind: consult-ripgrep, consult-line-multi,
   ;; consult-history, consult-outline
   :bind (("C-x b" . consult-buffer) ; orig. switch-to-buffer
+         ;; TODO: add this to keybindings.el
          ("M-y" . consult-yank-pop) ; orig. yank-pop
          ("C-s" . consult-line))    ; orig. isearch
   :config
   ;; Narrowing lets you restrict results to certain groups of candidates
-  (setq consult-narrow-key "<"))
+  (setq consult-narrow-key "<")
+  ;; (setq consult-xref-display-action nil)
+  (consult-customize
+   consult-xref
+   :display 'vertico))
+
+;; TODO: make sure this works on multiple implementations
+(use-package xref
+  :custom
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref))
 
 ;; Minibuffer completion
 (use-package vertico
@@ -98,7 +109,20 @@
   (read-file-name-completion-ignore-case t)
   (completion-styles '(basic substring partial-completion flex))
   :init
-  (vertico-mode))
+  (vertico-mode)
+  :general
+  (general-def :keymaps 'vertico-map
+    "M-h" 'vertico-directory-up
+    "M-j" 'vertico-next
+    "M-k" 'vertico-previous
+    "M-l" 'vertico-directory-enter
+    ;; "C-h" 'vertico-directory-enter
+    )
+  :config
+  (setq vertico-scroll-margin 4
+        vertico-count 20
+        vertico-resize 'grow-only
+        vertico-cycle t))
 
 ;; FIXME: this is so terrible..
 (add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))

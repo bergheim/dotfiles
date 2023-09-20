@@ -58,6 +58,8 @@
    "bj" '(bookmark-jump :which-key "Bookmark jump")
    "bu" '(undo-tree-visualize :which-key "Undo tree")
 
+   "cE" '(consult-flymake :which-key "Flymake diagnostic")
+   
    "d" '(:ignore t :which-key "dotfiles")
    "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
    "df" '(bergheim/find-in-dotfiles :which-key "Find a file")

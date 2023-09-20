@@ -5,7 +5,7 @@
 (use-package eglot
   :ensure t
   :defer t
-  :bind (("s-<mouse-1>" . eglot-find-implementation)
+  :bind (("M-<mouse-1>" . eglot-find-implementation)
          ("C-c ." . eglot-code-action-quickfix))
 
   :hook ((web-mode . eglot-ensure))
@@ -42,5 +42,13 @@
 ;;    "c d" '(eglot-find-typeDefinition :which-key "Find definition")
 ;;    "c q" '(eglot-code-action-quickfix :which-key "Quickfix")
 ;;    "c o" '(eglot-code-action-organize-imports :which-key "Organize imports")))
+
+(use-package consult-eglot
+  :ensure t
+  :after eglot
+  :general
+  (bergheim/global-menu-keys
+   "c s" '(consult-eglot-symbols :which-key "Find symbols")))
+
 
 ;;; bergheim-eglot.el ends here
