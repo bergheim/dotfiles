@@ -47,11 +47,6 @@
       ;; TODO: remove this if it results in too much slowdown. Time spc n S for instance
       org-use-property-inheritance t
 
-      org-journal-date-format "%B %d, %Y - %A"
-      org-journal-file-format "%Y%m.org"
-      org-journal-file-type 'monthly
-      org-journal-enable-agenda-integration t
-      ;; org-journal-dir "~/org/journal/"
 
       ;; org-default-notes-file "~/org/inbox.org"
       ;; org-use-fast-todo-selection t

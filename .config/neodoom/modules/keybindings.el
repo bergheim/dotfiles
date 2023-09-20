@@ -51,7 +51,7 @@
    "bb" '(consult-buffer :which-key "Switch")
    "bd" '(evil-delete-buffer :which-key "Delete")
    "bn" '(evil-buffer-new :which-key "New")
-   "bS" '(switch-to-buffer "*scratch*" :which-key "switch to scratch")
+   "bS" '(scratch-buffer :which-key "switch to scratch")
    "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
    :which-key "switch to scratch")
    "bm" '(bookmark-set :which-key "Bookmark set")
@@ -64,6 +64,7 @@
    "db" '(bergheim/browse-dotfiles :which-key "Browse")
 
    "f" '(:ignore t :which-key "Files")
+   "fD" '(bergheim/delete-current-file :which-key "Delete file")
    "ff" '(find-file :which-key "Find file")
    "fr" '(consult-recent-file :which-key "Recent files")
    "fR" '(rename-visited-file :which-key "Rename file")
@@ -90,6 +91,7 @@
 
    "p" '(:ignore t :which-key "Project")
    "pa" '(projectile-add-known-project :which-key "Add project")
+   "pb" '(projectile-switch-to-buffer :which-key "buffers")
    "pf" '(projectile-find-file :which-key "Find file")
    ;; TODO: make this switch persps
    "pp" '(projectile-switch-project :which-key "Switch project")

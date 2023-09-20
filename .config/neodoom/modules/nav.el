@@ -56,4 +56,14 @@
    "M-e" #'dirvish-emerge-menu)
   )
 
+(defun bergheim/delete-current-file ()
+  "Delete the current file and kill its buffer, after asking for confirmation."
+  (interactive)
+  (let ((current-file (buffer-file-name)))
+    (when (and current-file
+               (file-exists-p current-file)
+               (yes-or-no-p (format "Really delete file %s? " current-file)))
+      (delete-file current-file)
+      (kill-buffer))))
+
 ;;; dired.el ends here

@@ -113,7 +113,7 @@
   :config
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
   ;; Use `ssh` by default instead of the default `scp`
-  (setq tramp-default-method "ssh")
+  (setq tramp-default-method "sshx")
 
   (add-to-list 'tramp-methods
                '("yadm"

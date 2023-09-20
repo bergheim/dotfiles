@@ -40,7 +40,9 @@
    "C-M-S-k" #'org-shiftmetaup
    "C-M-S-l" #'org-shiftmetaright
 
-   "RET" #'org-open-at-point))
+   ;; FIXME: this is too broad - can't newline anymore
+   ;; "RET" #'org-open-at-point
+   ))
 
 (use-package org-caldav
   :ensure t
@@ -86,6 +88,21 @@
   :ensure t
   :after org
   :init (setq org-contacts-files '("~/org/contacts.org")))
+
+(use-package org-journal
+  :ensure t
+  :defer t
+  :custom
+  (org-journal-dir (expand-file-name "journal" org-directory))
+  (org-journal-file-format "%Y-%m-%d.org")
+  (org-journal-date-prefix "#+TITLE: ")
+  (org-journal-time-prefix "* ")
+  (org-journal-date-format "%A, %d %B %Y")
+  :config
+  (setq org-journal-date-format "%B %d, %Y - %A"
+        org-journal-file-format "%Y%m.org"
+        org-journal-file-type 'monthly
+        org-journal-enable-agenda-integration t))
 
 
 ;;; org.el ends here
