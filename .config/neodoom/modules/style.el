@@ -21,13 +21,27 @@
 
 
 ;; Note: height = px * 100
-(cond
- ((>= (display-pixel-height) 2160)  ; 4K screens
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 150))
- ((>= (display-pixel-height) 1440)  ; 1440p screens
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 100))
- (t
-  (set-face-attribute 'default nil :font "Ubuntu Mono" :height 80)))
+(defun bergheim/set-font-based-on-frame-resolution ()
+  "Set font size based on the resolution of the frame's display.
+
+Subtract some pixels to allow for borders etc"
+
+  (let ((height (frame-pixel-height))
+        (margin 200))
+    (cond
+     ((< height (- 1440 margin)) ;; your CRT called it wants its tubes back
+      (set-face-attribute 'default nil :font "Ubuntu Mono" :height 80))
+     ((< height (- 2160 margin)) ;; 1440p
+      (set-face-attribute 'default nil :font "Ubuntu Mono" :height 100))
+     (t ;; 4k
+      (set-face-attribute 'default nil :font "Ubuntu Mono" :height 150)))))
+
+(bergheim/set-font-based-on-frame-resolution)
+;; Adjust font for new frames
+(add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (with-selected-frame frame
+              (bergheim/set-font-based-on-frame-resolution))))
 
 (show-paren-mode 1) ;; Visualize matching parens
 
