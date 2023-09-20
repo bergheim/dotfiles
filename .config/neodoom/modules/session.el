@@ -1,8 +1,14 @@
 ;;; session.el --- Description -*- lexical-binding: t; -*-
 
+;; this causes warnings when we restart emacs with eglot-buffers open
+;; and anyway, this is no legacy config!
+(with-eval-after-load 'flymake
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
+
 (use-package desktop
-  :defer t
   :init
+  (add-to-list 'desktop-minor-mode-handlers
+               '(eglot--managed-mode . ignore))
   ;; Define the path for desktop files.
   (setq desktop-path (list bergheim/cache-dir)
         desktop-auto-save-timeout 30
@@ -22,7 +28,7 @@
     "Save desktop and then restart Emacs with custom init directory."
     (interactive)
     (desktop-save bergheim/cache-dir)
-    (let ((restart-args `("--init-directory" ,(expand-file-name "~/.config/neodoom"))))
+    (let ((restart-args `("--init-directory" ,(expand-file-name "~/.config/neodoom") "--debug-init")))
       (restart-emacs restart-args))))
 
 ;;; session.el ends here

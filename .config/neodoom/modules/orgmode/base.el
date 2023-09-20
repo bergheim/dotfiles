@@ -121,9 +121,6 @@
          "|" "DONE(d@)" "CANCELLED(c@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")))
 
-;; indent headings
-(org-indent-mode)
-
 (add-to-list 'org-modules 'org-habit)
 
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)

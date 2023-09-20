@@ -24,8 +24,8 @@
 
 (defvar bergheim/cache-dir
   (let* ((xdg-cache (or (getenv "XDG_CACHE_HOME")
-                       (expand-file-name "~/.cache/")))
-        (cache-dir (concat xdg-cache "neodoom/")))
+                        (expand-file-name "~/.cache/")))
+         (cache-dir (concat xdg-cache "neodoom/")))
 
     (unless (file-exists-p cache-dir)
       (make-directory cache-dir))

@@ -5,12 +5,10 @@
 (use-package eglot
   :ensure t
   :defer t
-  :bind (("M-<mouse-1>" . eglot-find-implementation)
-         ("C-c ." . eglot-code-action-quickfix))
-
+  :bind (("M-<mouse-1>" . eglot-find-implementation))
   :hook ((web-mode . eglot-ensure))
+         ;; (typescript-ts-mode . eglot-ensure))
   :config
-
   (add-to-list 'eglot-server-programs
                '(web-mode . ("typescript-language-server" "--stdio")))
 

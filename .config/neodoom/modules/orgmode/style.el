@@ -54,6 +54,9 @@ Lisp programs can force the template by setting KEYS to a string."
    ;; org-agenda-current-time-string
    ;; "⭠ now ─────────────────────────────────────────────────")
 
+
+  ;; indent headings
+  (org-indent-mode)
   (global-org-modern-mode))
 
 ;; (setq org-agenda-prefix-format

@@ -3,7 +3,7 @@
   :demand t
   :config
   (setq no-littering-var-directory (concat bergheim/cache-dir "/var")))
-  ;;       no-littering-etc-directory (concat bergheim/config-dir "/etc")))
+;;       no-littering-etc-directory (concat bergheim/config-dir "/etc")))
 
 (use-package recentf
   :config
@@ -77,9 +77,9 @@
         elfeed-enclosure-default-dir (concat bergheim/cache-dir "elfeed/enclosures/"))
   :config
   ;; (setq elfeed-search-filter "@2-week-ago ")
-        ;; elfeed-show-entry-switch #'pop-to-buffer
-        ;; elfeed-show-entry-delete #'+rss/delete-pane
-        ;; shr-max-image-proportion 0.8)
+  ;; elfeed-show-entry-switch #'pop-to-buffer
+  ;; elfeed-show-entry-delete #'+rss/delete-pane
+  ;; shr-max-image-proportion 0.8)
   (make-directory elfeed-db-directory t))
 
 (use-package elfeed-org
