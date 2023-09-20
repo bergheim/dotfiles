@@ -101,6 +101,8 @@
       backup-by-copying t
       ;; I _think_ this should be something else (ie the cache directory)
       backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
+      ;; TODO I am seeing `#FILE#' in folders - see if this removes them
+      auto-save-file-name-transforms `((".*" ,bergheim/cache-dir t))
       custom-file (expand-file-name "custom.el" bergheim/config-dir))
 
 (defun bergheim/reload-init-file ()

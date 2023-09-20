@@ -75,7 +75,8 @@
 
 (use-package embark-consult
   :ensure t
-  :after embark)
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; lots of more filtering options for completing-read
 (use-package consult
