@@ -94,15 +94,47 @@
   :defer t
   :custom
   (org-journal-dir (expand-file-name "journal" org-directory))
-  (org-journal-file-format "%Y-%m-%d.org")
-  (org-journal-date-prefix "#+TITLE: ")
-  (org-journal-time-prefix "* ")
-  (org-journal-date-format "%A, %d %B %Y")
-  :config
-  (setq org-journal-date-format "%B %d, %Y - %A"
-        org-journal-file-format "%Y%m.org"
-        org-journal-file-type 'monthly
-        org-journal-enable-agenda-integration t))
+  (org-journal-file-format "%Y%m.org")
+  (org-journal-date-prefix "* ")
+  (org-journal-time-prefix "** ")
+  (org-journal-date-format "%B %d, %Y - %A")
+  (org-journal-file-type 'monthly)
+  (org-journal-find-file #'find-file)
+  (org-journal-enable-agenda-integration t)
 
+  :general
+  (general-define-key
+   :states 'normal
+   :keymaps 'org-journal-mode-map
+   "]f"  #'org-journal-next-entry
+   "[f"  #'org-journal-previous-entry
+   "C-n" #'org-journal-next-entry
+   "C-p" #'org-journal-previous-entry)
+
+  (general-define-key
+   :keymaps 'org-journal-search-mode-map
+   "C-n" #'org-journal-search-next
+   "C-p" #'org-journal-search-previous)
+
+  ;; TODO: need a working localleader mode
+  ;; (general-define-key
+  ;;  :prefix ","
+  ;;  :states 'normal
+  ;;  :keymaps 'org-journal-mode-map
+  ;;  "jc" #'org-journal-new-entry
+  ;;  "jd" #'org-journal-new-date-entry
+  ;;  "jn" #'org-journal-next-entry
+  ;;  "jp" #'org-journal-previous-entry
+  ;;  "ss" #'org-journal-search
+  ;;  "sf" #'org-journal-search-forever
+  ;;  "sF" #'org-journal-search-future
+  ;;  "sw" #'org-journal-search-calendar-week
+  ;;  "sm" #'org-journal-search-calendar-month
+  ;;  "sy" #'org-journal-search-calendar-year)
+
+  (general-define-key
+   :keymaps 'org-journal-search-mode-map
+   "n" #'org-journal-search-next
+   "p" #'org-journal-search-prev))
 
 ;;; org.el ends here
