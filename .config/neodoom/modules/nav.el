@@ -1,4 +1,4 @@
-;;; dired.el --- Description -*- lexical-binding: t; -*-
+;;; nav.el --- Description -*- lexical-binding: t; -*-
 
 (use-package dired
   :commands dired-jump
@@ -66,4 +66,7 @@
       (delete-file current-file)
       (kill-buffer))))
 
-;;; dired.el ends here
+(use-package affe
+  :ensure t)
+
+;;; nav.el ends here

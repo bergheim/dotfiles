@@ -92,12 +92,22 @@
    "m" '(:ignore t :which-key "Mode specific")
 
    "p" '(:ignore t :which-key "Project")
-   "pa" '(projectile-add-known-project :which-key "Add project")
-   "pb" '(projectile-switch-to-buffer :which-key "buffers")
-   "pf" '(projectile-find-file :which-key "Find file")
-   ;; TODO: make this switch persps
-   "pp" '(projectile-switch-project :which-key "Switch project")
-   "pu" '(projectile-discover-projects-in-search-path :which-key "Update projects")
+
+   ;; TODO: remove projectile if project is good enough
+   ;; "pa" '(projectile-add-known-project :which-key "Add project")
+   ;; "pb" '(projectile-switch-to-buffer :which-key "buffers")
+   ;; "pf" '(projectile-find-file :which-key "Find file")
+   ;; "ps" ;; TODO: make this ripgrep all files in project
+   ;; "pp" '(projectile-switch-project :which-key "Switch project")
+   ;; "pu" '(projectile-discover-projects-in-search-path :which-key "Update projects")
+
+   "pb" '(consult-project-buffer :which-key "buffers")
+   "pd" '(project-find-dir :which-key "Find dir")
+   "pf" '(project-find-file :which-key "Find file")
+   "pF" '(affe-find :which-key "Async find file")
+   "ps" '(consult-ripgrep :which-key "Grep project")
+   "pS" '(affe-grep :which-key "Async grep project")
+   "pp" '(project-switch-project :which-key "Switch project")
 
    ;; TODO: add lots more consult stuff like kill-ring etc
    "s" '(:ignore t :which-key "Search")

@@ -26,8 +26,8 @@
   "oj" '(:ignore t :which-key "journal")
   "ojj" '(org-journal-new-entry :which-key "New entry")
   "ojJ" '(org-journal-new-scheduled-entry :which-key "New scheduled entry")
-  "ojo" '(org-journal-open-new :which-key "Open journal")
-  "ojs" '(org-journal-open-current-journal-file :which-key "Search journal")
+  "ojo" '(org-journal-open-current-journal-file :which-key "Open journal")
+  "ojs" '(org-journal-search-forever :which-key "Search journal")
 
   "oc" '(:ignore t :which-key "org-clock")
   "ocg" '(org-clock-goto :which-key "clock goto")

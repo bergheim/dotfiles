@@ -52,13 +52,20 @@
   (when (bound-and-true-p tab-bar-mode)
     (burly-tabs-mode)))
 
-(use-package projectile
-  :ensure t
+(use-package project
+  :ensure nil  ; built-in package
   :config
-  (setq projectile-project-search-path (list (concat bergheim/home-directory "dev")))
-  (setq projectile-cache-file (concat bergheim/cache-dir "/projectile.cache")
-        projectile-known-projects-file (concat bergheim/cache-dir "/projectile-bookmarks.eld"))
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  (setq project-use-git t))
+
+;; TODO: remove this is `project.el' is enough
+;; (use-package projectile
+;;   :ensure t
+;;   :config
+;;   (setq projectile-project-search-path (list (concat bergheim/home-directory "dev")))
+;;   (setq projectile-cache-file (concat bergheim/cache-dir "/projectile.cache")
+;;         projectile-known-projects-file (concat bergheim/cache-dir "/projectile-bookmarks.eld"))
+;;   (projectile-mode +1)
+;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
 
 ;;; workspace.el ends here
