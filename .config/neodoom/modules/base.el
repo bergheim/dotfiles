@@ -73,14 +73,14 @@
   :ensure t
   :commands elfeed
   :init
-  (setq elfeed-db-directory (concat bergheim/cache-dir "elfeed/db/")
-        elfeed-enclosure-default-dir (concat bergheim/cache-dir "elfeed/enclosures/"))
+  (setq elfeed-db-directory (bergheim/get-and-ensure-data-dir "elfeed/db/")
+        elfeed-enclosure-default-dir (bergheim/get-and-ensure-data-dir "elfeed/enclosures/"))
   :config
   ;; (setq elfeed-search-filter "@2-week-ago ")
   ;; elfeed-show-entry-switch #'pop-to-buffer
   ;; elfeed-show-entry-delete #'+rss/delete-pane
   ;; shr-max-image-proportion 0.8)
-  (make-directory elfeed-db-directory t))
+  )
 
 (use-package elfeed-org
   :ensure t
@@ -131,7 +131,7 @@
   :config
   (setq undo-tree-auto-save-history t
         undo-tree-history-directory-alist
-        `(("." . ,(concat bergheim/cache-dir "/undo"))))
+        `(("." . ,(bergheim/get-and-ensure-data-dir "undo"))))
 
   ;; TODO: For some reason, general.el isn't binding 'U' as expected.
   ;; Using define-key as a workaround.
@@ -169,3 +169,7 @@
 ;;    "u" 'undo-fu-only-undo
 ;;    "C-r" 'undo-fu-only-redo))
 
+(use-package flymake
+  :defer t
+  :config
+  (setq flymake-temporary-file-directory (bergheim/get-and-ensure-data-dir "flymake")))

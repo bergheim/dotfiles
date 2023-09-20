@@ -2,6 +2,9 @@
 
 (message "Hello World!")
 
+;; required for the tests
+(package-initialize)
+
 (setq visible-bell t ;; flash
       inhibit-startup-message t
 
@@ -41,25 +44,21 @@
                       (expand-file-name "~/"))))
     xdg-home))
 
-(defun bergheim/load-file (filename)
-  "Load a file from the `bergheim/config-dir` directory."
-  (let ((full-path (expand-file-name filename bergheim/config-dir)))
-    (load-file full-path)))
+;; bootstrap helpers
+(let ((modules-dir (concat bergheim/config-dir "modules/")))
+  (unless (file-exists-p modules-dir)
+        (make-directory modules-dir))
+  (load-file (concat modules-dir "bergheim-utils.el")))
 
-(unless (file-exists-p bergheim/cache-dir)
-  (make-directory bergheim/cache-dir t))
-
-(setq lock-directory (expand-file-name "lock/" bergheim/cache-dir))
-(unless (file-exists-p lock-directory)
-  (make-directory lock-directory t))
+(setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
 
 ;; TODO: refactor this. we need the macro before the autoloads
 (load (expand-file-name "modules/email.macros.el" bergheim/config-dir))
 
 (loaddefs-generate (concat bergheim/config-dir "modules")
-                   (concat bergheim/cache-dir "neodoom-autoloads.el"))
+                   (bergheim/get-and-ensure-data-dir nil "neodoom-autoloads.el"))
 
-(let ((autoloads-file (expand-file-name "neodoom-autoloads.el" bergheim/cache-dir)))
+(let ((autoloads-file (bergheim/get-and-ensure-data-dir nil "neodoom-autoloads.el")))
   (message "Loading neodoom-autoloads.el")
   (when (file-exists-p autoloads-file)
     (load-file autoloads-file)))
@@ -105,12 +104,6 @@
       auto-save-file-name-transforms `((".*" ,bergheim/cache-dir t))
       custom-file (expand-file-name "custom.el" bergheim/config-dir))
 
-(defun bergheim/reload-init-file ()
-  (interactive)
-  (load-file (expand-file-name "init.el" bergheim/config-dir))
-
-
-  (message "Emacs configuration reloaded successfully!"))
 
 ;; Show the help buffer after startup
 ;; (add-hook 'after-init-hook 'help-quick)
@@ -174,3 +167,13 @@
            gcs-done))
 
 (add-hook 'emacs-startup-hook 'display-startup-time)
+
+(defun bergheim/run-all-tests ()
+  "Load and run all Neodoom tests."
+  (interactive)
+  (let ((test-dir (bergheim/get-and-ensure-config-dir "tests/")))
+    (dolist (file (directory-files test-dir t "-test\\.el$"))
+      (load-file file)))
+  (ert t))
+
+(provide 'bergheim-tests)
