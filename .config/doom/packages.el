@@ -56,7 +56,6 @@
 (package! org-fancy-priorities)
 ;; (package! helm-org-rifle)
 (package! org-roam-ui)
-(unpin! org-roam)
 
 (package! org-caldav)
 (package! calendar-norway)
@@ -65,16 +64,9 @@
 (package! mu4e-alert :disable t)
 (package! mu4e-thread
   :recipe (:host github :repo "rougier/mu4e-thread"))
-;; TODO: just here while 1.10 settles..
-(unpin! evil-collection)
-(package! evil-collection
-  :recipe (:host github :repo "meliache/evil-collection"))
 (package! evil-matchit)
-(unpin! mu4e)
 
 ;; should improve auto-complete (in theory)
-(package! company :disable t)
-(unpin! corfu)
 (package! corfu)
 (package! orderless)
 (package! cape)
