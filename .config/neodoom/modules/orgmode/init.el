@@ -24,6 +24,7 @@
   (bergheim/load-file "modules/orgmode/agenda.el")
   (bergheim/load-file "modules/orgmode/capture.el")
   (bergheim/load-file "modules/orgmode/roam.el")
+  (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/style.el")
 
   :general
@@ -61,11 +62,18 @@
 
 (use-package org-mru-clock
   :ensure t
-  :defer t
+  :after org
   :init
   (setq org-mru-clock-files #'org-agenda-files
         org-mru-clock-how-many 100))
 
+(use-package org-ql
+  :ensure t
+  :defer t)
+
+(use-package org-super-agenda
+  :ensure t
+  :after org)
 
 ;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
