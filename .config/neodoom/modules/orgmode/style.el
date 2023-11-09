@@ -27,6 +27,9 @@ Lisp programs can force the template by setting KEYS to a string."
   (setq-local wrap-prefix "                          "))
 (add-hook 'org-agenda-mode-hook #'ct/org-agenda-set-wrap-prefix)
 
+;; indent by default
+(add-hook 'org-mode-hook 'org-indent-mode)
+
 ;; TODO: read the man here
 (use-package org-modern
   :ensure t
