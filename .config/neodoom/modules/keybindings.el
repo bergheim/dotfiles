@@ -17,6 +17,10 @@
 ;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone
 ;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
 
+
+(defvar bergheim/localleader-map (make-sparse-keymap)
+  "Keymap for 'SPC m'")
+
 (use-package general
   :config
   ;; TODO: make this work with reloads
@@ -27,6 +31,11 @@
     :prefix "SPC"
     :keymaps 'override
     :non-normal-prefix "M-SPC")
+
+  (general-create-definer bergheim/localleader-keys
+    :prefix "SPC m"
+    :states '(normal visual emacs)
+    :keymaps 'bergheim/localleader-map)
 
   (general-create-definer bergheim/global-evil-keys
     :states '(normal visual motion operator)
@@ -89,7 +98,7 @@
    "ht" '(consult-theme :which-key "Switch theme")
    "hv" '(helpful-variable :which-key "Variable")
 
-   "m" '(:ignore t :which-key "Mode specific")
+   "m" bergheim/localleader-map
 
    "p" '(:ignore t :which-key "Project")
 

@@ -3,18 +3,25 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (use-package org-agenda
-  ;; :ensure org-plus-contrib
-  :commands (org-agenda)
+  :after general
+  :ensure org
   :general
-  (bergheim/global-keys
-   "mt" 'org-agenda-todo
-   "mq" 'org-agenda-set-tags
-   ;; TODO add clock here
-   "me"  'org-agenda-set-effort))
+  ;; FIXME: this does not work.
+  ;; nothing in 'motion' sticks, which is probably the one one we need..
+  (bergheim/localleader-keys
+    :keymaps 'org-agenda-mode-map
+    ;; :keymaps 'override
+    :states '(normal visual insert motion emacs)
+    "m" 'describe-mode
+    "t" 'org-agenda-todo
+    "q" 'org-agenda-set-tags
+    "e" 'org-agenda-set-effort
+    )
+  )
 
 ;; This drove me nuts! Unbind SPC in org-agenda-mode
-(with-eval-after-load 'org-agenda
-  (evil-define-key 'motion org-agenda-mode-map (kbd "SPC") nil))
+;; (with-eval-after-load 'org-agenda
+;;   (evil-define-key 'motion org-agenda-mode-map (kbd "SPC") nil))
 
 (setq org-agenda-custom-commands
       '(("d" "Dashboard for today"

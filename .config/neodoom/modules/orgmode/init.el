@@ -10,15 +10,10 @@
   ;; :init
   ;; (bergheim/load-file "modules/mu4e/keybindings.el")
 
-  :general
-  (bergheim/global-keys
-   ;; FIXME: we need to reset `m' on every mode
-   "mn" 'org-store-link
-   "mq" 'org-set-tags-command)
-
   :config
   (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/keybindings.el")
+  (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/agenda.el")
@@ -43,7 +38,30 @@
 
    ;; FIXME: this is too broad - can't newline anymore
    ;; "RET" #'org-open-at-point
-   ))
+   )
+  ;; FIXME: this is straight up ignored
+  (bergheim/localleader-keys
+    :keymaps 'org-agenda-mode-map
+    :states '(emacs normal motion)
+    "t" 'org-agenda-todo
+    "q" 'org-agenda-set-tags
+    "e" 'org-agenda-set-effort)
+
+  (bergheim/localleader-keys
+    :keymaps 'org-mode-map
+    "t" 'org-todo
+    "n" 'org-store-link
+    "q" 'org-set-tags-command))
+
+;; (use-package org
+;;   :after general
+;;   :config
+;;   (bergheim/localleader-keys
+;;     :states '(normal visual emacs)
+;;     :keymaps 'org-mode-map
+;;     "t" 'org-todo
+;;     "n" 'org-store-link
+;;     "q" 'org-set-tags-command))
 
 (use-package org-caldav
   :ensure t
