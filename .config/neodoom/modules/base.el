@@ -12,6 +12,14 @@
   (setq recentf-max-saved-items 200)
   (recentf-mode t))
 
+(use-package saveplace
+  :config
+  (setq save-place-forget-unreadable-files t)
+  (setq save-place-limit 1000)
+  (setq save-place-file (concat bergheim/cache-dir "/places"))
+  :hook
+  (after-init . save-place-mode))
+
 (use-package which-key
   :ensure t
   :config
