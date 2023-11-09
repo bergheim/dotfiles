@@ -39,7 +39,8 @@
   :init
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
-  (setq evil-undo-system 'undo-tree)
+  ;; (setq evil-undo-system 'undo-tree)
+  (setq evil-undo-system 'undo-redo) ;; for vundo etc
   :config
   (evil-mode 1))
 
@@ -132,34 +133,35 @@
                  (tramp-remote-shell-args ("-c")))))
 
 ;; as long as this doesn't destroy my data..
-(use-package undo-tree
-  :ensure t
-  :init
-  (global-undo-tree-mode)
-  :config
-  (setq undo-tree-auto-save-history t
-        undo-tree-history-directory-alist
-        `(("." . ,(bergheim/get-and-ensure-data-dir "undo"))))
-
-  ;; TODO: For some reason, general.el isn't binding 'U' as expected.
-  ;; Using define-key as a workaround.
-  (define-key evil-normal-state-map (kbd "U") 'undo-tree-visualize)
-
-  :general
-  (general-nmap
-   "u" 'undo-tree-undo
-   "U" 'undo-tree-visualize
-   "C-r" 'undo-tree-redo))
+;; (use-package undo-tree
+;;   :ensure t
+;;   :init
+;;   (global-undo-tree-mode)
+;;   :config
+;;   (setq undo-tree-auto-save-history t
+;;         undo-tree-history-directory-alist
+;;         `(("." . ,(bergheim/get-and-ensure-data-dir "undo"))))
+;; 
+;;   ;; TODO: For some reason, general.el isn't binding 'U' as expected.
+;;   ;; Using define-key as a workaround.
+;;   (define-key evil-normal-state-map (kbd "U") 'undo-tree-visualize)
+;; 
+;;   :general
+;;   (general-nmap
+;;    "u" 'undo-tree-undo
+;;    "U" 'undo-tree-visualize
+;;    "C-r" 'undo-tree-redo))
 
 ;; if it does, switch to this
-;; (use-package vundo
-;;   :ensure t
-;;   :after general
-;;   :config
-;;   (setq vundo-dir bergheim/cache-dir)
-;;   (general-define-key
-;;    :states 'normal
-;;    "U" 'vundo))
+(use-package vundo
+  :ensure t
+  :after general
+  :config
+  (setq vundo-dir bergheim/cache-dir)
+  (setq vundo-glyph-alist vundo-unicode-symbols)
+  (general-define-key
+   :states 'normal
+   "U" 'vundo))
 
 ;; (use-package undo-fu
 ;;   :ensure t
