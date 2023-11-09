@@ -27,7 +27,7 @@
 Subtract some pixels to allow for borders etc"
 
   (let ((height (frame-pixel-height))
-        (margin 200))
+        (margin 400))
     (cond
      ((< height (- 1440 margin)) ;; your CRT called it wants its tubes back
       (set-face-attribute 'default nil :font "Ubuntu Mono" :height 80))
@@ -48,8 +48,9 @@ Subtract some pixels to allow for borders etc"
 (use-package ef-themes
   :ensure t
   :config
-  (ef-themes-select 'ef-cyprus))
+  ;; (ef-themes-select 'ef-cyprus))
   ;; (ef-themes-select 'ef-elea-dark))
+  (ef-themes-select 'ef-maris-dark))
 
 ;; (use-package doom-themes
 ;;   :ensure t
@@ -71,39 +72,47 @@ Subtract some pixels to allow for borders etc"
 
 ;; (load-theme 'modus-vivendi t)
 
-(use-package doom-modeline
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :init
+;;   (setq doom-modeline-support-imenu t)
+;;   (doom-modeline-mode 1)
+;;   :config
+
+;;   ;; Disable icons for a performance boost
+;;   ;; (setq doom-modeline-icon nil)
+
+;;   ;; Disable major mode icons for additional speedup
+;;   ;; (setq doom-modeline-major-mode-icon nil)
+;;   ;; (setq doom-modeline-major-mode-color-icon nil)
+
+;;   ;; Use a simpler version checker format
+;;   (setq doom-modeline-checker-simple-format t)
+
+;;   ;; Disable buffer encoding display
+;;   (setq doom-modeline-buffer-encoding nil)
+
+;;   ;; If you don't use LSP, or don't want to display its status
+;;   (setq doom-modeline-lsp t)
+
+;;   ;; Set a fixed width for the modeline for consistency and performance
+;;   (setq doom-modeline-width 40)
+
+;;   ;; Set the cache directory for doom-modeline
+;;   (setq doom-modeline-cache-directory (expand-file-name "doom-modeline/" bergheim/cache-dir))
+
+;;   ;; apparently `file-name' is faster than `auto'
+;;   ;; see https://github.com/seagle0128/doom-modeline#customize
+;;   (setq doom-modeline-buffer-file-name-style 'file-name)
+;;   (setq doom-modeline-buffer-encoding nil))
+
+(use-package mood-line
   :ensure t
   :init
-  (setq doom-modeline-support-imenu t)
-  (doom-modeline-mode 1)
-  :config
+  (mood-line-mode))
 
-  ;; Disable icons for a performance boost
-  ;; (setq doom-modeline-icon nil)
-
-  ;; Disable major mode icons for additional speedup
-  ;; (setq doom-modeline-major-mode-icon nil)
-  ;; (setq doom-modeline-major-mode-color-icon nil)
-
-  ;; Use a simpler version checker format
-  (setq doom-modeline-checker-simple-format t)
-
-  ;; Disable buffer encoding display
-  (setq doom-modeline-buffer-encoding nil)
-
-  ;; If you don't use LSP, or don't want to display its status
-  (setq doom-modeline-lsp t)
-
-  ;; Set a fixed width for the modeline for consistency and performance
-  (setq doom-modeline-width 40)
-
-  ;; Set the cache directory for doom-modeline
-  (setq doom-modeline-cache-directory (expand-file-name "doom-modeline/" bergheim/cache-dir))
-
-  ;; apparently `file-name' is faster than `auto'
-  ;; see https://github.com/seagle0128/doom-modeline#customize
-  (setq doom-modeline-buffer-file-name-style 'file-name)
-  (setq doom-modeline-buffer-encoding nil))
+(with-eval-after-load 'mood-line
+  (setq mood-line-glyph-alist mood-line-glyphs-fira-code))
 
 
 ;; foo -> bar -> baz
@@ -177,6 +186,11 @@ Subtract some pixels to allow for borders etc"
   ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
   )
 
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (provide 'style)
 ;;; style.el ends here
