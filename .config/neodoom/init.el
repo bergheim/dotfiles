@@ -89,9 +89,7 @@
 ;; (setq save-place-file (concat bergheim/cache-dir "/places"))
 
 ;; Reload files that are changed outside of Emacs
-(setq auto-revert-interval 1)
-(setq auto-revert-check-vc-info t)
-(global-auto-revert-mode)
+(global-auto-revert-mode 1)
 
 (setq uniquify-buffer-name-style 'forward
       window-resize-pixelwise t
