@@ -7,12 +7,12 @@
 (use-package org
   :defer t
   :after general
-  ;; :init
-  ;; (bergheim/load-file "modules/mu4e/keybindings.el")
+
+  :init
+  (bergheim/load-file "modules/orgmode/keybindings.el")
 
   :config
   (bergheim/load-file "modules/orgmode/base.el")
-  (bergheim/load-file "modules/orgmode/keybindings.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
