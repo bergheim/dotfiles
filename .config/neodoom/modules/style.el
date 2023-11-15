@@ -145,12 +145,14 @@ Subtract some pixels to allow for borders etc"
 
 ;; We won't set these, but they're good to know about
 ;;
-;; (setq-default indent-tabs-mode nil)
-;; (setq-default tab-width 4)
+;; Uh why won't we set these?
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 
 ;; Misc. UI tweaks
 (blink-cursor-mode -1)                                ; Steady cursor
 (pixel-scroll-precision-mode)                         ; Smooth scrolling
+(setq visible-bell nil)                               ; do _not_ flash on esc or anything
 
 ;; Display line numbers in programming mode
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
