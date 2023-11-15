@@ -75,6 +75,7 @@
 
 (use-package embark-consult
   :ensure t
+  :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 

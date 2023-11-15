@@ -23,7 +23,7 @@
 ;;   :after tree-sitter)
 
 (use-package treesit-auto
-  :demand t
+  :ensure t
   :config
   (setq treesit-auto-install 'prompt)
   (treesit-auto-add-to-auto-mode-alist)

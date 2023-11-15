@@ -1,13 +1,12 @@
 (use-package no-littering
   :ensure t
   :demand t
-  :config
-  (setq no-littering-var-directory (concat bergheim/cache-dir "/var")))
-;;       no-littering-etc-directory (concat bergheim/config-dir "/etc")))
+  :init
+  (setq no-littering-var-directory (concat bergheim/cache-dir "/var"))
+  (setq no-littering-etc-directory (concat bergheim/config-dir "/etc")))
 
 (use-package recentf
   :config
-  (setq recentf-save-file (concat bergheim/cache-dir "/recentf"))
   (setq recentf-max-menu-items 50)
   (setq recentf-max-saved-items 200)
   (recentf-mode t))
@@ -16,7 +15,6 @@
   :config
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000)
-  (setq save-place-file (concat bergheim/cache-dir "/places"))
   :hook
   (after-init . save-place-mode))
 

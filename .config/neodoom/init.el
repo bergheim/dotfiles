@@ -53,23 +53,8 @@
 (require 'uniquify) ;; Make same named buffers unique
 
 (electric-pair-mode t) ;; insert closing parens
-
 (setq-default indent-tabs-mode nil) ;; I have given up on tabs
-
-(save-place-mode t) ;; jump back in old files
-(recentf-mode t) ;; recent files
 (savehist-mode t) ;; save minibuffer history
-
-;; clean up config dir
-(setq auto-save-list-file-prefix (concat bergheim/cache-dir "/auto-save-list/.saves-"))
-(setq native-comp-eln-cache-dir (concat bergheim/cache-dir "/eln-cache/"))
-(setq recentf-save-file (concat bergheim/cache-dir "/recentf"))
-(setq transient-history-file (concat bergheim/cache-dir "/transient/history.el"))
-;; TODO: do I want these in config or not
-;; (setq bookmark-default-file (concat bergheim/cache-dir "/bookmarks"))
-;; (setq package-user-dir (concat bergheim/cache-dir "/elpa"))
-;; (setq savehist-file (concat bergheim/cache-dir "/history"))
-;; (setq save-place-file (concat bergheim/cache-dir "/places"))
 
 ;; Reload files that are changed outside of Emacs
 (global-auto-revert-mode 1)
