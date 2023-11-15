@@ -10,14 +10,10 @@
 
       gc-cons-threshold 100000000 ; 100 mb
       read-process-output-max (* 1024 1024) ; 1mb
-
       initial-major-mode 'emacs-lisp-mode  ; default mode for the *scratch* buffer
       display-time-default-load-average nil ; this information is useless for most
-
       read-answer-short t ;; y means yes
-
       use-dialog-box nil ;; plz no
-
       sentence-end-double-space nil ;; Fix archaic defaults
       )
 
@@ -49,14 +45,6 @@
   (load-file (concat modules-dir "bergheim-utils.el")))
 
 (setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
-
-;; TODO: refactor this. we need the macro before the autoloads
-(load (expand-file-name "modules/email.macros.el" bergheim/config-dir))
-
-(let ((autoloads-file (bergheim/get-and-ensure-data-dir nil "autoloads.el")))
-  (loaddefs-generate (concat bergheim/config-dir "autoloads") autoloads-file)
-  (when (file-exists-p autoloads-file)
-    (load-file autoloads-file)))
 
 ;; Make right-click do something sensible
 (when (display-graphic-p)
@@ -136,9 +124,10 @@
   (load-file (concat module-dir "programming.el"))
   (load-file (concat module-dir "evil.module.el")))
 
-;; (use-package evil-surround
-;;   :config
-;;   (global-evil-surround-mode 1))
+(let ((autoloads-file (bergheim/get-and-ensure-data-dir nil "autoloads.el")))
+  (loaddefs-generate (concat bergheim/config-dir "autoloads") autoloads-file)
+  (when (file-exists-p autoloads-file)
+    (load-file autoloads-file)))
 
 ;; maybe actually try this
 (use-package denote
