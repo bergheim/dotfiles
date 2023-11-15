@@ -12,6 +12,7 @@
 ;; Package-Requires: ((emacs "29.1"))
 ;;
 
+(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 
 ;; https://www.masteringemacs.org/article/mastering-key-bindings-emacs
 ;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone

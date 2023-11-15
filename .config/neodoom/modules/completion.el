@@ -113,10 +113,10 @@
   (vertico-mode)
   :general
   (general-def :keymaps 'vertico-map
-    "M-h" 'vertico-directory-up
-    "M-j" 'vertico-next
-    "M-k" 'vertico-previous
-    "M-l" 'vertico-directory-enter
+    "C-h" 'vertico-directory-up
+    "C-j" 'vertico-next
+    "C-k" 'vertico-previous
+    "C-l" 'vertico-directory-enter
     ;; "C-h" 'vertico-directory-enter
     )
   :config
