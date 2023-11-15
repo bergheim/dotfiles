@@ -53,11 +53,8 @@
 ;; TODO: refactor this. we need the macro before the autoloads
 (load (expand-file-name "modules/email.macros.el" bergheim/config-dir))
 
-(loaddefs-generate (concat bergheim/config-dir "modules")
-                   (bergheim/get-and-ensure-data-dir nil "neodoom-autoloads.el"))
-
-(let ((autoloads-file (bergheim/get-and-ensure-data-dir nil "neodoom-autoloads.el")))
-  (message "Loading neodoom-autoloads.el")
+(let ((autoloads-file (bergheim/get-and-ensure-data-dir nil "autoloads.el")))
+  (loaddefs-generate (concat bergheim/config-dir "autoloads") autoloads-file)
   (when (file-exists-p autoloads-file)
     (load-file autoloads-file)))
 

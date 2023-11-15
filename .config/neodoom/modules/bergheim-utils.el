@@ -10,7 +10,7 @@
     (unless (file-exists-p temp-dir)
       (make-directory temp-dir t))
     (if filename
-        (concat temp-dir filename)
+        (expand-file-name filename temp-dir)
       temp-dir)))
 
 (defun bergheim/get-and-ensure-config-dir (directory &optional filename)
@@ -21,7 +21,7 @@
     (unless (file-exists-p temp-dir)
       (make-directory temp-dir t))
     (if filename
-        (concat temp-dir filename)
+        (expand-file-name filename temp-dir)
       temp-dir)))
 
 
