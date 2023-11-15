@@ -7,6 +7,38 @@
 ;; Created: September 18, 2023
 ;; Modified: September 18, 2023
 
+(use-package treesit
+  :ensure nil
+  :config
+  (setq treesit-font-lock-level 4))
+
+;; (use-package tree-sitter
+;;   :ensure t
+;;   :config
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+;; (use-package tree-sitter-langs
+;;   :ensure t
+;;   :after tree-sitter)
+
+(use-package treesit-auto
+  :demand t
+  :config
+  (setq treesit-auto-install 'prompt)
+  (treesit-auto-add-to-auto-mode-alist)
+  (global-treesit-auto-mode))
+
+(use-package emacs :ensure nil
+  :after treesit
+  :custom-face
+  (typescript-ts-jsx-tag-face
+   ((t ( :inherit font-lock-type-face))))
+  :mode
+  ("\\.js$" . js-ts-mode)
+  ("\\.ts$" . typescript-ts-mode)
+  ("\\.tsx$" . tsx-ts-mode))
+
 ;; used by vimish-fold
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode))
@@ -19,7 +51,7 @@
          (lisp-interaction-mode . enable-paredit-mode)
          (scheme-mode . enable-paredit-mode)))
 
-(use-package elixir-mode
+(use-package elixir-ts-mode
   :ensure t)
 
 (use-package yaml-mode
@@ -33,19 +65,16 @@
   (setq markdown-command "multimarkdown"))
 
 (use-package web-mode
-  :ensure t
-  :mode (("\\.ts\\'" . web-mode)
-         ("\\.js\\'" . web-mode)
-         ("\\.mjs\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode)
-         ("\\.jsx\\'" . web-mode))
+  :mode (("\\.html\\'" . web-mode))
   :custom
-  (web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
   (web-mode-code-indent-offset 4)
   (web-mode-css-indent-offset 4)
   (web-mode-markup-indent-offset 4)
   (web-mode-enable-auto-quoting nil))
 
+(use-package typescript-ts-mode
+  :ensure nil
+  :custom (typescript-ts-mode-indent-offset 4))
 
 (defun bergheim/adjust-web-mode-comment-style ()
   "Adjust comment style based on current context in `web-mode`."
@@ -59,14 +88,5 @@
     ;; Otherwise, for TypeScript, use the regular style
     (setq-local comment-start "// ")
     (setq-local comment-end "")))
-
-(use-package web-mode
-  :mode "\\.tsx\\'"
-  :config
-  (setq web-mode-enable-current-element-highlight t)
-  (setq web-mode-enable-current-column-highlight t)
-  ;; (setq web-mode-code-indent-offset 2)
-  (add-hook 'web-mode-hook 'bergheim/adjust-web-mode-comment-style))
-
 
 ;;; programming.el ends here

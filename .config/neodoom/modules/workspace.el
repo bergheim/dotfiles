@@ -9,6 +9,7 @@
 
 (use-package popper
   :ensure t
+  :after general
   :bind (("C-`"   . popper-toggle)
          ("M-`"   . popper-cycle)
          ("C-M-`" . popper-toggle-type))
@@ -17,13 +18,13 @@
         '("\\*Messages\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"
-          help-mode
-          compilation-mode))
-  (setq popper-reference-buffers
-        (append popper-reference-buffers
-                '("^\\*Flymake diagnostics.*\\*$" flymake-diagnostics-buffer-mode
-                  )))
-  (setq popper-window-height 15)
+          "^\\*Flymake diagnostics.*\\*$" flymake-diagnostics-buffer-mode
+          ;; help-mode
+          compilation-mode
+          ))
+
+  (setq popper-window-height 16)
+  ;; (setq popper-display-control 'user)
   (setq popper-display-function #'popper-display-popup-at-bottom)
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints

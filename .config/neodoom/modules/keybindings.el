@@ -53,6 +53,7 @@
     "C-u" 'evil-scroll-up)
 
   (bergheim/global-menu-keys
+   "RET" '(consult-bookmark :which-key "Bookmarks")
    "a" '(:ignore t :which-key "Applications")
    "ad" '(dirvish :which-key "Dirvish")
    "ae" '(elfeed :which-key "Elfeed")
@@ -131,6 +132,10 @@
    "sm" '(consult-man :which-key "man")
    "sp" '(consult-project-buffer :which-key "project buffers")
    "ss" '(consult-line :which-key "buffer")
+
+   "t" '(:ignore t :which-key "Toggle")
+   "t f" '(apheleia-global-mode :which-key "Toggle formatting")
+   "t p" '(popper-toggle-type :which-key "Toggle popup")
 
    "u" '(universal-argument :which-key "Universal argument")
 

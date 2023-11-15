@@ -3,14 +3,20 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (use-package eglot
-  :ensure t
+  :ensure nil
   :defer t
   :bind (("M-<mouse-1>" . eglot-find-implementation))
-  :hook ((web-mode . eglot-ensure))
-         ;; (typescript-ts-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
-               '(web-mode . ("typescript-language-server" "--stdio")))
+               '(tsx-ts-mode . ("typescript-language-server" "--stdio")))
+  ;; ignore debug logging - should speed up LSP
+  (fset #'jsonrpc--log-event #'ignore)
+  :custom
+  (eglot-autoshutdown t)
+  :hook ((web-mode . eglot-ensure))
+         (typescript-ts-base-mode . eglot-ensure)
+         (tsx-ts-mode . eglot-ensure)
+         (eglot-managed-mode . me/flymake-eslint-enable-maybe)
 
   :general
   (bergheim/global-menu-keys

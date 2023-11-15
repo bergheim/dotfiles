@@ -1,7 +1,5 @@
 ;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
 
-(message "Hello World!")
-
 ;; required for the tests
 (package-initialize)
 
