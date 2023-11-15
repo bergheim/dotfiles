@@ -115,6 +115,10 @@ Subtract some pixels to allow for borders etc"
   (setq mood-line-glyph-alist mood-line-glyphs-fira-code))
 
 
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'forward))
+
 ;; foo -> bar -> baz
 (use-package breadcrumb
   :vc (:fetcher github :repo joaotavora/breadcrumb)

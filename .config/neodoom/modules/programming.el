@@ -22,6 +22,9 @@
 ;;   :ensure t
 ;;   :after tree-sitter)
 
+
+(electric-pair-mode t) ;; insert closing parens
+
 (use-package treesit-auto
   :ensure t
   :config
