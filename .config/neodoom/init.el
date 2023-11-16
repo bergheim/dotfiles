@@ -85,10 +85,12 @@
   (load-file (concat module-dir "programming.el"))
   (load-file (concat module-dir "evil.module.el")))
 
-(let ((autoloads-file (bergheim/get-and-ensure-data-dir nil "autoloads.el")))
-  (loaddefs-generate (concat bergheim/config-dir "autoloads") autoloads-file)
-  (when (file-exists-p autoloads-file)
-    (load-file autoloads-file)))
+(use-package site-lisp
+  :ensure t
+  :demand t
+  :config
+  (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
+  (site-lisp-initialise))
 
 ;; maybe actually try this
 (use-package denote
