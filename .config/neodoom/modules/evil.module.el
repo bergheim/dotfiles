@@ -2,6 +2,7 @@
 
 (use-package evil
   :config
+  (setq evil-want-fine-undo t)
   (defun bergheim/evil-search-symbol-forward ()
     "Search forward for the entire symbol under cursor, or fall back to word search."
     (interactive)
