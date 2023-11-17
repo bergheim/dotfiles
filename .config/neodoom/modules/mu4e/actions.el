@@ -61,50 +61,42 @@
 
 ;; TODO in general, lower-case should match /Inbox/, upper-case should mean everything but /Trash/
 (setq mu4e-headers-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-headers-actions))
-(add-to-list 'mu4e-headers-actions '("Narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
-(add-to-list 'mu4e-headers-actions '("follow up" . bergheim/mu4e-follow-up) t)
-(add-to-list 'mu4e-headers-actions '("later" . bergheim/mu4e-read-later) t)
+(setq mu4e-headers-actions (delete '("capture message" . mu4e-action-capture-message) mu4e-headers-actions))
+(add-to-list 'mu4e-headers-actions '("adwim" . bergheim/mu4e-search-dwim) t)
+(add-to-list 'mu4e-headers-actions '("Around" . bergheim/mu4e-search-around-message) t)
 (add-to-list 'mu4e-headers-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
-(add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
-(add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
+(add-to-list 'mu4e-headers-actions '("capture message" . mu4e-action-capture-message) t)
+(add-to-list 'mu4e-headers-actions '("Capture contact" . mu4e-action-add-org-contact) t)
 (add-to-list 'mu4e-headers-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
 (add-to-list 'mu4e-headers-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
+(add-to-list 'mu4e-headers-actions '("email" . bergheim/mu4e-search-from-address) t)
+(add-to-list 'mu4e-headers-actions '("follow up" . bergheim/mu4e-follow-up) t)
+(add-to-list 'mu4e-headers-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
+(add-to-list 'mu4e-headers-actions '("later" . bergheim/mu4e-read-later) t)
 (add-to-list 'mu4e-headers-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
 (add-to-list 'mu4e-headers-actions '("Me" . bergheim/mu4e-search-to-me) t)
-
-;; TODO: make a general universal arg wrapper
-(add-to-list 'mu4e-headers-actions '("Me" . (lambda (msg)
-                                              (interactive)
-                                              (let ((current-prefix-arg '(4))) ; C-u
-                                                (bergheim/mu4e-search-to-me msg)))) t)
-
-
+(add-to-list 'mu4e-headers-actions '("name" . bergheim/mu4e-search-from-name) t)
+(add-to-list 'mu4e-headers-actions '("Narrow to sender" . bergheim/mu4e-narrow-to-sender) t)
 (add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
-(add-to-list 'mu4e-headers-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
-(add-to-list 'mu4e-headers-actions '("Around" . bergheim/mu4e-search-around-message) t)
-(add-to-list 'mu4e-headers-actions '("adwim" . bergheim/mu4e-search-dwim) t)
 
 (setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
 (setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
-(add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
-(add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
-(add-to-list 'mu4e-view-actions '("List" . bergheim/mu4e-search-from-list) t)
+(setq mu4e-view-actions (delete '("capture message" . mu4e-action-capture-message) mu4e-view-actions))
+(add-to-list 'mu4e-view-actions '("adwim" . bergheim/mu4e-search-dwim) t)
+(add-to-list 'mu4e-view-actions '("Around" . bergheim/mu4e-search-around-message) t)
 (add-to-list 'mu4e-view-actions '("browser" . bergheim/mu4e-open-message-in-webclient) t)
-(add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
-(add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
+(add-to-list 'mu4e-view-actions '("capture message" . mu4e-action-capture-message) t)
 (add-to-list 'mu4e-view-actions '("domain" . bergheim/mu4e-search-from-domain-all) t)
 (add-to-list 'mu4e-view-actions '("Domain inbox" . bergheim/mu4e-search-from-domain) t)
+(add-to-list 'mu4e-view-actions '("email" . bergheim/mu4e-search-from-address) t)
+(add-to-list 'mu4e-view-actions '("follow up" . bergheim/mu4e-follow-up) t)
+(add-to-list 'mu4e-view-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
+(add-to-list 'mu4e-view-actions '("later" . bergheim/mu4e-read-later) t)
 (add-to-list 'mu4e-view-actions '("mail list" . bergheim/mu4e-search-from-mail-list) t)
-
 (add-to-list 'mu4e-view-actions '("Me" . bergheim/mu4e-search-to-me) t)
+(add-to-list 'mu4e-view-actions '("name" . bergheim/mu4e-search-from-name) t)
 (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
-(add-to-list 'mu4e-view-actions '("junk" . bergheim/mu4e-refile-as-spam) t)
-(add-to-list 'mu4e-view-actions '("Around" . bergheim/mu4e-search-around-message) t)
-(add-to-list 'mu4e-view-actions '("adwim" . bergheim/mu4e-search-dwim) t)
-
-;; (add-to-list 'mu4e-view-actions '("Eww view" . jcs-view-in-eww) t)
-
 
 ;;; actions.el ends here
