@@ -88,47 +88,47 @@
 
 ;; (load-theme 'modus-vivendi t)
 
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :init
-;;   (setq doom-modeline-support-imenu t)
-;;   (doom-modeline-mode 1)
-;;   :config
-
-;;   ;; Disable icons for a performance boost
-;;   ;; (setq doom-modeline-icon nil)
-
-;;   ;; Disable major mode icons for additional speedup
-;;   ;; (setq doom-modeline-major-mode-icon nil)
-;;   ;; (setq doom-modeline-major-mode-color-icon nil)
-
-;;   ;; Use a simpler version checker format
-;;   (setq doom-modeline-checker-simple-format t)
-
-;;   ;; Disable buffer encoding display
-;;   (setq doom-modeline-buffer-encoding nil)
-
-;;   ;; If you don't use LSP, or don't want to display its status
-;;   (setq doom-modeline-lsp t)
-
-;;   ;; Set a fixed width for the modeline for consistency and performance
-;;   (setq doom-modeline-width 40)
-
-;;   ;; Set the cache directory for doom-modeline
-;;   (setq doom-modeline-cache-directory (expand-file-name "doom-modeline/" bergheim/cache-dir))
-
-;;   ;; apparently `file-name' is faster than `auto'
-;;   ;; see https://github.com/seagle0128/doom-modeline#customize
-;;   (setq doom-modeline-buffer-file-name-style 'file-name)
-;;   (setq doom-modeline-buffer-encoding nil))
-
-(use-package mood-line
+(use-package doom-modeline
   :ensure t
   :init
-  (mood-line-mode))
+  (setq doom-modeline-support-imenu t)
+  (doom-modeline-mode 1)
+  :config
 
-(with-eval-after-load 'mood-line
-  (setq mood-line-glyph-alist mood-line-glyphs-fira-code))
+  ;; Disable icons for a performance boost
+  ;; (setq doom-modeline-icon nil)
+
+  ;; Disable major mode icons for additional speedup
+  ;; (setq doom-modeline-major-mode-icon nil)
+  ;; (setq doom-modeline-major-mode-color-icon nil)
+
+  ;; Use a simpler version checker format
+  (setq doom-modeline-checker-simple-format t)
+
+  ;; Disable buffer encoding display
+  (setq doom-modeline-buffer-encoding nil)
+
+  ;; If you don't use LSP, or don't want to display its status
+  (setq doom-modeline-lsp t)
+
+  ;; Set a fixed width for the modeline for consistency and performance
+  (setq doom-modeline-width 40)
+
+  ;; Set the cache directory for doom-modeline
+  (setq doom-modeline-cache-directory (expand-file-name "doom-modeline/" bergheim/cache-dir))
+
+  ;; apparently `file-name' is faster than `auto'
+  ;; see https://github.com/seagle0128/doom-modeline#customize
+  (setq doom-modeline-buffer-file-name-style 'file-name)
+  (setq doom-modeline-buffer-encoding nil))
+
+;; (use-package mood-line
+;;   :ensure t
+;;   :init
+;;   (mood-line-mode))
+
+;; (with-eval-after-load 'mood-line
+;;   (setq mood-line-glyph-alist mood-line-glyphs-fira-code))
 
 
 (use-package uniquify
@@ -148,6 +148,24 @@
   :after evil-collection
   :config
   (global-anzu-mode +1))
+
+(use-package emacs
+  :config
+  (setq scroll-step 1
+        scroll-conservatively 10
+        scroll-margin 3)
+  ;; Enable smooth pixel scrolling
+  (pixel-scroll-precision-mode 1)
+
+  ;; Optional: Adjust pixel scroll settings
+  ;; Set the number of pixels to scroll each step
+  (setq pixel-scroll-precision-interpolate-page 1
+        pixel-scroll-precision-use-momentum t
+        pixel-scroll-precision-large-scroll-height 40.0
+
+        mouse-wheel-scroll-amount '(1 ((shift) . 1)) ;; one line at a time
+        mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
+        mouse-wheel-follow-mouse 't)) ;; scroll window under mouse
 
 ;; Mode line information
 (setq line-number-mode t)                        ; Show current line in modeline
