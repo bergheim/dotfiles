@@ -5,6 +5,7 @@
 
 (setq visible-bell t ;; flash
       inhibit-startup-message t
+      evil-want-Y-yank-to-eol t
 
       bergheim/home-directory (expand-file-name "~/")
 
