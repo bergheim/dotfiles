@@ -52,5 +52,13 @@
      (t
       (switch-to-buffer scratch-buffer)))))
 
+(defun bergheim/open-dirvish-current-project ()
+  "Open dirvish in the root directory of the current project."
+  (interactive)
+  (let ((project-root (project-root (project-current t))))
+    (if project-root
+        (dirvish project-root)
+      (message "No project found!"))))
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here

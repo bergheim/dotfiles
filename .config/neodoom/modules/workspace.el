@@ -56,7 +56,15 @@
 (use-package project
   :ensure nil  ; built-in package
   :config
-  (setq project-use-git t))
+  (setq project-use-git t)
+  (setq project-switch-commands
+        '((project-find-file "Find file")
+          (project-find-dir "Find directory")
+          (bergheim/open-dirvish-current-project "Browse" "b")
+          (consult-ripgrep "Grep" "g")
+          (consult-fd "Search" "s")
+          (magit-project-status "Magit" "m")
+          (project-eshell "Eshell"))))
 
 ;; TODO: remove this is `project.el' is enough
 ;; (use-package projectile
