@@ -212,10 +212,13 @@
 
 (use-package org-super-agenda
   :ensure t
-  :after org-agenda
+  :after org
   :config
   (setq org-super-agenda-header-map (make-sparse-keymap))
+  (org-super-agenda-mode))
 
+;; TODO could not get this correctly loaded inside use-package..
+(with-eval-after-load 'org-super-agenda
   (org-super-agenda--def-auto-group bergheim/clocked-or-created
     "Group items based on the latest CLOCK or CREATED timestamp in the entry.
 The date is formatted according to `org-super-agenda-date-format'."
@@ -247,10 +250,9 @@ The date is formatted according to `org-super-agenda-date-format'."
                                   'org-super-agenda-ts latest-ts)))))
     :key-sort-fn (lambda (a b)
                    (ts> (get-text-property 0 'org-super-agenda-ts a)
-                        (get-text-property 0 'org-super-agenda-ts b))))
+                        (get-text-property 0 'org-super-agenda-ts b)))))
 
 
-  (org-super-agenda-mode))
 
 ;; don't break evil on org-super-agenda headings, see
 ;; https://github.com/alphapapa/org-super-agenda/issues/50
