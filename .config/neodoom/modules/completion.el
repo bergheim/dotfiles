@@ -91,6 +91,24 @@
    consult-xref
    :display 'vertico))
 
+(defun bergheim/consult-ripgrep-with-selection (&optional dir)
+  "Run `consult-ripgrep' with the current visual selection as the initial input.
+If called interactively with a prefix argument, prompt for DIR, otherwise use the default behavior of `consult-ripgrep`."
+  (interactive
+   (list (when current-prefix-arg
+           (read-directory-name "Search Directory: "))))
+  (let ((initial (when (use-region-p)
+                   (buffer-substring-no-properties (region-beginning) (region-end)))))
+    (consult-ripgrep (or dir (consult--project-root)) initial)))
+
+(defun bergheim/consult-project-or-buffer ()
+  "Call `consult-project-buffer` if in a project, otherwise `consult-buffer`."
+  (interactive)
+  (if (project-current)
+      (consult-project-buffer)
+    (consult-buffer)))
+
+
 ;; TODO: make sure this works on multiple implementations
 (use-package xref
   :custom
@@ -100,6 +118,7 @@
 ;; Minibuffer completion
 (use-package vertico
   :ensure t
+  :demand t
   :custom
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)
