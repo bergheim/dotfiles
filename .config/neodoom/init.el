@@ -84,7 +84,8 @@
   (load-file (concat module-dir "mu4e/init.el"))
   (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "programming.el"))
-  (load-file (concat module-dir "evil.module.el")))
+  (load-file (concat module-dir "evil.module.el"))
+  (load-file (concat module-dir "apps.el")))
 
 (use-package site-lisp
   :ensure t

@@ -237,9 +237,37 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
         '(:padding -1 :stroke 0 :margin 0 :radius 0 :height 0.5 :scale 1.0))
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(use-package eshell
-  :bind (("C-r" . consult-history)))
 
+(use-package tempel
+  :ensure t
+  :custom
+  ;; Require trigger prefix before template name when completing.
+  (tempel-trigger-prefix "!")
+  :bind (("C-c t" . tempel-expand))
+  :config
+  (with-eval-after-load 'tempel
+    (define-key tempel-map (kbd "M-n") 'tempel-next)
+    (define-key tempel-map (kbd "M-p") 'tempel-previous))
+  :init
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-complete
+                      completion-at-point-functions)))
+
+  (add-hook 'conf-mode-hook 'tempel-setup-capf)
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf))
+
+(use-package tempel-collection
+  :after tempel
+  :ensure t)
 
 ;; `~' returns home
 (defun bergheim/find-file-recognize-home (orig-fun &rest args)
