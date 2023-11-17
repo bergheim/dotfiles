@@ -12,7 +12,15 @@
 ;; Package-Requires: ((emacs "29.1"))
 ;;
 
+;; death to C-g
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+(global-set-key [escape] 'keyboard-quit)
+(with-eval-after-load 'mu4e
+  (define-key mu4e-minibuffer-search-query-map [escape] 'abort-recursive-edit))
+
+(let ((keymaps '(minibuffer-local-map minibuffer-local-ns-map minibuffer-local-completion-map minibuffer-local-must-match-map)))
+  (dolist (map keymaps)
+    (define-key (symbol-value map) [escape] 'abort-recursive-edit)))
 
 ;; https://www.masteringemacs.org/article/mastering-key-bindings-emacs
 ;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone
@@ -47,6 +55,11 @@
     :states '(normal visual emacs)
     :keymaps 'emacs-lisp-mode-map)
 
+  (general-def :keymaps '(vertico-active-map consult-preview-keymap embark-general-map)
+    [escape] 'keyboard-quit)
+
+  (general-def :keymaps 'transient-map
+    [escape] 'transient-quit-one)
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map)
     "C-S-u" 'universal-argument
