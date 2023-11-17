@@ -73,9 +73,9 @@
         org-caldav-calendar-id "personal"
         org-caldav-inbox (concat org-directory "caldav/personal.org")
         org-caldav-calendars `((:calendar-id "personal"
-                                :inbox ,(concat org-directory "caldav/personal.org"))
+                                             :inbox ,(concat org-directory "caldav/personal.org"))
                                (:calendar-id "outlookoffice365com"
-                                :inbox ,(concat org-directory "caldav/neptune.org"))
+                                             :inbox ,(concat org-directory "caldav/neptune.org"))
                                )))
 
 (use-package org-mru-clock
@@ -87,15 +87,12 @@
 
 (use-package org-ql
   :ensure t
-  :defer t)
-
-(use-package org-super-agenda
-  :ensure t
   :after org)
 
 ;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
   :ensure t
+  :after org
   :defer t
   :config
   (org-recent-headings-mode))

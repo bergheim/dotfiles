@@ -4,7 +4,6 @@
 
 (use-package org-agenda
   :after general
-  :ensure org
   :general
   ;; FIXME: this does not work.
   ;; nothing in 'motion' sticks, which is probably the one one we need..
@@ -34,52 +33,52 @@
                       ;; (org-agenda-show-log nil)
                       (org-super-agenda-groups
                        '((:name "Happy birthday 🎂"
-                          :property "BIRTHDAY"
-                          :order 2)
+                                :property "BIRTHDAY"
+                                :order 2)
                          (:name "Keep your habits up 🔥"
-                          :habit t
-                          :order 3)
+                                :habit t
+                                :order 3)
 
                          (:name "Currently working on 🏋"
-                          :todo "INPROGRESS"
-                          :order 2)
+                                :todo "INPROGRESS"
+                                :order 2)
 
                          (:name "Logged 📅" :log t :order 15)
 
                          (:discard (:todo "SOMEDAY"))
                          ;; (:name "Done today" :discard (:log t))
                          (:name "This is how your day looks 🌞"
-                          :time-grid t
-                          :order 1)
+                                :time-grid t
+                                :order 1)
 
                          (:name "Waiting.. 鈴"
-                          :todo "WAITING"
-                          :order 5)
+                                :todo "WAITING"
+                                :order 5)
 
                          (:name "First, do one of these 🐸"
-                          :and (:deadline today :priority "A")
-                          :deadline today
-                          :and (:deadline past :priority "A")
-                          :and (:scheduled t :priority "A")
-                          :and (:scheduled past :priority "A")
-                          :deadline past
-                          :order 3)
+                                :and (:deadline today :priority "A")
+                                :deadline today
+                                :and (:deadline past :priority "A")
+                                :and (:scheduled t :priority "A")
+                                :and (:scheduled past :priority "A")
+                                :deadline past
+                                :order 3)
 
                          (:name "Scheduled for today ⏰"
-                          :scheduled today
-                          :order 3)
+                                :scheduled today
+                                :order 3)
 
                          (:name "Upcoming deadlines 🚌"
-                          :deadline future
-                          :order 6)
+                                :deadline future
+                                :order 6)
 
                          (:name "Follow up 📝"
-                          :tag "email"
-                          :order 4)
+                                :tag "email"
+                                :order 4)
 
                          (:name "Do you still need to do these? 🤔"
-                          :scheduled past
-                          :order 5)
+                                :scheduled past
+                                :order 5)
                          ))))))
 
         ("W" "Dashboard for the week"
@@ -91,7 +90,7 @@
                       (org-agenda-log-mode-items '(closed))
                       (org-super-agenda-groups
                        '((:time-grid t
-                          :order 1)
+                                     :order 1)
                          (:discard (:anything t))))))))
 
         ("w" "Work related tasks"
@@ -100,11 +99,11 @@
                                        '(
                                          ;; (:discard (:not (:and (:tag ("@work" "planet9")))))
                                          (:name "Important tasks"
-                                          :priority ("A" "B")
-                                          :order 1)
+                                                :priority ("A" "B")
+                                                :order 1)
                                          (:name "Needs refiling"
-                                          :tag "REFILE"
-                                          :order 1)))))))
+                                                :tag "REFILE"
+                                                :order 1)))))))
 
         ("c" "Todays done and clocked items"
          ((agenda "" ((org-agenda-overriding-header "")
@@ -113,10 +112,10 @@
                       (org-agenda-start-day (org-today))
                       (org-super-agenda-groups
                        '((:name "Done today"
-                          :and (:regexp "State \"DONE\""
-                                :log t))
+                                :and (:regexp "State \"DONE\""
+                                              :log t))
                          (:name "Clocked today"
-                          :log t)
+                                :log t)
                          (:discard (:anything t))))))))
 
         ("i" "In progress" tags-todo "TODO=\"INPROGRESS\"")
@@ -161,42 +160,42 @@
          ((agenda "Agenda today" ((org-agenda-span 'day)
                                   (org-super-agenda-groups
                                    '((:name "Today"
-                                      :time-grid t
-                                      :date today
-                                      :todo "TODAY"
-                                      :scheduled today
-                                      :order 1)))))
+                                            :time-grid t
+                                            :date today
+                                            :todo "TODAY"
+                                            :scheduled today
+                                            :order 1)))))
           (alltodo "All todos" ((org-agenda-overriding-header "")
                                 (org-super-agenda-groups
                                  '((:name "Next to do"
-                                    :todo "NEXT"
-                                    :order 1)
+                                          :todo "NEXT"
+                                          :order 1)
                                    (:name "Important"
-                                    :tag "Important"
-                                    :priority "A"
-                                    :order 6)
+                                          :tag "Important"
+                                          :priority "A"
+                                          :order 6)
                                    (:name "Due Today"
-                                    :deadline today
-                                    :order 2)
+                                          :deadline today
+                                          :order 2)
                                    (:name "Due Soon"
-                                    :deadline future
-                                    :order 8)
+                                          :deadline future
+                                          :order 8)
                                    (:name "Overdue"
-                                    :deadline past
-                                    :face error
-                                    :order 7)
+                                          :deadline past
+                                          :face error
+                                          :order 7)
                                    (:name "Projects"
-                                    :tag "Project"
-                                    :order 14)
+                                          :tag "Project"
+                                          :order 14)
                                    (:name "Emacs"
-                                    :tag "emacs"
-                                    :order 13)
+                                          :tag "emacs"
+                                          :order 13)
                                    (:name "To read"
-                                    :tag "toread"
-                                    :order 30)
+                                          :tag "toread"
+                                          :order 30)
                                    (:name "Waiting"
-                                    :todo "WAITING"
-                                    :order 20)
+                                          :todo "WAITING"
+                                          :order 20)
                                    (:discard (:tag ("Chore" "Routine" "Daily")))))))))
 
         ("D" "Playground"
