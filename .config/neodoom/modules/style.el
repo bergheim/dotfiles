@@ -198,5 +198,11 @@ Subtract some pixels to allow for borders etc"
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
+(use-package evil-goggles
+  :ensure t
+  :config
+  (evil-goggles-mode)
+  (evil-goggles-use-diff-faces))
+
 (provide 'style)
 ;;; style.el ends here

@@ -8,6 +8,10 @@
   (with-editor-mode        . evil-insert-state)
   (magit-post-refresh-hook . diff-hl-magit-post-refresh))
 
+(use-package forge
+  :ensure t
+  :after magit)
+
 ;; TODO is this really needed..
 (use-package diff-hl
   :ensure t
