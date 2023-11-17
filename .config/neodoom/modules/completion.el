@@ -12,14 +12,9 @@
 (setq completions-format 'one-column)
 (setq completions-group t)
 (setq completion-auto-select 'second-tab)            ; Much more eager
-;(setq completion-auto-select t)                     ; See `C-h v completion-auto-select' for more possible values
+;; (setq completion-auto-select t)                      ; See `C-h v completion-auto-select' for more possible values
 
 (keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
-
-;; For a fancier built-in completion option, try ido-mode or fido-mode. See also
-;; the file extras/base.el
-;(fido-vertical-mode)
-;(setq icomplete-delay-completions-threshold 4000)
 
 (use-package avy
   :ensure t

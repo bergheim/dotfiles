@@ -41,7 +41,7 @@
 ;; bootstrap helpers
 (let ((modules-dir (concat bergheim/config-dir "modules/")))
   (unless (file-exists-p modules-dir)
-        (make-directory modules-dir))
+    (make-directory modules-dir))
   (load-file (concat modules-dir "bergheim-utils.el")))
 
 (setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))

@@ -37,6 +37,20 @@
 
   (message "Emacs configuration reloaded successfully!"))
 
+(defun bergheim/toggle-scratch-buffer ()
+  "Toggle the *scratch* buffer: show, hide, or switch to it based on its current state."
+  (interactive)
+  (let ((scratch-buffer (get-buffer-create "*scratch*")))
+    (cond
+     ;; hide if active
+     ((eq (current-buffer) scratch-buffer)
+      (bury-buffer))
+     ;; switch to it if visible
+     ((get-buffer-window scratch-buffer t)
+      (pop-to-buffer scratch-buffer))
+     ;; else open in current
+     (t
+      (switch-to-buffer scratch-buffer)))))
 
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
