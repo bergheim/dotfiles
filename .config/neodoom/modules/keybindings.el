@@ -30,6 +30,7 @@
 
 (use-package general
   :config
+  (general-evil-setup)
   (defvar bergheim/localleader-map (make-sparse-keymap)
     "Keymap for 'SPC m'")
 
@@ -58,6 +59,12 @@
 
   (general-def :keymaps 'transient-map
     [escape] 'transient-quit-one)
+
+  ;; jk exits normal
+  (general-imap "j"
+                (general-key-dispatch 'self-insert-command
+                  :timeout 0.25
+                  "k" 'evil-normal-state))
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map)
     "C-S-u" 'universal-argument
@@ -106,7 +113,7 @@
     "g o" 'browse-at-remote
     "g l" 'magit-log-buffer-file
     "g y" 'browse-at-remote-kill
-    "g s" 'magit-stage-file
+    "g s" 'magit-stage-buffer-file
 
     "h" '(:ignore t :which-key "Help")
     "ha" '(apropos :which-key "Apropos")
