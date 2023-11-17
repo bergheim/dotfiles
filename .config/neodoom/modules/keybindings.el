@@ -66,135 +66,146 @@
     "C-u" 'evil-scroll-up)
 
   (bergheim/global-menu-keys
-   "RET" '(consult-bookmark :which-key "Bookmarks")
-   "a" '(:ignore t :which-key "Applications")
-   "ad" '(dirvish :which-key "Dirvish")
-   "ae" '(elfeed :which-key "Elfeed")
+    "RET" '(consult-bookmark :which-key "Bookmarks")
+    "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
+    "'" '(vertico-repeat :which-key "Repeat search")
+    "`" '(bergheim/toggle-scratch-buffer :which-key "Scratch buffer")
+    "SPC" '(find-file :which-key "Find file")
 
-   "b" '(:ignore t :which-key "Buffers")
-   "bb" '(consult-buffer :which-key "Switch")
-   "bd" '(evil-delete-buffer :which-key "Delete")
-   "bn" '(evil-buffer-new :which-key "New")
-   "bS" '(scratch-buffer :which-key "switch to scratch")
-   "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
-   :which-key "switch to scratch")
-   "bm" '(bookmark-set :which-key "Bookmark set")
-   "bj" '(bookmark-jump :which-key "Bookmark jump")
-   "bu" '(undo-tree-visualize :which-key "Undo tree")
+    "a" '(:ignore t :which-key "Apps")
+    "ad" '(dirvish :which-key "Dirvish")
+    "ae" '(elfeed :which-key "Elfeed")
 
-   "cE" '(consult-flymake :which-key "Flymake diagnostic")
-   
-   "d" '(:ignore t :which-key "dotfiles")
-   "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
-   "df" '(bergheim/find-in-dotfiles :which-key "Find a file")
-   "db" '(bergheim/browse-dotfiles :which-key "Browse")
+    "b" '(:ignore t :which-key "Buffers")
+    "bb" '(bergheim/consult-project-or-buffer :which-key "Switch")
+    "bB" '(consult-buffer :which-key "Switch")
 
-   "f" '(:ignore t :which-key "Files")
-   "fD" '(bergheim/delete-current-file :which-key "Delete file")
-   "ff" '(find-file :which-key "Find file")
-   "fr" '(consult-recent-file :which-key "Recent files")
-   "fR" '(rename-visited-file :which-key "Rename file")
-   "fs" '(save-buffer :which-key "Save buffer")
+    "bd" '(evil-delete-buffer :which-key "Delete")
+    "bn" '(evil-buffer-new :which-key "New")
+    "bS" '(scratch-buffer :which-key "switch to scratch")
+    "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
+            :which-key "switch to scratch")
+    "bm" '(bookmark-set :which-key "Bookmark set")
+    "bj" '(bookmark-jump :which-key "Bookmark jump")
+    "bu" '(undo-tree-visualize :which-key "Undo tree")
 
-   "g" '(:ignore t :which-key "git")
-   "g g" '(magit :which-key "magit")
-   "g o" 'browse-at-remote
-   "g l" 'browse-at-remote-kill
-   "g y" 'browse-at-remote-kill
-   "g s" 'magit-stage-file
+    "cE" '(consult-flymake :which-key "Flymake diagnostic")
+    
+    "d" '(:ignore t :which-key "dotfiles")
+    "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
+    "df" '(bergheim/find-in-dotfiles :which-key "Find a file")
+    "db" '(bergheim/browse-dotfiles :which-key "Browse")
 
-   "h" '(:ignore t :which-key "Help")
-   "ha" '(apropos :which-key "Apropos")
-   "hb" '(embark-bindings :which-key "Bindings")
-   "hf" '(helpful-callable :which-key "Function")
-   "hk" '(helpful-key :which-key "Key")
-   "hm" '(describe-mode :which-key "Describe mode")
-   "hr" '(bergheim/reload-init-file :which-key "Reload")
-   "ht" '(consult-theme :which-key "Switch theme")
-   "hv" '(helpful-variable :which-key "Variable")
+    "f" '(:ignore t :which-key "Files")
+    "fD" '(bergheim/delete-current-file :which-key "Delete file")
+    "ff" '(find-file :which-key "Find file")
+    "fr" '(consult-recent-file :which-key "Recent files")
+    "fR" '(rename-visited-file :which-key "Rename file")
+    "fs" '(save-buffer :which-key "Save buffer")
 
-   "m" bergheim/localleader-map
+    "g" '(:ignore t :which-key "git")
+    "g g" '(magit :which-key "magit")
+    "g o" 'browse-at-remote
+    "g l" 'magit-log-buffer-file
+    "g y" 'browse-at-remote-kill
+    "g s" 'magit-stage-file
 
-   "p" '(:ignore t :which-key "Project")
+    "h" '(:ignore t :which-key "Help")
+    "ha" '(apropos :which-key "Apropos")
+    "hb" '(embark-bindings :which-key "Bindings")
+    "hf" '(helpful-callable :which-key "Function")
+    "hk" '(helpful-key :which-key "Key")
+    "hm" '(describe-mode :which-key "Describe mode")
+    "hr" '(bergheim/reload-init-file :which-key "Reload")
+    "ht" '(consult-theme :which-key "Switch theme")
+    "hv" '(helpful-variable :which-key "Variable")
 
-   ;; TODO: remove projectile if project is good enough
-   ;; "pa" '(projectile-add-known-project :which-key "Add project")
-   ;; "pb" '(projectile-switch-to-buffer :which-key "buffers")
-   ;; "pf" '(projectile-find-file :which-key "Find file")
-   ;; "ps" ;; TODO: make this ripgrep all files in project
-   ;; "pp" '(projectile-switch-project :which-key "Switch project")
-   ;; "pu" '(projectile-discover-projects-in-search-path :which-key "Update projects")
+    "m" `(,bergheim/localleader-map :which-key "Local leader")
 
-   "pb" '(consult-project-buffer :which-key "buffers")
-   "pd" '(project-find-dir :which-key "Find dir")
-   "pf" '(project-find-file :which-key "Find file")
-   "pF" '(affe-find :which-key "Async find file")
-   "ps" '(consult-ripgrep :which-key "Grep project")
-   "pS" '(affe-grep :which-key "Async grep project")
-   "pp" '(project-switch-project :which-key "Switch project")
+    "p" '(:ignore t :which-key "Project")
+    "pb" '(consult-project-buffer :which-key "buffers")
+    "pd" '(project-find-dir :which-key "Find dir")
+    "pf" '(project-find-file :which-key "Find file")
+    "pF" '(affe-find :which-key "Async find file")
+    "ps" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
+    "pp" '(project-switch-project :which-key "Switch project")
 
-   ;; TODO: add lots more consult stuff like kill-ring etc
-   "s" '(:ignore t :which-key "Search")
-   "sa" '(consult-org-agenda :which-key "org agenda")
-   "sb" '(consult-line-multi :which-key "open buffers")
-   "sd" '(consult-ripgrep :which-key "grep current directory")
-   "sh" '(consult-org-heading :which-key "org heading")
-   "sh" '(consult-recent-file :which-key "recent files")
-   "sI" '(consult-imenu-multi :which-key "imenu items in all buffers")
-   "si" '(consult-imenu :which-key "imenu items")
-   "sm" '(consult-man :which-key "man")
-   "sp" '(consult-project-buffer :which-key "project buffers")
-   "ss" '(consult-line :which-key "buffer")
+    ;; TODO: add lots more consult stuff like kill-ring etc
+    "s" '(:ignore t :which-key "Search")
+    "sa" '(consult-org-agenda :which-key "org agenda")
+    "sb" '(arg-line-multi :which-key "open buffers")
+    "sd" '((lambda () (interactive) (bergheim/consult-ripgrep-with-selection ".")) :which-key "Current directory")
+    "sD" '((lambda () (interactive) 
+             (let ((current-prefix-arg (prefix-numeric-value '(4)))) 
+               (call-interactively 'bergheim/consult-ripgrep-with-selection)))
+           :which-key "Other dir")
+    "sA" '(affe-grep :which-key "Async grep")
+    
+    "sf" '(consult-fd :which-key "Search File")
+    "sF" '(consult-find :which-key "Search all files")
+    "sh" '(consult-org-heading :which-key "org heading")
+    "sh" '(consult-recent-file :which-key "recent files")
+    "sI" '(consult-imenu-multi :which-key "imenu items in all buffers")
+    "si" '(consult-imenu :which-key "imenu items")
+    "sm" '(consult-man :which-key "man")
+    "sp" '(consult-project-buffer :which-key "project buffers")
+    "ss" '(consult-line :which-key "buffer")
 
-   "t" '(:ignore t :which-key "Toggle")
-   "t f" '(apheleia-global-mode :which-key "Toggle formatting")
-   "t p" '(popper-toggle-type :which-key "Toggle popup")
+    "t" '(:ignore t :which-key "Toggle")
+    "t f" '(apheleia-global-mode :which-key "Toggle formatting")
+    "t p" '(popper-toggle-type :which-key "Toggle popup")
+    "t w" '(writeroom-mode :which-key "Writerroom")
+    "t z" '(bergheim/present-mode :which-key "Present")
 
-   "u" '(universal-argument :which-key "Universal argument")
+    "u" '(universal-argument :which-key "Universal argument")
 
-   "q" '(:ignore t :which-key "Quit")
-   "qq" '(save-buffers-kill-terminal :which-key "Quit")
-   "qr" '(bergheim/restart-emacs :which-key "Restart")
+    "q" '(:ignore t :which-key "Quit")
+    "qq" '(save-buffers-kill-terminal :which-key "Quit")
+    "qr" '(bergheim/restart-emacs :which-key "Restart")
 
-   "w" '(:ignore t :which-key "Workspace and windows")
-   "ws" '(evil-window-split :which-key "split horizontally")
-   "wv" '(evil-window-vsplit :which-key "split vertically")
-   "wd" '(evil-window-delete :which-key "delete window")
+    "w" '(:ignore t :which-key "Workspace and windows")
+    "w=" '(balance-windows :which-key "Balance")
+    "ws" '(evil-window-split :which-key "split horizontally")
+    "wv" '(evil-window-vsplit :which-key "split vertically")
+    "wd" '(evil-window-delete :which-key "delete window")
 
-   "wb" '(:ignore t :which-key "Burly")
-   "wbf" '(burly-bookmark-frames :which-key "Bookmark frames")
-   "wbw" '(burly-bookmark-windows :which-key "Bookmark windows and frames")
-   "wbo" '(burly-open-bookmark :which-key "Open a bookmark")
-   "wbl" '(burly-open-last-bookmark :which-key "Open last bookmark")
-   "wu" '(winner-undo :which-key "Winner undo")
-   "wr" '(winner-redo :which-key "Winner redo")
-   "wm" '(bergheim/zoom-window :which-key "Maximize window")
+    "wb" '(:ignore t :which-key "Burly")
+    "wbf" '(burly-bookmark-frames :which-key "Bookmark frames")
+    "wbw" '(burly-bookmark-windows :which-key "Bookmark windows and frames")
+    "wbo" '(burly-open-bookmark :which-key "Open a bookmark")
+    "wbl" '(burly-open-last-bookmark :which-key "Open last bookmark")
+    "wu" '(winner-undo :which-key "Winner undo")
+    "wU" '(winner-redo :which-key "Winner redo")
+    "wr" '(evil-window-rotate-upwards :which-key "Rotate upwards")
+    "wR" '(evil-window-rotate-downwards :which-key "Rotate downwards")
+    "wm" '(bergheim/zoom-window :which-key "Maximize window")
 
-   "wB" '(:ignore t :which-key "Bufler")
-   "wBb" '(bufler :which-key "Show buffers")
-   "wBs" '(bufler-switch-buffer :which-key "Switch to buffer"))
+    "wB" '(:ignore t :which-key "Bufler")
+    "wBb" '(bufler :which-key "Show buffers")
+    "wBs" '(bufler-switch-buffer :which-key "Switch to buffer"))
 
   (bergheim/global-evil-keys
-   "M-h" #'evil-window-left
-   "M-j" #'evil-window-down
-   "M-k" #'evil-window-up
-   "M-l" #'evil-window-right
+    "M-h" #'evil-window-left
+    "M-j" #'evil-window-down
+    "M-k" #'evil-window-up
+            "M-l" #'evil-window-right
 
-   "M-H" #'+evil/window-move-left
-   "M-J" #'+evil/window-move-down
-   "M-K" #'+evil/window-move-up
-   "M-L" #'+evil/window-move-right
+            ;; TODO: do these work?
+            "M-H" #'windmove-left
+            "M-J" #'windmove-down
+            "M-K" #'windmove-up
+            "M-L" #'windmove-right
 
-   "M-\\" #'evil-window-vsplit
-   "M-]" #'evil-window-split
+    "M-\\" #'evil-window-vsplit
+    "M-]" #'evil-window-split
 
-   "M-DEL" #'evil-window-delete
-   ;; "M-<backspace>" #'+workspace/close-window-or-workspace
-   "M-S-<backspace>" #'kill-current-buffer
+    "M-DEL" #'evil-window-delete
+    ;; "M-<backspace>" #'+workspace/close-window-or-workspace
+    "M-S-<backspace>" #'kill-current-buffer
 
-   "M-o" #'evil-window-next
-   "M-f" #'maximize-window
-   "M-F" #'winner-undo)
+    "M-o" #'evil-window-next
+    "M-f" #'maximize-window
+    "M-F" #'winner-undo)
 
   ;; (general-define-key
   ;;  :states '(normal visual)
@@ -204,9 +215,9 @@
   ;;
 
   (bergheim/emacs-lisp-keys
-   "e" '(:ignore t :which-key "Eval")
-   "e d" '(eval-defun :which-key "eval last defun")
-   "e e" '(eval-last-sexp :which-key "eval last sexp")
-   "e b" '(eval-last-sexp :which-key "eval buffer")
-   "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
+    "e" '(:ignore t :which-key "Eval")
+    "e d" '(eval-defun :which-key "eval last defun")
+    "e e" '(eval-last-sexp :which-key "eval last sexp")
+    "e b" '(eval-last-sexp :which-key "eval buffer")
+    "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
   )

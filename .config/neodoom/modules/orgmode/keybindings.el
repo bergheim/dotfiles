@@ -15,8 +15,15 @@
   "ol" '(org-clock-in-last :which-key "clock in last")
   "oo" '(org-clock-out :which-key "clock out")
   "oC" '(org-capture :which-key "capture")
-  "or" '(bergheim/org-mru-clock-in :which-key "mru clock in")
-  "oR" '(bergheim/org-mru-goto :which-key "mru goto")
+
+  "or" '(:ignore t :which-key "Recent changes")
+  "orr" '(bergheim/org-agenda-recent-changes :which-key "this week")
+
+  "orw" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@work" "work" "neptune"))) :which-key "work")
+  "orp" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@life" "life"))) :which-key "work")
+
+  "orm" '((lambda () (interactive) (org-ql-view-recent-items :num-days 31 :type 'clocked)) :which-key "Last month")
+
   "on" '(org-add-note :which-key "add note")
   "om" '(bergheim/org-subtree-to-mu4e :which-key "subtree to mu4e")
   "os" '(org-store-link :which-key "store link")
