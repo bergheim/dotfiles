@@ -21,27 +21,43 @@
 
 
 ;; Note: height = px * 100
+(defvar bergheim/font-name "Ubuntu Mono" "Default font for fixed-width.")
+(defvar bergheim/variable-font-name "IosevkaTerm Nerd Font Propo" "Default font for variable width.")
+(defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
+(defvar bergheim/font-size-small 100 "Font size for small displays.")
+(defvar bergheim/font-size-medium 150 "Font size for medium displays.")
+(defvar bergheim/font-size-large 200 "Font size for large displays.")
+(defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
+(defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
+(defvar bergheim/line-spacing-large 0.8 "Line spacing for large displays.")
+(defvar bergheim/screen-margin 400 "Margin to subtract from screen height.")
+
 (defun bergheim/set-font-based-on-frame-resolution ()
-  "Set font size based on the resolution of the frame's display.
-
-Subtract some pixels to allow for borders etc"
-
-  (let ((height (frame-pixel-height))
-        (margin 400))
+  "Set font size based on the resolution of the frame's display."
+  (let ((height (- (frame-pixel-height) bergheim/screen-margin))
+        font-size global-line-spacing)
     (cond
-     ((< height (- 1440 margin)) ;; your CRT called it wants its tubes back
-      (set-face-attribute 'default nil :font "Ubuntu Mono" :height 80))
-     ((< height (- 2160 margin)) ;; 1440p
-      (set-face-attribute 'default nil :font "Ubuntu Mono" :height 100))
-     (t ;; 4k
-      (set-face-attribute 'default nil :font "Ubuntu Mono" :height 150)))))
+     ((< height 1440)
+      (setq font-size bergheim/font-size-small
+            global-line-spacing bergheim/line-spacing-small))
+     ((< height 2160)
+      (setq font-size bergheim/font-size-medium
+            global-line-spacing bergheim/line-spacing-medium))
+     (t
+      (setq font-size bergheim/font-size-large
+            global-line-spacing bergheim/line-spacing-large)))
+
+    (setq-default line-spacing global-line-spacing)
+    (set-face-attribute 'default nil :font bergheim/font-name :height font-size)
+    (set-face-attribute 'variable-pitch nil :family bergheim/variable-font-name :height font-size)
+    (set-face-attribute 'fixed-pitch nil :font bergheim/fixed-font-name :height font-size)))
+
+;; Adjust font for new frames
+(add-hook 'after-make-frame-functions (lambda (frame)
+                                        (with-selected-frame frame
+                                          (bergheim/set-font-based-on-frame-resolution))))
 
 (bergheim/set-font-based-on-frame-resolution)
-;; Adjust font for new frames
-(add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (with-selected-frame frame
-              (bergheim/set-font-based-on-frame-resolution))))
 
 (show-paren-mode 1) ;; Visualize matching parens
 
