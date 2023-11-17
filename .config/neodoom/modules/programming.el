@@ -46,14 +46,6 @@
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode))
 
-(use-package paredit
-  :ensure t
-  :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode . enable-paredit-mode)
-         (ielm-mode . enable-paredit-mode)
-         (lisp-interaction-mode . enable-paredit-mode)
-         (scheme-mode . enable-paredit-mode)))
-
 (use-package elixir-ts-mode
   :ensure t)
 
@@ -86,8 +78,8 @@
       (progn
         (setq-local comment-start "// ")
         (setq-local comment-end ""))
-        ;; (setq-local comment-start "{/* ")
-        ;; (setq-local comment-end " */}"))
+    ;; (setq-local comment-start "{/* ")
+    ;; (setq-local comment-end " */}"))
     ;; Otherwise, for TypeScript, use the regular style
     (setq-local comment-start "// ")
     (setq-local comment-end "")))
