@@ -6,19 +6,19 @@
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package desktop
-  :init
-  (add-to-list 'desktop-minor-mode-handlers
-               '(eglot--managed-mode . ignore))
-  ;; Define the path for desktop files.
-  (setq desktop-path (list bergheim/cache-dir)
-        desktop-auto-save-timeout 30
-        desktop-save 'if-exists
-        desktop-load-locked-desktop t) ; Load even if there's a lock.
+  ;; :init
+  ;; (add-to-list 'desktop-minor-mode-handlers
+  ;;              '(eglot--managed-mode . ignore))
+  :config
+  (setq desktop-path (list (bergheim/get-and-ensure-data-dir "desktop"))
+        desktop-auto-save-timeout 3600
+        desktop-save 'ask-if-new
+        desktop-load-locked-desktop t
+        desktop-save-mode 1)
 
   ;; Auto-save and load without prompting.
-  (setq desktop-save-mode 1)
   (add-hook 'desktop-after-read-hook (lambda () (desktop-save-mode 1)))
-  (desktop-read bergheim/cache-dir))
+  (desktop-read (expand-file-name "desktop" bergheim/cache-dir)))
 
 (use-package restart-emacs
   :ensure t
@@ -27,7 +27,7 @@
   (defun bergheim/restart-emacs ()
     "Save desktop and then restart Emacs with custom init directory."
     (interactive)
-    (desktop-save bergheim/cache-dir)
+    (desktop-save (expand-file-name "desktop" bergheim/cache-dir))
     (let ((restart-args `("--init-directory" ,(expand-file-name "~/.config/neodoom") "--debug-init")))
       (restart-emacs restart-args))))
 
