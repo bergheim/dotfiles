@@ -126,6 +126,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (completion-styles '(basic substring partial-completion flex))
   :init
   (vertico-mode)
+  ;; save the state so we can `vertico-repeat'
+  :hook (minibuffer-setup . vertico-repeat-save)
   :general
   (general-def :keymaps 'vertico-map
     "C-h" 'vertico-directory-up
@@ -137,7 +139,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :config
   (setq vertico-scroll-margin 4
         vertico-count 20
-        vertico-resize 'grow-only
+        vertico-resize nil
         vertico-cycle t))
 
 ;; FIXME: this is so terrible..
@@ -181,13 +183,15 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (:map corfu-map
         ("SPC" . corfu-insert-separator)
         ("C-n" . corfu-next)
-        ("C-p" . corfu-previous))
+        ("C-p" . corfu-previous)
+        ("M-n" . nil)
+        ("M-p" . nil))
   :custom
   (corfu-auto t) ;; enable auto completion
   ;; (corfu-auto-delay 0)
   ;; (corfu-auto-prefix 0)
   ;; (completion-styles '(basic))
-)
+  )
 
 ;; Part of corfu
 (use-package corfu-popupinfo
@@ -230,7 +234,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :after corfu
   :config
   (setq kind-icon-default-style
-         '(:padding -1 :stroke 0 :margin 0 :radius 0 :height 0.5 :scale 1.0))
+        '(:padding -1 :stroke 0 :margin 0 :radius 0 :height 0.5 :scale 1.0))
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package eshell

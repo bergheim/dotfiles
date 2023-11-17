@@ -27,13 +27,11 @@
 ;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
 
 
-(defvar bergheim/localleader-map (make-sparse-keymap)
-  "Keymap for 'SPC m'")
 
 (use-package general
   :config
-  ;; TODO: make this work with reloads
-  ;; (general-unbind :prefix "SPC")
+  (defvar bergheim/localleader-map (make-sparse-keymap)
+    "Keymap for 'SPC m'")
 
   (general-create-definer bergheim/global-menu-keys
     :states '(normal visual insert motion emacs)
