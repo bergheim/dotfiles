@@ -213,9 +213,9 @@
 
   :general
   (general-nmap
-   "u" 'undo-tree-undo
-   "U" 'undo-tree-visualize
-   "C-r" 'undo-tree-redo))
+    "u" 'undo-tree-undo
+    "U" 'undo-tree-visualize
+    "C-r" 'undo-tree-redo))
 
 ;; if it does, switch to this
 ;; (use-package vundo

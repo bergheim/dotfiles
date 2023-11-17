@@ -32,6 +32,8 @@
 (defvar bergheim/line-spacing-large 0.8 "Line spacing for large displays.")
 (defvar bergheim/screen-margin 400 "Margin to subtract from screen height.")
 
+(custom-set-faces '(line-number-current-line ((t :weight bold))))
+
 (defun bergheim/set-font-based-on-frame-resolution ()
   "Set font size based on the resolution of the frame's display."
   (let ((height (- (frame-pixel-height) bergheim/screen-margin))
@@ -58,8 +60,6 @@
                                           (bergheim/set-font-based-on-frame-resolution))))
 
 (bergheim/set-font-based-on-frame-resolution)
-
-(show-paren-mode 1) ;; Visualize matching parens
 
 (use-package ef-themes
   :ensure t
@@ -167,6 +167,17 @@
         mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
         mouse-wheel-follow-mouse 't)) ;; scroll window under mouse
 
+
+(defun noct-relative ()
+  "Show relative line numbers."
+  (setq-local display-line-numbers 'visual))
+
+(defun noct-absolute ()
+  "Show absolute line numbers."
+  (setq-local display-line-numbers t))
+
+;; TODO: go through this..
+
 ;; Mode line information
 (setq line-number-mode t)                        ; Show current line in modeline
 (setq column-number-mode t)                      ; Show column as well
@@ -192,9 +203,12 @@
 (pixel-scroll-precision-mode)                         ; Smooth scrolling
 (setq visible-bell nil)                               ; do _not_ flash on esc or anything
 
-;; Display line numbers in programming mode
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(setq-default display-line-numbers-width 3)           ; Set a minimum width
+(setq-default display-line-numbers 'visual
+              display-line-numbers-widen t
+              display-line-numbers-width 3
+              display-line-numbers-current-absolute t)
+
+(show-paren-mode 1) ;; Visualize matching parens
 
 ;; Nice line wrapping when working with text
 (add-hook 'text-mode-hook 'visual-line-mode)

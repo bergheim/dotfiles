@@ -12,6 +12,9 @@
           (evil-search symbol t t)
         (evil-ex-search-word-forward))))
 
+  (add-hook 'evil-insert-state-entry-hook #'noct-absolute)
+  (add-hook 'evil-insert-state-exit-hook #'noct-relative)
+
   :general
   (evil-normal-state-map
    "*" 'bergheim/evil-search-symbol-forward))
@@ -112,6 +115,21 @@
   (setq evil-cleverparens-use-additional-bindings t
         evil-cleverparens-use-additional-movement-keys t
         evil-cleverparens-use-s-and-S nil))
+
+;; (use-package lispyville
+;;   :ensure t
+;;   :after evil
+;;   ;; :defer t
+;;   :init
+;;   (general-add-hook '(emacs-lisp-mode-hook lisp-mode-hook) #'lispyville-mode)
+;;   :config
+;;   (setq lispyville-key-theme '(operators c-w additional
+;;                                          additional-movement slurp/barf-cp
+;;                                          text-objects)))
+;; (use-package iedit
+;;   :after lispyville
+;;   :config
+;;   (define-key iedit-mode-keymap (kbd "C-;") nil))  ; this is used by embark
 
 ;; posframe is.. kinda cool I guess? but it does not contain all the text..
 ;; (use-package posframe
