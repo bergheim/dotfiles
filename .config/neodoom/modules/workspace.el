@@ -18,8 +18,9 @@
         '("\\*Messages\\*"
           "Output\\*$"
           "\\*Async Shell Command\\*"
-          "^\\*Flymake diagnostics.*\\*$" flymake-diagnostics-buffer-mode
-          ;; help-mode
+          "^\\*Flymake diagnostics.*\\*$"
+          flymake-diagnostics-buffer-mode
+          help-mode
           compilation-mode
           "\\*eldoc\\*"
           ))

@@ -15,7 +15,10 @@
 (use-package magit-todos
   :ensure t
   :after magit
-  :config (magit-todos-mode 1))
+  :custom
+  (magit-todos-depth 2)
+  :config
+  (magit-todos-mode 0))
 
 ;; TODO is this really needed..
 (use-package diff-hl
