@@ -1,30 +1,9 @@
 ;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
 
-;; required for the tests
-(package-initialize)
-
-(setq visible-bell t ;; flash
-      inhibit-startup-message t
-      evil-want-Y-yank-to-eol t
-
-      bergheim/home-directory (expand-file-name "~/")
-
-      gc-cons-threshold 100000000 ; 100 mb
-      read-process-output-max (* 1024 1024) ; 1mb
-      initial-major-mode 'emacs-lisp-mode  ; default mode for the *scratch* buffer
-      display-time-default-load-average nil ; this information is useless for most
-      read-answer-short t ;; y means yes
-      use-dialog-box nil ;; plz no
-      sentence-end-double-space nil ;; Fix archaic defaults
-      )
-
-(defalias 'yes-or-no-p 'y-or-n-p)
-
 (defvar bergheim/cache-dir
   (let* ((xdg-cache (or (getenv "XDG_CACHE_HOME")
                         (expand-file-name "~/.cache/")))
          (cache-dir (concat xdg-cache "neodoom/")))
-
     (unless (file-exists-p cache-dir)
       (make-directory cache-dir))
     cache-dir))
@@ -43,7 +22,25 @@
 (let ((modules-dir (concat bergheim/config-dir "modules/")))
   (unless (file-exists-p modules-dir)
     (make-directory modules-dir))
-  (load-file (concat modules-dir "bergheim-utils.el")))
+  (load-file (expand-file-name "bootstrap.el" modules-dir)))
+
+(setq visible-bell t ;; flash
+      inhibit-startup-message t
+      evil-want-Y-yank-to-eol t
+      package-user-dir (bergheim/get-and-ensure-data-dir "elpa") 
+
+      bergheim/home-directory (expand-file-name "~/")
+
+      gc-cons-threshold 100000000 ; 100 mb
+      read-process-output-max (* 1024 1024) ; 1mb
+      initial-major-mode 'emacs-lisp-mode  ; default mode for the *scratch* buffer
+      display-time-default-load-average nil ; this information is useless for most
+      read-answer-short t ;; y means yes
+      use-dialog-box nil ;; plz no
+      sentence-end-double-space nil) ;; Fix archaic defaults
+
+(package-initialize)
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
 
@@ -72,6 +69,7 @@
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
   (load-file (concat module-dir "base.el"))
   (load-file (concat module-dir "style.el"))
+  (load-file (concat module-dir "utils.el"))
   (load-file (concat module-dir "vcs.el"))
   (load-file (concat module-dir "workspace.el"))
   (load-file (concat module-dir "formating.el"))

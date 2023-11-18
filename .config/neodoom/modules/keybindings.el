@@ -140,6 +140,7 @@
     "p" '(:ignore t :which-key "Project")
     "pb" '(consult-project-buffer :which-key "buffers")
     "pd" '(project-find-dir :which-key "Find dir")
+    "pe" '(project-or-external-find-file :which-key "External Find file")
     "pf" '(project-find-file :which-key "Find file")
     "pF" '(affe-find :which-key "Async find file")
     "ps" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
