@@ -114,6 +114,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
 
+(defun sort-directories-first (files)
+  (setq files (vertico-sort-history-alpha files))
+  (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
+         (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
+
 ;; Minibuffer completion
 (use-package vertico
   :ensure t
@@ -125,6 +130,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (completion-styles '(basic substring partial-completion flex))
   :init
   (vertico-mode)
+  (vertico-multiform-mode)
   ;; save the state so we can `vertico-repeat'
   :hook (minibuffer-setup . vertico-repeat-save)
   :general
@@ -136,7 +142,14 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     "C-M-k" 'vertico-previous-group
     "C-l" 'vertico-directory-enter)
   :config
-  (setq vertico-scroll-margin 4
+  (setq vertico-sort-function #'vertico-sort-history-alpha
+        vertico-multiform-commands '((consult-imenu-multi buffer indexed)
+                                     ;; (execute-extended-command buffer)
+                                     )
+        vertico-multiform-categories '((symbol (vertico-sort-function . vertico-sort-alpha))
+                                       ;; (consult-grep buffer)
+                                       (file (vertico-sort-function . sort-directories-first)))
+        vertico-scroll-margin 4
         vertico-count 20
         vertico-resize nil
         vertico-cycle t))
