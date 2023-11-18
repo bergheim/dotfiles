@@ -130,9 +130,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     "C-h" 'vertico-directory-up
     "C-j" 'vertico-next
     "C-k" 'vertico-previous
-    "C-l" 'vertico-directory-enter
-    ;; "C-h" 'vertico-directory-enter
-    )
+    "C-M-j" 'vertico-next-group
+    "C-M-k" 'vertico-previous-group
+    "C-l" 'vertico-directory-enter)
   :config
   (setq vertico-scroll-margin 4
         vertico-count 20

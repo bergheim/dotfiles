@@ -26,8 +26,13 @@
 
   "on" '(org-add-note :which-key "add note")
   "om" '(bergheim/org-subtree-to-mu4e :which-key "subtree to mu4e")
-  "os" '(org-store-link :which-key "store link")
+
+  "os" '(:ignore t :which-key "Search")
+  "osa" '(consult-org-agenda :which-key "Search agenda")
+  "oss" '(consult-org-heading :which-key "Search headings")
+
   "ou" '(bergheim/org-copy-url-only :which-key "copy url only")
+  "oy" '(org-store-link :which-key "store link")
   "ol" '(org-insert-link :which-key "insert link")
 
   "oj" '(:ignore t :which-key "journal")

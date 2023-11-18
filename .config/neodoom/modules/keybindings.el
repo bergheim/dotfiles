@@ -95,7 +95,10 @@
     "bj" '(bookmark-jump :which-key "Bookmark jump")
     "bu" '(undo-tree-visualize :which-key "Undo tree")
 
-    "cE" '(consult-flymake :which-key "Flymake diagnostic")
+    "c" '(:ignore t :which-key "Code")
+    "cr" '(xref-find-references :which-key "Find references")
+    "ce" '(consult-flymake :which-key "Search errors")
+    "cE" '(flymake-show-buffer-diagnostics :which-key "Show errors")
     
     "d" '(:ignore t :which-key "dotfiles")
     "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
@@ -127,6 +130,9 @@
     "ht" '(consult-theme :which-key "Switch theme")
     "hv" '(helpful-variable :which-key "Variable")
 
+    "i" '(:ignore t :which-key "Insert")
+    "ir" '(consult-register :which-key "Register")
+
     "m" `(,bergheim/localleader-map :which-key "Local leader")
 
     "p" '(:ignore t :which-key "Project")
@@ -140,7 +146,7 @@
     ;; TODO: add lots more consult stuff like kill-ring etc
     "s" '(:ignore t :which-key "Search")
     "sa" '(consult-org-agenda :which-key "org agenda")
-    "sb" '(arg-line-multi :which-key "open buffers")
+    "sb" '(consult-line-multi :which-key "open buffers")
     "sd" '((lambda () (interactive) (bergheim/consult-ripgrep-with-selection ".")) :which-key "Current directory")
     "sD" '((lambda () (interactive) 
              (let ((current-prefix-arg (prefix-numeric-value '(4)))) 
@@ -150,16 +156,23 @@
     
     "sf" '(consult-fd :which-key "Search File")
     "sF" '(consult-find :which-key "Search all files")
-    "sh" '(consult-org-heading :which-key "org heading")
-    "sh" '(consult-recent-file :which-key "recent files")
-    "sI" '(consult-imenu-multi :which-key "imenu items in all buffers")
-    "si" '(consult-imenu :which-key "imenu items")
-    "sm" '(consult-man :which-key "man")
+    "sh" '(consult-isearch-history :which-key "Search history")
+    "sr" '(consult-recent-file :which-key "recent files")
+    "si" '(consult-imenu-multi :which-key "imenu items in all buffers")
+    "sI" '(consult-imenu :which-key "imenu items")
+    "sk" '(consult-kmacro :which-key "kmacro")
+    "sm" '(consult-global-mark :which-key "global marks")
+    "sM" '(consult-man :which-key "man")
+    "sn" '(consult-focus-lines :which-key "narrow view")
+    "so" '(consult-outline :which-key "outline")
+    ;; todo remember consult-kmacro
     "sp" '(consult-project-buffer :which-key "project buffers")
     "ss" '(consult-line :which-key "buffer")
+    "sS" '(consult-line-multi :which-key "open buffers")
 
     "t" '(:ignore t :which-key "Toggle")
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
+    "t i" '(berhgeim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
     "t w" '(writeroom-mode :which-key "Writerroom")
     "t z" '(bergheim/present-mode :which-key "Present")
@@ -195,7 +208,7 @@
     "M-h" #'evil-window-left
     "M-j" #'evil-window-down
     "M-k" #'evil-window-up
-            "M-l" #'evil-window-right
+    "M-l" #'evil-window-right
 
             ;; TODO: do these work?
             "M-H" #'windmove-left
