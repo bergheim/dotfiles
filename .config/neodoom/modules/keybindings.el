@@ -67,7 +67,7 @@
       "k" 'evil-normal-state))
 
   (general-def
-    :keymaps '(evil-normal-state-map org-agenda-mode-map)
+    :keymaps '(evil-normal-state-map org-agenda-mode-map global-map)
     "C-S-u" 'universal-argument
     "C-u" 'evil-scroll-up)
 
@@ -81,6 +81,7 @@
     "a" '(:ignore t :which-key "Apps")
     "ad" '(dirvish :which-key "Dirvish")
     "ae" '(elfeed :which-key "Elfeed")
+    "at" '(treemacs :which-key "Treemacs")
 
     "b" '(:ignore t :which-key "Buffers")
     "bb" '(bergheim/consult-project-or-buffer :which-key "Switch")
@@ -107,6 +108,7 @@
 
     "f" '(:ignore t :which-key "Files")
     "fc" '(bergheim/copy-current-buffer-file :which-key "Copy file")
+    "fd" '(dirvish :which-key "Dirvish")
     "fD" '(bergheim/delete-current-file :which-key "Delete file")
     "ff" '(find-file :which-key "Find file")
     "fr" '(consult-recent-file :which-key "Recent files")
@@ -141,6 +143,7 @@
     "pf" '(project-find-file :which-key "Find file")
     "pF" '(affe-find :which-key "Async find file")
     "ps" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
+    "pt" '(treemacs :which-key "Treemacs")
     "pp" '(project-switch-project :which-key "Switch project")
 
     ;; TODO: add lots more consult stuff like kill-ring etc
