@@ -79,17 +79,14 @@
   :ensure t
   ;; Other good things to bind: consult-ripgrep, consult-line-multi,
   ;; consult-history, consult-outline
-  :bind (("C-x b" . consult-buffer) ; orig. switch-to-buffer
-         ;; TODO: add this to keybindings.el
-         ("M-y" . consult-yank-pop) ; orig. yank-pop
-         ("C-s" . consult-line))    ; orig. isearch
+  :bind (("M-p" . consult-yank-pop) ; yes yes. I am an evil heretic
+         ("C-s" . consult-line)     ; orig. isearch
+         :map minibuffer-local-map
+         ("M-s" . consult-history)  ;; orig. next-matching-history-element
+         ("M-r" . consult-history))
   :config
   ;; Narrowing lets you restrict results to certain groups of candidates
-  (setq consult-narrow-key "<")
-  ;; (setq consult-xref-display-action nil)
-  (consult-customize
-   consult-xref
-   :display 'vertico))
+  (setq consult-narrow-key "<"))
 
 (defun bergheim/consult-ripgrep-with-selection (&optional dir)
   "Run `consult-ripgrep' with the current visual selection as the initial input.
@@ -275,6 +272,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 (use-package tempel
   :ensure t
+  :after corfu
   ;; Require trigger prefix before template name when completing.
   ;; :custom (tempel-trigger-prefix "!")
   :bind (("C-c t" . tempel-expand))

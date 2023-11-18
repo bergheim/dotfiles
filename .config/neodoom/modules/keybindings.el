@@ -103,6 +103,7 @@
     "db" '(bergheim/browse-dotfiles :which-key "Browse")
 
     "f" '(:ignore t :which-key "Files")
+    "fc" '(bergheim/copy-current-buffer-file :which-key "Copy file")
     "fD" '(bergheim/delete-current-file :which-key "Delete file")
     "ff" '(find-file :which-key "Find file")
     "fr" '(consult-recent-file :which-key "Recent files")

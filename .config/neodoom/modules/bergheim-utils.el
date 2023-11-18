@@ -60,5 +60,16 @@
         (dirvish project-root)
       (message "No project found!"))))
 
+(defun bergheim/copy-current-buffer-file ()
+  "Copy the current buffer's file to a specified location."
+  (interactive)
+  (if buffer-file-name
+      (let ((destination (read-file-name "Copy to: ")))
+        (copy-file buffer-file-name destination t)
+        (find-file destination)
+        (message "File copied to: %s" destination))
+    (message "No file is associated with this buffer.")))
+
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
