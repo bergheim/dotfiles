@@ -244,6 +244,10 @@
 ;;    "u" 'undo-fu-only-undo
 ;;    "C-r" 'undo-fu-only-redo))
 
+;; act across files
+(use-package wgrep
+  :ensure t)
+
 (use-package flymake
   :defer t
   :config
