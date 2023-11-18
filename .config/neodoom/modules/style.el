@@ -178,6 +178,7 @@
 
 ;; TODO: go through this..
 
+(setq-default fill-column 79)
 ;; Mode line information
 (setq line-number-mode t)                        ; Show current line in modeline
 (setq column-number-mode t)                      ; Show column as well

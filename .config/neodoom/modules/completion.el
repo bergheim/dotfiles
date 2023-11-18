@@ -181,17 +181,17 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (global-corfu-mode)
   :bind
   (:map corfu-map
-        ("SPC" . corfu-insert-separator)
+        ("S-SPC" . corfu-insert-separator)
         ("C-n" . corfu-next)
         ("C-p" . corfu-previous)
         ("M-n" . nil)
         ("M-p" . nil))
   :custom
   (corfu-auto t) ;; enable auto completion
-  ;; (corfu-auto-delay 0)
-  ;; (corfu-auto-prefix 0)
-  ;; (completion-styles '(basic))
-  )
+  (corfu-cycle t)
+  ;; if we have applied the separator, never quit
+  (corfu-quit-no-match 'separator)
+  (corfu-auto-prefix 2)) ;; min chars
 
 ;; Part of corfu
 (use-package corfu-popupinfo
@@ -210,15 +210,50 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :config
   (corfu-terminal-mode))
 
+(use-package dabbrev
+  :ensure t
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  ;; Other useful Dabbrev configurations.
+  :custom
+  (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+
+;; combine completion at point functions. in cape the name was not clear
+(use-package cape
+  :ensure t
+  :demand t
+  :config
+  ;; globally available CAPE completions (with lower priority)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev 80)
+  (add-hook 'completion-at-point-functions #'cape-file 80)
+  (add-hook 'completion-at-point-functions #'cape-emoji 80))
+
+(defun bergheim/org-mode-setup-corfu ()
+  (add-to-list 'completion-at-point-functions #'cape-tex 80)
+  ;; TODO: set up a dict and enable this
+  ;; (add-to-list 'completion-at-point-functions #'cape-dict 80)
+  (add-to-list 'completion-at-point-functions #'cape-keyword 80))
+
+(add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu)
+
 ;; Orderless: powerful completion style
 (use-package orderless
   :ensure t
-  :config
-  (setq completion-styles '(orderless))
-  ;; (setq completion-styles '(orderless basic))
-  ;; ;; (setq orderless-matching-styles '(orderless-initialism)))
-  ;; (setq orderless-matching-styles '(orderless-regexp orderless-literal orderless-initialism))
-  )
+  :custom
+  (completion-styles '(orderless basic))
+  ;; this has a bunch of other things set up.. so just set everything from orderless
+  (completion-category-defaults nil)
+  (completion-category-overrides '(file (styles basic partial-completion)))
+  (orderless-affix-dispatch-alist
+   '((37 . char-fold-to-regexp)       ; %
+     (33 . orderless-without-literal) ; !
+     (44 . orderless-initialism)      ; ,
+     (61 . orderless-literal)         ; =
+     (126 . orderless-flex)           ; ~
+     (43 . orderless-prefix)))        ; +
+  ;; don't add rarely used things here, use dispatchers instead
+  (orderless-matching-styles '(orderless-literal orderless-prefixes)))
 
 ;; TODO: use this? I want MRU and then alphanumeric sorting
 ;; (use-package vertico-prescient
@@ -240,9 +275,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 (use-package tempel
   :ensure t
-  :custom
   ;; Require trigger prefix before template name when completing.
-  (tempel-trigger-prefix "!")
+  ;; :custom (tempel-trigger-prefix "!")
   :bind (("C-c t" . tempel-expand))
   :config
   (with-eval-after-load 'tempel

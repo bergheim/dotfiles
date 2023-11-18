@@ -17,8 +17,7 @@
         desktop-save-mode 1)
 
   ;; Auto-save and load without prompting.
-  (add-hook 'desktop-after-read-hook (lambda () (desktop-save-mode 1)))
-  (desktop-read (expand-file-name "desktop" bergheim/cache-dir)))
+  (add-hook 'desktop-after-read-hook (lambda () (desktop-save-mode 1))))
 
 (use-package restart-emacs
   :ensure t
