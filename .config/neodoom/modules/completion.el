@@ -88,6 +88,8 @@
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<"))
 
+(use-package consult-todo :ensure t :after consult)
+
 (defun bergheim/consult-ripgrep-with-selection (&optional dir)
   "Run `consult-ripgrep' with the current visual selection as the initial input.
 If called interactively with a prefix argument, prompt for DIR, otherwise use the default behavior of `consult-ripgrep`."

@@ -34,6 +34,12 @@
 ;; Reload files that are changed outside of Emacs
 (global-auto-revert-mode 1)
 
+;; save on buffer switching, focus loss, everything
+(use-package super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
+
 (setq window-resize-pixelwise t
       frame-resize-pixelwise t
       load-prefer-newer t

@@ -12,6 +12,11 @@
   :ensure t
   :after magit)
 
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :config (magit-todos-mode 1))
+
 ;; TODO is this really needed..
 (use-package diff-hl
   :ensure t
