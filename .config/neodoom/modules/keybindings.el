@@ -74,14 +74,16 @@
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map global-map)
     "C-S-u" 'universal-argument
-    "C-u" 'evil-scroll-up)
+    "C-u" 'evil-scroll-up
+    "M-r" #'vertico-repeat
+    )
 
   (bergheim/global-menu-keys
     "RET" '(consult-bookmark :which-key "Bookmarks")
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")
     "`" '(bergheim/toggle-scratch-buffer :which-key "Scratch buffer")
-    "SPC" '(find-file :which-key "Find file")
+    "SPC" '(consult-buffer :which-key "Find stuff")
 
     "a" '(:ignore t :which-key "Apps")
     "ad" '(dirvish :which-key "Dirvish")
@@ -219,11 +221,10 @@
     "M-k" #'evil-window-up
     "M-l" #'evil-window-right
 
-            ;; TODO: do these work?
-            "M-H" #'windmove-left
-            "M-J" #'windmove-down
-            "M-K" #'windmove-up
-            "M-L" #'windmove-right
+    "M-H" #'evil-window-move-far-left
+    "M-J" #'evil-window-move-far-bottom
+    "M-K" #'evil-window-move-far-top
+    "M-L" #'evil-window-move-far-right
 
     "M-\\" #'evil-window-vsplit
     "M-]" #'evil-window-split

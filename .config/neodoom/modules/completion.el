@@ -145,6 +145,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (setq vertico-sort-function #'vertico-sort-history-alpha
         vertico-multiform-commands '((consult-imenu-multi buffer indexed)
                                      ;; (execute-extended-command buffer)
+                                     ;; (t posframe)
                                      )
         vertico-multiform-categories '((symbol (vertico-sort-function . vertico-sort-alpha))
                                        ;; (consult-grep buffer)
@@ -153,6 +154,27 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
         vertico-count 20
         vertico-resize nil
         vertico-cycle t))
+
+;; these look ice and all but I dunno..
+;; (use-package vertico-posframe
+;;   :ensure t
+;;   :config
+;;   (setq vertico-posframe-parameters
+;;         '((left-fringe . 32)
+;;           (top-fringe . 32)
+;;           (bottom-fringe . 32)
+;;           (right-fringe . 32)))
+;;   (vertico-posframe-mode 1))
+
+;; (use-package mini-frame
+;;   :custom
+;;   (custom-set-variables
+;;    '(mini-frame-show-parameters
+;;      '((top . 10)
+;;        (width . 0.7)
+;;        (left . 0.5))))
+;;   :config
+;;   (mini-frame-mode))
 
 ;; FIXME: this is so terrible..
 (add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))
@@ -202,7 +224,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (corfu-auto t) ;; enable auto completion
   (corfu-cycle t)
   ;; if we have applied the separator, never quit
-  (corfu-quit-no-match 'separator)
+  ;; (corfu-quit-no-match 'separator)
   (corfu-auto-prefix 2)) ;; min chars
 
 ;; Part of corfu
