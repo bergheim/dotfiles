@@ -42,6 +42,11 @@
   ("\\.ts$" . typescript-ts-mode)
   ("\\.tsx$" . tsx-ts-mode))
 
+(use-package dumb-jump
+  :ensure t
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
 ;; used by vimish-fold
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode))
