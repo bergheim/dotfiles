@@ -66,6 +66,11 @@
       :timeout 0.25
       "k" 'evil-normal-state))
 
+  (general-define-key
+   :states 'visual
+   "u" 'undo-tree-undo
+   "C-r" 'undo-tree-redo)
+
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map global-map)
     "C-S-u" 'universal-argument

@@ -2,7 +2,7 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-(defvar me/eglot-inlay-hints-automatic t
+(defvar me/eglot-inlay-hints-automatic nil
   "Whether `eglot-inlay-hints-mode' should be enabled by default.")
 
 (defun me/eglot-inlay-hints-maybe ()

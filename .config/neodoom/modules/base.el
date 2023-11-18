@@ -210,8 +210,7 @@
   (global-undo-tree-mode)
   :config
   (setq undo-tree-auto-save-history t)
-  ;; undo-tree-history-directory-alist
-  ;; `(("." . ,(bergheim/get-and-ensure-data-dir "undo"))))
+  (setq undo-tree-enable-undo-in-region t)
 
   ;; TODO: For some reason, general.el isn't binding 'U' as expected.
   ;; Using define-key as a workaround.
