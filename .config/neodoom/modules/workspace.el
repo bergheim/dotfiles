@@ -21,6 +21,7 @@
           "^\\*Flymake diagnostics.*\\*$" flymake-diagnostics-buffer-mode
           ;; help-mode
           compilation-mode
+          "\\*eldoc\\*"
           ))
 
   (setq popper-window-height 16)
