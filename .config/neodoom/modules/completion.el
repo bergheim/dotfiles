@@ -287,7 +287,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
      (126 . orderless-flex)           ; ~
      (43 . orderless-prefix)))        ; +
   ;; don't add rarely used things here, use dispatchers instead
-  (orderless-matching-styles '(orderless-literal orderless-prefixes)))
+  (orderless-matching-styles '(orderless-literal orderless-prefixes orderless-regexp)))
 
 ;; TODO: use this? I want MRU and then alphanumeric sorting
 ;; (use-package vertico-prescient

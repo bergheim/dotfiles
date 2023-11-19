@@ -76,14 +76,19 @@
     "C-S-u" 'universal-argument
     "C-u" 'evil-scroll-up
     "M-r" #'vertico-repeat
-    )
+    ;; I sometimes want to use C-h for other things..
+    "C-c h" 'help-command)
+
+  (general-def
+    :keymaps '(evil-motion-state-map)
+    "gD" #'bergheim/evil-goto-definition-other-window)
 
   (bergheim/global-menu-keys
     "RET" '(consult-bookmark :which-key "Bookmarks")
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")
     "`" '(bergheim/toggle-scratch-buffer :which-key "Scratch buffer")
-    "SPC" '(consult-buffer :which-key "Find stuff")
+    "SPC" '(bergheim/consult-project-or-buffer :which-key "Find stuff")
 
     "a" '(:ignore t :which-key "Apps")
     "ad" '(dirvish :which-key "Dirvish")

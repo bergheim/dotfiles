@@ -30,7 +30,7 @@
   :ensure t
   :after org
   :hook
-  (org-mode . (lambda () evil-org-mode))
+  (org-mode . evil-org-mode)
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
@@ -45,9 +45,13 @@
 ;; gl/gL text-object char
 (use-package evil-lion
   :ensure t
-  :after evil
+  :after (evil general)
   :config
-  (evil-lion-mode))
+  (general-define-key
+   :states '(normal visual)
+   :keymaps 'prog-mode-map
+   "gl" 'evil-lion-left
+   "gL" 'evil-lion-right))
 
 ;; TODO add this and keybindings
 ;; (use-package evil-textobj-tree-sitter
@@ -115,6 +119,19 @@
   (setq evil-cleverparens-use-additional-bindings t
         evil-cleverparens-use-additional-movement-keys t
         evil-cleverparens-use-s-and-S nil))
+
+(defun bergheim/evil-goto-definition-other-window ()
+  "Open the definition in another window."
+  (interactive)
+  (let ((marker (save-excursion
+                  (evil-goto-definition)
+                  (point-marker))))
+    (if (one-window-p)
+        (split-window-horizontally))
+    (other-window 1)
+    (if (not (eq (marker-buffer marker) (current-buffer)))
+        (switch-to-buffer (marker-buffer marker)))
+    (goto-char (marker-position marker))))
 
 ;; (use-package lispyville
 ;;   :ensure t

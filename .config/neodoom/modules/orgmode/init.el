@@ -39,6 +39,15 @@
    ;; FIXME: this is too broad - can't newline anymore
    ;; "RET" #'org-open-at-point
    )
+
+  (general-define-key
+   :states '(normal visual)
+   :keymaps 'org-mode-map
+   "C-h" 'bergheim/org-move-up-header
+   "C-l" 'bergheim/org-move-down-header
+   "gh" 'bergheim/org-move-up-header
+   "gl" 'bergheim/org-move-down-header)
+
   ;; FIXME: this is straight up ignored
   (bergheim/localleader-keys
     :keymaps 'org-agenda-mode-map
