@@ -36,7 +36,7 @@
 
 (defun bergheim/set-font-based-on-frame-resolution ()
   "Set font size based on the resolution of the frame's display."
-  (let ((height (- (frame-pixel-height) bergheim/screen-margin))
+  (let ((height (- (display-pixel-height) bergheim/screen-margin))
         font-size global-line-spacing)
     (cond
      ((< height 1440)
