@@ -20,7 +20,7 @@
           "\\*Async Shell Command\\*"
           "^\\*Flymake diagnostics.*\\*$"
           flymake-diagnostics-buffer-mode
-          help-mode
+          ;; help-mode
           compilation-mode
           "\\*eldoc\\*"
           ))

@@ -146,6 +146,7 @@
 
     "i" '(:ignore t :which-key "Insert")
     "ir" '(consult-register :which-key "Register")
+    "ip" '(consult-yank-pop :which-key "kill-ring")
 
     "m" `(,bergheim/localleader-map :which-key "Local leader")
 
@@ -190,6 +191,7 @@
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
     "t i" '(berhgeim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
+    "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
     "t w" '(writeroom-mode :which-key "Writerroom")
     "t z" '(bergheim/present-mode :which-key "Present")
 

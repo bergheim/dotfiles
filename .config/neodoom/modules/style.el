@@ -149,6 +149,15 @@
   :config
   (global-anzu-mode +1))
 
+(defun bergheim/toggle-visual-fluff ()
+  "Toggle the menu bar and scroll bar on and off."
+  (interactive)
+  (if menu-bar-mode
+      (progn (menu-bar-mode -1)
+             (scroll-bar-mode -1))
+    (menu-bar-mode 1)
+    (scroll-bar-mode 1)))
+
 (use-package emacs
   :config
   (setq scroll-step 1

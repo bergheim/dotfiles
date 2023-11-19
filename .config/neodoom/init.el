@@ -39,6 +39,12 @@
       use-dialog-box nil ;; plz no
       sentence-end-double-space nil) ;; Fix archaic defaults
 
+;; disable this early to avoid flashing it
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+;; (fringe-mode 8)
+;; (set-frame-parameter nil 'internal-border-width 10)
+
 (package-initialize)
 (defalias 'yes-or-no-p 'y-or-n-p)
 
