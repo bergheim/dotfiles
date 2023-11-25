@@ -45,15 +45,12 @@
 (use-package bufler
   :ensure t
   :config
-  (bufler-mode)
-  (when (bound-and-true-p tab-bar-mode)
-    (burly-tabs-mode)))
+  (bufler-mode))
 
 (use-package burly
   :ensure t
   :config
-  (when (bound-and-true-p tab-bar-mode)
-    (burly-tabs-mode)))
+  (burly-tabs-mode 1))
 
 (use-package project
   :ensure nil  ; built-in package
@@ -68,15 +65,50 @@
           (magit-project-status "Magit" "m")
           (project-eshell "Eshell"))))
 
-;; TODO: remove this is `project.el' is enough
-;; (use-package projectile
-;;   :ensure t
-;;   :config
-;;   (setq projectile-project-search-path (list (concat bergheim/home-directory "dev")))
-;;   (setq projectile-cache-file (concat bergheim/cache-dir "/projectile.cache")
-;;         projectile-known-projects-file (concat bergheim/cache-dir "/projectile-bookmarks.eld"))
-;;   (projectile-mode +1)
-;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+(defun bergheim/open-or-switch-to-project-tab (new-frame)
+  "Open a selected project in a new tab, or switch to it if it already exists.
+If NEW-FRAME is non-nil, open the project in a new frame."
+  (interactive "P")
+  (let* ((project-path (project-prompt-project-dir))
+         (name (file-name-nondirectory (directory-file-name project-path)))
+         (tab-names (mapcar (lambda (tab) (alist-get 'name tab))
+                            (funcall tab-bar-tabs-function))))
+    (if (member name tab-names)
+        (progn
+          (tab-bar-switch-to-tab name)
+          (if new-frame
+              (tab-bar-detach-tab)))
+      (tab-new)
+      (tab-rename name)
+      (cd project-path)
+      (project-switch-project project-path)
+      (if new-frame
+          (tab-bar-detach-tab)))))
 
+;; these are great
+(defun siren-tab-bar-switch-to-or-create-tab (name)
+  "Switch to or create a tab by NAME."
+  (interactive
+   (let* ((recent-tabs (mapcar (lambda (tab) (alist-get 'name tab))
+                               (tab-bar--tabs-recent))))
+     (list (completing-read "Switch to tab by name (default recent): "
+                            recent-tabs nil nil nil nil recent-tabs))))
+  (let ((tab-names (mapcar (lambda (tab) (alist-get 'name tab))
+                           (funcall tab-bar-tabs-function))))
+    (if (member name tab-names)
+        (tab-bar-switch-to-tab name)
+      (siren-tab-bar-new-named-tab name)))
+  (tab-bar-select-tab (1+ (or (tab-bar--tab-index-by-name name) 0))))
+
+(defun siren-tab-bar-new-named-tab (name)
+  "Create a new tab named NAME."
+  (interactive "MName for new tab (leave blank for automatic naming): ")
+  (tab-new 99999)
+  (if (not (string= name ""))
+      (tab-rename name)))
+
+(tab-bar-mode 1)
+(tab-bar-history-mode 1)
+(setq tab-bar-new-tab-choice "*scratch*")
 
 ;;; workspace.el ends here

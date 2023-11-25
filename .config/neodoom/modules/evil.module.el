@@ -24,6 +24,7 @@
   :ensure t
   :after evil
   :config
+  (setq evil-collection-want-unimpaired-p nil)
   (evil-collection-init))
 
 (use-package evil-org

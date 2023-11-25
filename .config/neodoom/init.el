@@ -31,12 +31,12 @@
 
       bergheim/home-directory (expand-file-name "~/")
 
-      gc-cons-threshold 100000000 ; 100 mb
+      gc-cons-threshold 100000000           ; 100 mb
       read-process-output-max (* 1024 1024) ; 1mb
-      initial-major-mode 'emacs-lisp-mode  ; default mode for the *scratch* buffer
+      initial-major-mode 'emacs-lisp-mode ; default mode for the *scratch* buffer
       display-time-default-load-average nil ; this information is useless for most
-      read-answer-short t ;; y means yes
-      use-dialog-box nil ;; plz no
+      read-answer-short t                   ;; y means yes
+      use-dialog-box nil                    ;; plz no
       sentence-end-double-space nil) ;; Fix archaic defaults
 
 ;; disable this early to avoid flashing it

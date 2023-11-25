@@ -217,8 +217,8 @@
   (setq org-super-agenda-header-map (make-sparse-keymap))
   (org-super-agenda-mode))
 
-;; TODO could not get this correctly loaded inside use-package..
 (with-eval-after-load 'org-super-agenda
+  ;; TODO could not get this correctly loaded inside use-package..
   (org-super-agenda--def-auto-group bergheim/clocked-or-created
     "Group items based on the latest CLOCK or CREATED timestamp in the entry.
 The date is formatted according to `org-super-agenda-date-format'."

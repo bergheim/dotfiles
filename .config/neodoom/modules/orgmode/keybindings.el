@@ -43,11 +43,12 @@
 
   "oc" '(:ignore t :which-key "org-clock")
   "ocg" '(org-clock-goto :which-key "clock goto")
+  "ocG" '(bergheim/org-mru-goto :which-key "mru goto")
   "oci" '(org-clock-in :which-key "clock in")
   "ocl" '(org-clock-in-last :which-key "clock in last")
   "oco" '(org-clock-out :which-key "clock out")
   "ocr" '(bergheim/org-mru-clock-in :which-key "mru clock in")
-  "ocR" '(bergheim/org-mru-goto :which-key "mru goto"))
+  "ocR" '(org-resolve-clocks :which-key "resolve"))
 
 (provide 'keybindings)
 ;;; keybindings.el ends here

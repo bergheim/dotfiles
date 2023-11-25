@@ -144,10 +144,12 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :config
   (setq vertico-sort-function #'vertico-sort-history-alpha
         vertico-multiform-commands '((consult-imenu-multi buffer indexed)
+                                     (jinx-languages (vertico-sort-function . bergheim/jinx-language-sort))
                                      ;; (execute-extended-command buffer)
                                      ;; (t posframe)
                                      )
         vertico-multiform-categories '((symbol (vertico-sort-function . vertico-sort-alpha))
+                                       (jinx grid (vertico-grid-annotate . 20))
                                        ;; (consult-grep buffer)
                                        (file (vertico-sort-function . sort-directories-first)))
         vertico-scroll-margin 4
