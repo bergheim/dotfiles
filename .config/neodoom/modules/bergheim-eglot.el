@@ -38,6 +38,8 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   :defer t
   :bind (("M-<mouse-1>" . eglot-find-implementation))
   :config
+  ;; disabling event logging
+  (setq eglot-events-buffer-size 0)
   (add-to-list
    'eglot-server-programs
    '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode typescript-mode)
