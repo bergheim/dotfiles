@@ -12,6 +12,13 @@
   :config
   (setq treesit-font-lock-level 4))
 
+(use-package treesit-auto
+  :ensure t
+  :config
+  (setq treesit-auto-install 'prompt)
+  (treesit-auto-add-to-auto-mode-alist)
+  (global-treesit-auto-mode))
+
 ;; (use-package tree-sitter
 ;;   :ensure t
 ;;   :config
@@ -22,15 +29,7 @@
 ;;   :ensure t
 ;;   :after tree-sitter)
 
-
-(electric-pair-mode t) ;; insert closing parens
-
-(use-package treesit-auto
-  :ensure t
-  :config
-  (setq treesit-auto-install 'prompt)
-  (treesit-auto-add-to-auto-mode-alist)
-  (global-treesit-auto-mode))
+;; (electric-pair-mode t) ;; insert closing parens
 
 (use-package emacs :ensure nil
   :after treesit
@@ -51,6 +50,11 @@
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode))
 
+(use-package smartparens
+  :ensure t
+  :config
+  (smartparens-global-mode t))
+
 (use-package elixir-ts-mode
   :ensure t)
 
@@ -65,8 +69,9 @@
   (setq markdown-command "multimarkdown"))
 
 (use-package web-mode
-  :mode (("\\.html\\'" . web-mode))
+  ;; :mode (("\\.html\\'" . web-mode))
   :custom
+  (web-mode-enable-autoclosing t)
   (web-mode-code-indent-offset 4)
   (web-mode-css-indent-offset 4)
   (web-mode-markup-indent-offset 4)
