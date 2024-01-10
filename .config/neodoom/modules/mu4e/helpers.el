@@ -17,7 +17,7 @@
         (concat "/" (mapconcat 'identity (cdr maildir-parts) "/"))
       maildir)))
 
-(defun bergheim/mu4e--clean-subject-for-mu (subject)
+(defun bergheim/mu4e--clean-string-for-mu (subject)
   "Clean up the subject before sending it to mu4e.
 
 This is because xapian has a lot of characters that will break the search. I could not find docs on

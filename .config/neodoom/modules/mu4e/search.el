@@ -54,12 +54,12 @@ With \\[universal-argument], include emails to this name as well"
 
   (let ((name (plist-get (car (mu4e-message-field-at-point :from)) :name))
         (msgid (mu4e-message-field msg :message-id))
-        (query-string "NOT maildir:/Trash/ AND (from:%s"))
+        (query-string "NOT maildir:/Trash/ AND from:%s"))
 
     (when current-prefix-arg
-      (setq query-string (concat query-string " OR to:%s")))
+      (setq query-string "NOT maildir:/Trash/ AND contact:%s"))
 
-    (setq query-string (concat query-string ")"))
+    (setq name (bergheim/mu4e--clean-string-for-mu name))
 
     (mu4e-search
      (format query-string name name)
@@ -154,7 +154,7 @@ If \\[universal-argument] is called before this, include the trash."
     ;; (if current-prefix-arg
     ;;   (setq subject (replace-regexp-in-string "[^[:alpha:]_']" " " subject)))
 
-    (setq subject (bergheim/mu4e--clean-subject-for-mu subject))
+    (setq subject (bergheim/mu4e--clean-string-for-mu subject))
 
     (when (and match-partial-subject (not (string-empty-p subject)))
       (setq subject (bergheim/mu4e--pattern-match-subject subject)))
