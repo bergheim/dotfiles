@@ -71,6 +71,23 @@
    "u" 'undo-tree-undo
    "C-r" 'undo-tree-redo)
 
+  (general-define-key
+   :states '(normal visual)
+   "[b" 'previous-buffer
+   "]b" 'next-buffer
+   "]e" 'flymake-goto-next-error
+   "[e" 'flymake-goto-prev-error
+   "]e" 'flymake-goto-next-error
+   "[f" 'bergheim/prev-file
+   "]f" 'bergheim/next-file
+   "[s" 'jinx-prev
+   "]s" 'jinx-next
+   "z=" 'jinx-correct
+   "[t" 'tab-bar-switch-to-prev-tab
+   "]t" 'tab-bar-switch-to-next-tab
+   "[T" 'tab-bar-move-tab-backward
+   "]T" 'tab-bar-move-tab)
+
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map global-map)
     "C-S-u" 'universal-argument
