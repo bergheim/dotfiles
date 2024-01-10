@@ -145,6 +145,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (setq vertico-sort-function #'vertico-sort-history-alpha
         vertico-multiform-commands '((consult-imenu-multi buffer indexed)
                                      (jinx-languages (vertico-sort-function . bergheim/jinx-language-sort))
+                                     (mu4e-headers-action grid)
+                                     (mu4e-view-action grid)
                                      ;; (execute-extended-command buffer)
                                      ;; (t posframe)
                                      )
@@ -153,8 +155,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
                                        ;; (consult-grep buffer)
                                        (file (vertico-sort-function . sort-directories-first)))
         vertico-scroll-margin 4
-        vertico-count 20
-        vertico-resize nil
+        vertico-count 10
+        vertico-resize 'grow-only
         vertico-cycle t))
 
 ;; these look ice and all but I dunno..
