@@ -4,9 +4,19 @@
 (use-package magit
   :ensure t
   :after diff-hl
+  :commands magit-status
   :hook
   (with-editor-mode        . evil-insert-state)
-  (magit-post-refresh-hook . diff-hl-magit-post-refresh))
+  (magit-post-refresh-hook . diff-hl-magit-post-refresh)
+
+  :general
+  (:states '(normal visual emacs)
+           :keymaps 'magit-mode-map
+           "Z" 'magit-stash
+           "z 1" 'magit-section-show-level-1-all
+           "z 2" 'magit-section-show-level-2-all
+           "z 3" 'magit-section-show-level-3-all
+           "z 4" 'magit-section-show-level-4-all))
 
 (use-package forge
   :ensure t
