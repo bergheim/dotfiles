@@ -7,6 +7,15 @@
 ;; Created: September 18, 2023
 ;; Modified: September 18, 2023
 
+(use-package ediff
+  :ensure nil
+  :config
+  (setq ediff-show-clashes-only t)
+  ;; open diffs horizontally in the current frame
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (setq ediff-merge-split-window-function 'split-window-horizontally))
+
 (use-package treesit
   :ensure nil
   :config
