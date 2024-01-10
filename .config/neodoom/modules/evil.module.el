@@ -112,14 +112,14 @@
                  (window-height . 0.3)))
   (evil-owl-mode))
 
-(use-package evil-cleverparens
-  :ensure t
-  :after evil
-  :hook (emacs-lisp-mode . evil-cleverparens-mode)
-  :config
-  (setq evil-cleverparens-use-additional-bindings t
-        evil-cleverparens-use-additional-movement-keys t
-        evil-cleverparens-use-s-and-S nil))
+;; (use-pacage evil-cleverparens
+;;   :ensure t
+;;   :after evil
+;;   :hook (emacs-lisp-mode . evil-cleverparens-mode)
+;;   :config
+;;   (setq evil-cleverparens-use-additional-bindings t
+;;         evil-cleverparens-use-additional-movement-keys t
+;;         evil-cleverparens-use-s-and-S nil))
 
 (defun bergheim/evil-goto-definition-other-window ()
   "Open the definition in another window."

@@ -152,12 +152,16 @@
     "db" '(bergheim/browse-dotfiles :which-key "Browse")
 
     "f" '(:ignore t :which-key "Files")
+    "fb" '(dirvish :which-key "Browse")
     "fc" '(bergheim/copy-current-buffer-file :which-key "Copy file")
     "fd" '(dirvish :which-key "Dirvish")
     "fD" '(bergheim/delete-current-file :which-key "Delete file")
     "ff" '(find-file :which-key "Find file")
+    "fF" '(consult-find :which-key "Find file")
+    "fh" '(dirvish-history-jump :which-key "Dirvish history")
     "fr" '(consult-recent-file :which-key "Recent files")
     "fR" '(rename-visited-file :which-key "Rename file")
+    "fo" '(browse-url-of-buffer :which-key "Browse file")
     "fs" '(save-buffer :which-key "Save buffer")
 
     "g" '(:ignore t :which-key "git")
@@ -179,8 +183,9 @@
 
     "i" '(:ignore t :which-key "Insert")
     "ir" '(consult-register :which-key "Register")
+    "ie" '(emoji-search :which-key "Emojiii")
+    "iu" '(insert-char :which-key "Unicode")
     "ip" '(consult-yank-pop :which-key "kill-ring")
-
     "m" `(,bergheim/localleader-map :which-key "Local leader")
 
     "p" '(:ignore t :which-key "Project")
@@ -191,7 +196,8 @@
     "pF" '(affe-find :which-key "Async find file")
     "ps" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "pt" '(treemacs :which-key "Treemacs")
-    "pp" '(project-switch-project :which-key "Switch project")
+    "pp" '(bergheim/open-or-switch-to-project-tab :which-key "Switch project")
+    "pP" '((lambda () (interactive) (bergheim/open-or-switch-to-project-tab t)) :which-key "Switch project")
 
     ;; TODO: add lots more consult stuff like kill-ring etc
     "s" '(:ignore t :which-key "Search")
@@ -208,8 +214,8 @@
     "sF" '(consult-find :which-key "Search all files")
     "sh" '(consult-isearch-history :which-key "Search history")
     "sr" '(consult-recent-file :which-key "recent files")
-    "si" '(consult-imenu-multi :which-key "imenu items in all buffers")
-    "sI" '(consult-imenu :which-key "imenu items")
+    "si" '(consult-imenu :which-key "imenu items")
+    "sI" '(consult-imenu-multi :which-key "imenu items in all buffers")
     "sk" '(consult-kmacro :which-key "kmacro")
     "sm" '(consult-global-mark :which-key "global marks")
     "sM" '(consult-man :which-key "man")
@@ -223,7 +229,9 @@
     "t" '(:ignore t :which-key "Toggle")
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
     "t i" '(berhgeim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
+    "t l" '(jinx-languages :which-key "Languages")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
+    "t s" '(jinx-mode :which-key "Spelling")
     "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
     "t w" '(writeroom-mode :which-key "Writerroom")
     "t z" '(bergheim/present-mode :which-key "Present")
@@ -231,6 +239,7 @@
     "u" '(universal-argument :which-key "Universal argument")
 
     "q" '(:ignore t :which-key "Quit")
+    "qf" '(delete-frame :which-key "Close frame")
     "qq" '(save-buffers-kill-terminal :which-key "Quit")
     "qr" '(bergheim/restart-emacs :which-key "Restart")
 
@@ -275,7 +284,15 @@
 
     "M-o" #'evil-window-next
     "M-f" #'maximize-window
-    "M-F" #'winner-undo)
+    "M-F" #'winner-undo
+
+    "M-1" '(lambda () (interactive) (tab-bar-select-tab 1))
+    "M-2" '(lambda () (interactive) (tab-bar-select-tab 2))
+    "M-3" '(lambda () (interactive) (tab-bar-select-tab 3))
+    "M-4" '(lambda () (interactive) (tab-bar-select-tab 4))
+    "M-5" '(lambda () (interactive) (tab-bar-select-tab 5))
+    "M-t" 'siren-tab-bar-switch-to-or-create-tab
+    "M-w" 'tab-close)
 
   ;; (general-define-key
   ;;  :states '(normal visual)
@@ -288,6 +305,5 @@
     "e" '(:ignore t :which-key "Eval")
     "e d" '(eval-defun :which-key "eval last defun")
     "e e" '(eval-last-sexp :which-key "eval last sexp")
-    "e b" '(eval-last-sexp :which-key "eval buffer")
-    "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer"))
-  )
+    "e b" '(eval-buffer :which-key "eval buffer")
+    "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer")))
