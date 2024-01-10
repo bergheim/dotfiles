@@ -1,5 +1,10 @@
 ;;; settings.el --- Description -*- lexical-binding: t; -*-
 
+;; open mu4e in the current window instead of current frame
+(add-to-list 'display-buffer-alist
+             `(,(regexp-quote mu4e-main-buffer-name)
+               display-buffer-same-window))
+
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
@@ -46,8 +51,9 @@
                             (:subject))
 
       ;; show overview to left, email to the right
-      ;; mu4e-split-view 'single-window
+      mu4e-split-view 'horizontal
       mu4e-headers-visible-columns 110
+      mu4e-headers-visible-lines 8
 
       ;; SMTP stuff
       send-mail-function 'sendmail-send-it
@@ -142,8 +148,8 @@
          :key ?x)
 
         (:name "Economy"
-               :query ,(concat "maildir:/Inbox/ AND contact:/.*" bergheim/mu4e/economy "$/")
-               :key ?e)
+         :query ,(concat "maildir:/Inbox/ AND contact:/.*" bergheim/mu4e/economy "$/")
+         :key ?e)
 
         (:name "Focus inbox"
          :query "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"
