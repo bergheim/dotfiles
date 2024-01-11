@@ -25,7 +25,7 @@
 (defvar bergheim/variable-font-name "IosevkaTerm Nerd Font Propo" "Default font for variable width.")
 (defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
 (defvar bergheim/font-size-small 100 "Font size for small displays.")
-(defvar bergheim/font-size-medium 150 "Font size for medium displays.")
+(defvar bergheim/font-size-medium 120 "Font size for medium displays.")
 (defvar bergheim/font-size-large 200 "Font size for large displays.")
 (defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
 (defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
@@ -190,8 +190,17 @@
 
         mouse-wheel-scroll-amount '(1 ((shift) . 1)) ;; one line at a time
         mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
-        mouse-wheel-follow-mouse 't)) ;; scroll window under mouse
+        mouse-wheel-follow-mouse 't)      ;; scroll window under mouse
 
+  (setq tab-bar-show t
+        tab-bar-auto-width-min '(100 10)
+        tab-bar-auto-width-max '(300 30)
+        tab-bar-close-button-show nil
+        tab-bar-new-button-show nil
+        tab-bar-tab-hints t))
+
+;; TODO install this for smooth image scrolling
+;; https://github.com/casouri/iscroll
 
 (defun noct-relative ()
   "Show relative line numbers."
@@ -280,6 +289,32 @@
   :config
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))
+
+(use-package dashboard
+  :after nerd-icons
+  :demand t
+  :config
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          ;; (agenda . 5)
+                          (registers . 5)))
+  (setq dashboard-banner-logo-title "NeoDOOOOOM")
+  (setq dashboard-startup-banner 'logo)
+
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+
+  ;; (setq dashboard-show-shortcuts nil)
+  ;; (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  ;; (setq dashboard-icon-type 'nerd-icons)
+
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+
+  (setq dashboard-set-init-info t)
+  (setq dashboard-projects-backend 'project-el)
+  (dashboard-setup-startup-hook))
 
 (provide 'style)
 ;;; style.el ends here
