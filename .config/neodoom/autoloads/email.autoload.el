@@ -3,7 +3,7 @@
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-today
                        "Opens the inbox with unread and today's email."
-                       "(date:1d..now) AND maildir:/Inbox/")
+                       "maildir:/Inbox/ AND date:2d..now")
 
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-inbox
@@ -13,7 +13,7 @@
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-important
                        "Important email"
-                       "(maildir:/Inbox/ AND date:1w..now AND flag:unread) OR flag:flagged")
+                       "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)")
 
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-inbox-work
@@ -23,22 +23,17 @@
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-inbox-personal
                        "Personal email"
-                       "(maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox) AND (date:1w..now OR flag:unread)")
-
-;;;###autoload
-(define-mu4e-search-fn bergheim/email-today
-                       "Opens the inbox with unread and todays email"
-                       "(date:1d..now) AND maildir:/Inbox/")
+                       "(maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox) AND (flag:unread OR date:1w..now)")
 
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-today-or-unread
-                       "Opens the inbox with unread and todays email"
-                       "maildir:/Inbox/ AND (date:1d..now OR flag:unread)")
+                       "Opens the inbox with unread and today's email"
+                       "maildir:/Inbox/ AND (flag:unread OR date:2d..now)")
 
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-week
                        "Opens the inbox with unread and this weeks email"
-                       "(date:1w..now) AND maildir:/Inbox/")
+                       "maildir:/Inbox/ AND date:1w..now")
 
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-sent
