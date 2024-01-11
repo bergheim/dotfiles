@@ -44,7 +44,7 @@
                 (mu4e-sent-folder   . "/gmail/Sent")
                 (mu4e-trash-folder  . "/gmail/Trash")
                 (mu4e-drafts-folder . "/gmail/Drafts")
-                (mu4e-refile-folder . "/gmail/Archives")
+                (mu4e-refile-folder . "/gmail/Archive")
                 (mu4e-spam-folder   . "/gmail/Spam")
 
                 (mu4e-maildir-shortcuts  . (("/gmail/Inbox"  . ?i)

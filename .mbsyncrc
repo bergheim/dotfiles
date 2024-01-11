@@ -122,8 +122,13 @@ Channel gmail-inbox
     Far :gmail-remote:
     Near :gmail-local:
     # Just sync things that operations on an email can affect
-    Patterns "Archives" "INBOX" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
+    Patterns "INBOX" !"Archives" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
+
+Channel gmail-archive
+    Far :gmail-remote:"Archives"
+    Near :gmail-local:"Archive"
+    Expunge Both
 
 Channel gmail-trash
     Far :gmail-remote:"[Gmail]/Trash"
@@ -153,7 +158,7 @@ Channel gmail-spam
 Channel gmail
     Far :gmail-remote:
     Near :gmail-local:
-    Patterns  "Archives" "INBOX" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
+    Patterns  "INBOX" !"Archives" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
 
 Group neptune
@@ -176,6 +181,7 @@ Group gmail
 
 Group gmail-inbox
     Channel gmail-inbox
+    Channel gmail-archive
     Channel gmail-trash
     Channel gmail-sent
     Channel gmail-drafts
