@@ -17,7 +17,6 @@
 (keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
 
 (use-package avy
-  :ensure t
   :demand t
   :after evil
   :config
@@ -34,7 +33,6 @@
 
 ;; right click from your keyboard
 (use-package embark
-  :ensure t
   :demand t
   :after avy
   :bind (("C-c a" . embark-act)
@@ -68,14 +66,12 @@
   (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark))
 
 (use-package embark-consult
-  :ensure t
   :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; lots of more filtering options for completing-read
 (use-package consult
-  :ensure t
   ;; Other good things to bind: consult-ripgrep, consult-line-multi,
   ;; consult-history, consult-outline
   :bind (("M-p" . consult-yank-pop) ; yes yes. I am an evil heretic
@@ -122,6 +118,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Minibuffer completion
 (use-package vertico
   :demand t
+  :ensure t
   :custom
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)
@@ -183,7 +180,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 (add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))
 (use-package vertico-directory
   :elpaca nil
-  :ensure nil
   :after vertico
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
@@ -205,13 +201,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Add descriptions to completion
 (use-package marginalia
   :after vertico
-  :ensure t
   :init
   (marginalia-mode))
 
 ;; COmpletion in Region FUnction (code completion)
 (use-package corfu
-  :ensure t
   :init
   ;; (setq corfu-max-width 150)
   ;; (setq corfu-max-height 35)
@@ -244,13 +238,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Make corfu popup come up in terminal overlay
 (use-package corfu-terminal
   :if (not (display-graphic-p))
-  :ensure t
   :config
   (corfu-terminal-mode))
 
 (use-package dabbrev
   :elpaca nil
-  :ensure t
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand))
@@ -260,7 +252,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; combine completion at point functions. in cape the name was not clear
 (use-package cape
-  :ensure t
   :demand t
   :config
   ;; globally available CAPE completions (with lower priority)
@@ -278,7 +269,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Orderless: powerful completion style
 (use-package orderless
-  :ensure t
   :custom
   (completion-styles '(orderless basic))
   ;; this has a bunch of other things set up.. so just set everything from orderless
@@ -304,7 +294,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Pretty icons for corfu
 (use-package kind-icon
   :if (display-graphic-p)
-  :ensure t
   :after corfu
   :config
   (setq kind-icon-default-style
@@ -313,7 +302,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 
 (use-package tempel
-  :ensure t
   :after corfu
   ;; Require trigger prefix before template name when completing.
   ;; :custom (tempel-trigger-prefix "!")
@@ -340,8 +328,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (add-hook 'text-mode-hook 'tempel-setup-capf))
 
 (use-package tempel-collection
-  :after tempel
-  :ensure t)
+  :after tempel)
 
 ;; `~' returns home
 (defun bergheim/find-file-recognize-home (orig-fun &rest args)

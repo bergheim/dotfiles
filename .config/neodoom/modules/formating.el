@@ -2,7 +2,6 @@
 ;;
 
 (use-package apheleia
-  :ensure t
   :config
   ;; temp fix while apheleia does not support this ts mode directly
   (setf (alist-get 'prettier apheleia-formatters)

@@ -1,14 +1,13 @@
 ;;; evil.module.el --- Description -*- lexical-binding: t; -*-
 
 (use-package evil-collection
-  :ensure t
+  :demand t
   :after evil
   :config
   (setq evil-collection-want-unimpaired-p nil)
   (evil-collection-init))
 
 (use-package evil-org
-  :ensure t
   :after org
   :hook
   (org-mode . evil-org-mode)

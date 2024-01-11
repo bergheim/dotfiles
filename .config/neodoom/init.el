@@ -82,7 +82,7 @@
 ;;       use-package-compute-statistics nil ; compute statistics about package initialization
 ;;       use-package-minimum-reported-time 0.0001
 ;;       use-package-expand-minimally t	; minimal expanded macro
-;;       use-package-always-defer t)	; always defer, don't "require", except when :demand
+(setq use-package-always-defer t)	; always defer, don't "require", except when :demand
 
 ;; analyze startup time
 ;; (profiler-start 'cpu+mem)
@@ -161,7 +161,6 @@
   )
 
 (use-package site-lisp
-  :ensure t
   :demand t
   :config
   (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
@@ -183,10 +182,10 @@
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
-                    (time-subtract after-init-time before-init-time)))
+                    (time-subtract elpaca-after-init-time before-init-time)))
            gcs-done))
 
-(add-hook 'emacs-startup-hook 'display-startup-time)
+(add-hook 'elpaca-after-init-hook 'display-startup-time)
 
 (defun bergheim/run-all-tests ()
   "Load and run all Neodoom tests."

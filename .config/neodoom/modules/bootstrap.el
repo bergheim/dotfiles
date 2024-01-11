@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 
 (defun bergheim/get-and-ensure-data-dir (directory &optional filename)
   (unless bergheim/cache-dir
@@ -40,8 +41,34 @@
   :config
   (no-littering-theme-backups))
 
+(use-package evil
+  :demand t
+  :init
+  (setq evil-want-keybinding nil)
+  (setq evil-want-integration t)
+  (setq evil-undo-system 'undo-tree)
+  ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
+  :config
+  (setq evil-want-fine-undo t)
+  (setq evil-want-C-u-scroll t)
+  (defun bergheim/evil-search-symbol-forward ()
+    "Search forward for the entire symbol under cursor, or fall back to word search."
+    (interactive)
+    (let ((symbol (thing-at-point 'symbol t)))
+      (if symbol
+          (evil-search symbol t t)
+        (evil-ex-search-word-forward))))
+
+  (add-hook 'evil-insert-state-entry-hook #'noct-absolute)
+  (add-hook 'evil-insert-state-exit-hook #'noct-relative)
+  (evil-mode 1)
+
+  ;; :general
+  ;; (evil-normal-state-map
+  ;;  "*" 'bergheim/evil-search-symbol-forward)
+  )
+
 (use-package general
-  :ensure t
   :demand t
   :config
   (defvar bergheim/localleader-map (make-sparse-keymap)

@@ -19,8 +19,8 @@
 
  "e u" '(mu4e-update-mail-and-index :which-key "Update index and mail")
  "e U" '(mu4e-update-index :which-key "Update index")
- "e w" '(bergheim/email-inbox-work :which-key "Work email inbox")
- "e W" '(bergheim/email-week :which-key "This week's email")
+ "e w" '(bergheim/email-week :which-key "This week's email")
+ "e W" '(bergheim/email-inbox-work :which-key "Work email inbox")
  "e t" '(bergheim/email-trash :which-key "Trash"))
 
 ;;; keybindings.el ends here

@@ -8,7 +8,6 @@
 ;; Modified: September 18, 2023
 
 (use-package ediff
-  :ensure nil
   :elpaca nil
   :config
   (setq ediff-show-clashes-only t)
@@ -19,12 +18,10 @@
 
 (use-package treesit
   :elpaca nil
-  :ensure nil
   :config
   (setq treesit-font-lock-level 4))
 
 (use-package treesit-auto
-  :ensure t
   :config
   (setq treesit-auto-install 'prompt)
   (treesit-auto-add-to-auto-mode-alist)
@@ -68,14 +65,11 @@
   :config
   (smartparens-global-mode t))
 
-(use-package elixir-ts-mode
-  :ensure t)
+(use-package elixir-ts-mode)
 
-(use-package yaml-mode
-  :ensure t)
+(use-package yaml-mode)
 
 (use-package markdown-mode
-  :ensure t
   :hook ((markdown-mode . visual-line-mode)
          (markdown-mode . flyspell-mode))
   :init
@@ -92,7 +86,6 @@
 
 (use-package typescript-ts-mode
   :elpaca nil
-  :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
 
 (defun bergheim/adjust-web-mode-comment-style ()

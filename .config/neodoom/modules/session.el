@@ -21,7 +21,6 @@
   (add-hook 'desktop-after-read-hook (lambda () (desktop-save-mode 1))))
 
 (use-package restart-emacs
-  :ensure t
   :after desktop
   :config
   (defun bergheim/restart-emacs ()

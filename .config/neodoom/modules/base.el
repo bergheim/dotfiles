@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 (setq-default indent-tabs-mode nil) ;; I have given up on tabs
 
 ;; save minibuffer history
@@ -59,10 +60,11 @@
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000)
   :hook
+  ;; FIXME: migrate this to elpaca. see https://github.com/progfolio/elpaca
   (after-init . save-place-mode))
 
 (use-package which-key
-  :ensure t
+  :demand t
   :config
   (which-key-mode)
   (setq which-key-idle-delay 0.3)
@@ -70,36 +72,8 @@
   (setq which-key-sort-order 'which-key-key-order-alpha)
   (setq which-key-idle-secondary-delay 0.3))
 
-(use-package evil
-  :ensure t
-  :demand t
-  :after general
-  :init
-  (setq evil-want-keybinding nil)
-  (setq evil-want-integration t)
-  (setq evil-undo-system 'undo-tree)
-  ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
-  :config
-  (setq evil-want-fine-undo t)
-  (setq evil-want-C-u-scroll t)
-  (defun bergheim/evil-search-symbol-forward ()
-    "Search forward for the entire symbol under cursor, or fall back to word search."
-    (interactive)
-    (let ((symbol (thing-at-point 'symbol t)))
-      (if symbol
-          (evil-search symbol t t)
-        (evil-ex-search-word-forward))))
-
-  (add-hook 'evil-insert-state-entry-hook #'noct-absolute)
-  (add-hook 'evil-insert-state-exit-hook #'noct-relative)
-  (evil-mode 1)
-
-  :general
-  (evil-normal-state-map
-   "*" 'bergheim/evil-search-symbol-forward))
-
 (use-package default-text-scale
-  :ensure t
+  :demand t
   :config
   (general-define-key
    :states '(normal visual)
@@ -130,8 +104,9 @@
     (function-put 'bergheim/present-mode 'toggled t)))
 
 (use-package git-auto-commit-mode
-  :ensure t)
+  :demand t)
 
+;; emacs startup profiler
 (use-package esup
   :ensure t
   :defer t
@@ -212,7 +187,7 @@
 
 ;; as long as this doesn't destroy my data..
 (use-package undo-tree
-  :ensure t
+  :after evil
   :init
   (global-undo-tree-mode)
   :config

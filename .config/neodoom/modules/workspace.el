@@ -55,7 +55,7 @@
 
 (use-package project
   :elpaca nil
-  :ensure nil  ; built-in package
+  :demand t
   :config
   (setq project-use-git t)
   (setq project-switch-commands

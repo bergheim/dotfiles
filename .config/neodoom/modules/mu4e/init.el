@@ -21,8 +21,7 @@
   (bergheim/load-file "modules/mu4e/accounts.el")
   (bergheim/load-file "modules/mu4e/view.el")
   (bergheim/load-file "modules/mu4e/actions.el")
-  (bergheim/load-file "modules/mu4e/search.el")
-  )
+  (bergheim/load-file "modules/mu4e/search.el"))
 
 (use-package mu4e-org
   :elpaca nil

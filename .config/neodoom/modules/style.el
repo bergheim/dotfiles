@@ -62,11 +62,12 @@
 (bergheim/set-font-based-on-frame-resolution)
 
 (use-package ef-themes
-  :ensure t
+  :demand t
+  :elpaca (:host github :repo "protesilaos/ef-themes")
   :config
-  ;; (ef-themes-select 'ef-cyprus))
+  (ef-themes-select 'ef-cyprus))
   ;; (ef-themes-select 'ef-elea-dark))
-  (ef-themes-select 'ef-maris-dark))
+  ;; (ef-themes-select 'ef-maris-dark))
 
 ;; (use-package doom-themes
 ;;   :ensure t
@@ -89,7 +90,6 @@
 ;; (load-theme 'modus-vivendi t)
 
 (use-package doom-modeline
-  :ensure t
   :init
   (setq doom-modeline-support-imenu t)
   (doom-modeline-mode 1)
@@ -253,7 +253,6 @@
   )
 
 (use-package rainbow-delimiters
-  :ensure t
   :defer t
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
