@@ -52,7 +52,6 @@
   ;;       (lambda () (which-key--show-popup which-key--buffer))
   ;;       prefix-help-command 'which-key-show-top-level)
 
-
   ;; Add the option to run embark when using avy
   (defun bedrock/avy-action-embark (pt)
     (unwind-protect
@@ -88,7 +87,7 @@
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<"))
 
-(use-package consult-todo :ensure t :after consult)
+(use-package consult-todo :after consult)
 
 (defun bergheim/consult-ripgrep-with-selection (&optional dir)
   "Run `consult-ripgrep' with the current visual selection as the initial input.
@@ -110,6 +109,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; TODO: make sure this works on multiple implementations
 (use-package xref
+  :elpaca nil
   :custom
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
@@ -121,7 +121,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Minibuffer completion
 (use-package vertico
-  :ensure t
   :demand t
   :custom
   (vertico-cycle t)
@@ -182,8 +181,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; FIXME: this is so terrible..
 (add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))
-(require 'vertico-directory)
 (use-package vertico-directory
+  :elpaca nil
   :ensure nil
   :after vertico
   ;; More convenient directory navigation commands
@@ -233,6 +232,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Part of corfu
 (use-package corfu-popupinfo
+  :elpaca nil
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
@@ -249,6 +249,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (corfu-terminal-mode))
 
 (use-package dabbrev
+  :elpaca nil
   :ensure t
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)

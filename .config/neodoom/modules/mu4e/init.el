@@ -11,6 +11,7 @@
      (mu4e-search-bookmark ,bookmark-string)))
 
 (use-package mu4e
+  :elpaca nil
   :commands mu4e
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
@@ -24,6 +25,7 @@
   )
 
 (use-package mu4e-org
+  :elpaca nil
   :after mu4e)
 
 ;; (setq mail-user-agent 'mu4e-user-agent)

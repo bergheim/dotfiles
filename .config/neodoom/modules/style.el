@@ -132,14 +132,16 @@
 
 
 (use-package uniquify
+  :elpaca nil
   :config
   (setq uniquify-buffer-name-style 'forward))
 
 ;; foo -> bar -> baz
-(use-package breadcrumb
-  :vc (:fetcher github :repo joaotavora/breadcrumb)
-  :defer t
-  :init (breadcrumb-mode))
+;; FIXME: make work for elpaca
+;; (use-package breadcrumb
+;;   :vc (:fetcher github :repo joaotavora/breadcrumb)
+;;   :defer t
+;;   :init (breadcrumb-mode))
 
 ;; display match info in the modeline
 ;; has some replace stuff as well, not sure how useful
@@ -159,6 +161,7 @@
     (scroll-bar-mode 1)))
 
 (use-package emacs
+  :elpaca nil
   :config
   (setq scroll-step 1
         scroll-conservatively 10
@@ -232,7 +235,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Show the tab-bar as soon as tab-bar functions are invoked
-(setq tab-bar-show 0)
 
 ;; Add the time to the tab-bar, if visible
 ;; (add-to-list 'tab-bar-format 'tab-bar-format-align-right 'append)
@@ -256,8 +258,13 @@
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
+(use-package hl-todo
+  :defer t
+  :elpaca (:depth nil))
+
 (use-package evil-goggles
   :ensure t
+  :after evil
   :config
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))

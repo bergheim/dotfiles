@@ -6,6 +6,7 @@
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package desktop
+  :elpaca nil
   ;; :init
   ;; (add-to-list 'desktop-minor-mode-handlers
   ;;              '(eglot--managed-mode . ignore))

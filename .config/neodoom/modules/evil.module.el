@@ -1,25 +1,5 @@
 ;;; evil.module.el --- Description -*- lexical-binding: t; -*-
 
-(use-package evil
-  :config
-  (setq evil-want-fine-undo t)
-  (setq evil-want-C-u-scroll t)
-  (defun bergheim/evil-search-symbol-forward ()
-    "Search forward for the entire symbol under cursor, or fall back to word search."
-    (interactive)
-    (let ((symbol (thing-at-point 'symbol t)))
-      (if symbol
-          (evil-search symbol t t)
-        (evil-ex-search-word-forward))))
-
-  (add-hook 'evil-insert-state-entry-hook #'noct-absolute)
-  (add-hook 'evil-insert-state-exit-hook #'noct-relative)
-
-  :general
-  (evil-normal-state-map
-   "*" 'bergheim/evil-search-symbol-forward))
-
-
 (use-package evil-collection
   :ensure t
   :after evil

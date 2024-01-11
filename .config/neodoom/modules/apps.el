@@ -1,9 +1,9 @@
 
 (use-package eshell
+  :elpaca nil
   :bind (("C-r" . consult-history)))
 
 (use-package treemacs
-  :ensure t
   :defer t
   :config
   (treemacs-follow-mode t)

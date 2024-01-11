@@ -62,6 +62,9 @@
     "n" 'org-store-link
     "q" 'org-set-tags-command))
 
+;; ensure we load the latest version of org
+(elpaca-wait)
+
 ;; (use-package org
 ;;   :after general
 ;;   :config
@@ -100,11 +103,15 @@
 
 ;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
-  :ensure t
   :after org
   :defer t
   :config
   (org-recent-headings-mode))
+
+(use-package frecency
+  :after org
+  ;; TODO remove this once https://github.com/alphapapa/org-recent-headings/issues/22 is resolved
+  :elpaca (:version (lambda (_) "0.1")))
 
 (use-package org-sticky-header
   :ensure t

@@ -32,6 +32,7 @@
   (popper-echo-mode +1))                ; For echo area hints
 
 (use-package winner
+  :elpaca nil
   :init
   (winner-mode 1))
 
@@ -53,6 +54,7 @@
   (burly-tabs-mode 1))
 
 (use-package project
+  :elpaca nil
   :ensure nil  ; built-in package
   :config
   (setq project-use-git t)

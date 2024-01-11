@@ -1,16 +1,8 @@
 (setq-default indent-tabs-mode nil) ;; I have given up on tabs
 
-(use-package no-littering
-  :ensure t
-  :demand t
-  :init
-  (setq no-littering-var-directory (concat bergheim/cache-dir "var"))
-  (setq no-littering-etc-directory (concat bergheim/cache-dir "etc"))
-  :config
-  (no-littering-theme-backups))
-
 ;; save minibuffer history
 (use-package savehist
+  :elpaca nil
   ;; :init
   ;; (setq savehist-file (expand-file-name "savehist" bergheim/cache-dir))
   :config
@@ -51,6 +43,7 @@
       custom-file (expand-file-name "custom.el" bergheim/config-dir))
 
 (use-package recentf
+  :elpaca nil
   :config
   (setq recentf-max-menu-items 50)
   (setq recentf-max-saved-items 200)
@@ -61,6 +54,7 @@
   (recentf-mode t))
 
 (use-package saveplace
+  :elpaca nil
   :config
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000)
@@ -76,22 +70,33 @@
   (setq which-key-sort-order 'which-key-key-order-alpha)
   (setq which-key-idle-secondary-delay 0.3))
 
-(use-package general
-  :ensure t
-  :demand t
-  :config
-  (general-override-mode))
-
 (use-package evil
   :ensure t
   :demand t
+  :after general
   :init
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
   (setq evil-undo-system 'undo-tree)
   ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
   :config
-  (evil-mode 1))
+  (setq evil-want-fine-undo t)
+  (setq evil-want-C-u-scroll t)
+  (defun bergheim/evil-search-symbol-forward ()
+    "Search forward for the entire symbol under cursor, or fall back to word search."
+    (interactive)
+    (let ((symbol (thing-at-point 'symbol t)))
+      (if symbol
+          (evil-search symbol t t)
+        (evil-ex-search-word-forward))))
+
+  (add-hook 'evil-insert-state-entry-hook #'noct-absolute)
+  (add-hook 'evil-insert-state-exit-hook #'noct-relative)
+  (evil-mode 1)
+
+  :general
+  (evil-normal-state-map
+   "*" 'bergheim/evil-search-symbol-forward))
 
 (use-package default-text-scale
   :ensure t
@@ -177,6 +182,7 @@
   (elfeed-goodies/setup))
 
 (use-package minibuffer
+  :elpaca nil
   :after general
   :config
   (general-define-key
@@ -189,6 +195,7 @@
   :defer t)
 
 (use-package tramp
+  :elpaca nil
   :defer t
   :config
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
@@ -254,6 +261,7 @@
   :ensure t)
 
 (use-package flymake
+  :elpaca nil
   :defer t
   :config
   (setq flymake-temporary-file-directory (bergheim/get-and-ensure-data-dir "flymake")))

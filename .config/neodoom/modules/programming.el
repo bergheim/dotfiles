@@ -9,6 +9,7 @@
 
 (use-package ediff
   :ensure nil
+  :elpaca nil
   :config
   (setq ediff-show-clashes-only t)
   ;; open diffs horizontally in the current frame
@@ -17,6 +18,7 @@
   (setq ediff-merge-split-window-function 'split-window-horizontally))
 
 (use-package treesit
+  :elpaca nil
   :ensure nil
   :config
   (setq treesit-font-lock-level 4))
@@ -40,7 +42,8 @@
 
 ;; (electric-pair-mode t) ;; insert closing parens
 
-(use-package emacs :ensure nil
+(use-package emacs
+  :elpaca nil
   :after treesit
   :custom-face
   (typescript-ts-jsx-tag-face
@@ -57,6 +60,7 @@
 
 ;; used by vimish-fold
 (use-package hideshow
+  :elpaca nil
   :hook (prog-mode . hs-minor-mode))
 
 (use-package smartparens
@@ -87,6 +91,7 @@
   (web-mode-enable-auto-quoting nil))
 
 (use-package typescript-ts-mode
+  :elpaca nil
   :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
 
