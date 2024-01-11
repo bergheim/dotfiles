@@ -8,7 +8,7 @@
 ;; Modified: September 18, 2023
 
 (use-package ediff
-  :ensure nil
+  :elpaca nil
   :config
   (setq ediff-show-clashes-only t)
   ;; open diffs horizontally in the current frame
@@ -17,12 +17,11 @@
   (setq ediff-merge-split-window-function 'split-window-horizontally))
 
 (use-package treesit
-  :ensure nil
+  :elpaca nil
   :config
   (setq treesit-font-lock-level 4))
 
 (use-package treesit-auto
-  :ensure t
   :config
   (setq treesit-auto-install 'prompt)
   (treesit-auto-add-to-auto-mode-alist)
@@ -40,7 +39,8 @@
 
 ;; (electric-pair-mode t) ;; insert closing parens
 
-(use-package emacs :ensure nil
+(use-package emacs
+  :elpaca nil
   :after treesit
   :custom-face
   (typescript-ts-jsx-tag-face
@@ -57,6 +57,7 @@
 
 ;; used by vimish-fold
 (use-package hideshow
+  :elpaca nil
   :hook (prog-mode . hs-minor-mode))
 
 (use-package smartparens
@@ -64,14 +65,11 @@
   :config
   (smartparens-global-mode t))
 
-(use-package elixir-ts-mode
-  :ensure t)
+(use-package elixir-ts-mode)
 
-(use-package yaml-mode
-  :ensure t)
+(use-package yaml-mode)
 
 (use-package markdown-mode
-  :ensure t
   :hook ((markdown-mode . visual-line-mode)
          (markdown-mode . flyspell-mode))
   :init
@@ -87,7 +85,7 @@
   (web-mode-enable-auto-quoting nil))
 
 (use-package typescript-ts-mode
-  :ensure nil
+  :elpaca nil
   :custom (typescript-ts-mode-indent-offset 4))
 
 (defun bergheim/adjust-web-mode-comment-style ()

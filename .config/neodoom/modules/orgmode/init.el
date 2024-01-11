@@ -100,11 +100,13 @@
 
 ;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
-  :ensure t
   :after org
   :defer t
   :config
   (org-recent-headings-mode))
+
+(use-package frecency
+  :after org)
 
 (use-package org-sticky-header
   :ensure t

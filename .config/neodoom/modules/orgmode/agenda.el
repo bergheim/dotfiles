@@ -3,6 +3,7 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (use-package org-agenda
+  :elpaca nil
   :after general
   :general
   ;; FIXME: this does not work.

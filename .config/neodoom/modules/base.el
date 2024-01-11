@@ -1,16 +1,9 @@
+;; -*- lexical-binding: t; -*-
 (setq-default indent-tabs-mode nil) ;; I have given up on tabs
-
-(use-package no-littering
-  :ensure t
-  :demand t
-  :init
-  (setq no-littering-var-directory (concat bergheim/cache-dir "var"))
-  (setq no-littering-etc-directory (concat bergheim/cache-dir "etc"))
-  :config
-  (no-littering-theme-backups))
 
 ;; save minibuffer history
 (use-package savehist
+  :elpaca nil
   ;; :init
   ;; (setq savehist-file (expand-file-name "savehist" bergheim/cache-dir))
   :config
@@ -51,6 +44,7 @@
       custom-file (expand-file-name "custom.el" bergheim/config-dir))
 
 (use-package recentf
+  :elpaca nil
   :config
   (setq recentf-max-menu-items 50)
   (setq recentf-max-saved-items 200)
@@ -61,14 +55,16 @@
   (recentf-mode t))
 
 (use-package saveplace
+  :elpaca nil
   :config
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000)
   :hook
+  ;; FIXME: migrate this to elpaca. see https://github.com/progfolio/elpaca
   (after-init . save-place-mode))
 
 (use-package which-key
-  :ensure t
+  :demand t
   :config
   (which-key-mode)
   (setq which-key-idle-delay 0.3)
@@ -76,25 +72,8 @@
   (setq which-key-sort-order 'which-key-key-order-alpha)
   (setq which-key-idle-secondary-delay 0.3))
 
-(use-package general
-  :ensure t
-  :demand t
-  :config
-  (general-override-mode))
-
-(use-package evil
-  :ensure t
-  :demand t
-  :init
-  (setq evil-want-keybinding nil)
-  (setq evil-want-integration t)
-  (setq evil-undo-system 'undo-tree)
-  ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
-  :config
-  (evil-mode 1))
-
 (use-package default-text-scale
-  :ensure t
+  :demand t
   :config
   (general-define-key
    :states '(normal visual)
@@ -125,8 +104,9 @@
     (function-put 'bergheim/present-mode 'toggled t)))
 
 (use-package git-auto-commit-mode
-  :ensure t)
+  :demand t)
 
+;; emacs startup profiler
 (use-package esup
   :ensure t
   :defer t
@@ -177,6 +157,7 @@
   (elfeed-goodies/setup))
 
 (use-package minibuffer
+  :elpaca nil
   :after general
   :config
   (general-define-key
@@ -189,6 +170,7 @@
   :defer t)
 
 (use-package tramp
+  :elpaca nil
   :defer t
   :config
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
@@ -205,7 +187,7 @@
 
 ;; as long as this doesn't destroy my data..
 (use-package undo-tree
-  :ensure t
+  :after evil
   :init
   (global-undo-tree-mode)
   :config
@@ -254,6 +236,7 @@
   :ensure t)
 
 (use-package flymake
+  :elpaca nil
   :defer t
   :config
   (setq flymake-temporary-file-directory (bergheim/get-and-ensure-data-dir "flymake")))

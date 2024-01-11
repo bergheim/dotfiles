@@ -17,7 +17,6 @@
 (keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
 
 (use-package avy
-  :ensure t
   :demand t
   :after evil
   :config
@@ -34,7 +33,6 @@
 
 ;; right click from your keyboard
 (use-package embark
-  :ensure t
   :demand t
   :after avy
   :bind (("C-c a" . embark-act)
@@ -52,7 +50,6 @@
   ;;       (lambda () (which-key--show-popup which-key--buffer))
   ;;       prefix-help-command 'which-key-show-top-level)
 
-
   ;; Add the option to run embark when using avy
   (defun bedrock/avy-action-embark (pt)
     (unwind-protect
@@ -69,14 +66,12 @@
   (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark))
 
 (use-package embark-consult
-  :ensure t
   :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; lots of more filtering options for completing-read
 (use-package consult
-  :ensure t
   ;; Other good things to bind: consult-ripgrep, consult-line-multi,
   ;; consult-history, consult-outline
   :bind (("M-p" . consult-yank-pop) ; yes yes. I am an evil heretic
@@ -88,7 +83,7 @@
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<"))
 
-(use-package consult-todo :ensure t :after consult)
+(use-package consult-todo :after consult)
 
 (defun bergheim/consult-ripgrep-with-selection (&optional dir)
   "Run `consult-ripgrep' with the current visual selection as the initial input.
@@ -110,6 +105,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; TODO: make sure this works on multiple implementations
 (use-package xref
+  :elpaca nil
   :custom
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
@@ -121,8 +117,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Minibuffer completion
 (use-package vertico
-  :ensure t
   :demand t
+  :ensure t
   :custom
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)
@@ -182,9 +178,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; FIXME: this is so terrible..
 (add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))
-(require 'vertico-directory)
 (use-package vertico-directory
-  :ensure nil
+  :elpaca nil
   :after vertico
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
@@ -206,13 +201,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Add descriptions to completion
 (use-package marginalia
   :after vertico
-  :ensure t
   :init
   (marginalia-mode))
 
 ;; COmpletion in Region FUnction (code completion)
 (use-package corfu
-  :ensure t
   :init
   ;; (setq corfu-max-width 150)
   ;; (setq corfu-max-height 35)
@@ -233,6 +226,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Part of corfu
 (use-package corfu-popupinfo
+  :elpaca nil
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
@@ -244,12 +238,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Make corfu popup come up in terminal overlay
 (use-package corfu-terminal
   :if (not (display-graphic-p))
-  :ensure t
   :config
   (corfu-terminal-mode))
 
 (use-package dabbrev
-  :ensure t
+  :elpaca nil
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand))
@@ -259,7 +252,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; combine completion at point functions. in cape the name was not clear
 (use-package cape
-  :ensure t
   :demand t
   :config
   ;; globally available CAPE completions (with lower priority)
@@ -277,7 +269,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Orderless: powerful completion style
 (use-package orderless
-  :ensure t
   :custom
   (completion-styles '(orderless basic))
   ;; this has a bunch of other things set up.. so just set everything from orderless
@@ -303,7 +294,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Pretty icons for corfu
 (use-package kind-icon
   :if (display-graphic-p)
-  :ensure t
   :after corfu
   :config
   (setq kind-icon-default-style
@@ -312,7 +302,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 
 (use-package tempel
-  :ensure t
   :after corfu
   ;; Require trigger prefix before template name when completing.
   ;; :custom (tempel-trigger-prefix "!")
@@ -339,8 +328,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (add-hook 'text-mode-hook 'tempel-setup-capf))
 
 (use-package tempel-collection
-  :after tempel
-  :ensure t)
+  :after tempel)
 
 ;; `~' returns home
 (defun bergheim/find-file-recognize-home (orig-fun &rest args)

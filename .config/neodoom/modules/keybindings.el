@@ -27,33 +27,7 @@
 ;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
 
 
-
-(use-package general
-  :config
-  (general-evil-setup)
-  (defvar bergheim/localleader-map (make-sparse-keymap)
-    "Keymap for 'SPC m'")
-
-  (general-create-definer bergheim/global-menu-keys
-    :states '(normal visual insert motion emacs)
-    :prefix "SPC"
-    :keymaps 'override
-    :non-normal-prefix "M-SPC")
-
-  (general-create-definer bergheim/localleader-keys
-    :prefix "SPC m"
-    :states '(normal visual emacs)
-    :keymaps 'bergheim/localleader-map)
-
-  (general-create-definer bergheim/global-evil-keys
-    :states '(normal visual motion operator)
-    :keymaps 'override)
-
-  (general-create-definer bergheim/emacs-lisp-keys
-    :prefix "SPC m"
-    :states '(normal visual emacs)
-    :keymaps 'emacs-lisp-mode-map)
-
+(with-eval-after-load 'general
   (general-def :keymaps '(vertico-active-map consult-preview-keymap embark-general-map)
     [escape] 'keyboard-quit)
 

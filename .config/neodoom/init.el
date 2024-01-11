@@ -18,6 +18,81 @@
                       (expand-file-name "~/"))))
     xdg-home))
 
+(defvar elpaca-installer-version 0.6)
+(defvar elpaca-directory (expand-file-name "elpaca" bergheim/cache-dir))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                              :ref nil
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                 ((zerop (call-process "git" nil buffer t "clone"
+                                       (plist-get order :repo) repo)))
+                 ((zerop (call-process "git" nil buffer t "checkout"
+                                       (or (plist-get order :ref) "--"))))
+                 (emacs (concat invocation-directory invocation-name))
+                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                 ((require 'elpaca))
+                 ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+;; needed for magit. See https://github.com/progfolio/elpaca/issues/216
+(defun +elpaca-unload-seq (e) "Unload seq before continuing the elpaca build, then continue to build the recipe E."
+  (and (featurep 'seq) (unload-feature 'seq t))
+  (elpaca--continue-build e))
+(elpaca `(seq :build ,(append (butlast (if (file-exists-p (expand-file-name "seq" elpaca-builds-directory))
+                                          elpaca--pre-built-steps
+                                        elpaca-build-steps))
+                             (list '+elpaca-unload-seq 'elpaca--activate-package))))
+
+;; Install use-package support
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default t)
+  (setq elpaca-queue-limit 30))
+
+;; ;; Block until current queue processed.
+(elpaca-wait)
+
+;; 'always-defer' means that for a package to load we need a ':hook' or using a ':general' keybinding
+;; if there is none, we need to explicitly add ':demand' to load the package
+;; can also load with ':defer time'
+;; (setq use-package-verbose nil		; don't print anything
+;;       use-package-compute-statistics nil ; compute statistics about package initialization
+;;       use-package-minimum-reported-time 0.0001
+;;       use-package-expand-minimally t	; minimal expanded macro
+(setq use-package-always-defer t)	; always defer, don't "require", except when :demand
+
+;; analyze startup time
+;; (profiler-start 'cpu+mem)
+;; (add-hook 'elpaca-after-init-hook (lambda () (profiler-stop) (profiler-report)))
+
+
+
+
+
+
 ;; bootstrap helpers
 (let ((modules-dir (concat bergheim/config-dir "modules/")))
   (unless (file-exists-p modules-dir)
@@ -45,7 +120,6 @@
 ;; (fringe-mode 8)
 ;; (set-frame-parameter nil 'internal-border-width 10)
 
-(package-initialize)
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
@@ -58,11 +132,6 @@
 (with-eval-after-load 'package
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
 
-;; adds :vc keyword to use-package
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package"))
-(require 'vc-use-package)
-
 ;; In your .emacs or init.el or whatever your main configuration file is
 (let ((private-file (expand-file-name "private.el" bergheim/config-dir)))
   (when (file-exists-p private-file)
@@ -73,6 +142,7 @@
   (load custom-file))
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
+  (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "base.el"))
   (load-file (concat module-dir "style.el"))
   (load-file (concat module-dir "utils.el"))
@@ -81,18 +151,16 @@
   (load-file (concat module-dir "formating.el"))
   (load-file (concat module-dir "nav.el"))
   (load-file (concat module-dir "keybindings.el"))
-  (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "bergheim-eglot.el"))
   (load-file (concat module-dir "mu4e/init.el"))
   (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "programming.el"))
   (load-file (concat module-dir "completion.el"))
-  (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "apps.el"))
-  (load-file (concat module-dir "session.el")))
+  (load-file (concat module-dir "session.el"))
+  )
 
 (use-package site-lisp
-  :ensure t
   :demand t
   :config
   (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
@@ -114,10 +182,10 @@
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
-                    (time-subtract after-init-time before-init-time)))
+                    (time-subtract elpaca-after-init-time before-init-time)))
            gcs-done))
 
-(add-hook 'emacs-startup-hook 'display-startup-time)
+(add-hook 'elpaca-after-init-hook 'display-startup-time)
 
 (defun bergheim/run-all-tests ()
   "Load and run all Neodoom tests."

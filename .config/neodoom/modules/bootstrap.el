@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 
 (defun bergheim/get-and-ensure-data-dir (directory &optional filename)
   (unless bergheim/cache-dir
@@ -30,3 +31,71 @@
   (interactive)
   (load-file (expand-file-name "init.el" bergheim/config-dir))
   (message "Emacs configuration reloaded successfully!"))
+
+(use-package no-littering
+  :ensure t
+  :demand t
+  :init
+  (setq no-littering-var-directory (concat bergheim/cache-dir "var"))
+  (setq no-littering-etc-directory (concat bergheim/cache-dir "etc"))
+  :config
+  (no-littering-theme-backups))
+
+(use-package evil
+  :demand t
+  :init
+  (setq evil-want-keybinding nil)
+  (setq evil-want-integration t)
+  (setq evil-undo-system 'undo-tree)
+  ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
+  :config
+  (setq evil-want-fine-undo t)
+  (setq evil-want-C-u-scroll t)
+  (defun bergheim/evil-search-symbol-forward ()
+    "Search forward for the entire symbol under cursor, or fall back to word search."
+    (interactive)
+    (let ((symbol (thing-at-point 'symbol t)))
+      (if symbol
+          (evil-search symbol t t)
+        (evil-ex-search-word-forward))))
+
+  (add-hook 'evil-insert-state-entry-hook #'noct-absolute)
+  (add-hook 'evil-insert-state-exit-hook #'noct-relative)
+  (evil-mode 1)
+
+  ;; :general
+  ;; (evil-normal-state-map
+  ;;  "*" 'bergheim/evil-search-symbol-forward)
+  )
+
+(use-package general
+  :demand t
+  :config
+  (defvar bergheim/localleader-map (make-sparse-keymap)
+    "Keymap for 'SPC m'")
+
+  (general-create-definer bergheim/global-menu-keys
+    :states '(normal visual insert motion emacs)
+    :prefix "SPC"
+    :keymaps 'override
+    :non-normal-prefix "M-SPC")
+
+  (general-create-definer bergheim/localleader-keys
+    :prefix "SPC m"
+    :states '(normal visual emacs)
+    :keymaps 'bergheim/localleader-map)
+
+  (general-create-definer bergheim/global-evil-keys
+    :states '(normal visual motion operator)
+    :keymaps 'override)
+
+  (general-create-definer bergheim/emacs-lisp-keys
+    :prefix "SPC m"
+    :states '(normal visual emacs)
+    :keymaps 'emacs-lisp-mode-map)
+
+  (general-override-mode)
+  (general-evil-setup))
+
+;; general modifies use-package so make sure we get it before moving on
+(elpaca-wait)

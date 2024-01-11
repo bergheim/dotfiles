@@ -6,6 +6,7 @@
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package desktop
+  :elpaca nil
   ;; :init
   ;; (add-to-list 'desktop-minor-mode-handlers
   ;;              '(eglot--managed-mode . ignore))
@@ -20,7 +21,6 @@
   (add-hook 'desktop-after-read-hook (lambda () (desktop-save-mode 1))))
 
 (use-package restart-emacs
-  :ensure t
   :after desktop
   :config
   (defun bergheim/restart-emacs ()

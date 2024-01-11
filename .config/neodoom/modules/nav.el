@@ -1,6 +1,7 @@
 ;;; nav.el --- Description -*- lexical-binding: t; -*-
 
 (use-package dired
+  :elpaca nil
   :commands dired-jump
   :after general
   :init
