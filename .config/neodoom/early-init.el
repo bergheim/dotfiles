@@ -23,6 +23,9 @@
 
 ;; Default frame configuration: full screen, good-looking title bar on macOS
 (setq frame-resize-pixelwise t)
+;; disable this early to avoid flashing it
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
 (tool-bar-mode -1)                      ; All these tools are in the menu-bar anyway
 (setq default-frame-alist '((fullscreen . maximized)
 

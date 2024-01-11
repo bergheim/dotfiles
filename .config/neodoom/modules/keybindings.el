@@ -142,6 +142,7 @@
     "g g" '(magit :which-key "magit")
     "g o" 'browse-at-remote
     "g l" 'magit-log-buffer-file
+    "g f" 'magit-find-file
     "g y" 'browse-at-remote-kill
     "g s" 'magit-stage-buffer-file
 
