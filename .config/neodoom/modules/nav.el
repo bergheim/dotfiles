@@ -1,8 +1,26 @@
 ;;; nav.el --- Description -*- lexical-binding: t; -*-
 
+(use-package consult-notes
+  :commands (consult-notes
+             consult-notes-search-in-all-notes
+             consult-notes-org-roam-find-node
+             consult-notes-org-roam-find-node-relation)
+  :config
+  (when (locate-library "denote")
+    (consult-notes-denote-mode))
+  (when (locate-library "org-roam")
+    (consult-notes-org-roam-mode)))
+
+(use-package consult-dir
+  :ensure t
+  :bind (("C-x C-d" . consult-dir)
+         ("C-c C-c" . consult-dir)
+         :map minibuffer-local-completion-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
+
 (use-package dired
   :elpaca nil
-  :commands dired-jump
   :after general
   :init
   (setq dired-dwim-target t  ; suggest a target for moving/copying intelligently
@@ -29,8 +47,9 @@
 
 (use-package dirvish
   :ensure t
-  :defer t
+  :demand t
   :after general
+  ;; :commands (dirvish)
   :config
   (setq dirvish-emerge-mode t)
   (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)

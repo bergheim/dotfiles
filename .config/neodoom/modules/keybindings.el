@@ -167,6 +167,12 @@
     "ip" '(consult-yank-pop :which-key "kill-ring")
     "m" `(,bergheim/localleader-map :which-key "Local leader")
 
+    "n" '(:ignore t :which-key "Notes")
+    "nd" '(:ignore t :which-key "Denote")
+    "ndd" '(denote :which-key "Denote")
+    "ndl" '(denote-link :which-key "Link")
+    "ns" '(consult-notes-search-in-all-notes :which-key "Search")
+
     "p" '(:ignore t :which-key "Project")
     "pb" '(consult-project-buffer :which-key "buffers")
     "pd" '(project-find-dir :which-key "Find dir")
