@@ -188,11 +188,8 @@
     "s" '(:ignore t :which-key "Search")
     "sa" '(consult-org-agenda :which-key "org agenda")
     "sb" '(consult-line-multi :which-key "open buffers")
-    "sd" '((lambda () (interactive) (bergheim/consult-ripgrep-with-selection ".")) :which-key "Current directory")
-    "sD" '((lambda () (interactive) 
-             (let ((current-prefix-arg (prefix-numeric-value '(4)))) 
-               (call-interactively 'bergheim/consult-ripgrep-with-selection)))
-           :which-key "Other dir")
+    "sd" '(bergheim/consult-ripgrep-with-selection :which-key "Current directory")
+    "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
     "sA" '(affe-grep :which-key "Async grep")
     
     "sf" '(consult-fd :which-key "Search File")

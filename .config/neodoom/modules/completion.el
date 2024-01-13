@@ -95,13 +95,18 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
                    (buffer-substring-no-properties (region-beginning) (region-end)))))
     (consult-ripgrep (or dir (consult--project-root)) initial)))
 
+(defun bergheim/consult-ripgrep-with-selection-other-dir ()
+  "Invoke `bergheim/consult-ripgrep-with-selection` with a chosen directory."
+  (interactive)
+  (let ((dir (read-directory-name "Search Directory: ")))
+    (bergheim/consult-ripgrep-with-selection dir)))
+
 (defun bergheim/consult-project-or-buffer ()
   "Call `consult-project-buffer` if in a project, otherwise `consult-buffer`."
   (interactive)
   (if (project-current)
       (consult-project-buffer)
     (consult-buffer)))
-
 
 ;; TODO: make sure this works on multiple implementations
 (use-package xref
