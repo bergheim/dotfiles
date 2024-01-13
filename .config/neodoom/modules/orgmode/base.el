@@ -9,6 +9,7 @@
       calendar-date-style 'european
       org-icalendar-timezone "Europe/Oslo"
       org-icalendar-alarm-time 30
+      org-extend-today-until 4
 
       ;; show tasks scheduled or due in next fortnight
       org-agenda-span 14
