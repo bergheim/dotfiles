@@ -26,7 +26,6 @@
 ;; Generally, all keys prefixed with C-c ? (where ? is a single character) are reserved for you, and you alone
 ;; The other set of reserved keys are the F-keys from F5 and onwards. The other two prefix keys reserved to you are hyper and super
 
-
 (with-eval-after-load 'general
   (general-def :keymaps '(vertico-active-map consult-preview-keymap embark-general-map)
     [escape] 'keyboard-quit)
@@ -98,7 +97,7 @@
     "TAB x" '(tab-close :which-key "close tab")
 
     "a" '(:ignore t :which-key "Apps")
-    "ad" '(dirvish :which-key "Dirvish")
+    "ad" '((lambda () (interactive) (dirvish "~/")) :which-key "Dirvish")
     "ae" '(elfeed :which-key "Elfeed")
     "at" '(treemacs :which-key "Treemacs")
 
@@ -149,9 +148,14 @@
     "h" '(:ignore t :which-key "Help")
     "ha" '(apropos :which-key "Apropos")
     "hb" '(embark-bindings :which-key "Bindings")
+    "hd" '(:ignore t :which-key "Debug")
+    "hdd" '(toggle-debug-on-error t :which-key "Debug")
+    "hdq" '(toggle-debug-on-quit t :which-key "Debug on quit")
     "hf" '(helpful-callable :which-key "Function")
     "hk" '(helpful-key :which-key "Key")
+    "hl" '(find-library :which-key "Library")
     "hm" '(describe-mode :which-key "Describe mode")
+    "hp" '(elpaca-manager :which-key "Packages")
     "hr" '(bergheim/reload-init-file :which-key "Reload")
     "ht" '(consult-theme :which-key "Switch theme")
     "hv" '(helpful-variable :which-key "Variable")
@@ -275,10 +279,4 @@
   ;;  "gy" 'evil-commentary-yank
   ;;  "s" 'evil-surround-region)
   ;;
-
-  (bergheim/emacs-lisp-keys
-    "e" '(:ignore t :which-key "Eval")
-    "e d" '(eval-defun :which-key "eval last defun")
-    "e e" '(eval-last-sexp :which-key "eval last sexp")
-    "e b" '(eval-buffer :which-key "eval buffer")
-    "e r" '(elisp-eval-region-or-buffer :which-key "eval region or buffer")))
+  )

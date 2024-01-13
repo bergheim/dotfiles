@@ -32,30 +32,70 @@
   :defer t
   :after general
   :config
+  (setq dirvish-emerge-mode t)
+  (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)
   (dirvish-override-dired-mode)
   (setq dirvish-cache-dir (concat bergheim/cache-dir "dirvish/"))
   (setq dirvish-attributes
         '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size))
   (setq dirvish-subtree-state-style 'nerd)
 
-  (general-define-key
+  (setq dirvish-emerge-groups '(("Recent files" (predicate . recent-files-today))
+                                ("Documents" (extensions "pdf" "tex" "bib" "epub" "doc"))
+                                ("Video" (extensions "mp4" "mkv" "webm"))
+                                ("Pictures" (extensions "jpg" "png" "svg" "gif"))
+                                ("Audio" (extensions "mp3" "flac" "wav" "ape" "aac"))
+                                ("Archives" (extensions "gz" "rar" "zip"))))
+
+  (setq dirvish-quick-access-entries '(("h" "~/" "Home")
+                                       ("e" "~/.config/neodoom/" "Emacs user directory")
+                                       ("d" "~/dev" "Development")
+                                       ("D" "~/Downloads/" "Downloads")))
+
+  :general
+  (:keymaps 'dirvish-mode-map
    :states 'normal
-   :keymaps 'dirvish-mode-map
    "?"   #'dirvish-dispatch
+   "b"   #'dirvish-history-jump
    "q"   #'dirvish-quit
    "a"   #'dirvish-quick-access
-   "f"   #'dirvish-file-info-menu
-   "y"   #'dirvish-yank-menu
-   "s"   #'dirvish-quicksort
+   "C"   #'dired-create-directory
+   "f"   #'dirvish-fd
+   "F"   #'dirvish-fd-ask
+   ;; this is hilarious. yes, I do in fact want to copy it as kill
+   "y"   #'dired-copy-filename-as-kill
+   "Y"   #'dirvish-copy-file-name
+   "p"   #'dirvish-yank-menu
+   "o"   #'dired-sort-toggle-or-edit
+   "O"   #'dirvish-quicksort
+   "s"   #'dirvish-narrow
+   "S"   #'dirvish-fd-ask
    "TAB" #'dirvish-subtree-toggle
-   "M-t" #'dirvish-layout-toggle
-   "M-b" #'dirvish-history-go-backward
-   "M-f" #'dirvish-history-go-forward
-   "M-n" #'dirvish-narrow
-   "M-m" #'dirvish-mark-menu
-   "M-s" #'dirvish-setup-menu
-   "M-e" #'dirvish-emerge-menu)
-  )
+   "C-h" #'dirvish-history-go-backward
+   "C-l" #'dirvish-history-go-forward)
+
+  (bergheim/localleader-keys
+   :keymaps 'dirvish-mode-map
+
+   "b" '((lambda () (interactive) (browse-url-xdg-open (expand-file-name dired-directory))) :which-key "Browse externally")
+   "c" '(dired-create-empty-file :which-key "Create empty file")
+   "C" '(dired-create-directory :which-key "Create directory")
+   "e" '(gnus-dired-attach :which-key "Attach to email")
+   "E" '(dirvish-emerge-mode :which-key "toggle emerge")
+   "f" '(dirvish-layout-toggle :which-key "toggle fullscreen")
+   "i" '(dirvish-file-info-menu :which-key "file info menu")
+   "j" '(consult-dir :which-key "switch dir")
+   "s" '(dirvish-setup-menu :which-key "setup menu")
+   "m" '(dirvish-mark-menu :which-key "mark menu")
+   "o" '((lambda ()
+           (interactive)
+           (call-interactively 'bergheim/org-attach-dired-to-subtree))
+         :which-key "Copy to org")
+   "O" '((lambda ()
+           (interactive)
+           (let ((current-prefix-arg 4))
+             (call-interactively 'bergheim/org-attach-dired-to-subtree)))
+         :which-key "Move to org")))
 
 (defun bergheim/delete-current-file ()
   "Delete the current file and kill its buffer, after asking for confirmation."

@@ -268,3 +268,5 @@ should be checked."
   (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
   (setq writeroom-global-effects '(writeroom-set-fullscreen))
   (setq writeroom-bottom-divider-width 1))
+
+(use-package pdf-tools)
