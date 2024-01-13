@@ -65,6 +65,19 @@
   :config
   (smartparens-global-mode t))
 
+(use-package emacs-lisp-mode
+  :elpaca nil
+  :after general
+  :general
+  (bergheim/localleader-keys
+    :states 'normal
+    :keymaps 'emacs-lisp-mode-map
+    "e" '(:ignore t :which-key "Eval")
+    "e d" '(eval-defun :which-key "last defun")
+    "e e" '(eval-last-sexp :which-key "last sexp")
+    "e b" '(eval-buffer :which-key "buffer")
+    "e r" '(elisp-eval-region-or-buffer :which-key "region or buffer")))
+
 (use-package elixir-ts-mode)
 
 (use-package yaml-mode)

@@ -2,7 +2,6 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-(setq org-id-link-to-org-use-id t)
 (defun bergheim/org-id-advice (&rest args)
   "Add unique and clear IDs to everything, except modes where it does not make sense"
 
@@ -19,11 +18,21 @@
     )
   args)
 
+(defun bergheim/org-attach-id-uuid-folder-format (id)
+  "Puts everything in the same path, in the folder ID.
+
+Assumes the ID will be unique across all items."
+  (format "%s" id))
+
+;; TODO: clean this up
+(autoload 'org-attach-attach "org-attach" nil t)
+
+(setq org-id-link-to-org-use-id t)
 (advice-add 'org-store-link :before #'bergheim/org-id-advice)
-;; (advice-remove 'org-store-link #'bergheim/org-id-advice)
 ;; FIXME: if we find an ID in parent, use that
 (advice-add 'org-attach-attach :before #'bergheim/org-id-advice)
 
-
+(with-eval-after-load 'org-attach
+  (add-to-list 'org-attach-id-to-path-function-list 'bergheim/org-attach-id-uuid-folder-format))
 
 ;;; attachments.el ends here

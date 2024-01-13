@@ -25,7 +25,7 @@
 (defvar bergheim/variable-font-name "IosevkaTerm Nerd Font Propo" "Default font for variable width.")
 (defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
 (defvar bergheim/font-size-small 100 "Font size for small displays.")
-(defvar bergheim/font-size-medium 120 "Font size for medium displays.")
+(defvar bergheim/font-size-medium 140 "Font size for medium displays.")
 (defvar bergheim/font-size-large 200 "Font size for large displays.")
 (defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
 (defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")

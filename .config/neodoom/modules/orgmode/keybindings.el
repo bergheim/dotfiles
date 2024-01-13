@@ -7,21 +7,22 @@
 
   "o" '(:ignore t :which-key "Org Mode")
 
-  "od" '((lambda (&optional arg) (interactive) (org-agenda arg "d")) :which-key "Orgmode Dashboard")
+  "od" '((lambda (&optional arg) (interactive) (bergheim/org-super-agenda arg "d")) :which-key "Orgmode Dashboard")
+  "oo" '((lambda (&optional arg) (interactive) (bergheim/org-super-agenda arg "d")) :which-key "Orgmode Dashboard")
   "oa" '(org-agenda :which-key "org-agenda")
-  "ob" '(bergheim/org--open-attachments :which-key "open attachments")
-  "og" '(org-clock-goto :which-key "clock goto")
-  "oi" '(org-clock-in :which-key "clock in")
-  "ol" '(org-clock-in-last :which-key "clock in last")
-  "oo" '(org-clock-out :which-key "clock out")
+  "ob" '(bergheim/org-open-attachments :which-key "open attachments")
+
+  ;; "og" '(org-clock-goto :which-key "clock goto")
+  ;; "oi" '(org-clock-in :which-key "clock in")
+  ;; "ol" '(org-clock-in-last :which-key "clock in last")
+  ;; "oo" '(org-clock-out :which-key "clock out")
+
   "oC" '(org-capture :which-key "capture")
 
   "or" '(:ignore t :which-key "Recent changes")
   "orr" '(bergheim/org-agenda-recent-changes :which-key "this week")
-
   "orw" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@work" "work" "neptune"))) :which-key "work")
-  "orp" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@life" "life"))) :which-key "work")
-
+  "orp" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@life" "life"))) :which-key "private")
   "orm" '((lambda () (interactive) (org-ql-view-recent-items :num-days 31 :type 'clocked)) :which-key "Last month")
 
   "on" '(org-add-note :which-key "add note")

@@ -2,22 +2,25 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-
 (use-package org
   :defer t
+  ;; TODO: latest org does not work with org-habits etc so
+  ;; use the internal one for now
+  :elpaca nil
   :after general
 
+  ;; LOL @this loading
   :init
+  (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/keybindings.el")
+  (bergheim/load-file "modules/orgmode/capture.el")
+  (bergheim/load-file "modules/orgmode/agenda.el")
+  (bergheim/load-file "modules/orgmode/roam.el")
 
   :config
   (bergheim/load-file "modules/orgmode/base.el")
-  (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
-  (bergheim/load-file "modules/orgmode/agenda.el")
-  (bergheim/load-file "modules/orgmode/capture.el")
-  (bergheim/load-file "modules/orgmode/roam.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/style.el")
 
@@ -33,43 +36,22 @@
    "C-M-S-h" #'org-shiftmetaleft
    "C-M-S-j" #'org-shiftmetadown
    "C-M-S-k" #'org-shiftmetaup
-   "C-M-S-l" #'org-shiftmetaright
-
-   ;; FIXME: this is too broad - can't newline anymore
-   ;; "RET" #'org-open-at-point
-   )
+   "C-M-S-l" #'org-shiftmetaright)
 
   (general-define-key
    :states '(normal visual)
    :keymaps 'org-mode-map
+   "RET" '+org/dwim-at-point
    "C-h" 'bergheim/org-move-up-header
    "C-l" 'bergheim/org-move-down-header
    "gh" 'bergheim/org-move-up-header
    "gl" 'bergheim/org-move-down-header)
 
-  ;; FIXME: this is straight up ignored
-  (bergheim/localleader-keys
-    :keymaps 'org-agenda-mode-map
-    :states '(emacs normal motion)
-    "t" 'org-agenda-todo
-    "q" 'org-agenda-set-tags
-    "e" 'org-agenda-set-effort)
-
   (bergheim/localleader-keys
     :keymaps 'org-mode-map
     "t" 'org-todo
-    "n" 'org-store-link
+    "l" 'org-store-link
     "q" 'org-set-tags-command))
-
-;; (use-package org
-;;   :after general
-;;   :config
-;;   (bergheim/localleader-keys
-;;     :states '(normal visual emacs)
-;;     :keymaps 'org-mode-map
-;;     "t" 'org-todo
-;;     "n" 'org-store-link
-;;     "q" 'org-set-tags-command))
 
 (use-package org-caldav
   :ensure t
@@ -83,8 +65,13 @@
         org-caldav-calendars `((:calendar-id "personal"
                                              :inbox ,(concat org-directory "caldav/personal.org"))
                                (:calendar-id "outlookoffice365com"
-                                             :inbox ,(concat org-directory "caldav/neptune.org"))
-                               )))
+                                             :inbox ,(concat org-directory "caldav/neptune.org")))))
+
+(use-package org-clock
+  :ensure nil
+  :elpaca nil
+  :after org
+  :commands (org-clock-drawer-name))
 
 (use-package org-mru-clock
   :ensure t
@@ -120,7 +107,9 @@
 (use-package org-contacts
   :ensure t
   :after org
-  :init (setq org-contacts-files '("~/org/contacts.org")))
+  :commands (org-contacts-anniversaries)
+  :init
+  (setq org-contacts-files '("~/org/contacts.org")))
 
 (use-package org-journal
   :ensure t

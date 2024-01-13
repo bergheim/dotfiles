@@ -6,6 +6,9 @@
 (use-package org-roam
   :ensure t
   :defer t
+  :after org
+  :init
+  (setq org-roam-directory (expand-file-name "~/org/roam"))
   :config
   (setq org-roam-capture-templates
         '(("d" "default" plain "%?" :target

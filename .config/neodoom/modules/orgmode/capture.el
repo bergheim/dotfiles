@@ -8,13 +8,15 @@
 ;; Modified: September 18, 2023
 ;; Version: 0.0.1
 
-
-;; declerative capture templates
+;; declarative capture templates
 (use-package doct
   :ensure t
   ;;recommended: defer until calling doct
-  :commands (doct)
+  :commands (doct))
 
+(use-package org-capture
+  :elpaca nil
+  :after org
   :config
   (setq org-capture-templates
         (doct `(("Personal"
