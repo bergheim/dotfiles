@@ -117,7 +117,7 @@ With \\[universal-argument], include emails to this name as well"
      ;; (unforunately, many provide a "List-Unsubscribe", but not the List-Id itself)
      (email-list
       (mu4e-search
-       (format "maildir:/Inbox/ AND list:%s" email-list)
+       (format "list:%s AND maildir:/Inbox/" email-list)
        nil nil nil
        msgid (and (eq major-mode 'mu4e-view-mode)
                   (not (eq mu4e-split-view 'single-window)))))

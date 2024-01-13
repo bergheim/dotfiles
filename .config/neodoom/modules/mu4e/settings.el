@@ -8,6 +8,7 @@
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
+
       mu4e-get-mail-command "sync-mail"
       mu4e-attachment-dir "~/Downloads/email"
       mu4e-confirm-quit nil

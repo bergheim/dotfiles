@@ -2,7 +2,6 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-;;; ~/.config/doom/+org.el -*- lexical-binding: t; -*-
 
 (use-package org
   :defer t

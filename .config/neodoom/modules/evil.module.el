@@ -8,9 +8,12 @@
   (evil-collection-init))
 
 (use-package evil-org
+  :ensure t
   :after org
+  :commands (evil-org-mode)
   :hook
   (org-mode . evil-org-mode)
+  (org-agenda-mode . evil-org-mode)
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
@@ -42,7 +45,7 @@
 ;; s-/ evil-commentary-line
 ;;     evil-commentary-yank-line
 (use-package evil-commentary
-  :ensure t
+  :demand t
   :after evil
   :config
   (evil-commentary-mode))

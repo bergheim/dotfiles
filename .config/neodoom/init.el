@@ -88,11 +88,6 @@
 ;; (profiler-start 'cpu+mem)
 ;; (add-hook 'elpaca-after-init-hook (lambda () (profiler-stop) (profiler-report)))
 
-
-
-
-
-
 ;; bootstrap helpers
 (let ((modules-dir (concat bergheim/config-dir "modules/")))
   (unless (file-exists-p modules-dir)
@@ -114,13 +109,11 @@
       use-dialog-box nil                    ;; plz no
       sentence-end-double-space nil) ;; Fix archaic defaults
 
-;; disable this early to avoid flashing it
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
 ;; (fringe-mode 8)
 ;; (set-frame-parameter nil 'internal-border-width 10)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
+(defconst IS-MAC      (eq system-type 'darwin))
 
 (setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
 
@@ -142,7 +135,6 @@
   (load custom-file))
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
-  (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "base.el"))
   (load-file (concat module-dir "style.el"))
   (load-file (concat module-dir "utils.el"))
@@ -154,6 +146,7 @@
   (load-file (concat module-dir "bergheim-eglot.el"))
   (load-file (concat module-dir "mu4e/init.el"))
   (load-file (concat module-dir "evil.module.el"))
+  (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "programming.el"))
   (load-file (concat module-dir "completion.el"))
   (load-file (concat module-dir "apps.el"))

@@ -7,6 +7,7 @@
 
 (use-package desktop
   :elpaca nil
+  :demand t
   ;; :init
   ;; (add-to-list 'desktop-minor-mode-handlers
   ;;              '(eglot--managed-mode . ignore))

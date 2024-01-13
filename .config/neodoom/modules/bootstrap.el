@@ -63,10 +63,8 @@
   (add-hook 'evil-insert-state-exit-hook #'noct-relative)
   (evil-mode 1)
 
-  ;; :general
-  ;; (evil-normal-state-map
-  ;;  "*" 'bergheim/evil-search-symbol-forward)
-  )
+  :bind (:map evil-normal-state-map
+         ("*" . bergheim/evil-search-symbol-forward)))
 
 (use-package general
   :demand t
@@ -96,6 +94,10 @@
 
   (general-override-mode)
   (general-evil-setup))
+
+;; this must be loaded early because of `desktop`
+(use-package git-auto-commit-mode
+  :demand t)
 
 ;; general modifies use-package so make sure we get it before moving on
 (elpaca-wait)

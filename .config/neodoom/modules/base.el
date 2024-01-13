@@ -103,9 +103,6 @@
     (bergheim/toggle-big-font-mode)
     (function-put 'bergheim/present-mode 'toggled t)))
 
-(use-package git-auto-commit-mode
-  :demand t)
-
 ;; emacs startup profiler
 (use-package esup
   :ensure t
