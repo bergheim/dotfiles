@@ -80,5 +80,15 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
 
 (advice-add 'jinx--correct-replace :before #'jinx--add-to-abbrev)
 
+;; (use-package unicode-fonts
+;;   :ensure t
+;;   :config
+;;   (unicode-fonts-setup))
+
+(use-package expand-region
+  :ensure t
+  :defer t
+  :bind ("M-e" . er/expand-region))
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here

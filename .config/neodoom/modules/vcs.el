@@ -30,7 +30,7 @@
   :config
   (magit-todos-mode 0))
 
-;; TODO is this really needed..
+;; shows diffs in the fringe
 (use-package diff-hl
   :ensure t
   :defer t
@@ -38,7 +38,7 @@
          (vc-dir-mode . diff-hl-mode)
          (magit-post-refresh . diff-hl-magit-post-refresh))
   :config
-  (global-diff-hl-mode)
+  ;; (global-diff-hl-mode)
   ;; To keep in line with your vim-style keybindings preference:
   (general-define-key
    :states '(normal visual)
