@@ -16,6 +16,10 @@
   (setq ediff-split-window-function 'split-window-horizontally)
   (setq ediff-merge-split-window-function 'split-window-horizontally))
 
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
+
 (use-package treesit
   :elpaca nil
   :config

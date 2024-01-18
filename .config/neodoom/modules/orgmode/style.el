@@ -30,38 +30,6 @@ Lisp programs can force the template by setting KEYS to a string."
 ;; indent by default
 (add-hook 'org-mode-hook 'org-indent-mode)
 
-;; TODO: read the man here
-(use-package org-modern
-  :ensure t
-  :after org
-  :config
-  ;; (setq ;; Edit settings
-  ;; org-auto-align-tags nil
-  ;; org-tags-column 0
-  ;; org-catch-invisible-edits 'show-and-error
-  ;; org-special-ctrl-a/e t
-  ;; org-insert-heading-respect-content t
-
-  ;; ;; Org styling, hide markup etc.
-  ;; org-hide-emphasis-markers t
-  ;; org-pretty-entities t
-  ;; org-ellipsis "…"
-
-  ;; ;; Agenda styling
-  ;; org-agenda-tags-column 0
-  ;; org-agenda-block-separator ?─
-  ;; org-agenda-time-grid
-  ;; '((daily today require-timed)
-  ;;   (800 1000 1200 1400 1600 1800 2000)
-  ;;   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-  ;; org-agenda-current-time-string
-  ;; "⭠ now ─────────────────────────────────────────────────")
-
-
-  ;; indent headings
-  (org-indent-mode)
-  (global-org-modern-mode))
-
 ;; (setq org-agenda-prefix-format
 ;;       (quote
 ;;        ((agenda . "%-12c%?-18t% s")
