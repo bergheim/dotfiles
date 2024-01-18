@@ -11,12 +11,13 @@
 
   :general
   (:states '(normal visual emacs)
-           :keymaps 'magit-mode-map
-           "Z" 'magit-stash
-           "z 1" 'magit-section-show-level-1-all
-           "z 2" 'magit-section-show-level-2-all
-           "z 3" 'magit-section-show-level-3-all
-           "z 4" 'magit-section-show-level-4-all))
+   :keymaps 'magit-mode-map
+   "Z" 'magit-stash
+   "z 1" 'magit-section-show-level-1-all
+   "z 2" 'magit-section-show-level-2-all
+   "z 3" 'magit-section-show-level-3-all
+   "z 4" 'magit-section-show-level-4-all
+   "M-RET" 'magit-diff-visit-worktree-file-other-window))
 
 (use-package forge
   :ensure t
