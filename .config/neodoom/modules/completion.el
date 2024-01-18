@@ -19,17 +19,22 @@
 (use-package avy
   :demand t
   :after evil
+  :custom
+  (avy-timeout-seconds 0.2)
   :config
-  ;; :bind (("C-c j" . avy-goto-line)
-  ;;        ("C-c u"   . avy-goto-char-timer)))
   (general-define-key
    :states '(normal visual)
-   "s" 'evil-avy-goto-char-2)
+   "g SPC" 'evil-avy-goto-char-timer
+   "gu" 'avy-resume)
+   ;; FIXME: too broad; this messes up the surround operator, say ds(
+  ;; (general-define-key
+  ;;  :states 'operator
+  ;;  "z" 'evil-avy-goto-char-2
+  ;;  "x" 'evil-avy-goto-char-2
+  ;;  "s" 'evil-avy-goto-char-2-below
+  ;;  "S" 'evil-avy-goto-char-2-above)
+  )
 
-  (general-define-key
-   :states 'operator
-   "z" 'evil-avy-goto-char-2
-   "x" 'evil-avy-goto-char-2))
 
 ;; right click from your keyboard
 (use-package embark
