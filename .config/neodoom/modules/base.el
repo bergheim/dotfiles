@@ -175,26 +175,7 @@
                  (tramp-remote-shell "/bin/sh")
                  (tramp-remote-shell-args ("-c")))))
 
-;; as long as this doesn't destroy my data..
-(use-package undo-tree
-  :after evil
-  :init
-  (global-undo-tree-mode)
-  :config
-  (setq undo-tree-auto-save-history t)
-  (setq undo-tree-enable-undo-in-region t)
-
-  ;; TODO: For some reason, general.el isn't binding 'U' as expected.
-  ;; Using define-key as a workaround.
-  (define-key evil-normal-state-map (kbd "U") 'undo-tree-visualize)
-
-  :general
-  (general-nmap
-    "u" 'undo-tree-undo
-    "U" 'undo-tree-visualize
-    "C-r" 'undo-tree-redo))
-
-;; if it does, switch to this
+;; if undo-tree fails, switch to this
 ;; (use-package vundo
 ;;   :ensure t
 ;;   :after general
@@ -249,6 +230,7 @@ should be checked."
 
 (use-package persistent-scratch
   :ensure t
+  :demand t
   :config
   (persistent-scratch-setup-default))
 
