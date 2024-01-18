@@ -76,16 +76,13 @@ If NEW-FRAME is non-nil, open the project in a new frame."
          (tab-names (mapcar (lambda (tab) (alist-get 'name tab))
                             (funcall tab-bar-tabs-function))))
     (if (member name tab-names)
-        (progn
-          (tab-bar-switch-to-tab name)
-          (if new-frame
-              (tab-bar-detach-tab)))
+        (tab-bar-switch-to-tab name)
       (tab-new)
       (tab-rename name)
       (cd project-path)
-      (project-switch-project project-path)
-      (if new-frame
-          (tab-bar-detach-tab)))))
+      (project-switch-project project-path))
+    (when new-frame
+      (tab-bar-detach-tab))))
 
 ;; these are great
 (defun siren-tab-bar-switch-to-or-create-tab (name)
@@ -99,8 +96,8 @@ If NEW-FRAME is non-nil, open the project in a new frame."
                            (funcall tab-bar-tabs-function))))
     (if (member name tab-names)
         (tab-bar-switch-to-tab name)
-      (siren-tab-bar-new-named-tab name)))
-  (tab-bar-select-tab (1+ (or (tab-bar--tab-index-by-name name) 0))))
+      (siren-tab-bar-new-named-tab name)
+      (tab-bar-select-tab (length (funcall tab-bar-tabs-function))))))
 
 (defun siren-tab-bar-new-named-tab (name)
   "Create a new tab named NAME."
