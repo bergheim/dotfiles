@@ -4,8 +4,7 @@
 ;; save minibuffer history
 (use-package savehist
   :elpaca nil
-  ;; :init
-  ;; (setq savehist-file (expand-file-name "savehist" bergheim/cache-dir))
+  :demand t
   :config
   ;; .. a lot of it
   (dolist (hist '(command-history
@@ -30,6 +29,7 @@
 ;; save on buffer switching, focus loss, everything
 (use-package super-save
   :ensure t
+  :demand t
   :config
   (super-save-mode +1))
 
@@ -45,6 +45,7 @@
 
 (use-package recentf
   :elpaca nil
+  :demand t
   :config
   (setq recentf-max-menu-items 50)
   (setq recentf-max-saved-items 200)
@@ -56,6 +57,7 @@
 
 (use-package saveplace
   :elpaca nil
+  :demand t
   :config
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000)

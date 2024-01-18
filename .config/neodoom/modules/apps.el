@@ -24,3 +24,15 @@
   (("C-c n n" . denote)
    ("C-c n f" . denote-open-or-create)
    ("C-c n i" . denote-link)))
+
+;; pastebin stuff
+(use-package 0x0
+  :after general
+
+  :general
+  (bergheim/global-menu-keys
+    "ys" '(:ignore t :which-key "Share")
+    "yss" '(0x0-dwim :which-key "Dwim")
+    "ysp" '(0x0-popup :which-key "Text")
+    "ysf" '(0x0-upload-file :which-key "File")))
+
