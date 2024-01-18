@@ -45,6 +45,30 @@
    "h"   #'dired-up-directory
    "l"   #'dired-find-file))
 
+(defun bergheim//executables-in-path ()
+  "Retrieve a list of all executable files in `exec-path'."
+  (let ((files_in_path))
+    (dolist (dir exec-path)
+      (when (and dir (file-exists-p dir))
+        (let ((files (directory-files dir t)))
+          (dolist (file files)
+            (when (and (file-executable-p file)
+                       (not (file-directory-p file)))
+              (push (file-name-nondirectory file) files_in_path))))))
+    files_in_path))
+
+(defun bergheim/open-file (arg)
+  "Open the current file in 'dired-mode' with an application.
+With a universal argument, it allows entering the application to use."
+  (interactive "P")
+  (let* ((file (dired-get-filename nil t))
+         (command (if arg
+                      (completing-read "Open current file with: " (bergheim//executables-in-path))
+                    "xdg-open")))
+    (if file
+        (start-process command nil command file)
+      (message "No file on this line"))))
+
 (use-package dirvish
   :ensure t
   :demand t
@@ -67,9 +91,9 @@
                                 ("Archives" (extensions "gz" "rar" "zip"))))
 
   (setq dirvish-quick-access-entries '(("h" "~/" "Home")
-                                       ("e" "~/.config/neodoom/" "Emacs user directory")
-                                       ("d" "~/dev" "Development")
-                                       ("D" "~/Downloads/" "Downloads")))
+                                       ("d" "~/Downloads/" "Downloads")
+                                       ("D" "~/dev" "Development")
+                                       ("e" "~/.config/neodoom/" "Emacs user directory")))
 
   :general
   (:keymaps 'dirvish-mode-map
@@ -96,7 +120,8 @@
   (bergheim/localleader-keys
    :keymaps 'dirvish-mode-map
 
-   "b" '((lambda () (interactive) (browse-url-xdg-open (expand-file-name dired-directory))) :which-key "Browse externally")
+   "b" '(bergheim/open-file :which-key "Open")
+   "B" `(,(bergheim/call-with-universal-arg #'bergheim/open-file) :which-key "Open With")
    "c" '(dired-create-empty-file :which-key "Create empty file")
    "C" '(dired-create-directory :which-key "Create directory")
    "e" '(gnus-dired-attach :which-key "Attach to email")
@@ -110,10 +135,7 @@
            (interactive)
            (call-interactively 'bergheim/org-attach-dired-to-subtree))
          :which-key "Copy to org")
-   "O" '((lambda ()
-           (interactive)
-           (let ((current-prefix-arg 4))
-             (call-interactively 'bergheim/org-attach-dired-to-subtree)))
+   "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
          :which-key "Move to org")))
 
 (defun bergheim/delete-current-file ()

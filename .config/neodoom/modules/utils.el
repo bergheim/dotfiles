@@ -90,5 +90,12 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
   :defer t
   :bind ("M-e" . er/expand-region))
 
+
+(defun bergheim/call-with-universal-arg (fn)
+  (lambda ()
+    (interactive)
+    (let ((current-prefix-arg 4))
+      (call-interactively fn))))
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
