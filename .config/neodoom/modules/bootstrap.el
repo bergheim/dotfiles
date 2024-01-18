@@ -73,14 +73,15 @@
     "Keymap for 'SPC m'")
 
   (general-create-definer bergheim/global-menu-keys
-    :states '(normal visual motion emacs)
     :prefix "SPC"
-    :keymaps 'override
-    :non-normal-prefix "M-SPC")
+    ;; :non-normal-prefix "M-SPC"
+    :states '(normal visual motion emacs)
+    :keymaps 'override)
 
   (general-create-definer bergheim/localleader-keys
     :prefix "SPC m"
-    :states '(normal visual motion emacs)
+    :non-normal-prefix "M-m"
+    :states '(normal visual motion emacs insert)
     :keymaps 'bergheim/localleader-map)
 
   (general-create-definer bergheim/global-evil-keys
