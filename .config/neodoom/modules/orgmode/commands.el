@@ -78,7 +78,6 @@ derived from `dired-mode'."
    (list (dired-get-marked-files) (when current-prefix-arg 'mv)))
   (unless (derived-mode-p 'dired-mode)
     (user-error "This command must be triggered in a `dired-derived' buffer"))
-  (message (format "arg %s" current-prefix-arg))
   (let ((dirvish-buffer (current-buffer))
         (current-org-heading)
         ;; `buffer-list' is MRU-ordered, so pick the first Org buffer we find.
@@ -95,7 +94,7 @@ derived from `dired-mode'."
                                    "Copy")
                                  current-org-heading))
         (dolist (file files)
-          (org-attach-attach file))))
+          (org-attach-attach file nil attach-method))))
     (when (eq 'mv attach-method)
       ;; Revert the Dired buffer to show that the file is moved
       (revert-buffer)

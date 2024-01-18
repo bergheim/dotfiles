@@ -5,6 +5,8 @@
 (setq org-directory (concat bergheim/home-directory "org/")
       org-deadline-warning-days 14
 
+      org-confirm-babel-evaluate nil
+
       ;; continue on https://hugocisneros.com/org-config/
       calendar-date-style 'european
       org-icalendar-timezone "Europe/Oslo"
@@ -135,6 +137,11 @@
 
 (unless (file-exists-p org-directory)
   (make-directory org-directory))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (js .t)))
 
 ;; TODO: what is this again
 (org-add-link-type
