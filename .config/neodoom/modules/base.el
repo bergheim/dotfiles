@@ -74,15 +74,6 @@
   (setq which-key-sort-order 'which-key-key-order-alpha)
   (setq which-key-idle-secondary-delay 0.3))
 
-(use-package default-text-scale
-  :demand t
-  :config
-  (general-define-key
-   :states '(normal visual)
-   "C-+" 'default-text-scale-increase
-   "C-=" 'default-text-scale-reset
-   "C--" 'default-text-scale-decrease))
-
 (defun bergheim/toggle-big-font-mode (&optional level)
   "Toggle big font mode."
   (interactive)

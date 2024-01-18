@@ -46,6 +46,11 @@
 
   (general-define-key
    :states '(normal visual)
+
+   "C-=" 'global-text-scale-adjust
+   "C--" '(lambda () (interactive) (global-text-scale-adjust -1))
+   "C-0" '(lambda () (interactive) (bergheim/set-font-based-on-frame-resolution))
+
    "[b" 'previous-buffer
    "]b" 'next-buffer
    "]e" 'flymake-goto-next-error
@@ -55,7 +60,7 @@
    "]f" 'bergheim/next-file
    "[s" 'jinx-prev
    "]s" 'jinx-next
-   "z=" 'jinx-correct
+   "z=" 'jinx-correct-nearest
    "[t" 'tab-bar-switch-to-prev-tab
    "]t" 'tab-bar-switch-to-next-tab
    "[T" 'tab-bar-move-tab-backward
@@ -105,7 +110,7 @@
     "bb" '(bergheim/consult-project-or-buffer :which-key "Switch")
     "bB" '(consult-buffer :which-key "Switch")
 
-    "bd" '(evil-delete-buffer :which-key "Delete")
+    "bd" '(kill-current-buffer :which-key "Delete")
     "bn" '(evil-buffer-new :which-key "New")
     "bS" '(scratch-buffer :which-key "switch to scratch")
     "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
@@ -148,6 +153,7 @@
     "h" '(:ignore t :which-key "Help")
     "ha" '(apropos :which-key "Apropos")
     "hb" '(embark-bindings :which-key "Bindings")
+    "hc" '(describe-char :which-key "Char")
     "hd" '(:ignore t :which-key "Debug")
     "hdd" '(toggle-debug-on-error t :which-key "Debug")
     "hdq" '(toggle-debug-on-quit t :which-key "Debug on quit")
@@ -155,7 +161,14 @@
     "hk" '(helpful-key :which-key "Key")
     "hl" '(find-library :which-key "Library")
     "hm" '(describe-mode :which-key "Describe mode")
-    "hp" '(elpaca-manager :which-key "Packages")
+
+    "hp" '(:ignore t :which-key "Packages")
+    "hpp" '(elpaca-manager :which-key "Packages")
+    "hpb" '(elpaca-browse :which-key "Browse")
+    "hpi" '(elpaca-info :which-key "Info")
+    "hpf" '(elpaca-fetch-all :which-key "Fetch")
+    "hpm" '(elpaca-merge-all :which-key "Merge")
+
     "hr" '(bergheim/reload-init-file :which-key "Reload")
     "ht" '(consult-theme :which-key "Switch theme")
     "hv" '(helpful-variable :which-key "Variable")
@@ -246,6 +259,8 @@
     "wBb" '(bufler :which-key "Show buffers")
     "wBs" '(bufler-switch-buffer :which-key "Switch to buffer"))
 
+    "y" '(:ignore t :which-key "Yanking"))
+
   (bergheim/global-evil-keys
     "M-h" #'evil-window-left
     "M-j" #'evil-window-down
@@ -273,6 +288,7 @@
     "M-3" '(lambda () (interactive) (tab-bar-select-tab 3))
     "M-4" '(lambda () (interactive) (tab-bar-select-tab 4))
     "M-5" '(lambda () (interactive) (tab-bar-select-tab 5))
+    "M-6" '(lambda () (interactive) (tab-bar-select-tab 6))
     "M-t" 'siren-tab-bar-switch-to-or-create-tab
     "M-w" 'tab-close)
 
