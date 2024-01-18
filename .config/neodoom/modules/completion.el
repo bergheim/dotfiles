@@ -260,7 +260,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :custom
   (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
 
-;; combine completion at point functions. in cape the name was not clear
+;; combine completion at point functions. if the name cape was not clear
 (use-package cape
   :demand t
   :config
@@ -270,6 +270,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (add-hook 'completion-at-point-functions #'cape-emoji 80))
 
 (defun bergheim/org-mode-setup-corfu ()
+  (add-to-list 'completion-at-point-functions 'org-block-capf)
   (add-to-list 'completion-at-point-functions #'cape-tex 80)
   ;; TODO: set up a dict and enable this
   ;; (add-to-list 'completion-at-point-functions #'cape-dict 80)
@@ -300,6 +301,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;;   :after vertico
 ;;   :config
 ;;   (vertico-prescient-mode))
+
+(use-package org-block-capf
+  :elpaca (:host github :repo "xenodium/org-block-capf"))
 
 ;; Pretty icons for corfu
 (use-package kind-icon
