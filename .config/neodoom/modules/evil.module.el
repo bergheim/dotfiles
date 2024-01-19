@@ -52,6 +52,7 @@
 
 (use-package evil-surround
   :ensure t
+  :demand t
   :after evil
   :config
   (global-evil-surround-mode 1))
@@ -106,15 +107,17 @@
 (defun bergheim/evil-goto-definition-other-window ()
   "Open the definition in another window."
   (interactive)
-  (let ((marker (save-excursion
-                  (evil-goto-definition)
-                  (point-marker))))
+  (let ((currentBuf (current-buffer))
+        (currentPos (point-marker)))
+    (evil-goto-definition)
+    (let ((targetPos (point))
+          (targetBuf (current-buffer)))
+    (switch-to-buffer currentBuf)
     (if (one-window-p)
         (split-window-horizontally))
     (other-window 1)
-    (if (not (eq (marker-buffer marker) (current-buffer)))
-        (switch-to-buffer (marker-buffer marker)))
-    (goto-char (marker-position marker))))
+    (switch-to-buffer targetBuf)
+    (goto-char targetPos))))
 
 ;; (use-package lispyville
 ;;   :ensure t
