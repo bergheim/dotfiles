@@ -109,6 +109,23 @@
   :elpaca nil
   :custom (typescript-ts-mode-indent-offset 4))
 
+(use-package ob-typescript
+  :after org
+  :demand t
+  :config
+  ;; Assuming ob-typescript expects typescript-mode, we might need to
+  ;; temporarily alias typescript-ts-mode to typescript-mode.
+  (unless (fboundp 'typescript-mode)
+    (defalias 'typescript-mode 'typescript-ts-mode)))
+
+;; see https://github.com/abicky/nodejs-repl.el for options
+(use-package nodejs-repl
+  :ensure t
+  :commands (nodejs-repl)
+  :init
+  (with-eval-after-load 'repl-toggle
+    (cl-pushnew '(js-ts-mode . nodejs-repl) rtog/mode-repl-alist :test #'equal)))
+
 (defun bergheim/adjust-web-mode-comment-style ()
   "Adjust comment style based on current context in `web-mode`."
   (if (equal web-mode-content-type "jsx")
