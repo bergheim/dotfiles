@@ -20,10 +20,17 @@
   :demand t
   :after evil
   :custom
-  (avy-timeout-seconds 0.2)
+  (avy-timeout-seconds 0.3)
   :config
+
+  ;; this allows us to go back. strange the evil version does not do this..
+  (defadvice evil-avy-goto-char-timer (around bergheim/save-position activate)
+    (evil-set-jump)
+    ad-do-it)
+
   (general-define-key
    :states '(normal visual)
+   "M-d" 'evil-avy-goto-char-timer
    "g SPC" 'evil-avy-goto-char-timer
    "gu" 'avy-resume)
    ;; FIXME: too broad; this messes up the surround operator, say ds(
