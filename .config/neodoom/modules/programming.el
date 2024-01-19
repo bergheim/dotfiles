@@ -56,7 +56,11 @@
 
 (use-package dumb-jump
   :ensure t
+  :after (evil)
+  :demand t
   :config
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  (setq dumb-jump-prefer-searcher 'rg)
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 ;; used by vimish-fold
