@@ -155,6 +155,7 @@
     "hb" '(embark-bindings :which-key "Bindings")
     "hc" '(describe-char :which-key "Char")
     "hd" '(:ignore t :which-key "Debug")
+    "he" '(view-echo-area-messages t :which-key "Echo area")
     "hdd" '(toggle-debug-on-error t :which-key "Debug")
     "hdq" '(toggle-debug-on-quit t :which-key "Debug on quit")
     "hf" '(helpful-callable :which-key "Function")
@@ -228,7 +229,7 @@
     "t p" '(popper-toggle-type :which-key "Toggle popup")
     "t s" '(jinx-mode :which-key "Spelling")
     "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
-    "t w" '(writeroom-mode :which-key "Writerroom")
+    "t w" '(bergheim/write-mode :which-key "Writer room")
     "t z" '(bergheim/present-mode :which-key "Present")
 
     "u" '(universal-argument :which-key "Universal argument")

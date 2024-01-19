@@ -153,6 +153,9 @@
   (load-file (concat module-dir "session.el"))
   )
 
+(add-hook 'after-make-frame-functions #'bergheim/frame-setup)
+(add-hook 'emacs-startup-hook #'bergheim/frame-setup)
+
 (use-package site-lisp
   :demand t
   :config

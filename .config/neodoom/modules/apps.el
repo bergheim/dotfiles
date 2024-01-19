@@ -4,6 +4,11 @@
   :elpaca nil
   :bind (("C-r" . consult-history)))
 
+(use-package shr
+  :elpaca nil
+  :custom
+  (shr-max-width 140))
+
 (use-package treemacs
   :ensure t
   :config

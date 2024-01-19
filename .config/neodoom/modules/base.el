@@ -96,6 +96,18 @@
     (bergheim/toggle-big-font-mode)
     (function-put 'bergheim/present-mode 'toggled t)))
 
+(defun bergheim/write-mode ()
+  "Toggle zoom in on the current buffer."
+  (interactive)
+  (if (function-get 'bergheim/write-mode 'toggled)
+      (progn
+        (writeroom-mode -1)
+        (focus-mode 0)
+        (function-put 'bergheim/write-mode 'toggled nil))
+    (writeroom-mode 1)
+    (focus-mode 1)
+    (function-put 'bergheim/write-mode 'toggled t)))
+
 ;; emacs startup profiler
 (use-package esup
   :ensure t
