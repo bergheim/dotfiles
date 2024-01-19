@@ -246,14 +246,14 @@ should be checked."
   :config
   (persistent-scratch-setup-default))
 
-
-(use-package writeroom-mode
-  :ensure t
-  :config
-  (setq writeroom-width 80)
-  (setq writeroom-fullscreen-effect 'maximized)
-  (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
-  (setq writeroom-global-effects '(writeroom-set-fullscreen))
-  (setq writeroom-bottom-divider-width 1))
-
 (use-package pdf-tools)
+
+(use-package systemd
+  :mode (("\\.service\\'" . systemd-mode)
+         ("\\.socket\\'" . systemd-mode)
+         ("\\.timer\\'" . systemd-mode)
+         ("\\.target\\'" . systemd-mode)
+         ("\\.mount\\'" . systemd-mode)
+         ("\\.automount\\'" . systemd-mode)
+         ("\\.slice\\'" . systemd-mode)
+         ("\\.path\\'" . systemd-mode)))

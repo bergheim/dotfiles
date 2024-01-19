@@ -22,10 +22,10 @@
 
 ;; Note: height = px * 100
 (defvar bergheim/font-name "Ubuntu Mono" "Default font for fixed-width.")
-(defvar bergheim/variable-font-name "IosevkaTerm Nerd Font Propo" "Default font for variable width.")
+(defvar bergheim/variable-font-name "IosevkaTerm Nerd Font" "Default font for variable width.")
 (defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
 (defvar bergheim/font-size-small 100 "Font size for small displays.")
-(defvar bergheim/font-size-medium 140 "Font size for medium displays.")
+(defvar bergheim/font-size-medium 150 "Font size for medium displays.")
 (defvar bergheim/font-size-large 200 "Font size for large displays.")
 (defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
 (defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
@@ -54,20 +54,23 @@
     (set-face-attribute 'variable-pitch nil :family bergheim/variable-font-name :height font-size)
     (set-face-attribute 'fixed-pitch nil :font bergheim/fixed-font-name :height font-size)))
 
-;; Adjust font for new frames
-(add-hook 'after-make-frame-functions (lambda (frame)
-                                        (with-selected-frame frame
-                                          (bergheim/set-font-based-on-frame-resolution))))
-
 (bergheim/set-font-based-on-frame-resolution)
+
+(defun bergheim/frame-setup (&optional frame)
+  (with-selected-frame (or frame (selected-frame))
+    ;; Adjust font for new frames
+    (bergheim/set-font-based-on-frame-resolution)
+    (scroll-bar-mode -1)
+    (let ((hour (string-to-number (format-time-string "%H"))))
+      ;; TODO: call an external program to figure out if we are in dark-mode or not
+      (if (and (>= hour 8) (< hour 16))
+          (ef-themes-select 'ef-cyprus)
+        (ef-themes-select 'ef-deuteranopia-dark)))))
 
 (use-package ef-themes
   :demand t
-  :elpaca (:host github :repo "protesilaos/ef-themes")
   :config
-  (ef-themes-select 'ef-cyprus))
-  ;; (ef-themes-select 'ef-elea-dark))
-  ;; (ef-themes-select 'ef-maris-dark))
+  (setq ef-themes-to-toggle '(ef-cyprus ef-deuteranopia-dark)))
 
 ;; (use-package doom-themes
 ;;   :ensure t
@@ -278,6 +281,17 @@
   :defer t
   :config
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package focus)
+
+(use-package writeroom-mode
+  :ensure t
+  :config
+  (setq writeroom-width 80)
+  (setq writeroom-fullscreen-effect 'maximized)
+  (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
+  (setq writeroom-global-effects '(writeroom-set-fullscreen))
+  (setq writeroom-bottom-divider-width 1))
 
 (use-package hl-todo
   :defer t
