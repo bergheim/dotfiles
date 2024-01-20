@@ -1,20 +1,23 @@
 ;;; completion.el --- Description -*- lexical-binding: t; -*-
 
-(setq enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
-(setq completion-cycle-threshold 1)                  ; TAB cycles candidates
-(setq completions-detailed t)                        ; Show annotations
-(setq tab-always-indent 'complete)                   ; When I hit TAB, try to complete, otherwise, indent
-(setq completion-styles '(basic initials substring)) ; Different styles to match input to candidates
+(use-package emacs
+  :elpaca nil
+  :config
+  (setq enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
+  (setq completion-cycle-threshold 1)                  ; TAB cycles candidates
+  (setq completions-detailed t)                        ; Show annotations
+  (setq tab-always-indent 'complete)                   ; When I hit TAB, try to complete, otherwise, indent
+  (setq completion-styles '(basic initials substring)) ; Different styles to match input to candidates
 
-(setq completion-auto-help 'always)                  ; Open completion always; `lazy' another option
-(setq completions-max-height 20)                     ; This is arbitrary
-(setq completions-detailed t)
-(setq completions-format 'one-column)
-(setq completions-group t)
-(setq completion-auto-select 'second-tab)            ; Much more eager
-;; (setq completion-auto-select t)                      ; See `C-h v completion-auto-select' for more possible values
+  (setq completion-auto-help 'always)                  ; Open completion always; `lazy' another option
+  (setq completions-max-height 20)                     ; This is arbitrary
+  (setq completions-detailed t)
+  (setq completions-format 'one-column)
+  (setq completions-group t)
+  (setq completion-auto-select 'second-tab)            ; Much more eager
+  ;; (setq completion-auto-select t)                      ; See `C-h v completion-auto-select' for more possible values
 
-(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
+  (keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete)) ; TAB acts more like how it does in the shell
 
 (use-package avy
   :demand t

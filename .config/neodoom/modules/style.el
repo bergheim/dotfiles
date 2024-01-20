@@ -182,12 +182,24 @@
 
 (use-package emacs
   :elpaca nil
+  :custom
+  (fill-column 79)
+  (show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
+  (indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
+  (indent-tabs-mode nil)
+  (tab-width 4)
+  (display-line-numbers 'visual)
+  (display-line-numbers-widen t)
+  (display-line-numbers-width 3)
+  (display-line-numbers-current-absolute t)
+  (visible-bell nil)                  ; do _not_ flash on esc or anything
+  ;; Enable horizontal scrolling
+  (mouse-wheel-tilt-scroll t)
+  (mouse-wheel-flip-direction t)
   :config
   (setq scroll-step 1
         scroll-conservatively 10
         scroll-margin 3)
-  ;; Enable smooth pixel scrolling
-  (pixel-scroll-precision-mode 1)
 
   ;; Optional: Adjust pixel scroll settings
   ;; Set the number of pixels to scroll each step
@@ -196,15 +208,37 @@
         pixel-scroll-precision-large-scroll-height 40.0
 
         mouse-wheel-scroll-amount '(1 ((shift) . 1)) ;; one line at a time
-        mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
-        mouse-wheel-follow-mouse 't)      ;; scroll window under mouse
+        mouse-wheel-progressive-speed nil            ;; don't accelerate scrolling
+        mouse-wheel-follow-mouse 't)                 ;; scroll window under mouse
 
   (setq tab-bar-show t
         tab-bar-auto-width-min '(100 10)
         tab-bar-auto-width-max '(300 30)
         tab-bar-close-button-show nil
         tab-bar-new-button-show nil
-        tab-bar-tab-hints t))
+        tab-bar-tab-hints t
+        tab-bar-new-tab-choice "*scratch*")
+
+  (setq line-number-mode t                       ; Show current line in modeline
+        column-number-mode t                     ; Show column as well
+
+        x-underline-at-descent-line nil          ; Prettier underlines
+        switch-to-buffer-obey-display-actions t) ; Make switching buffers more consistent
+
+  (tab-bar-mode 1)
+  (tab-bar-history-mode 1)
+  (blink-cursor-mode -1)           ; Steady cursor
+  (pixel-scroll-precision-mode)    ; Smooth scrolling
+  (show-paren-mode 1)              ;; Visualize matching parens
+  (pixel-scroll-precision-mode 1)) ;; Enable smooth pixel scrolling
+
+;; Nice line wrapping when working with text
+(add-hook 'text-mode-hook 'visual-line-mode)
+
+;; Modes to highlight the current line with
+(let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
+  (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
+
 
 ;; TODO install this for smooth image scrolling
 ;; https://github.com/casouri/iscroll
@@ -216,48 +250,6 @@
 (defun noct-absolute ()
   "Show absolute line numbers."
   (setq-local display-line-numbers t))
-
-;; TODO: go through this..
-
-(setq-default fill-column 79)
-;; Mode line information
-(setq line-number-mode t)                        ; Show current line in modeline
-(setq column-number-mode t)                      ; Show column as well
-
-(setq x-underline-at-descent-line nil)           ; Prettier underlines
-(setq switch-to-buffer-obey-display-actions t)   ; Make switching buffers more consistent
-
-(setq-default show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
-(setq-default indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
-
-;; Enable horizontal scrolling
-(setq mouse-wheel-tilt-scroll t)
-(setq mouse-wheel-flip-direction t)
-
-;; We won't set these, but they're good to know about
-;;
-;; Uh why won't we set these?
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-
-;; Misc. UI tweaks
-(blink-cursor-mode -1)                                ; Steady cursor
-(pixel-scroll-precision-mode)                         ; Smooth scrolling
-(setq visible-bell nil)                               ; do _not_ flash on esc or anything
-
-(setq-default display-line-numbers 'visual
-              display-line-numbers-widen t
-              display-line-numbers-width 3
-              display-line-numbers-current-absolute t)
-
-(show-paren-mode 1) ;; Visualize matching parens
-
-;; Nice line wrapping when working with text
-(add-hook 'text-mode-hook 'visual-line-mode)
-
-;; Modes to highlight the current line with
-(let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
-  (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
 
 
 ;;;; Tab bar

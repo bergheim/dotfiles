@@ -1,6 +1,4 @@
 ;; -*- lexical-binding: t; -*-
-(setq-default indent-tabs-mode nil) ;; I have given up on tabs
-
 ;; save minibuffer history
 (use-package savehist
   :elpaca nil
@@ -23,8 +21,24 @@
   :hook
   (kill-emacs . savehist-save))
 
-;; Reload files that are changed outside of Emacs
-(global-auto-revert-mode 1)
+(use-package emacs
+  :elpaca nil
+  :config
+  (setq-default indent-tabs-mode nil) ;; I have given up on tabs
+  (setq window-resize-pixelwise t
+        frame-resize-pixelwise t
+        load-prefer-newer t
+        backup-by-copying t
+        ;; I _think_ this should be something else (ie the cache directory)
+        backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
+        ;; TODO I am seeing `#FILE#' in folders - see if this removes them
+        auto-save-file-name-transforms `((".*" ,bergheim/cache-dir t))
+        custom-file (expand-file-name "custom.el" bergheim/config-dir)
+
+        ;; updated things like dired buffers as well (tnx summer)
+        global-auto-revert-non-file-buffers t)
+  ;; Reload files that are changed outside of Emacs
+  (global-auto-revert-mode 1))
 
 ;; save on buffer switching, focus loss, everything
 (use-package super-save
@@ -32,16 +46,6 @@
   :demand t
   :config
   (super-save-mode +1))
-
-(setq window-resize-pixelwise t
-      frame-resize-pixelwise t
-      load-prefer-newer t
-      backup-by-copying t
-      ;; I _think_ this should be something else (ie the cache directory)
-      backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
-      ;; TODO I am seeing `#FILE#' in folders - see if this removes them
-      auto-save-file-name-transforms `((".*" ,bergheim/cache-dir t))
-      custom-file (expand-file-name "custom.el" bergheim/config-dir))
 
 (use-package recentf
   :elpaca nil

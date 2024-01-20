@@ -59,7 +59,8 @@
   :after (evil)
   :demand t
   :config
-  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  ;; should use `consult-xref`?
+  ;; (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
   (setq dumb-jump-prefer-searcher 'rg)
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 

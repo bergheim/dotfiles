@@ -107,9 +107,4 @@ If NEW-FRAME is non-nil, open the project in a new frame."
   (tab-new 99999)
   (if (not (string= name ""))
       (tab-rename name)))
-
-(tab-bar-mode 1)
-(tab-bar-history-mode 1)
-(setq tab-bar-new-tab-choice "*scratch*")
-
 ;;; workspace.el ends here
