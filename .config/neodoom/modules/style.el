@@ -19,7 +19,11 @@
 ;;
 ;;; Code:
 
+(defun bergheim/get-font-size ()
+  (interactive)
+  (message "Current font size: %s" (face-attribute 'default :height)))
 
+;; so many to choose from.. "Ubuntu" "DejaVu Sans" "Open Sans" "Noto Sans" "IosevkaTerm Nerd Font Propo" "Iosevka Nerd Font"
 ;; Note: height = px * 100
 (defvar bergheim/font-name "Ubuntu Mono" "Default font for fixed-width.")
 (defvar bergheim/variable-font-name "IosevkaTerm Nerd Font" "Default font for variable width.")

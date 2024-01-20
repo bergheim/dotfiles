@@ -19,15 +19,17 @@
           "Output\\*$"
           "\\*Async Shell Command\\*"
           "^\\*Flymake diagnostics.*\\*$"
+          "^\\*helpful .*\\*$"
           flymake-diagnostics-buffer-mode
-          ;; help-mode
+          help-mode
           compilation-mode
           "\\*eldoc\\*"
           ))
 
   (setq popper-window-height 16)
-  ;; (setq popper-display-control 'user)
+  (setq popper-display-control 'user)
   (setq popper-display-function #'popper-display-popup-at-bottom)
+  (setq popper-group-function #'popper-group-by-project)
   (popper-mode +1)
   (popper-echo-mode +1))                ; For echo area hints
 
