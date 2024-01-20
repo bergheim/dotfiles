@@ -22,12 +22,11 @@
   (bergheim/load-file "modules/mu4e/view.el")
   (bergheim/load-file "modules/mu4e/actions.el")
   (bergheim/load-file "modules/mu4e/search.el")
-  :general
-  (general-define-key
-   :states 'normal
-   :keymaps 'mu4e-headers-mode-map
-   "M" #'mu4e-headers-mark-for-move
-   "m" #'mu4e-headers-mark-for-something))
+
+  ;; `evil-collection` is so aggressive here. I couldn't find a proper way to
+  ;; bind them. I give up - just add this to the end
+  (add-hook 'mu4e-headers-mode-hook #'bergheim//mu4e-headers-setup)
+  (add-hook 'mu4e-view-mode-hook #'bergheim//mu4e-view-setup))
 
 (use-package mu4e-org
   :elpaca nil

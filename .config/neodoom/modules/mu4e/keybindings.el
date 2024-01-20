@@ -2,6 +2,19 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defun bergheim//mu4e-headers-setup ()
+  (general-define-key
+   :keymaps 'mu4e-headers-mode-map
+   :states 'normal
+   "M" #'mu4e-headers-mark-for-move
+   "m" #'mu4e-headers-mark-for-something))
+
+(defun bergheim//mu4e-view-setup ()
+  (general-define-key
+   :keymaps 'mu4e-view-mode-map
+   :states 'normal
+   "A" #'+mu4e-view-select-mime-part-action))
+
 (bergheim/global-menu-keys
  "e" '(:ignore t :which-key "E-mail")
  "e e" '(bergheim/email-today :which-key "Today's unhandled email")

@@ -226,4 +226,48 @@ With \\[universal-argument], search all emails where I am a recipient"
   (interactive)
   (bergheim/mu4e--iterate-open-links 'bergheim/mu4e--navigate-second-to-last-links))
 
+;; nicked from doom
+(defun +mu4e-part-selectors (parts)
+  "Generate selection strings for PARTS."
+  (if parts
+      (let (partinfo labeledparts maxfnamelen fnamefmt maxsizelen sizefmt)
+        (dolist (part parts)
+          (push (list :index (car part)
+                      :mimetype (if (and (string= "text/plain" (caaddr part))
+                                         (alist-get 'charset (cdaddr part)))
+                                    (format "%s (%s)"
+                                            (caaddr part)
+                                            (alist-get 'charset (cdaddr part)))
+                                  (caaddr part))
+                      :type (car (nth 5 part))
+                      :filename (cdr (assoc 'filename (assoc "attachment" (cdr part))))
+                      :size (file-size-human-readable (with-current-buffer (cadr part) (buffer-size)))
+                      :part part)
+                partinfo))
+        (setq maxfnamelen (apply #'max 7 (mapcar (lambda (i) (length (plist-get i :filename))) partinfo))
+              fnamefmt (format " %%-%ds  " maxfnamelen)
+              maxsizelen (apply #'max (mapcar (lambda (i) (length (plist-get i :size))) partinfo))
+              sizefmt (format "%%-%ds " maxsizelen))
+        (dolist (pinfo partinfo)
+          (push (cons (concat (propertize (format "%-2s " (plist-get pinfo :index)) 'face '(bold font-lock-type-face))
+                              (when (featurep 'nerd-icons)
+                                (nerd-icons-icon-for-file (or (plist-get pinfo :filename) "")))
+                              (format fnamefmt (or (plist-get pinfo :filename)
+                                                   (propertize (plist-get pinfo :type) 'face '(italic font-lock-doc-face))))
+                              (format sizefmt (propertize (plist-get pinfo :size) 'face 'font-lock-builtin-face))
+                              (propertize (plist-get pinfo :mimetype) 'face 'font-lock-constant-face))
+                      (plist-get pinfo :part))
+                labeledparts))
+        labeledparts)))
+
+(defun +mu4e-view-select-mime-part-action ()
+"Select a MIME part, and perform an action on it."
+(interactive)
+(let ((labeledparts (+mu4e-part-selectors (mu4e--view-gather-mime-parts))))
+  (if labeledparts
+      (mu4e-view-mime-part-action
+       (cadr (assoc (completing-read "Select part: " (mapcar #'car labeledparts))
+                    labeledparts)))
+    (user-error (mu4e-format "No parts found")))))
+
 ;;; helpers.el ends here
