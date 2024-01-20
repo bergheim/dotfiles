@@ -7,7 +7,8 @@
 (use-package shr
   :elpaca nil
   :custom
-  (shr-max-width 140))
+  ;; (toggle-truncate-lines 1)
+  (shr-max-width 120))
 
 (use-package treemacs
   :ensure t

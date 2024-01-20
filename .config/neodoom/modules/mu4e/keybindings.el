@@ -18,6 +18,7 @@
 (bergheim/global-menu-keys
  "e" '(:ignore t :which-key "E-mail")
  "e e" '(bergheim/email-today :which-key "Today's unhandled email")
+ "e E" '(bergheim/email-week :which-key "This weeks email")
  ;; TODO: rename this
  "e d" '(bergheim/mu4e-email-today :which-key "Dashboard")
  "e c" '(mu4e-compose-new :which-key "Compose") ; this is a category for the next set of keybindings
