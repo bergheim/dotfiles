@@ -196,8 +196,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;;   :config
 ;;   (mini-frame-mode))
 
-;; FIXME: this is so terrible..
-(add-to-list 'load-path (expand-file-name "extensions/" bergheim/config-dir ))
 (use-package vertico-directory
   :elpaca nil
   :after vertico
