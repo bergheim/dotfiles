@@ -148,5 +148,70 @@
 ;;         evil-owl-max-string-length 50)
 ;;   (evil-owl-mode))
 
+;; this package is not updated in 7 years, and aside from some misplaced matches
+;; from time to time, it still does the job
+;; at some point to be replaced by https://github.com/noctuid/things.el
+(use-package evil-textobj-anyblock
+  :after evil
+  :demand t
+  :config
+  (evil-define-text-object my-evil-textobj-anyblock-inner-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "'")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count nil)))
+
+  (evil-define-text-object my-evil-textobj-anyblock-a-quote
+    (count &optional beg end type)
+    "Select the closest outer quote."
+    (let ((evil-textobj-anyblock-blocks
+           '(("'" . "'")
+             ("\"" . "\"")
+             ("`" . "'")
+             ("“" . "”"))))
+      (evil-textobj-anyblock--make-textobj beg end type count t)))
+
+  (evil-define-text-object my-evil-textobj-anyblock-inner-bracket
+    (count &optional beg end type)
+    "Select text enclosed by the nearest matching pair of brackets."
+    (let ((evil-textobj-anyblock-blocks
+           '(("(" . ")")
+             ("{" . "}")
+             ("\\[" . "\\]"))))
+      (evil-textobj-anyblock--make-textobj beg end type count nil)))
+
+  (evil-define-text-object my-evil-textobj-anyblock-a-bracket
+    (count &optional beg end type)
+    "Select text, including the nearest matching pair of brackets."
+    (let ((evil-textobj-anyblock-blocks
+           '(("(" . ")")
+             ("{" . "}")
+             ("\\[" . "\\]"))))
+      (evil-textobj-anyblock--make-textobj beg end type count t)))
+
+  (define-key evil-inner-text-objects-map "q" 'my-evil-textobj-anyblock-inner-quote)
+  (define-key evil-outer-text-objects-map "q" 'my-evil-textobj-anyblock-a-quote)
+
+  (define-key evil-inner-text-objects-map "b" 'my-evil-textobj-anyblock-inner-bracket)
+  (define-key evil-outer-text-objects-map "b" 'my-evil-textobj-anyblock-a-bracket)
+
+  (define-key evil-inner-text-objects-map "g" 'evil-textobj-anyblock-inner-block)
+  (define-key evil-outer-text-objects-map "g" 'evil-textobj-anyblock-a-block)
+
+  ;; can do some fancy movements as well wanted
+  ;; (define-key evil-motion-state-map "b" 'evil-textobj-anyblock-backward-any-block-start)
+
+  ;; only count some of these as blocks in lisp
+  (add-hook 'lisp-mode-hook
+            (lambda ()
+              (setq-local evil-textobj-anyblock-blocks
+                          '(("(" . ")")
+                            ("{" . "}")
+                            ("\\[" . "\\]")
+                            ("\"" . "\""))))))
 
 ;;; evil.module.el ends here

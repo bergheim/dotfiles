@@ -56,8 +56,8 @@
    "]e" 'flymake-goto-next-error
    "[e" 'flymake-goto-prev-error
    "]e" 'flymake-goto-next-error
-   "[f" 'bergheim/prev-file
-   "]f" 'bergheim/next-file
+   "[n" 'bergheim/prev-file
+   "]n" 'bergheim/next-file
    "[s" 'jinx-prev
    "]s" 'jinx-next
    "z=" 'jinx-correct-nearest
