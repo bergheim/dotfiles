@@ -43,16 +43,14 @@
       ;; stamp a CLOSED: [X] on DONE items
       org-log-done 'time
       org-log-into-drawer t
-
       org-agenda-start-with-log-mode t
-
 
       ;; TODO: remove this if it results in too much slowdown. Time spc n S for instance
       org-use-property-inheritance t
 
-
       ;; org-default-notes-file "~/org/inbox.org"
       ;; org-use-fast-todo-selection t
+      ;; org-export-with-todo-keywords nil
 
       org-refile-targets '((nil :maxlevel . 3)
                            (org-agenda-files :maxlevel . 3))

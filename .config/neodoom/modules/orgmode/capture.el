@@ -256,23 +256,36 @@
                              :headline "Read Later")))))))
 
 
-;; TODO: add proper capture templates for persons. use this as a baseline..?
-;; (use-package org-capture
-;;   :ensure nil
-;;   :after org
-;;   :preface
-;;   (defvar my/org-contacts-template "* %(org-contacts-template-name)
-;; :PROPERTIES:
-;; :ADDRESS: %^{289 Cleveland St. Brooklyn, 11206 NY, USA}
-;; :BIRTHDAY: %^{yyyy-mm-dd}
-;; :EMAIL: %(org-contacts-template-email)
-;; :NOTE: %^{NOTE}
-;; :END:" "Template for org-contacts.")
-;;   :custom
-;;   (org-capture-templates
-;;    `(("c" "Contact" entry (file+headline "~/.personal/agenda/contacts.org" "Friends"),
-;;       my/org-contacts-template
-;;       :empty-lines 1))))
+(defun bergheim//delete-frame-after-capture ()
+  "Delete frame after capturing."
+  (delete-frame)
+  (remove-hook 'org-capture-after-finalize-hook 'bergheim//delete-frame-after-capture))
 
+(defun bergheim/capture ()
+  "Capture externally"
+  (interactive)
+  (delete-other-windows)
+
+  (add-hook 'org-capture-after-finalize-hook #'bergheim//delete-frame-after-capture)
+
+  ;; HACK to make the capture fullscreen
+  (cl-letf (((symbol-function 'switch-to-buffer-other-window)
+             (symbol-function 'switch-to-buffer)))
+    (org-capture)))
+
+;; (defun bergheim/capture ()
+;;   "Create a new frame and run `org-capture'."
+;;   (interactive)
+;;   (make-frame '((name . "floating emacs-capture")
+;;                 (top . 300)
+;;                 (left . 700)
+;;                 (width . 80)
+;;                 (height . 25)))
+;;   (select-frame-by-name "floating emacs-capture")
+;;   (delete-other-windows)
+;;   (add-hook 'org-capture-after-finalize-hook #'bergheim//delete-frame-after-capture)
+;;   (cl-letf (((symbol-function 'switch-to-buffer-other-window)
+;;              (symbol-function 'switch-to-buffer)))
+;;     (org-capture)))
 
 ;;; capture.el ends here
