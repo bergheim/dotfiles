@@ -24,7 +24,7 @@
 (use-package restart-emacs
   :after desktop
   :demand t
-  :init
+  :config
   (defun bergheim/restart-emacs ()
     "Save desktop and then restart Emacs with custom init directory."
     (interactive)

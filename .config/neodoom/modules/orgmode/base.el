@@ -33,7 +33,7 @@
       org-agenda-breadcrumbs-separator " ❱ "
 
       ;; start on monday instead of current day
-      ;; org-agenda-start-on-weekday 1
+      org-agenda-start-on-weekday 1
 
       ;; https://github.com/correl/dotfiles/blob/master/.doom.d/config.org
       ;; https://github.com/PRDeltoid/doom-dotfiles/blob/master/config.el
@@ -42,10 +42,10 @@
 
       ;; stamp a CLOSED: [X] on DONE items
       org-log-done 'time
+      org-log-into-drawer t
 
       org-agenda-start-with-log-mode t
 
-      org-log-into-drawer t
 
       ;; TODO: remove this if it results in too much slowdown. Time spc n S for instance
       org-use-property-inheritance t
@@ -54,27 +54,24 @@
       ;; org-default-notes-file "~/org/inbox.org"
       ;; org-use-fast-todo-selection t
 
-      ;; org-refile-targets '((nil :maxlevel . 4)
-      ;;                      (org-agenda-files :maxlevel . 4))
+      org-refile-targets '((nil :maxlevel . 3)
+                           (org-agenda-files :maxlevel . 3))
 
       ;; include the file in the refile search
       org-refile-use-outline-path 'file
+      org-outline-path-complete-in-steps nil
+
       ;; org-deadline-warning-days 7
       ;; org-agenda-compact-blocks nil ;; don't compact the agenda
       ;; give me all the possible completions at once so helm can present them
       ;; org-outline-path-complete-in-steps nil)
       ;; org-agenda-default-appointment-duration 60
-      ;; org-agenda-skip-scheduled-if-done t
 
-      ;; once you've used org for a while, you start to chose which files go to
-      ;; the agenda
       org-agenda-files (append (file-expand-wildcards (concat org-directory "*.org"))
-                               (file-expand-wildcards (concat org-directory "roam/*.org"))
                                (directory-files-recursively (concat org-directory "neptune") "\\.org$")
-                               (directory-files-recursively (concat org-directory "caldav") "\\.org$")
+                               (list bergheim/calendar/nextcloud/local)
                                (directory-files-recursively (concat org-directory "ical") "\\.org$")
-                               (directory-files-recursively (concat org-directory "projects") "\\.org$")
-                               (directory-files-recursively (concat org-directory "journal") "\\.org$"))
+                               (directory-files-recursively (concat org-directory "projects") "\\.org$"))
 
       ;; org-agenda-clockreport-parameter-plist
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))

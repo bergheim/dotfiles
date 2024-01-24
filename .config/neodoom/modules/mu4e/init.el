@@ -12,7 +12,7 @@
 
 (use-package mu4e
   :elpaca nil
-  :commands (mu4e mu4e-compose-new)
+  :commands (mu4e mu4e-compose-new mu4e-update-index)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config

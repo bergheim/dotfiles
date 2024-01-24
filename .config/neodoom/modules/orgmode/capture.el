@@ -111,7 +111,7 @@
                  :clock t
                  :template-file ,(expand-file-name "clocked.org" org-capture-custom-template-directory))
 
-                ("Interrupted" :keys "I"
+                ("Interrupted" :keys "i"
                  :icon ("nf-fa-stop_circle" :set "faicon" :color "red")
                  :file +org-capture-work-file
                  :type entry
@@ -191,7 +191,7 @@
                 ;;              :file +org-capture-project-changelog-file)))
 
                 ("Interesting"
-                 :keys "i"
+                 :keys "I"
                  :icon ("nf-fa-eye" :set "faicon" :color "lcyan")
                  :file +org-capture-todo-file
                  :prepend t

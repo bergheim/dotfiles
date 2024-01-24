@@ -3,7 +3,6 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 
-;; TODO: is this used?
 (defun bergheim/org-copy-url-only ()
   "Copy the URL (without description) of an Org-mode link under the cursor to the clipboard."
   (interactive)
