@@ -102,6 +102,8 @@
     "TAB x" '(tab-close :which-key "close tab")
 
     "a" '(:ignore t :which-key "Apps")
+    "ac" '(bergheim/open-calendar :which-key "Calendar")
+    "aC" '((lambda () (interactive) (find-file bergheim/calendar/nextcloud/local)) :which-key "Calendar org")
     "ad" '((lambda () (interactive) (dirvish "~/")) :which-key "Dirvish")
     "ae" '(elfeed :which-key "Elfeed")
     "at" '(treemacs :which-key "Treemacs")
@@ -120,12 +122,14 @@
     "bu" '(undo-tree-visualize :which-key "Undo tree")
 
     "c" '(:ignore t :which-key "Code")
+    "cd" '(xref-find-definitions :which-key "Find definitions")
+    "cD" '(xref-find-definitions-other-window :which-key "Find definitions other")
     "cr" '(xref-find-references :which-key "Find references")
     "ce" '(consult-flymake :which-key "Search errors")
     "cE" '(flymake-show-buffer-diagnostics :which-key "Show errors")
     
     "d" '(:ignore t :which-key "dotfiles")
-    "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Switch")
+    "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Magit")
     "df" '(bergheim/find-in-dotfiles :which-key "Find a file")
     "db" '(bergheim/browse-dotfiles :which-key "Browse")
 
@@ -202,7 +206,7 @@
     "s" '(:ignore t :which-key "Search")
     "sa" '(consult-org-agenda :which-key "org agenda")
     "sb" '(consult-line-multi :which-key "open buffers")
-    "sd" '(bergheim/consult-ripgrep-with-selection :which-key "Current directory")
+    "sd" '((lambda () (interactive) (bergheim/consult-ripgrep-with-selection ".")) :which-key "Current directory")
     "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
     "sA" '(affe-grep :which-key "Async grep")
     
@@ -218,7 +222,7 @@
     "sn" '(consult-focus-lines :which-key "narrow view")
     "so" '(consult-outline :which-key "outline")
     ;; todo remember consult-kmacro
-    "sp" '(consult-project-buffer :which-key "project buffers")
+    "sp" '(bergheim/consult-ripgrep-with-selection :which-key "Current directory")
     "ss" '(consult-line :which-key "buffer")
     "sS" '(consult-line-multi :which-key "open buffers")
 
