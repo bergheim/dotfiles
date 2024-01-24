@@ -71,12 +71,15 @@
 
 (use-package which-key
   :demand t
+  :custom
+  (which-key-idle-delay 0.3)
+  (which-key-idle-secondary-delay 0.3)
+  ;; sort A a B b not A B a b
+  (which-key-sort-order 'which-key-key-order-alpha)
+  ;; this fixes which-key window size for me in daemon mode
+  (which-key-allow-imprecise-window-fit nil)
   :config
-  (which-key-mode)
-  (setq which-key-idle-delay 0.3)
-  ;; sort A a B b not A B ab
-  (setq which-key-sort-order 'which-key-key-order-alpha)
-  (setq which-key-idle-secondary-delay 0.3))
+  (which-key-mode))
 
 (defun bergheim/toggle-big-font-mode (&optional level)
   "Toggle big font mode."

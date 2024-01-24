@@ -114,6 +114,7 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 (defconst IS-MAC      (eq system-type 'darwin))
+(defconst IS-LINUX    (memq system-type '(gnu gnu/linux gnu/kfreebsd berkeley-unix)))
 
 (setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
 
