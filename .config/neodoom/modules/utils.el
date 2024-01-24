@@ -97,6 +97,16 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
     (let ((current-prefix-arg 4))
       (call-interactively fn))))
 
+(use-package emacs-everywhere
+  :config
+  ;; I always want this to open centered, not where my cursor might happen to be
+  (setq emacs-everywhere-init-hooks
+        (delq 'emacs-everywhere-set-frame-position emacs-everywhere-init-hooks))
+  :custom
+  (emacs-everywhere-frame-parameters
+   '((name . "floating emacs-everywhere")
+     (width . 80)
+     (height . 30))))
 
 (use-package iedit
   :config
