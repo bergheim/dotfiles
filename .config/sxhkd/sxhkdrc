@@ -29,8 +29,12 @@ super + d
   dolphin
 
 # edit whatever in emacs
-super + shift + e
-  emacs-anywhere
+super + z
+  emacsclient --eval "(emacs-everywhere)"
+
+# org-capture
+super + c
+  emacs-capture --eval '(bergheim/capture)'
 
 # make sxhkd reload its configuration files:
 super + F6
@@ -44,17 +48,20 @@ super + @F1
 super + @F2
   screenshot -a && notify-send -u low 'Screenshot area captured'
 
-# toggle alacitty dark/white
-super + shift + F10
-  notify-send "Toggling alacritty colors" --icon=utilities-terminal --category=os && alacritty-colorscheme toggle "gruvbox_light.yaml" "nord.yaml"
-
 # toggle desktop dark/white
-super + F10
-  desktop-toggle-color
+super + F7
+  toggle-darkmode
 
 # toggle redshift
-super + F7
-  notify-send "Toggling redshift" --icon=preferences-desktop-screensaver --category=os && pkill -USR1 '^redshift$'
+super + F8
+  dunstify "Toggling redshift" --icon=to-the-moon && pkill -USR1 '^redshift$'
+
+super + F9
+   dunstify "Toggling picom" --icon=deepin-graphics-driver-manager && pkill picom || picom
+   # (pkill picom && dunstify "Enabling picom" --icon=to-the-moon) || (picom && dunstify "Disabling picom" --icon=to-the-moon)
+
+super + y
+   pulseaudio-control --node-type output --node-blacklist "alsa_output.pci-0000_02_00.1.hdmi-stereo,alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.mono-chat" next-node
 
 # lock screen
 super + F12
@@ -90,16 +97,12 @@ XF86AudioMute
 {XF86AudioLowerVolume, XF86AudioRaiseVolume}
   pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
 
-# org-capture
-super + semicolon
-  ~/.emacs.d/bin/org-capture
-
 # close notification
-ctrl + alt + grave
+ctrl + alt + Tab
   dunstctl close
 
 # restore notification
-ctrl + alt + Tab
+alt + shift + Tab
   dunstctl history-pop
 
 # super + ctrl + grave
