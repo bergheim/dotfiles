@@ -85,7 +85,7 @@
     :keymaps 'bergheim/localleader-map)
 
   (general-create-definer bergheim/global-evil-keys
-    :states '(normal visual motion operator)
+    :states '(normal visual motion operator emacs)
     :keymaps 'override)
 
   (general-override-mode)
