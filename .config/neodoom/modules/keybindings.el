@@ -45,7 +45,7 @@
    "C-r" 'undo-tree-redo)
 
   (general-define-key
-   :states '(normal visual)
+   :states '(normal visual emacs)
 
    "C-=" 'global-text-scale-adjust
    "C--" '(lambda () (interactive) (global-text-scale-adjust -1))
