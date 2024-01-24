@@ -10,6 +10,11 @@ configuration {
   scrollbar: true;
   background-color: transparent;
 
+  kb-remove-to-eol: "";
+  kb-accept-entry: "Control+m,Return,KP_Enter";
+  kb-row-up: "Up,Control+p,Control+k";
+  kb-row-down: "Down,Control+n,Control+j";
+
   drun {
     display-name: "";
   }
