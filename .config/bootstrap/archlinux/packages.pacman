@@ -161,3 +161,6 @@ noto-fonts-emoji
 unicode-emoji
 shfmt
 inotify-tools
+mediainfo
+xsettingsd
+pandoc-cli
