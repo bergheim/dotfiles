@@ -60,19 +60,119 @@
   :demand t
   :elpaca nil)
 
+;; see also https://github.com/akhramov/org-wild-notifier.el
+(use-package org-alert
+  :after org
+  :demand t
+  :config
+  (setq org-alert-interval 300
+      org-alert-notify-cutoff 10
+      org-alert-notify-after-event-cutoff 10))
+
 (use-package org-caldav
   :ensure t
   :defer t
   :config
+  ;; apparently these are experimental
+  (setq org-icalendar-include-todo 'all
+        org-caldav-sync-todo t
+        org-caldav-todo-percent-states
+        '((0 "TODO") (1 "NEXT") (2 "INPROGRESS") (100 "DONE")))
   (setq org-caldav-url bergheim/calendar/nextcloud
         org-caldav-delete-calendar-entries 'ask
-        org-caldav-save-directory (concat org-directory "caldav")
+        org-caldav-save-directory (expand-file-name "caldav" org-directory)
         org-caldav-calendar-id "personal"
-        org-caldav-inbox (concat org-directory "caldav/personal.org")
+        org-caldav-files `(,(expand-file-name "caldav/caldav-appointments.org" org-directory))
+        org-caldav-inbox bergheim/calendar/nextcloud/local
         org-caldav-calendars `((:calendar-id "personal"
-                                             :inbox ,(concat org-directory "caldav/personal.org"))
-                               (:calendar-id "outlookoffice365com"
-                                             :inbox ,(concat org-directory "caldav/neptune.org")))))
+                                :inbox ,bergheim/calendar/nextcloud/local))))
+
+(use-package calfw
+  :after org
+  :demand t
+  :init
+  (defun bergheim/ask-time (prompt)
+    "Ask for time using PROMPT."
+    (let ((time (read-string prompt)))
+      (unless (string= time "")
+      (let* ((parts (split-string time ":"))
+             (hours (car parts))
+             (minutes (or (cadr parts) "00")))
+        (format "%s:%02d" hours (string-to-number minutes))))))
+
+  (defun bergheim/format-scheduled-time (start end)
+    "Format START and END time to return a proper org-mode timestamp."
+    (let* ((date (substring (cfw:org-capture-day) 0 11)) ; extract "<2024-01-25"
+           (end (or end
+                    (when start
+                      (format-time-string "%H:%M"
+                                          (time-add (date-to-time (concat date " " start))
+                                                    (seconds-to-time 3600))))))
+           (time (format " %s%s>" (or start "") (when end (concat "-" end)))))
+      (if start
+          (concat date time)
+        (concat date ">"))))
+
+  (defun bergheim/open-calendar ()
+    (interactive)
+    (cfw:open-calendar-buffer
+     :contents-sources
+     (list
+      (cfw:ical-create-source "outlook" bergheim/calendar/neptune/default "Orange")
+      (cfw:org-create-file-source "personal" bergheim/calendar/nextcloud/local "DarkGreen"))
+     ;; :view 'block-5-day
+     :view 'transpose-two-weeks))
+  :custom
+  (cfw:org-capture-template
+   '("k" "Calendar capture" entry (file bergheim/calendar/nextcloud/local)
+     "* %^{Title}\n%(bergheim/format-scheduled-time (bergheim/ask-time \"Start Time: \") (bergheim/ask-time \"End Time: \"))\n\n%?"))
+  :config
+
+  (defun bergheim//caldav-sync-hook ()
+    (when (string= (org-capture-get :key) "k")
+      (org-caldav-sync)))
+  (add-hook 'org-capture-after-finalize-hook #'bergheim//caldav-sync-hook)
+
+  ;; maybe just sync this every time the files changes instead?
+  ;; (defun bergheim//caldav-sync-hook ()
+  ;;   (when (equal (expand-file-name (buffer-file-name))
+  ;;                (expand-file-name bergheim/calendar/nextcloud/local))
+  ;;     (org-caldav-sync)))
+  ;; (add-hook 'after-save-hook 'bergheim//caldav-sync-hook)
+  :general
+  (general-define-key
+   :states '(normal insert emacs motion visual)
+   :keymaps 'cfw:calendar-mode-map
+   "RET" #'cfw:show-details-command
+   "g" #'cfw:navi-goto-first-date-command
+   "G" #'cfw:navi-goto-last-date-command
+   "J" #'cfw:org-goto-date
+   ;; "g" #'cfw:org-goto-date
+   ;; "G" #'cfw:navi-goto-date-command
+   "[" #'cfw:navi-previous-month-command
+   "]" #'cfw:navi-next-month-command
+   "J" #'cfw:org-goto-date
+   "d" #'cfw:change-view-day
+   "w" #'cfw:change-view-week
+   "m" #'cfw:change-view-month)
+
+  (general-define-key
+   :states '(normal insert emacs motion visual)
+   :keymaps 'cfw:details-mode-map
+   "q" #'cfw:details-kill-buffer-command
+   "M-n" #'cfw:details-navi-next-command
+   "M-p" #'cfw:details-navi-prev-command))
+
+(use-package calfw-org    :after calfw :demand t)
+(use-package calfw-ical   :after calfw :demand t)
+(use-package calfw-blocks
+  :after calfw
+  :demand t
+  :elpaca (:host github :repo "ml729/calfw-blocks")
+  :config
+  (setq cfw:org-overwrite-default-keybinding t
+        calfw-blocks-earliest-visible-time '(2 0)
+        calfw-blocks-lines-per-hour 3))
 
 (use-package org-clock
   :ensure nil
