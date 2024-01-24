@@ -287,6 +287,8 @@
   ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
   )
 
+(use-package rainbow-mode)
+
 (use-package rainbow-delimiters
   :defer t
   :config
@@ -310,6 +312,7 @@
 (use-package evil-goggles
   :ensure t
   :after evil
+  :demand t
   :config
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))

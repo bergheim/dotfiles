@@ -97,5 +97,11 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
     (let ((current-prefix-arg 4))
       (call-interactively fn))))
 
+
+(use-package iedit
+  :config
+  (general-define-key
+   :states '(normal visual)
+   "gR" 'iedit-mode))
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here

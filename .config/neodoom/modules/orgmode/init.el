@@ -56,6 +56,10 @@
     "b" '(bergheim/org-open-attachments :which-key "open attachments")
     "q" 'org-set-tags-command))
 
+(use-package org-protocol
+  :demand t
+  :elpaca nil)
+
 (use-package org-caldav
   :ensure t
   :defer t
