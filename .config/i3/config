@@ -69,11 +69,6 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-# split in horizontal orientation
-# bindsym $mod+b split h
-
-# split in vertical orientation
-# bindsym $mod+v split v
 bindsym $mod+bar split toggle
 
 # enter fullscreen mode for the focused container
@@ -89,11 +84,8 @@ bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; 
 # bindsym $mod+Shift+s sticky toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+x layout tabbed
-# I never use stacking
-bindsym $mod+Shift+x layout stacking
-bindsym $mod+c layout toggle split
-bindsym $mod+z focus parent
+bindsym $mod+x layout toggle tabbed splitv splith
+bindsym $mod+Shift+x focus parent
 
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
@@ -156,6 +148,7 @@ workspace $ws9 output $monitor1
 workspace $ws10 output $monitor2
 workspace $ws11 output $monitor2
 workspace $ws12 output $monitor2
+workspace $ws13 output $monitor2
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -170,6 +163,7 @@ bindsym $mod+6 workspace $ws9
 bindsym $mod+7 workspace $ws10
 bindsym $mod+8 workspace $ws11
 bindsym $mod+9 workspace $ws12
+bindsym $mod+0 workspace $ws13
 
 # move focused container to workspace
 bindsym $mod+$alt+1 move container to workspace $ws1
@@ -184,6 +178,7 @@ bindsym $mod+$alt+6 move container to workspace $ws9
 bindsym $mod+$alt+7 move container to workspace $ws10
 bindsym $mod+$alt+8 move container to workspace $ws11
 bindsym $mod+$alt+9 move container to workspace $ws12
+bindsym $mod+$alt+0 move container to workspace $ws13
 
 # resize window (you can also use the mouse for that)
 # direction is grow in that direction
@@ -269,28 +264,30 @@ bindsym $mod+shift+minus    gaps inner current set 40; gaps outer current set 20
 bindsym $mod+shift+equal    gaps inner current set 60; gaps outer current set 30; border pixel $border_size
 
 # Set colors from Xresources
-set_from_resource $bg background #2f343f
-set_from_resource $fg foreground #d8dee8
-set_from_resource $c1 color1 #bf616a
-set_from_resource $c3 color3 #ebcb8b # primary
+set_from_resource $bg background
+set_from_resource $fg foreground
+set_from_resource $c1 color1
+set_from_resource $c2 color2
+set_from_resource $c3 color3
 set_from_resource $c4 color4
-set_from_resource $c5 color5 #81a1c1
+set_from_resource $c5 color5
 set_from_resource $c6 color6
 
-set_from_resource $c9 color9 #81a1c1
-set_from_resource $c15 color15 #81a1c1
+set_from_resource $c9 color9
+set_from_resource $c10 color10
+set_from_resource $c15 color15
 
 for_window [all] title_window_icon on
 for_window [all] title_window_icon padding 5px
 
 # see https://thomashunter.name/i3-configurator/
 # class                 border  backgr. text indicator child_border
-client.focused          $c3     $c3     $bg  $c4       $c3
+client.focused          $c10    $c10    $bg  $c4       $c10
 client.focused_inactive $fg     $bg     $fg  $fg       $bg
 client.unfocused        $fg     $bg     $fg  $fg       $bg
 client.urgent           $fg     $c1     $bg  $bg       $c1
 client.placeholder      $fg     $bg     $fg  $bg       $bg
-client.background       $fg
+client.background       $bg
 
 # new_window pixel 0
 # with i3-gaps this looks strange on apps like chromium
@@ -315,11 +312,13 @@ exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 for_window [window_role="About"] floating enable
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
-for_window [class="Qalculate-gtk"] floating enable
+for_window [class="qalculate-gtk"] floating enable
 for_window [title="Microsoft Teams Notification"] floating enable
 
 for_window [class="^floating"] floating enable
 for_window [instance="^floating"] floating enable
+for_window [title="^floating"] floating enable
 
 for_window [class="Emacs" title="doom-capture"] floating enable
-for_window [class="Emacs" title="\*Emacs Anywhere\*"] floating enable
+for_window [class="Emacs" title="emacs-everywhere"] floating enable
+for_window [class="gnome-calendar"] floating enable
