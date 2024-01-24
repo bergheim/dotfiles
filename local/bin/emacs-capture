@@ -1,2 +1,2 @@
 #!/bin/sh
-emacsclient -c -F "((name . \"floating emacs-capture\") (height . 20) (width . 80))" "$@"
+emacsclient -c -F "((name . \"floating emacs-capture\") (height . 30) (width . 120))" "$@"
