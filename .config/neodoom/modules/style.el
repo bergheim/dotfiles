@@ -23,6 +23,9 @@
   (interactive)
   (message "Current font size: %s" (face-attribute 'default :height)))
 
+(defvar bergheim/theme-light 'ef-cyprus)
+(defvar bergheim/theme-dark 'ef-deuteranopia-dark)
+
 ;; so many to choose from.. "Ubuntu" "DejaVu Sans" "Open Sans" "Noto Sans" "IosevkaTerm Nerd Font Propo" "Iosevka Nerd Font"
 ;; Note: height = px * 100
 (defvar bergheim/font-name "Ubuntu Mono" "Default font for fixed-width.")
@@ -60,21 +63,32 @@
 
 (bergheim/set-font-based-on-frame-resolution)
 
+(defun bergheim//system-dark-mode-enabled-p ()
+  "Check if system dark mode is enabled."
+  (string= (string-trim (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme")) "'prefer-dark'"))
+
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
     ;; Adjust font for new frames
     (bergheim/set-font-based-on-frame-resolution)
     (scroll-bar-mode -1)
-    (let ((hour (string-to-number (format-time-string "%H"))))
-      ;; TODO: call an external program to figure out if we are in dark-mode or not
-      (if (and (>= hour 8) (< hour 16))
-          (ef-themes-select 'ef-cyprus)
-        (ef-themes-select 'ef-deuteranopia-dark)))))
+    (with-eval-after-load 'ef-themes
+      (if (bergheim//system-dark-mode-enabled-p)
+          (ef-themes-select bergheim/theme-dark)
+        (ef-themes-select bergheim/theme-light)))))
 
 (use-package ef-themes
   :demand t
   :config
   (setq ef-themes-to-toggle '(ef-cyprus ef-deuteranopia-dark)))
+
+(defun bergheim/theme-dark ()
+  (interactive)
+  (consult-theme bergheim/theme-dark))
+
+(defun bergheim/theme-light ()
+  (interactive)
+  (consult-theme bergheim/theme-light))
 
 ;; (use-package doom-themes
 ;;   :ensure t
