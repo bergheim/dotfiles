@@ -94,9 +94,23 @@
          :map minibuffer-local-map
          ("M-s" . consult-history)  ;; orig. next-matching-history-element
          ("M-r" . consult-history))
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :init
+  (defvar-local consult-toggle-preview-orig nil)
+  (defun consult-toggle-preview ()
+    "Command to enable/disable preview."
+    (interactive)
+    (if consult-toggle-preview-orig
+        (setq consult--preview-function consult-toggle-preview-orig
+              consult-toggle-preview-orig nil)
+      (setq consult-toggle-preview-orig consult--preview-function
+            consult--preview-function #'ignore)))
   :config
   ;; Narrowing lets you restrict results to certain groups of candidates
-  (setq consult-narrow-key "<"))
+  (setq consult-narrow-key "<")
+  :general
+  (:keymaps 'vertico-map
+   "C-SPC" #'consult-toggle-preview))
 
 (use-package consult-todo :after consult)
 

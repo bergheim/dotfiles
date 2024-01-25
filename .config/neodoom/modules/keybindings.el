@@ -145,6 +145,7 @@
     "fR" '(rename-visited-file :which-key "Rename file")
     "fo" '(browse-url-of-buffer :which-key "Browse file")
     "fs" '(save-buffer :which-key "Save buffer")
+    "fy" '(+default/yank-buffer-path :which-key "Yank file path")
 
     "g" '(:ignore t :which-key "git")
     "g g" '(magit :which-key "magit")
