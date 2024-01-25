@@ -49,6 +49,7 @@ export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 export GPG_TTY=$(tty)
 
 export PAGER=bat
+export BROWSER=firefox
 
 # Set temporary files locations
 if [[ ! -d "$TMPDIR" ]]

@@ -162,19 +162,23 @@ case `uname` in
   ;;
 esac
 
-alias l='exa'
+alias l='eza'
 alias sl='ls'
-alias la='exa -a'
-alias lt='exa --tree --long'
-alias ll='exa -l'
+alias la='eza -a'
+alias lt='eza --tree --long'
+alias ll='eza -l'
 alias llh='ls -lh'
 
 alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
 alias pacs='pacman -Ss'
+alias pacwhat='pacman -Si'
+alias pacfiles='pacman -Ql'
+alias pacwho='pkgfile'
 
 alias f='vifmrun'
 alias shakemacs="pkill -USR2 emacs"
+alias tmux='tmux -2'
 
 # prefer vim to vi if it is installed
 if type vim >/dev/null 2>/dev/null; then
