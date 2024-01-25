@@ -1,4 +1,4 @@
-import = ["/home/tsb/.config/alacritty/colors/gruvbox_dark.toml"]
+import = ["/home/tsb/.config/alacritty/colors/bergheim-dark.toml"]
 live_config_reload = true
 
 [bell]

@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 
 NAME=i3termscratchpad
-
 ALACRITTY_CONFIG_HOME=$XDG_CONFIG_HOME/alacritty
-cd ${ALACRITTY_CONFIG_HOME} && yq eval-all '. as $item ireduce ({}; . * $item)' alacritty.yml scratchpad-template.yml >! scratchpad.yml
 
-alacritty --title $NAME --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.yml -e tmuxa scratchpad-test
+alacritty --title $NAME --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.toml -e tmuxa scratchpad

@@ -21,7 +21,5 @@ else
   bspc rule -a $NAME state=floating monitor=primary follow=on sticky=on hidden=on rectangle="$TERM_WIDTH"x"$TERM_HEIGHT"+"$WIN_X"+"$WIN_Y"
 
   ALACRITTY_CONFIG_HOME=$XDG_CONFIG_HOME/alacritty
-  yq merge ${ALACRITTY_CONFIG_HOME}/scratchpad-template.yml ${ALACRITTY_CONFIG_HOME}/alacritty.yml | tee ${ALACRITTY_CONFIG_HOME}/scratchpad.yml > /dev/null
-
-  alacritty --class $NAME,$NAME --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.yml -e tmuxa scratchpad
+  alacritty --class $NAME,$NAME --config-file ${ALACRITTY_CONFIG_HOME}/scratchpad.toml -e tmuxa scratchpad
 fi
