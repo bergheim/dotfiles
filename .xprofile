@@ -19,11 +19,13 @@ redshift & # dim the screen at night
 
 telegram-desktop &
 teams &
-
+element-desktop &
 (sleep 5 && discord) &
 
 (sleep 5 && firefox) &
 spotify &
+
+rsibreak &
 
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -variant intl -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"
