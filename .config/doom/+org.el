@@ -5,6 +5,10 @@
 ;; I.. don't know what this comes from
 (setq org-agenda-text-search-extra-files '(agenda-archives))
 
+;; TODO: verify this works (from https://github.com/unhammer/org-mru-clock/)
+;; (add-hook 'minibuffer-setup-hook #'org-mru-clock-embark-minibuffer-hook)
+
+;; TODO learn this
 (defun bergheim/org-agenda-mark-done-and-add-followup ()
   "Mark the current TODO as done and add another task after it.
        Creates it at the same level as the previous task, so it's better to use
@@ -47,6 +51,7 @@
 
 (setq org-deadline-warning-days 14
 
+      ;; continue on https://hugocisneros.com/org-config/
       calendar-date-style 'european
       org-icalendar-timezone "Europe/Oslo"
       org-icalendar-alarm-time 30
@@ -72,6 +77,11 @@
 
       ;; start on monday instead of current day
       ;; org-agenda-start-on-weekday 1
+
+      ;; https://github.com/correl/dotfiles/blob/master/.doom.d/config.org
+      ;; https://github.com/PRDeltoid/doom-dotfiles/blob/master/config.el
+      ;; this is by default a level. do I really want a project tag?
+      ;; org-stuck-projects '("+project/-DONE" ("TODO" "NEXT") nil "")
 
       ;; stamp a CLOSED: [X] on DONE items
       org-log-done 'time
@@ -405,6 +415,11 @@
                    (org-agenda-span 1))
                   )))))
 
+;; FIXME: remove that pesky line length sorting in vertico
+(use-package! org-recent-headings
+  :config
+  (org-recent-headings-mode))
+
 (use-package! org-sticky-header
   :custom
   (org-sticky-header-full-path 'full)
@@ -413,6 +428,7 @@
   (org-mode . org-sticky-header-mode))
 
 ;; FIXME: this does not list items in the latest order
+;; TODO: verify that, and add a shortcut
 (defun bergheim/org-recent-tasks-in-buffer ()
   "Lists the recently worked on tasks for this buffer"
   (interactive)
@@ -425,7 +441,7 @@
                   :select #'element-with-markers
                   ;; :from (org-agenda-files)
                   :from (buffer-file-name)
-                  :where '(ts :from -100 :to today)
+                  :where '(ts :from -31 :to today)
                   :order-by '(reverse date)))
                ;; only take the most recently clocked item
                (lambda (a b) (string-equal
@@ -440,6 +456,7 @@
         data
         #'string-equal))))))
 
+;; FIXME: this goes past "today"
 (defun bergheim/org-agenda-recent-changes (&optional tags)
   (interactive)
   (let (filter from)
@@ -863,6 +880,8 @@ Lisp programs can force the template by setting KEYS to a string."
 (defun bergheim/org-id-advice (&rest args)
   "Add unique and clear IDs to everything, except modes where it does not make sense"
 
+  ;; FIXME: maybe skip update-id if some mode?
+  ;; (message (format "%s" major-mode))
   ;; (unless (string-match "^\\(magit\\|mu4e\\)-.*" (format "%s" major-mode))
   ;; (message "Current ID %s" (org-entry-get (point) "ID" t))
 
@@ -998,9 +1017,30 @@ Update the `org-id-locations' global hash-table, and update the
 ;;                    (my/org-roam-copy-todo-to-today)))))
 
 
+;; TODO: add proper capture templates for persons. use this as a baseline..?
+;; (use-package! org-capture
+;;   :ensure nil
+;;   :after org
+;;   :preface
+;;   (defvar my/org-contacts-template "* %(org-contacts-template-name)
+;; :PROPERTIES:
+;; :ADDRESS: %^{289 Cleveland St. Brooklyn, 11206 NY, USA}
+;; :BIRTHDAY: %^{yyyy-mm-dd}
+;; :EMAIL: %(org-contacts-template-email)
+;; :NOTE: %^{NOTE}
+;; :END:" "Template for org-contacts.")
+;;   :custom
+;;   (org-capture-templates
+;;    `(("c" "Contact" entry (file+headline "~/.personal/agenda/contacts.org" "Friends"),
+;;       my/org-contacts-template
+;;       :empty-lines 1))))
 
 (use-package! org-contacts
   :init (setq org-contacts-files '("~/org/contacts.org")))
+
+(defun org-agenda-custom-fn ()
+  (format! "🎉 Everyday is a party! %s" date))
+
 (defun bergheim/org--open-attachments ()
   "Open an attachment of the current outline node using xdg-open"
   (interactive)
@@ -1081,3 +1121,14 @@ The date is formatted according to `org-super-agenda-date-format'."
   :key-sort-fn (lambda (a b)
                  (ts> (get-text-property 0 'org-super-agenda-ts a)
                       (get-text-property 0 'org-super-agenda-ts b))))
+
+
+(defun bergheim/org-copy-url-only ()
+  "Copy the URL (without description) of an Org-mode link under the cursor to the clipboard."
+  (interactive)
+  (let ((link (org-element-context)))
+    (if (eq (org-element-type link) 'link)
+        (let ((url (org-element-property :raw-link link)))
+          (kill-new url)
+          (message "URL copied: %s" url))
+      (message "No link at point."))))

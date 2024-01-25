@@ -345,6 +345,10 @@ Includes BCC emails, but does not include CC, because that point just use from:a
                            (url-encode-url to))))
       (_ (display-warning :warning (format "Account \"%s\" not found!" account))))))
 
+;; TODO: see if this works when sending works again
+;; message-id is apparently not generated on the server..? which sounds strange
+;; (add-hook 'message-send-mail-hook (lambda () (message "id %s") (org-store-link nil)))
+
 (defun bergheim/mu4e-read-later (msg)
   (interactive)
   (call-interactively 'org-store-link)
@@ -378,10 +382,9 @@ Includes BCC emails, but does not include CC, because that point just use from:a
         org-msg-signature bergheim/signature-html
         org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil tex:dvipng \\n:t"
         org-msg-default-alternatives '((new             . (text html))
-                                       (reply-to-html	. (text html))
+                                       (reply-to-html   . (text html))
         ;; replies are currently broken with mu 1.8. this hack prioritizes work mail. From https://github.com/jeremy-compostella/org-msg/issues/157#issuecomment-1233791513
-                                       (reply-to-text	. (text html)))
-        ))
+                                       (reply-to-text   . (text html)))))
 
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
@@ -492,6 +495,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
          :query ,(concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
          :key ?s)
 
+        ;; TODO does not work
         (:name "Today's messages"
          :query "maildir:/Inbox/ AND (date:1d..now)"
          :key ?t)
@@ -521,6 +525,10 @@ Includes BCC emails, but does not include CC, because that point just use from:a
         (:name "Trash"
          :query "maildir:/Trash/ OR flag:trashed"
          :key ?x)
+
+        (:name "Economy"
+               :query ,(concat "maildir:/Inbox/ AND contact:/.*" bergheim/mu4e/economy "$/")
+               :key ?e)
 
         (:name "Focus inbox"
          :query "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"

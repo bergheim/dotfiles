@@ -49,6 +49,7 @@
 (package! org-mru-clock)
 (package! org-super-agenda)
 (package! org-ql)
+(unpin! org-ql)
 (package! org-sticky-header)
 (package! doct)
 ;; https://github.com/IvanMalison/org-projectile
@@ -57,6 +58,8 @@
 ;; (package! helm-org-rifle)
 (package! org-roam-ui)
 
+;; (package! org-mime)
+(package! org-msg)
 (package! org-caldav)
 (package! calendar-norway)
 ;; (package! excorporate)
@@ -64,9 +67,10 @@
 (package! mu4e-alert :disable t)
 (package! mu4e-thread
   :recipe (:host github :repo "rougier/mu4e-thread"))
+
+(package! evil-collection)
 (package! evil-matchit)
 
-;; should improve auto-complete (in theory)
 (package! corfu)
 (package! orderless)
 (package! cape)
@@ -82,9 +86,23 @@
 ;; this is useful for things like org repos
 (package! git-auto-commit-mode)
 
+(unpin! elixir)
+;; (package! lsp-tailwindcss :recipe (:host github :repo "merrickluo/lsp-tailwindcss"))
+
 ;; TODO: trials
 
 (package! org-recent-headings)
 (package! ox-report)
 (package! affe)
 (package! deadgrep)
+
+;; well I for one welcome our new overlord
+;; there are so many.. lets just try them all
+(package! org-ai)
+(package! gptai)
+(package! gptel)
+(package! gpt)
+(package! chatgpt-shell
+  :recipe (:host github :repo "xenodium/chatgpt-shell"))
+
+;; (package! doom-modeline :pin "918730eff72e")

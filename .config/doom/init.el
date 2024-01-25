@@ -14,6 +14,10 @@
 ;;      Alternatively, press 'gd' (or 'C-c c d') on a module to browse its
 ;;      directory (for easy access to its source code).
 
+;; this is supposed to fix the HiDPI startup issue, but it does not work
+;; (setq evil-respect-visual-line-mode t)
+;; (add-hook 'after-make-frame-functions #'doom-init-fonts-h 'append)
+
 (doom! :input
        ;;chinese
        ;;japanese
@@ -33,6 +37,7 @@
        doom-quit         ; DOOM quit-message prompts when you quit Emacs
        ;;(emoji +unicode)  ; 🙂
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       ;; TODO use hydra here..?
        ;;hydra
        ;;indent-guides     ; highlighted indent columns
        ;;ligatures         ; ligatures and symbols to make your code pretty again
@@ -188,7 +193,9 @@
        ;;zig               ; C, but simpler
 
        :email
-       (mu4e +org)
+       ;; TODO: disabled while 1.10 is b0rked
+       ;; (mu4e +org)
+       (mu4e)
        ;;notmuch
        ;;(wanderlust +gmail)
 

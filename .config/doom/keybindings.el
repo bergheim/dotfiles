@@ -35,6 +35,25 @@
        "v" 'magit-blob-visit-file
        "l" 'magit-log-buffer-file)
 
+     (:prefix ("h" . "ai")
+       "e" 'gptai-elaborate-on-region
+       "h" 'gptel-send
+       "H" 'gptel
+       ;; TODO no org-ai here
+       ;; TODO remove this maybe?
+       "d" 'gpt-dwim
+       "i" 'gptai-send-image-query
+       "Q" 'gptai-send-query
+       "q" 'gptai-send-query-region
+       "s" 'gptai-spellcheck-region
+       (:prefix ("c" . "code")
+         "c" 'gptai-code-query
+         "d" 'gptai-document-code-region
+         "e" 'gptai-explain-code-region
+         "f" 'gptai-fix-code-region
+         "i" 'gptai-improve-code-region
+         "o" 'gptai-optimize-code-region))
+
      (:prefix ("o" . "org")
        "a" 'org-agenda
        "b" 'bergheim/org--open-attachments
@@ -48,6 +67,7 @@
        "n" 'org-add-note
        "m" 'bergheim/org-subtree-to-mu4e
        "s" 'org-store-link
+       "u" 'bergheim/org-copy-url-only
        "l" 'org-insert-link)
 
 
@@ -79,7 +99,7 @@
       (:desc "Search" "s" #'mu4e-search)
       (:desc "Sent" "S" 'bergheim/mu4e-email-sent)
       (:desc "Spam" "j" 'bergheim/email-spam)
-      (:desc "Today's email" "t" 'bergheim/mu4e-email-today)
+      (:desc "Today's email" "m" 'bergheim/mu4e-email-today)
       (:desc "Today's unhandled email" "T" 'bergheim/email-today-or-unread)
       (:desc "Work email inbox" "w" 'bergheim/email-work-inbox)
       (:desc "Today's personal email" "p" 'bergheim/email-personal-inbox)
@@ -118,6 +138,20 @@
 
      "t" 'heaven-and-hell-toggle-theme
      "T" 'bergheim/switch-dictionary)))
+
+;; lets try some hyper shortcuts
+;; (define-key (current-global-map) (kbd "H-h") 'evil-window-left)
+;; (define-key (current-global-map) (kbd "H-l") 'evil-window-right)
+;; (define-key (current-global-map) (kbd "H-j") 'evil-window-down)
+;; (define-key (current-global-map) (kbd "H-k") 'evil-window-up)
+;; (define-key (current-global-map) (kbd "H-d") 'evil-window-delete)
+;; (define-key (current-global-map) (kbd "H-s") 'evil-window-vsplit)
+(define-key (current-global-map) (kbd "H-b") #'dired-jump)
+(define-key (current-global-map) (kbd "H-<backspace>") #'kill-current-buffer)
+(define-key (current-global-map) (kbd "H-e") #'bergheim/mu4e-email-today)
+(define-key (current-global-map) (kbd "H-c") #'+mu4e/compose)
+(define-key (current-global-map) (kbd "H-a") (lambda (&optional arg) (interactive) (org-agenda arg "d")))
+;; (define-key (current-global-map) (kbd "H-o") ((lambda () (message "ohai"))))
 
 (map!
  ;; overrides (mark-paragraph)
@@ -202,6 +236,10 @@
 
 (map! :after treemacs
       :map treemacs-mode-map
+      :map lsp-treemacs-error-list-mode-map
+      :map evil-treemacs-state-map
+
+      :m "x" #'lsp-treemacs-quick-fix
 
       ;; this overrides expand, but tab does that as well
       "M-h" #'evil-window-left

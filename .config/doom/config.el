@@ -9,6 +9,12 @@
         doom-modeline-mu4e t ;; TODO where is this exactly?
         doom-modeline-buffer-encoding nil))
 
+
+(setf use-default-font-for-symbols nil)
+(set-fontset-font t 'unicode "Noto Emoji" nil 'append)
+
+
+
 ;; default to english.
 (setq ispell-dictionary "en")
 
@@ -152,7 +158,7 @@
 
 (load! "colors")
 (load! "keybindings")
-
+(load! "ai")
 
 (after! elfeed
   (setq elfeed-search-filter "@2-month-ago +unread"))
@@ -166,6 +172,9 @@
         dired-kill-when-opening-new-dired-buffer t))
 
 (use-package! evil-collection)
+(use-package! evil-matchit
+  :config
+  (global-evil-matchit-mode 1))
 
 (use-package! mu4e
   :config
@@ -189,7 +198,7 @@ If \\[universal-argument] if called before this, show a week back."
           (mu4e-search-sort-direction :ascending))
 
       ;; ask if you want to apply any changes made before leaving
-      (mu4e-mark-handle-when-leaving)
+      ;; (mu4e-mark-handle-when-leaving)
 
       (unless lookback
         (setq lookback "2m"))
@@ -198,7 +207,10 @@ If \\[universal-argument] if called before this, show a week back."
 
       (=mu4e t)
       ;; Add the hook temporarily
-      (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
+      ;; this is just awful :p
+      ;; (unless has-marks
+      ;;   (setq bergheim/mu4e--headers-goto-bottom-counter 1))
+      ;; (add-hook 'mu4e-headers-found-hook #'bergheim/mu4e--headers-goto-bottom)
       (mu4e-search (concat "maildir:/Inbox/ AND date:" lookback "..now"))))
 
   (defun bergheim/mu4e-email-sent()
@@ -258,10 +270,6 @@ If \\[universal-argument] if called before this, show a week back."
            (holiday-float 11 4 4 "Thanksgiving")
            (solar-equinoxes-solstices)))))
 
-(use-package! evil-matchit
-  :config
-  (global-evil-matchit-mode 1))
-
 (defun bergheim/open-calendar ()
   (interactive)
   (cfw:open-calendar-buffer
@@ -277,3 +285,23 @@ If \\[universal-argument] if called before this, show a week back."
                 "nb")))
     (ispell-change-dictionary dic)
     (message "Dictionary switched to %s" dic)))
+
+  (use-package! lsp-mode
+    :commands lsp
+    :ensure t
+    :diminish lsp-mode
+    :hook
+    (elixir-mode . lsp)
+    :init
+    (add-to-list 'exec-path " ~/local/elixir-lsp"))
+
+;; (use-package! lsp-tailwindcss)
+
+(defun bergheim/custom-evilnc-comment-operator (beg end)
+  "Custom comment operator to handle different comment styles based on major-mode."
+  (interactive "r")
+  (if (eq major-mode 'elixir-mode)
+      (let ((comment-start "<!-- ")
+            (comment-end " -->"))
+        (evilnc--comment-or-uncomment-region beg end))
+    (evilnc-comment-operator beg end)))
