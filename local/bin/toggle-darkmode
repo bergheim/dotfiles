@@ -1,0 +1,36 @@
+#!/bin/env sh
+
+# THEME_LIGHT="catppuccin-latte"
+# THEME_DARK="catppuccin-mocha"
+THEME_LIGHT="bergheim-light"
+THEME_DARK="bergheim-dark"
+ALACRITTYCONF="${XDG_CONFIG_HOME}/alacritty/alacritty.toml"
+TMUXCONF="${HOME}/.tmux.conf"
+XRES="${HOME}/.Xresources"
+XSETTINGS="${HOME}/.config/xsettingsd/xsettingsd.conf"
+QT_THEME="${XDG_CONFIG_HOME}/qt5ct/qt5ct.conf"
+
+CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
+
+if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
+  emacsclient -e '(bergheim/theme-light)'
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+  gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
+
+  sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
+  sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES"
+  sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
+else
+  emacsclient -e '(bergheim/theme-dark)'
+  gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+  gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+  sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
+  sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES"
+  sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
+fi
+
+xrdb -merge ~/.Xresources
+pkill -HUP xsettingsd &
+tmux source-file "$TMUXCONF" &
+pkill -USR1 polybar &
+pgrep i3 && i3 reload &
