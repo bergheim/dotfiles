@@ -123,7 +123,7 @@ set $ws12 "12"
 set $ws13 "13"
 
 exec_always --no-startup-id i3-scratchterm-toggle &
-bindsym $mod+grave [title="i3termscratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; resize set 3546 1600; move position center
+bindsym $mod+grave [title="i3termscratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; [title="i3termscratchpad"] resize set 3546 1600; [title="i3termscratchpad"] move position center
 
 for_window [title="i3termscratchpad"] border none
 for_window [title="i3termscratchpad"] floating enable sticky disable

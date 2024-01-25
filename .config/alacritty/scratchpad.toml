@@ -1,5 +1,20 @@
 import = ["/home/tsb/.config/alacritty/alacritty.toml"]
 
+[font]
+size = 16.0
+
+[font.bold]
+family = "Ubuntu Mono Nerd Font"
+style = "SemiBold"
+
+[font.italic]
+family = "Ubuntu Mono Nerd Font"
+style = "Italic"
+
+[font.normal]
+family = "Ubuntu Mono Nerd Font"
+style = "Regular"
+
 [colors.bright]
 black   = "0x686868"
 red     = "0xF07178"
@@ -23,3 +38,6 @@ white   = "0xC7C7C7"
 [colors.primary]
 background = "0x141414"
 foreground = "0xB3B1AD"
+
+[window]
+opacity = 0.8
