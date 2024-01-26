@@ -81,11 +81,14 @@
 
 (use-package embark-consult
   :after (embark consult)
+  :demand
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; lots of more filtering options for completing-read
 (use-package consult
+  :after vertico
+  :demand
   ;; Other good things to bind: consult-ripgrep, consult-line-multi,
   ;; consult-history, consult-outline
   :bind (("M-p" . consult-yank-pop) ; yes yes. I am an evil heretic
