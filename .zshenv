@@ -59,3 +59,6 @@ then
 fi
 
 export N_PREFIX=~/local
+
+
+source ~/.zshenv-private
