@@ -106,6 +106,11 @@
     "aC" '((lambda () (interactive) (find-file bergheim/calendar/nextcloud/local)) :which-key "Calendar org")
     "ad" '((lambda () (interactive) (dirvish "~/")) :which-key "Dirvish")
     "ae" '(elfeed :which-key "Elfeed")
+    "as" '(:ignore t :which-key "Spotify")
+    "ash" '(hydra-spotify/body :which-key "Hydra")
+    "asm" '(smudge-my-playlists :which-key "Search my lists")
+    "asp" '(smudge-playlist-search :which-key "Search playlists")
+    "ast" '(smudge-track-search :which-key "Search track")
     "at" '(treemacs :which-key "Treemacs")
 
     "b" '(:ignore t :which-key "Buffers")
@@ -164,6 +169,7 @@
     "hdd" '(toggle-debug-on-error t :which-key "Debug")
     "hdq" '(toggle-debug-on-quit t :which-key "Debug on quit")
     "hf" '(helpful-callable :which-key "Function")
+    "hi" '( :which-key "Info")
     "hk" '(helpful-key :which-key "Key")
     "hl" '(find-library :which-key "Library")
     "hm" '(describe-mode :which-key "Describe mode")
@@ -236,6 +242,9 @@
     "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
     "t w" '(bergheim/write-mode :which-key "Writer room")
     "t z" '(bergheim/present-mode :which-key "Present")
+
+    "r" '(:ignore :which-key "Run")
+    "re" '(eval-expression :which-key "Expression")
 
     "u" '(universal-argument :which-key "Universal argument")
 
