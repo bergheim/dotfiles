@@ -112,6 +112,10 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
   :config
   (general-define-key
    :states '(normal visual)
+(use-package iedit
+  :demand t
+  :general
+  (:states '(normal visual)
    "gR" 'iedit-mode))
 ;; redefines the silly indent of keyword lists
 ;; before
