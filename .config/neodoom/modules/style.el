@@ -290,9 +290,7 @@
 (use-package rainbow-mode)
 
 (use-package rainbow-delimiters
-  :defer t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  :hook (prog-mode . (lambda () (rainbow-delimiters-mode 1))))
 
 (use-package focus)
 

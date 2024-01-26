@@ -134,8 +134,7 @@
          ("C-h F" . #'helpful-function)
          ("C-h C" . #'helpful-command))
   :general
-  (general-define-key
-   :states 'normal
+  (:states 'normal
    "K" #'helpful-at-point))
 
 (use-package elfeed
@@ -179,8 +178,6 @@
   :defer t)
 
 (use-package tramp
-  :elpaca nil
-  :defer t
   :config
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
   ;; Use `ssh` by default instead of the default `scp`
