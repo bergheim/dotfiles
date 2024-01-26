@@ -7,7 +7,11 @@
 
 (use-package desktop
   :elpaca nil
-  :demand t
+  :hook
+  (elpaca-after-init . desktop-read)
+  ;; Auto-save and load without prompting.
+  (desktop-after-read  . (lambda () (desktop-save-mode 1)))
+
   ;; :init
   ;; (add-to-list 'desktop-minor-mode-handlers
   ;;              '(eglot--managed-mode . ignore))
@@ -16,15 +20,12 @@
         desktop-auto-save-timeout 3600
         desktop-save 'ask-if-new
         desktop-load-locked-desktop t
-        desktop-save-mode 1)
-
-  ;; Auto-save and load without prompting.
-  (add-hook 'desktop-after-read-hook (lambda () (desktop-save-mode 1))))
+        desktop-save-mode 1))
 
 (use-package restart-emacs
   :after desktop
-  :demand t
-  :config
+  :commands 'restart-emacs
+  :init
   (defun bergheim/restart-emacs ()
     "Save desktop and then restart Emacs with custom init directory."
     (interactive)

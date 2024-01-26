@@ -95,7 +95,7 @@
         (:overtime
          (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
     (if (org-clocking-p)
-        (format "%s - %s" (org-duration-from-minutes (org-clock-get-clocked-time)) org-clock-heading)
+        (format "%s:  %s" org-clock-heading (org-duration-from-minutes (org-clock-get-clocked-time)))
       "")))
 
 
