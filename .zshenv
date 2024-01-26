@@ -42,6 +42,7 @@ export SUDO_EDITOR="$EDITOR"
 export MONITOR_PRIMARY="DP-2"
 export MONITOR_SECONDARY="DP-0"
 
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
 export QT_QPA_PLATFORMTHEME=qt5ct
 
 # allow using the GnuPG agent as an SSH agent
