@@ -78,8 +78,8 @@
   :demand t
   :config
   (setq org-alert-interval 300
-      org-alert-notify-cutoff 10
-      org-alert-notify-after-event-cutoff 10))
+        org-alert-notify-cutoff 10
+        org-alert-notify-after-event-cutoff 10))
 
 (use-package org-caldav
   :ensure t
@@ -107,10 +107,10 @@
     "Ask for time using PROMPT."
     (let ((time (read-string prompt)))
       (unless (string= time "")
-      (let* ((parts (split-string time ":"))
-             (hours (car parts))
-             (minutes (or (cadr parts) "00")))
-        (format "%s:%02d" hours (string-to-number minutes))))))
+        (let* ((parts (split-string time ":"))
+               (hours (car parts))
+               (minutes (or (cadr parts) "00")))
+          (format "%s:%02d" hours (string-to-number minutes))))))
 
   (defun bergheim/format-scheduled-time (start end)
     "Format START and END time to return a proper org-mode timestamp."

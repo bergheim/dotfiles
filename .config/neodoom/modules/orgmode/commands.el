@@ -132,16 +132,16 @@ derived from `dired-mode'."
     '(not (done))
     :title "Work related tasks"
     :super-groups '((:name "Important tasks"
-                           :discard (:not (:tag ("@work" "planet9")))
-                           :priority ("A" "B"))
+                     :discard (:not (:tag ("@work" "planet9")))
+                     :priority ("A" "B"))
                     (:name "Needs refiling"
-                           :tag "REFILE"
-                           :order 7)
+                     :tag "REFILE"
+                     :order 7)
                     (:name "Habits"
-                           :habit t
-                           :order 3)
+                     :habit t
+                     :order 3)
                     (:todo "WAITING"
-                           :order 6)
+                     :order 6)
                     (:priority "A" :order 1)
                     (:priority "B" :order 2)
                     (:priority "C" :order 2))))

@@ -110,11 +110,11 @@
   (define-key evil-normal-state-map (kbd "U") 'undo-tree-visualize)
   (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo))
 
-  ;; :general
-  ;; (general-nmap
-  ;;   "u" 'undo-tree-undo
-  ;;   "U" 'undo-tree-visualize
-  ;;   "C-r" 'undo-tree-redo))
+;; :general
+;; (general-nmap
+;;   "u" 'undo-tree-undo
+;;   "U" 'undo-tree-visualize
+;;   "C-r" 'undo-tree-redo))
 
 ;; general modifies use-package so make sure we get it before moving on
 (elpaca-wait)

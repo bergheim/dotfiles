@@ -118,25 +118,25 @@ With a universal argument, it allows entering the application to use."
    "C-l" #'dirvish-history-go-forward)
 
   (bergheim/localleader-keys
-   :keymaps 'dirvish-mode-map
+    :keymaps 'dirvish-mode-map
 
-   "b" '(bergheim/open-file :which-key "Open")
-   "B" `(,(bergheim/call-with-universal-arg #'bergheim/open-file) :which-key "Open With")
-   "c" '(dired-create-empty-file :which-key "Create empty file")
-   "C" '(dired-create-directory :which-key "Create directory")
-   "e" '(gnus-dired-attach :which-key "Attach to email")
-   "E" '(dirvish-emerge-mode :which-key "toggle emerge")
-   "f" '(dirvish-layout-toggle :which-key "toggle fullscreen")
-   "i" '(dirvish-file-info-menu :which-key "file info menu")
-   "j" '(consult-dir :which-key "switch dir")
-   "s" '(dirvish-setup-menu :which-key "setup menu")
-   "m" '(dirvish-mark-menu :which-key "mark menu")
-   "o" '((lambda ()
-           (interactive)
-           (call-interactively 'bergheim/org-attach-dired-to-subtree))
-         :which-key "Copy to org")
-   "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
-         :which-key "Move to org")))
+    "b" '(bergheim/open-file :which-key "Open")
+    "B" `(,(bergheim/call-with-universal-arg #'bergheim/open-file) :which-key "Open With")
+    "c" '(dired-create-empty-file :which-key "Create empty file")
+    "C" '(dired-create-directory :which-key "Create directory")
+    "e" '(gnus-dired-attach :which-key "Attach to email")
+    "E" '(dirvish-emerge-mode :which-key "toggle emerge")
+    "f" '(dirvish-layout-toggle :which-key "toggle fullscreen")
+    "i" '(dirvish-file-info-menu :which-key "file info menu")
+    "j" '(consult-dir :which-key "switch dir")
+    "s" '(dirvish-setup-menu :which-key "setup menu")
+    "m" '(dirvish-mark-menu :which-key "mark menu")
+    "o" '((lambda ()
+            (interactive)
+            (call-interactively 'bergheim/org-attach-dired-to-subtree))
+          :which-key "Copy to org")
+    "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
+          :which-key "Move to org")))
 
 (defun bergheim/delete-current-file ()
   "Delete the current file and kill its buffer, after asking for confirmation."

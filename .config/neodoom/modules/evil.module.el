@@ -112,12 +112,12 @@
     (evil-goto-definition)
     (let ((targetPos (point))
           (targetBuf (current-buffer)))
-    (switch-to-buffer currentBuf)
-    (if (one-window-p)
-        (split-window-horizontally))
-    (other-window 1)
-    (switch-to-buffer targetBuf)
-    (goto-char targetPos))))
+      (switch-to-buffer currentBuf)
+      (if (one-window-p)
+          (split-window-horizontally))
+      (other-window 1)
+      (switch-to-buffer targetBuf)
+      (goto-char targetPos))))
 
 ;; (use-package lispyville
 ;;   :ensure t

@@ -36,7 +36,7 @@
    "M-d" 'evil-avy-goto-char-timer
    "g SPC" 'evil-avy-goto-char-timer
    "gu" 'avy-resume)
-   ;; FIXME: too broad; this messes up the surround operator, say ds(
+  ;; FIXME: too broad; this messes up the surround operator, say ds(
   ;; (general-define-key
   ;;  :states 'operator
   ;;  "z" 'evil-avy-goto-char-2
@@ -49,7 +49,6 @@
 ;; right click from your keyboard
 (use-package embark
   :demand t
-  :after avy
   :bind (("C-c a" . embark-act)
          ("C-'" . embark-act)
          ("C-c b" . embark-bindings)
@@ -215,9 +214,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :after vertico
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
-              ("RET" . vertico-directory-enter)
-              ("DEL" . vertico-directory-delete-char)
-              ("M-DEL" . vertico-directory-delete-word))
+         ("RET" . vertico-directory-enter)
+         ("DEL" . vertico-directory-delete-char)
+         ("M-DEL" . vertico-directory-delete-word))
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
@@ -244,11 +243,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (global-corfu-mode)
   :bind
   (:map corfu-map
-        ("S-SPC" . corfu-insert-separator)
-        ("C-n" . corfu-next)
-        ("C-p" . corfu-previous)
-        ("M-n" . nil)
-        ("M-p" . nil))
+   ("S-SPC" . corfu-insert-separator)
+   ("C-n" . corfu-next)
+   ("C-p" . corfu-previous)
+   ("M-n" . nil)
+   ("M-p" . nil))
   :custom
   (corfu-auto t) ;; enable auto completion
   (corfu-cycle t)

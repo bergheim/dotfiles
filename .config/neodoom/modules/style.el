@@ -169,13 +169,13 @@
   :init (spacious-padding-mode)
   :config
   (setq spacious-padding-widths
-      '( :internal-border-width 15
-         :header-line-width 4
-         :mode-line-width 6
-         :tab-width 4
-         :right-divider-width 30
-         :scroll-bar-width 8)
-      spacious-padding-subtle-mode-line nil))
+        '( :internal-border-width 15
+           :header-line-width 4
+           :mode-line-width 6
+           :tab-width 4
+           :right-divider-width 30
+           :scroll-bar-width 8)
+        spacious-padding-subtle-mode-line nil))
 
 ;; display match info in the modeline
 ;; has some replace stuff as well, not sure how useful

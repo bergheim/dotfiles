@@ -149,15 +149,14 @@ you're done. This can be called from an external shell script."
       (require 'org-capture)
       (condition-case ex
           (letf! ((#'pop-to-buffer #'switch-to-buffer))
-            (switch-to-buffer (doom-fallback-buffer))
-            (let ((org-capture-initial initial-input)
-                  org-capture-entry)
-              (when (and key (not (string-empty-p key)))
-                (setq org-capture-entry (org-capture-select-template key)))
-              (funcall +org-capture-fn)))
+                 (switch-to-buffer (doom-fallback-buffer))
+                 (let ((org-capture-initial initial-input)
+                       org-capture-entry)
+                   (when (and key (not (string-empty-p key)))
+                     (setq org-capture-entry (org-capture-select-template key)))
+                   (funcall +org-capture-fn)))
         ('error
          (message "org-capture: %s" (error-message-string ex))
          (delete-frame frame))))))
-
 
 ;;; helpers.el ends here
