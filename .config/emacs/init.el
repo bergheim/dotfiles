@@ -11,7 +11,7 @@
 (defvar bergheim/config-dir
   (let ((xdg-config (or (getenv "XDG_CONFIG_HOME")
                         (expand-file-name "~/.config/"))))
-    (expand-file-name "neodoom/" xdg-config)))
+    (expand-file-name "emacs/" xdg-config)))
 
 (defvar bergheim/home-dir
   (let ((xdg-home (or (getenv "HOME")
