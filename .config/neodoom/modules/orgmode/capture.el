@@ -14,6 +14,12 @@
   ;;recommended: defer until calling doct
   :commands (doct))
 
+(defun bergheim/org-capture-quote-or-nothing ()
+  (let ((selected-text (plist-get org-store-link-plist :initial)))
+    (if (equal selected-text "")
+        ""
+      (concat "#+BEGIN_QUOTE\n" (s-trim selected-text) "\n#+END_QUOTE\n"))))
+
 (use-package org-capture
   :elpaca nil
   :after org
@@ -161,12 +167,12 @@
                  :headline "People"
                  :file "~/org/contacts.org"
                  :template ("* %(org-contacts-template-name)
-:PROPERTIES:
-:ADDRESS: %^{Address}
-:BIRTHDAY: %^{Birthday (yyyy-mm-dd)}
-:EMAIL: %(org-contacts-template-email)
-:NOTE: %^{NOTE}
-:END:"))
+                 :PROPERTIES:
+                 :ADDRESS: %^{Address}
+                 :BIRTHDAY: %^{Birthday (yyyy-mm-dd)}
+                 :EMAIL: %(org-contacts-template-email)
+                 :NOTE: %^{NOTE}
+                 :END:"))
 
                 ;; TODO: add back once we have a working setup
                 ;; ("Active project" :keys "a"
@@ -215,25 +221,16 @@
                              :desc ""
                              :i-type "idea")))
 
-                ("Protocol Link Marked" :keys "z"
+                ("Protocol Capture" :keys "z"
                  :icon ("nf-oct-stop" :set "octicon" :color "red")
                  :type entry
                  :prepend t
                  :headline "Protocol"
                  :file +org-capture-todo-file
                  :immediate-finish t
-                 :template-file ,(expand-file-name "protocol-marked.org" org-capture-custom-template-directory))
+                 :template-file ,(expand-file-name "protocol-capture.org" org-capture-custom-template-directory))
 
-                ("Protocol Link Unmarked" :keys "Z"
-                 :icon ("nf-oct-stop" :set "octicon" :color "red")
-                 :type entry
-                 :prepend t
-                 :headline "Protocol"
-                 :file +org-capture-todo-file
-                 :immediate-finish t
-                 :template-file ,(expand-file-name "protocol-unmarked.org" org-capture-custom-template-directory))
-
-                ("Protocol Link Active Task" :keys "o"
+                ("Protocol Capture Active Task" :keys "o"
                  :icon ("nf-oct-stop" :set "octicon" :color "red")
                  :type entry
                  :prepend t

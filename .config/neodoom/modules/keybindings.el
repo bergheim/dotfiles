@@ -239,6 +239,7 @@
     "t l" '(jinx-languages :which-key "Languages")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
     "t s" '(jinx-mode :which-key "Spelling")
+    "t o" '(org-toggle-link-display :which-key "Org links")
     "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
     "t w" '(bergheim/write-mode :which-key "Writer room")
     "t z" '(bergheim/present-mode :which-key "Present")
@@ -252,6 +253,9 @@
     "qf" '(delete-frame :which-key "Close frame")
     "qq" '(save-buffers-kill-terminal :which-key "Quit")
     "qr" '(bergheim/restart-emacs :which-key "Restart")
+    "qs" '(bergheim/save-desktop :which-key "Save session")
+    "qS" '((lambda () (interactive) (desktop-auto-save 1) :which-key "Autosave session"))
+    "ql" '(bergheim/load-desktop :which-key "Load session")
 
     "w" '(:ignore t :which-key "Workspace and windows")
     "w=" '(balance-windows :which-key "Balance")

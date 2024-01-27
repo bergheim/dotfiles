@@ -52,8 +52,8 @@
       ;; org-use-fast-todo-selection t
       ;; org-export-with-todo-keywords nil
 
-      org-refile-targets '((nil :maxlevel . 3)
-                           (org-agenda-files :maxlevel . 3))
+      org-refile-targets '((nil :maxlevel . 4)
+                           (org-agenda-files :maxlevel . 4))
 
       ;; include the file in the refile search
       org-refile-use-outline-path 'file

@@ -59,16 +59,22 @@
 
 ;; Just use evil-avy-goto-char-2?
 ;; use `z' or `x' in operator mode
-;; (use-package evil-snipe
-;;   :ensure t
-;;   :after evil
-;;   :config
-;;   (setq evil-snipe-scope 'whole-visible)
-;;   (push '(?\[ "[[{(]") evil-snipe-aliases)
-;;   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
-;;   (evil-snipe-mode +1)
-;;   ;; I find `s' (and to a lesser degree `S') pretty useless tbh, so just override it
-;;   (evil-snipe-override-mode +1))
+(use-package evil-snipe
+  :after evil
+  :demand
+  :custom
+  (evil-snipe-smart-case t)
+  (evil-snipe-scope 'whole-visible)
+  (evil-snipe-auto-scroll nil)
+  (evil-snipe-tab-increment t)
+  :config
+  ;; s[ to search brackets
+  (push '(?\[ "[[{(]") evil-snipe-aliases)
+  (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
+  (evil-snipe-mode +1)
+  ;; `s' (and to a lesser degree `S') is pretty useless.
+  ;; and `cl` and `cc` does the same, so override it
+  (evil-snipe-override-mode +1))
 
 (use-package vimish-fold
   :ensure t
