@@ -81,7 +81,6 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
     "c f" '(eglot-format-buffer :which-key "Format buffer")
     "c F" '(eglot-format :which-key "Format region")
     "c i" '(eglot-find-implementation :which-key "Find implementation")
-    "c d" '(eglot-find-typeDefinition :which-key "Find definition")
     "c q" '(eglot-code-action-quickfix :which-key "Quickfix")
     "c o" '(eglot-code-action-organize-imports :which-key "Organize imports")))
 

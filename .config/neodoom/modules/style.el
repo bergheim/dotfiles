@@ -317,7 +317,7 @@
 
 (use-package dashboard
   :after nerd-icons
-  :demand t
+  :demand
   :config
   (setq dashboard-items '((recents  . 5)
                           (bookmarks . 5)

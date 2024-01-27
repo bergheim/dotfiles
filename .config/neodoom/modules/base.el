@@ -81,6 +81,12 @@
   :config
   (which-key-mode))
 
+(use-package exec-path-from-shell
+  :config
+  (when (or (memq window-system '(mac ns x))
+            (daemonp))
+    (exec-path-from-shell-initialize)))
+
 (defun bergheim/toggle-big-font-mode (&optional level)
   "Toggle big font mode."
   (interactive)
