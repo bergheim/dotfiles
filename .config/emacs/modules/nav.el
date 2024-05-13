@@ -12,12 +12,13 @@
     (consult-notes-org-roam-mode)))
 
 (use-package consult-dir
-  :ensure t
-  :bind (("C-x C-d" . consult-dir)
-         ("C-c C-c" . consult-dir)
-         :map minibuffer-local-completion-map
-         ("C-x C-d" . consult-dir)
-         ("C-x C-j" . consult-dir-jump-file)))
+  :after consult
+  :bind (("C-c C-d" . consult-dir)
+         :map vertico-map
+         ("M-d" . consult-dir)
+         ("M-f" . consult-dir-jump-file)
+         ("C-c C-d" . consult-dir)
+         ("C-c C-f" . consult-dir-jump-file)))
 
 (use-package dired
   :ensure nil

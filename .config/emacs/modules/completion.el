@@ -152,53 +152,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
          (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
 
-(defvar bergheim/minibuffer-favorite-paths
-  '("~/"
-    "~/Downloads/"
-    "~/llm/"))
-
-(defun bergheim/minibuffer-favorites ()
-  "Update minibuffer with a pre-defined path."
-  (interactive)
-  (let* ((path (completing-read "Path: " bergheim/minibuffer-favorite-paths)))
-    (when path
-      (delete-minibuffer-contents)
-      (insert path))))
-
-;; (define-key minibuffer-local-map (kbd "M-f") #'bergheim/minibuffer-favorites)
-
-(use-package bookmark
-  :ensure nil
-  :init
-  (defun bergheim/minibuffer-bookmarks ()
-    "List all file bookmarks and update the minibuffer to the selected one's file path."
-    (interactive)
-    (let* ((bookmark-names (bookmark-all-names))
-           (bookmark-files (seq-filter (lambda (name)
-                                         (let ((filename (bookmark-get-filename name)))
-                                           (and filename (file-exists-p filename))))
-                                       bookmark-names))
-           (chosen-bookmark (when bookmark-files (completing-read "Choose bookmark: " bookmark-files)))
-           (bookmark-path (and chosen-bookmark (bookmark-get-filename chosen-bookmark))))
-      (when bookmark-path
-        (delete-minibuffer-contents)
-        (insert bookmark-path))))
-
-  (defun bergheim/minibuffer-bookmarks ()
-    "List all file bookmarks and update the minibuffer to the selected one's file path."
-    (interactive)
-    (let* ((bookmark-names (bookmark-all-names))
-           (bookmark-dirs (seq-filter (lambda (name)
-                                        (let ((file (bookmark-prop-get (bookmark-get-bookmark name) 'filename)))
-                                          (and file (file-directory-p file))))
-                                      bookmark-names))
-           (chosen-bookmark (when bookmark-dirs (completing-read "Choose bookmark: " bookmark-dirs)))
-           (bookmark-path (and chosen-bookmark (bookmark-get-filename chosen-bookmark))))
-      (when bookmark-path
-        (delete-minibuffer-contents)
-        (insert bookmark-path))))
-  )
-
 ;; (define-key minibuffer-local-map (kbd "M-f") #'bergheim/minibuffer-bookmarks)
 ;; Minibuffer completion
 (use-package vertico
@@ -222,8 +175,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     "C-l" 'vertico-insert
     "C-M-j" 'vertico-next-group
     "C-M-k" 'vertico-previous-group
-    "C-S-H" 'helpful-key
-    "M-f"  #'bergheim/minibuffer-bookmarks)
+    "C-S-H" 'helpful-key)
 
   :config
   (setq vertico-sort-function #'vertico-sort-history-alpha
