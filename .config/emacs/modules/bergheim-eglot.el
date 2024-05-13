@@ -60,9 +60,6 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
 
   ;; ignore debug logging - should speed up LSP
   (fset #'jsonrpc--log-event #'ignore)
-  (put 'eglot-error 'flymake-overlay-control nil)
-  (put 'eglot-note 'flymake-overlay-control nil)
-  (put 'eglot-warning 'flymake-overlay-control nil)
   :custom
   (eglot-autoshutdown t)
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
@@ -71,6 +68,8 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (eglot-managed-mode . me/flymake-eslint-enable-maybe)
   (eglot-managed-mode . bergheim/eglot-capf)
   (web-mode . eglot-ensure)
+  (python-ts-mode . eglot-ensure)
+  (rust-ts-mode . eglot-ensure)
   (typescript-ts-base-mode . eglot-ensure)
 
   :general
