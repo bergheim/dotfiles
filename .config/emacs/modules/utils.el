@@ -90,6 +90,10 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
   :defer t
   :bind ("M-e" . er/expand-region))
 
+;; .csv parser
+(use-package pcsv)
+
+(use-package transient)
 
 (defun bergheim/call-with-universal-arg (fn)
   (lambda ()
