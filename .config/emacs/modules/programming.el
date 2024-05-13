@@ -26,6 +26,7 @@
   (setq treesit-font-lock-level 4))
 
 (use-package treesit-auto
+  :defer 10
   :config
   (setq treesit-auto-install 'prompt)
   (treesit-auto-add-to-auto-mode-alist)
@@ -126,7 +127,8 @@
   :hook ((markdown-mode . visual-line-mode)
          (markdown-mode . flyspell-mode))
   :init
-  (setq markdown-command "multimarkdown"))
+  ;; (setq markdown-command "pandoc -f markdown -t html")
+  (setq markdown-command "markdown"))
 
 (use-package web-mode
   ;; :mode (("\\.html\\'" . web-mode))
@@ -140,6 +142,10 @@
 (use-package typescript-ts-mode
   :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
+
+(use-package python-ts-mode
+  :ensure nil
+  :hook (python-mode . poetry-tracking-mode))
 
 (use-package ob-typescript
   :after org
@@ -170,5 +176,9 @@
     ;; Otherwise, for TypeScript, use the regular style
     (setq-local comment-start "// ")
     (setq-local comment-end "")))
+
+(use-package poetry)
+
+(use-package dape)
 
 ;;; programming.el ends here

@@ -112,12 +112,13 @@
 
       org-todo-keywords
       '((sequence "TODO(t)"
-         "INPROGRESS(i!)"
-         "NEXT(n)"
-         "WAITING(w@/!)"
-         "SOMEDAY(s!)"
-         "|" "DONE(d@)" "CANCELLED(c@/!)")
-        (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")))
+                  "INPROGRESS(i!)"
+                  "NEXT(n)"
+                  "WAITING(w@/!)"
+                  "SOMEDAY(s!)"
+                  "|" "DONE(d@)" "CANCELLED(c@/!)")
+        (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")
+        (sequence "DRAFT(d)" "POST(p)" "|" "PUBLISH(b)")))
 
 (add-to-list 'org-modules 'org-habit)
 

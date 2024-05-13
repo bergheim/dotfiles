@@ -34,7 +34,11 @@
       mu4e-hide-index-messages t
 
       mu4e-headers-include-related nil
-      mu4e-search-threads nil
+
+      ;; include threads in search results. we might not get the "correct"
+      ;; email from the thread anyway, as quotes and replies messes the matches
+      ;; up a bit and we only get one email from the thread if so
+      mu4e-search-threads t
       ;; mu4e-headers-sort-direction 'ascending
 
       ;; set up a more concise timestamp
@@ -54,7 +58,7 @@
       ;; show overview to left, email to the right
       mu4e-split-view 'horizontal
       mu4e-headers-visible-columns 110
-      mu4e-headers-visible-lines 8
+      mu4e-headers-visible-lines 10
 
       ;; SMTP stuff
       send-mail-function 'sendmail-send-it
