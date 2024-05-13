@@ -56,11 +56,11 @@
     "i" 'org-toggle-item
     "h" 'org-toggle-heading
     "q" 'org-set-tags-command
+    "s" '(:ignore t :which-key "Subtree")
     "sA" 'org-archive-subtree
     "sa" 'org-toggle-archive-tag
     "sb" 'org-tree-to-indirect-buffer
     "sc" 'org-clone-subtree-with-time-shift
-    "s" '(:ignore t :which-key "Subtree")
     "sn" 'org-narrow-to-subtree
     "sN" 'widen
     "so" 'org-sort
