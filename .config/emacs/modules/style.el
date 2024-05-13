@@ -225,6 +225,8 @@
         mouse-wheel-progressive-speed nil            ;; don't accelerate scrolling
         mouse-wheel-follow-mouse 't)                 ;; scroll window under mouse
 
+  (setq xterm-mouse-mode t) ;; allow mouse events in terminal
+
   (setq tab-bar-show t
         tab-bar-auto-width-min '(100 10)
         tab-bar-auto-width-max '(300 30)
@@ -318,27 +320,49 @@
 (use-package dashboard
   :after nerd-icons
   :demand
-  :config
+  :init
   (setq dashboard-items '((recents  . 5)
                           (bookmarks . 5)
-                          (projects . 5)
-                          ;; (agenda . 5)
-                          (registers . 5)))
-  (setq dashboard-banner-logo-title "NeoDOOOOOM")
+                          (projects . 5)))
+  (setq dashboard-banner-logo-title "NeoDOOM")
   (setq dashboard-startup-banner 'logo)
 
   ;; Content is not centered by default. To center, set
   (setq dashboard-center-content t)
 
   ;; (setq dashboard-show-shortcuts nil)
-  ;; (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  ;; (setq dashboard-icon-type 'nerd-icons)
-
+  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  (setq dashboard-icon-type 'nerd-icons) 
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
 
   (setq dashboard-set-init-info t)
   (setq dashboard-projects-backend 'project-el)
+
+  ;; I don't remember writing this
+  (defun get-random-file (directory)
+    (interactive)
+    (let* ((allowed-extensions '(".png" ".svg" ".jpg" ".gif"))
+           (filtered-files (directory-files directory t (regexp-opt allowed-extensions))))
+      (if filtered-files
+          (nth (random (length filtered-files)) filtered-files)
+        (progn
+          (message "Error: No supported files found in %s" directory)
+          nil))))
+
+  ;; Function to set a random picture as the startup banner
+  (defun set-random-startup-banner ()
+    (setq dashboard-startup-banner (get-random-file dashboard-banner-dir)))
+
+  ;; Set the directory containing the pictures
+  (setq dashboard-banner-dir "~/Downloads/HDZi/")
+
+  ;; Set a random picture as the startup banner initially
+  (set-random-startup-banner)
+  :config
+  ;; Advise dashboard-refresh-buffer to set a random picture each time it's called
+  (advice-add 'dashboard-refresh-buffer :after 'set-random-startup-banner)
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (dashboard-setup-startup-hook))
 
 (provide 'style)
