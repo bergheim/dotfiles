@@ -6,7 +6,7 @@
   :defer t
   ;; TODO: latest org does not work with org-habits etc so
   ;; use the internal one for now
-  :elpaca nil
+  :ensure nil
   :after general
 
   ;; LOL @this loading
@@ -70,7 +70,7 @@
 
 (use-package org-protocol
   :demand t
-  :elpaca nil)
+  :ensure nil)
 
 ;; see also https://github.com/akhramov/org-wild-notifier.el
 (use-package org-alert
@@ -180,7 +180,7 @@
 (use-package calfw-blocks
   :after calfw
   :demand t
-  :elpaca (:host github :repo "ml729/calfw-blocks")
+  :ensure (:host github :repo "ml729/calfw-blocks")
   :config
   (setq cfw:org-overwrite-default-keybinding t
         calfw-blocks-earliest-visible-time '(2 0)
@@ -188,7 +188,7 @@
 
 (use-package org-clock
   :ensure nil
-  :elpaca nil
+  :ensure nil
   :after org
   :commands (org-clock-drawer-name))
 

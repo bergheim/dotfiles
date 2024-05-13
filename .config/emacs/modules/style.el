@@ -153,7 +153,7 @@
 
 
 (use-package uniquify
-  :elpaca nil
+  :ensure nil
   :config
   (setq uniquify-buffer-name-style 'forward))
 
@@ -165,7 +165,7 @@
 ;;   :init (breadcrumb-mode))
 
 (use-package spacious-padding
-  :elpaca (:host github :repo "protesilaos/spacious-padding")
+  :ensure (:host github :repo "protesilaos/spacious-padding")
   :init (spacious-padding-mode)
   :config
   (setq spacious-padding-widths
@@ -195,7 +195,7 @@
     (scroll-bar-mode 1)))
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :custom
   (fill-column 79)
   (show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
@@ -307,10 +307,9 @@
 
 (use-package hl-todo
   :defer t
-  :elpaca (:depth nil))
+  :ensure (:depth nil))
 
 (use-package evil-goggles
-  :ensure t
   :after evil
   :demand t
   :config

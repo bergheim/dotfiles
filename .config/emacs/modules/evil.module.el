@@ -27,7 +27,6 @@
 
 ;; gl/gL text-object char
 (use-package evil-lion
-  :ensure t
   :after (evil general)
   :config
   (general-define-key

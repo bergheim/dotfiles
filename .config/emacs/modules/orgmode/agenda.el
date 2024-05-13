@@ -15,7 +15,7 @@
     "t" 'org-agenda-todo))
 
 (use-package org-agenda
-  :elpaca nil
+  :ensure nil
   :commands (org-agenda)
   :after org
   ;; overwrite whatever is overwriting the binds

@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 ;; save minibuffer history
 (use-package savehist
-  :elpaca nil
+  :ensure nil
   :demand t
   :config
   ;; .. a lot of it
@@ -22,7 +22,7 @@
   (kill-emacs . savehist-save))
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :config
   (setq-default indent-tabs-mode nil) ;; I have given up on tabs
   (setq window-resize-pixelwise t
@@ -48,7 +48,7 @@
   (super-save-mode +1))
 
 (use-package recentf
-  :elpaca nil
+  :ensure nil
   :demand t
   :config
   (setq recentf-max-menu-items 50)
@@ -60,7 +60,7 @@
   (recentf-mode t))
 
 (use-package saveplace
-  :elpaca nil
+  :ensure nil
   :demand t
   :config
   (setq save-place-forget-unreadable-files t)
@@ -171,7 +171,7 @@
   (elfeed-goodies/setup))
 
 (use-package minibuffer
-  :elpaca nil
+  :ensure nil
   :after general
   :config
   (general-define-key
@@ -184,7 +184,7 @@
   :defer t)
 
 (use-package tramp
-  :elpaca nil
+  :ensure nil
   :init
   (defun my--tramp-send-command--workaround-stty-icanon-bug (conn-vec orig-command &rest args)
     "See: https://github.com/magit/magit/issues/4720"
@@ -243,7 +243,7 @@
   :ensure t)
 
 (use-package flymake
-  :elpaca nil
+  :ensure nil
   :defer t
   :config
   (setq flymake-temporary-file-directory (bergheim/get-and-ensure-data-dir "flymake")))

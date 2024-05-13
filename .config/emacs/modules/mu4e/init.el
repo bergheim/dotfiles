@@ -11,8 +11,8 @@
      (mu4e-search-bookmark ,bookmark-string)))
 
 (use-package mu4e
-  :elpaca nil
   :commands (mu4e mu4e-compose-new mu4e-update-index)
+  :ensure nil
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
@@ -29,7 +29,7 @@
   (add-hook 'mu4e-view-mode-hook #'bergheim//mu4e-view-setup))
 
 (use-package mu4e-org
-  :elpaca nil
+  :ensure nil
   :after mu4e)
 
 (use-package org-msg

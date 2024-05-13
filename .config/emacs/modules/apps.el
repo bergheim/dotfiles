@@ -1,11 +1,11 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package eshell
-  :elpaca nil
+  :ensure nil
   :bind (("C-r" . consult-history)))
 
 (use-package shr
-  :elpaca nil
+  :ensure nil
   :custom
   ;; (toggle-truncate-lines 1)
   (shr-max-width 120))

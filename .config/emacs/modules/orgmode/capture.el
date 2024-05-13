@@ -21,7 +21,7 @@
       (concat "#+BEGIN_QUOTE\n" (s-trim selected-text) "\n#+END_QUOTE\n"))))
 
 (use-package org-capture
-  :elpaca nil
+  :ensure nil
   :after org
   :config
   (setq org-capture-templates

@@ -34,7 +34,7 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                      ))))
 
 (use-package eglot
-  :elpaca nil
+  ;; why not?
   :ensure nil
   :defer t
   :bind (("M-<mouse-1>" . eglot-find-implementation))

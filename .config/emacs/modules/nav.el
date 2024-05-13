@@ -20,7 +20,7 @@
          ("C-x C-j" . consult-dir-jump-file)))
 
 (use-package dired
-  :elpaca nil
+  :ensure nil
   :after general
   :init
   (defun bergheim//executables-in-path ()

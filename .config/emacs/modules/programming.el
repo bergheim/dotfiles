@@ -8,7 +8,7 @@
 ;; Modified: September 18, 2023
 
 (use-package ediff
-  :elpaca nil
+  :ensure nil
   :config
   (setq ediff-show-clashes-only t)
   ;; open diffs horizontally in the current frame
@@ -21,7 +21,7 @@
   (editorconfig-mode 1))
 
 (use-package treesit
-  :elpaca nil
+  :ensure nil
   :config
   (setq treesit-font-lock-level 4))
 
@@ -46,7 +46,7 @@
 ;; (electric-pair-mode t) ;; insert closing parens
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :after treesit
   :custom-face
   (typescript-ts-jsx-tag-face
@@ -97,7 +97,7 @@
 
 ;; used by vimish-fold
 (use-package hideshow
-  :elpaca nil
+  :ensure nil
   :hook (prog-mode . hs-minor-mode))
 
 (use-package smartparens
@@ -106,7 +106,7 @@
   (smartparens-global-mode t))
 
 (use-package emacs-lisp-mode
-  :elpaca nil
+  :ensure nil
   :after general
   :general
   (bergheim/localleader-keys
@@ -138,7 +138,7 @@
   (web-mode-enable-auto-quoting nil))
 
 (use-package typescript-ts-mode
-  :elpaca nil
+  :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
 
 (use-package ob-typescript

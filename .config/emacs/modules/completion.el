@@ -1,7 +1,7 @@
 ;;; completion.el --- Description -*- lexical-binding: t; -*-
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :config
   (setq enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
   (setq completion-cycle-threshold 1)                  ; TAB cycles candidates
@@ -141,7 +141,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; TODO: make sure this works on multiple implementations
 (use-package xref
-  :elpaca nil
+  :ensure nil
   :custom
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
@@ -213,7 +213,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;;   (mini-frame-mode))
 
 (use-package vertico-directory
-  :elpaca nil
+  :ensure nil
   :after vertico
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
@@ -260,7 +260,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Part of corfu
 (use-package corfu-popupinfo
-  :elpaca nil
+  :ensure nil
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode)
   :custom
@@ -276,7 +276,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (corfu-terminal-mode))
 
 (use-package dabbrev
-  :elpaca nil
+  :ensure nil
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand))
@@ -327,7 +327,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;;   (vertico-prescient-mode))
 
 (use-package org-block-capf
-  :elpaca (:host github :repo "xenodium/org-block-capf"))
+  :ensure (:host github :repo "xenodium/org-block-capf"))
 
 ;; Pretty icons for corfu
 (use-package kind-icon

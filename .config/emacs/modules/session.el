@@ -6,9 +6,9 @@
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package desktop
-  :elpaca nil
   :hook
   (elpaca-after-init . desktop-read)
+  :ensure nil
   ;; Auto-save and load without prompting.
   (desktop-after-read  . (lambda () (desktop-save-mode 1)))
 
