@@ -6,8 +6,9 @@
   :config
   ;; .. a lot of it
   (dolist (hist '(command-history
-                  evil-jumps-history
                   extended-command-history
+                  buffer-name-history
+                  evil-jumps-history
                   global-mark-ring
                   kill-ring
                   mark-ring
@@ -144,28 +145,26 @@
    "K" #'helpful-at-point))
 
 (use-package elfeed
-  :ensure t
   :commands elfeed
   :init
   (setq elfeed-db-directory (bergheim/get-and-ensure-data-dir "elfeed/db/")
-        elfeed-enclosure-default-dir (bergheim/get-and-ensure-data-dir "elfeed/enclosures/"))
-  :config
-  ;; (setq elfeed-search-filter "@2-week-ago ")
-  ;; elfeed-show-entry-switch #'pop-to-buffer
-  ;; elfeed-show-entry-delete #'+rss/delete-pane
-  ;; shr-max-image-proportion 0.8)
-  )
+        elfeed-enclosure-default-dir (bergheim/get-and-ensure-data-dir "elfeed/enclosures/")))
+
+;; from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
+(define-advice elfeed-search--header (:around (oldfun &rest args))
+  (if elfeed-db
+      (apply oldfun args)
+    "No database loaded yet"))
 
 (use-package elfeed-org
-  :ensure t
+  :demand
   :after elfeed
-  :preface
-  (setq rmh-elfeed-org-files (list "elfeed.org"))
+  :init
+  (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" org-directory)))
   :config
   (elfeed-org))
 
 (use-package elfeed-goodies
-  :ensure t
   :after elfeed
   :config
   (elfeed-goodies/setup))

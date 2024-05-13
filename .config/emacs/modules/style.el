@@ -180,7 +180,6 @@
 ;; display match info in the modeline
 ;; has some replace stuff as well, not sure how useful
 (use-package evil-anzu
-  :ensure t
   :after evil-collection
   :config
   (global-anzu-mode +1))
@@ -281,7 +280,7 @@
 ;; (display-time-mode)
 
 (use-package nerd-icons
-  :ensure t
+  :demand
   ;; :custom
   ;; The Nerd Font you want to use in GUI
   ;; "Symbols Nerd Font Mono" is the default and is recommended
@@ -297,7 +296,6 @@
 (use-package focus)
 
 (use-package writeroom-mode
-  :ensure t
   :config
   (setq writeroom-width 80)
   (setq writeroom-fullscreen-effect 'maximized)

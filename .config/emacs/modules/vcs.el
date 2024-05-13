@@ -4,7 +4,7 @@
 (use-package magit
   :ensure t
   :after diff-hl
-  :commands magit-status
+  :commands (magit magit-status magit--handle-bookmark)
   :hook
   (with-editor-mode        . evil-insert-state)
   (magit-post-refresh-hook . diff-hl-magit-post-refresh)
