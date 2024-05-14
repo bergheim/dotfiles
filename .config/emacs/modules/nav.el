@@ -116,7 +116,9 @@ With a universal argument, it allows entering the application to use."
    "S"   #'dirvish-fd-ask
    "TAB" #'dirvish-subtree-toggle
    "C-h" #'dirvish-history-go-backward
-   "C-l" #'dirvish-history-go-forward)
+   "C-l" #'dirvish-history-go-forward
+   "C-M-k" #'dirvish-emerge-previous-group
+   "C-M-j" #'dirvish-emerge-next-group)
 
   (bergheim/localleader-keys
     :keymaps 'dirvish-mode-map

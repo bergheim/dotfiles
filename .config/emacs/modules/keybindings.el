@@ -155,7 +155,7 @@
     "g" '(:ignore t :which-key "git")
     "g g" '(magit :which-key "magit")
     "g o" 'browse-at-remote
-    "g l" 'magit-log-buffer-file
+    "g l" `(,(bergheim/call-with-universal-arg #'magit-log-buffer-file) :which-key "Log buffer file")
     "g f" 'magit-find-file
     "g y" 'browse-at-remote-kill
     "g s" 'magit-stage-buffer-file
@@ -236,11 +236,14 @@
     "t" '(:ignore t :which-key "Toggle")
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
     "t i" '(berhgeim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
-    "t l" '(jinx-languages :which-key "Languages")
+    "t L" '(jinx-languages :which-key "Languages")
+    ;; toggle-truncate-lines?
+    "t l" '(visual-line-mode :which-key "Visual lines")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
     "t s" '(jinx-mode :which-key "Spelling")
     "t o" '(org-toggle-link-display :which-key "Org links")
     "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
+    "t s" '(window-toggle-side-windows :which-key "Sidewindows")
     "t w" '(bergheim/write-mode :which-key "Writer room")
     "t z" '(bergheim/present-mode :which-key "Present")
 
@@ -287,8 +290,8 @@
     "M-l" #'evil-window-right
 
     "M-H" #'evil-window-move-far-left
-    "M-J" #'evil-window-move-far-bottom
-    "M-K" #'evil-window-move-far-top
+    "M-J" #'evil-window-move-very-bottom
+    "M-K" #'evil-window-move-very-top
     "M-L" #'evil-window-move-far-right
 
     "M-\\" #'evil-window-vsplit

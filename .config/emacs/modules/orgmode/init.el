@@ -112,18 +112,18 @@
                (minutes (or (cadr parts) "00")))
           (format "%s:%02d" hours (string-to-number minutes))))))
 
-  (defun bergheim/format-scheduled-time (start end)
+  (cl-defun bergheim/format-scheduled-time (&key (start nil) (end nil) (date nil))
     "Format START and END time to return a proper org-mode timestamp."
-    (let* ((date (substring (cfw:org-capture-day) 0 11)) ; extract "<2024-01-25"
+    (let* ((date (or date (substring (cfw:org-capture-day) 1 11))) ; extract "2024-01-25"
            (end (or end
                     (when start
                       (format-time-string "%H:%M"
                                           (time-add (date-to-time (concat date " " start))
                                                     (seconds-to-time 3600))))))
-           (time (format " %s%s>" (or start "") (when end (concat "-" end)))))
+           (time (format " %s%s" (or start "") (when end (concat "-" end)))))
       (if start
           (concat date time)
-        (concat date ">"))))
+        date)))
 
   (defun bergheim/open-calendar ()
     (interactive)
@@ -137,7 +137,7 @@
   :custom
   (cfw:org-capture-template
    '("k" "Calendar capture" entry (file bergheim/calendar/nextcloud/local)
-     "* %^{Title}\n%(bergheim/format-scheduled-time (bergheim/ask-time \"Start Time: \") (bergheim/ask-time \"End Time: \"))\n\n%?"))
+     "* %^{Title}\n<%(bergheim/format-scheduled-time :start (bergheim/ask-time \"Start Time: \") :end (bergheim/ask-time \"End Time: \"))>\n\n%?"))
   :config
 
   (defun bergheim//caldav-sync-hook ()
@@ -309,4 +309,6 @@
   (org-indent-mode)
   (global-org-modern-mode))
 
+(use-package org-contrib
+  :after org)
 ;;; org.el ends here

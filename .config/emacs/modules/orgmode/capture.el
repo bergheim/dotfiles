@@ -56,6 +56,14 @@
                              :headline "Notes"
                              :template-file ,(expand-file-name "note.org" org-capture-custom-template-directory))
 
+                            ("Appointment"
+                             :icon ("nf-fa-calendar" :set "faicon" :color "green")
+                             :keys "a"
+                             :prepend nil
+                             :file bergheim/calendar/nextcloud/local
+                             :template-file ,(expand-file-name "appointment.org" org-capture-custom-template-directory)
+                             :after-finalize org-caldav-sync)
+
                             ("Meeting"
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"
