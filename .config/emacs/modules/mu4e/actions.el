@@ -81,7 +81,8 @@
 (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
 (add-to-list 'mu4e-headers-actions '("To" . bergheim/mu4e-search-to-address) t)
 
-(setq mu4e-view-actions (delete '("View in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
+;; (setq mu4e-view-actions (delete '("view in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
+(setq mu4e-view-actions (delete '("xview in xwidget" . mu4e-action-view-in-xwidget) mu4e-view-actions))
 (setq mu4e-view-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-view-actions))
 (setq mu4e-view-actions (delete '("capture message" . mu4e-action-capture-message) mu4e-view-actions))
 (add-to-list 'mu4e-view-actions '("adwim" . bergheim/mu4e-search-dwim) t)
