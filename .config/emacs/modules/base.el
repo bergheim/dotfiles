@@ -200,8 +200,15 @@
               #'my--tramp-send-command--workaround-stty-icanon-bug--filter-args)
   (setq tramp-pipe-stty-settings "")
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
-  ;; Use `ssh` by default instead of the default `scp`
-  (setq tramp-default-method "sshx")
+  (setq
+   ;; `ssh` should be quicker than the default `scp`
+   tramp-default-method "ssh"
+   ;; Disable version control to avoid delays:
+   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                vc-ignore-dir-regexp tramp-file-name-regexp)
+   tramp-copy-size-limit nil
+   tramp-completion-reread-directory-timeout t)
+  ;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='~/.ssh/sockets/tramp-%%r@%%h-%%p' -o ControlPersist=600")
 
   (add-to-list 'tramp-methods
                '("yadm"
