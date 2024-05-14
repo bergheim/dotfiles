@@ -18,31 +18,24 @@
 
 (defun bergheim/mu4e-search-from-domain-all (msg)
   "Quickly find all INBOX mails sent to or from this domain"
-  (bergheim/mu4e-search-from-domain msg t))
+  (bergheim/mu4e-search-from-domain msg nil))
 
-(defun bergheim/mu4e-search-from-address (msg &optional from-address)
-  "Quickly find all mails sent from the current address
+(defun bergheim/mu4e-search-from-address (msg &optional to-and-from-p)
+  "Quickly find all mails sent from the current address; include both to and
+from if TO-AND-FROM-P is non-nil. With \\[universal-argument], exclude mails in Trash."
 
-With \\[universal-argument], include emails to this address as well"
+  (let* ((from (plist-get (car (mu4e-message-field-at-point :from)) :email))
+         (msgid (mu4e-message-field msg :message-id))
+         (query (format "%s:%s AND %s"
+                        (if to-and-from-p "contact" "from")
+                        from
+                        (if current-prefix-arg "NOT maildir:/Trash/" "maildir:/Inbox/"))))
+    (mu4e-search query nil nil nil msgid (and (eq major-mode 'mu4e-view-mode)
+                                              (not (eq mu4e-split-view 'single-window))))))
 
-  (let ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
-        (msgid (mu4e-message-field msg :message-id))
-        (query-string "(from:%s"))
-
-    (when from-address
-      (setq email from-address))
-
-    (if current-prefix-arg
-        (setq query-string (concat query-string " OR to:%s"))
-      (setq query-string (concat "maildir:/Inbox/ AND " query-string " OR to:%s")))
-
-    (setq query-string (concat query-string ")"))
-
-    (mu4e-search
-     (format query-string email email)
-     nil nil nil
-     msgid (and (eq major-mode 'mu4e-view-mode)
-                (not (eq mu4e-split-view 'single-window))))))
+(defun bergheim/mu4e-search-from-address-all (msg)
+  "Find all emails sent to or from this address"
+  (bergheim/mu4e-search-from-address msg t))
 
 (defun bergheim/mu4e-search-from-name (msg)
   "Quickly find all mails sent from the current name.
@@ -54,10 +47,10 @@ With \\[universal-argument], include emails to this name as well"
 
   (let ((name (plist-get (car (mu4e-message-field-at-point :from)) :name))
         (msgid (mu4e-message-field msg :message-id))
-        (query-string "NOT maildir:/Trash/ AND from:%s"))
+        (query-string "from:%s AND maildir:/Inbox/"))
 
     (when current-prefix-arg
-      (setq query-string "NOT maildir:/Trash/ AND contact:%s"))
+      (setq query-string "from:%s AND NOT maildir:/Trash/"))
 
     (setq name (bergheim/mu4e--clean-string-for-mu name))
 
@@ -74,7 +67,7 @@ With \\[universal-argument], include emails to this name as well"
   (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
          (msgid (mu4e-message-field msg :message-id))
          (domain (bergheim/utils--get-domain email))
-         (query-string "(from:/.*%s$/ or to:/.*%s$/)")
+         (query-string "contact:/.*%s$/")
          (maildir-filter)
          ;; always sort descending as there might be thousands of emails
          (mu4e-headers-sort-field :date)
@@ -88,10 +81,10 @@ With \\[universal-argument], include emails to this name as well"
         (setq maildir-filter "NOT maildir:/Trash/")
       (setq maildir-filter "maildir:/Inbox/"))
 
-    (setq query-string (concat maildir-filter " AND " query-string))
+    (setq query-string (concat query-string " AND " maildir-filter))
 
     (mu4e-search
-     (format query-string domain domain)
+     (format query-string domain)
      nil nil nil
      msgid (and (eq major-mode 'mu4e-view-mode)
                 (not (eq mu4e-split-view 'single-window))))))
@@ -213,8 +206,29 @@ Includes BCC emails, but does not include CC, because that point just use from:a
          (my-email (bergheim/mu4e--addressed-to-me))
          (query-string (format "(from:%s AND (%s)" from my-email)))
 
-    (unless current-prefix-arg
-      (setq query-string (concat "NOT maildir:/Trash/ AND " query-string)))
+    (if current-prefix-arg
+        (setq query-string (concat query-string " AND NOT maildir:/Trash/"))
+      (setq query-string (concat query-string " AND maildir:/Inbox/")))
+
+    (mu4e-search
+     query-string
+     nil nil nil
+     msgid (and (eq major-mode 'mu4e-view-mode)
+                (not (eq mu4e-split-view 'single-window))))))
+
+;; TODO: merge this and search-to-me
+(defun bergheim/mu4e-search-to-address (msg)
+  "Quickly find all mails sent to the current address
+
+With \\[universal-argument], include emails from this address as well"
+
+  (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
+         (msgid (mu4e-message-field msg :message-id))
+         (query-string (format "to:%s" email)))
+
+    (if current-prefix-arg
+        (setq query-string (concat query-string " AND NOT maildir:/Trash/"))
+      (setq query-string (concat query-string " AND maildir:/Inbox/")))
 
     (mu4e-search
      query-string

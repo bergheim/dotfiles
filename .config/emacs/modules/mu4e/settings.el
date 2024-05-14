@@ -11,6 +11,7 @@
 
       mu4e-get-mail-command "sync-mail"
       mu4e-attachment-dir "~/Downloads/email"
+      mu4e-org-contacts-file (expand-file-name "contacts.org" org-directory)
       mu4e-confirm-quit nil
 
       ;; this fixes some sync issues with mbsync and office365

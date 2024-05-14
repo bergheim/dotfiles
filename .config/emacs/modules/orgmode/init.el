@@ -222,13 +222,12 @@
   :hook
   (org-mode . org-sticky-header-mode))
 
-;; TODO do I really use this
 (use-package org-contacts
-  :ensure t
   :after org
+  :demand
   :commands (org-contacts-anniversaries)
   :init
-  (setq org-contacts-files '("~/org/contacts.org")))
+  (setq org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
 
 (use-package org-journal
   :ensure t
