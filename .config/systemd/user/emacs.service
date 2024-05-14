@@ -6,7 +6,7 @@ Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
 # Type=notify
 Type=simple
 Environment=NODE_VERSION=default
-ExecStart=emacs --fg-daemon
+ExecStart=%h/local/bin/emacs-daemon-start
 ExecStop=emacsclient --eval "(kill-emacs)"
 
 # Emacs will exit with status 15 after having received SIGTERM, which
