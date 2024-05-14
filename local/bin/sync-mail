@@ -6,9 +6,9 @@ MAIL_SYNC_FILE="$MAIL_DIR/.lastsync"
 # todo < /dev/null this
 if [ -z "$1" ]; then
     # xoauth2 generates these annoying debug outputs
-    parallel "mbsync {}" ::: "glvortex-inbox" "gmail-inbox" "neptune-inbox" 2>&1 > /dev/null
+    parallel "mbsync {}" ::: "glvortex-inbox" "gmail-inbox" "neptune-inbox" 2>&1 >/dev/null
 else
-    parallel "mbsync {}" ::: "glvortex" "gmail" "neptune" > /dev/null 2>&1 > /dev/null
+    parallel "mbsync {}" ::: "glvortex" "gmail" "neptune" >/dev/null 2>&1 >/dev/null
 fi
 
 # something like this would work if we could index mu behind the scenes. but if
