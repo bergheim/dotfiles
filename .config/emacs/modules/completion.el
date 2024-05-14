@@ -87,7 +87,6 @@
 
 ;; lots of more filtering options for completing-read
 (use-package consult
-  :after vertico
   :demand
   ;; Other good things to bind: consult-ripgrep, consult-line-multi,
   ;; consult-history, consult-outline
@@ -111,6 +110,29 @@
   :config
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<")
+
+  (with-eval-after-load 'consult-xref
+    ;; nicked from https://github.com/minad/consult/issues/1015#issuecomment-2107283203
+    (el-patch-defun consult-xref--candidates ()
+                    "Return xref candidate list."
+                    (let ((root (consult--project-root)))
+                      (mapcar (lambda (xref)
+                                (let* ((loc (xref-item-location xref))
+                                       (group (el-patch-swap (if (fboundp 'xref--group-name-for-display) ;;  <----- patch here
+                                                                 ;; This function is available in xref 1.3.2
+                                                                 (xref--group-name-for-display
+                                                                  (xref-location-group loc) root)
+                                                               (xref-location-group loc))
+                                                             (xref-location-group loc)))
+                                       (cand (consult--format-file-line-match
+                                              group
+                                              (or (xref-location-line loc) 0)
+                                              (xref-item-summary xref))))
+                                  (add-text-properties
+                                   0 1 `(consult-xref ,xref consult--prefix-group ,group) cand)
+                                  cand))
+                              (funcall consult-xref--fetcher)))))
+
   :general
   (:keymaps 'vertico-map
    "C-SPC" #'consult-toggle-preview))
@@ -140,9 +162,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
       (consult-project-buffer)
     (consult-buffer)))
 
-;; TODO: make sure this works on multiple implementations
 (use-package xref
-  :ensure nil
   :custom
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))

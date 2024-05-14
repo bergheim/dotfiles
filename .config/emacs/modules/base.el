@@ -70,6 +70,8 @@
   ;; FIXME: migrate this to elpaca. see https://github.com/progfolio/elpaca
   (after-init . save-place-mode))
 
+(use-package el-patch)
+
 (use-package which-key
   :demand t
   :custom
