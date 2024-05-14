@@ -10,10 +10,10 @@ if test -e "$FORECAST_FILE"; then
 else
     IF_MOD_HEADER=""
 fi
-curl --silent --header "${IF_MOD_HEADER}" "${FORECAST_URL}" --output "${FORECAST_FILE}"
+curl --fail --silent --header "${IF_MOD_HEADER}" "${FORECAST_URL}" --output "${FORECAST_FILE}"
 
-TEMPERATURE=$(jq ".properties.timeseries[0] | .data.instant.details.air_temperature" < $FORECAST_FILE)
-INDICATOR=$(jq ".properties.timeseries[0] | .data.next_1_hours.summary.symbol_code" < $FORECAST_FILE)
+TEMPERATURE=$(jq ".properties.timeseries[0] | .data.instant.details.air_temperature" <$FORECAST_FILE)
+INDICATOR=$(jq ".properties.timeseries[0] | .data.next_1_hours.summary.symbol_code" <$FORECAST_FILE)
 
 TEMPERATURE=$(sed -e 's/^"//' -e 's/"$//' <<<"$TEMPERATURE")
 INDICATOR=$(sed -e 's/^"//' -e 's/"$//' <<<"$INDICATOR")
@@ -107,4 +107,9 @@ ICON_MAP=(
 )
 
 TEXT=$(sed -e 's/^"//' -e 's/"$//' <<<"$TEXT")
-echo -e "${ICON_MAP[$INDICATOR]} ${INDICATOR//_/ } $TEMPERATURE℃";
+
+if [[ -v ICON_MAP[$INDICATOR] ]]; then
+    echo -e "${ICON_MAP[$INDICATOR]} ${INDICATOR//_/ } $TEMPERATURE℃"
+else
+    echo -e "${INDICATOR//_/ } $TEMPERATURE℃"
+fi
