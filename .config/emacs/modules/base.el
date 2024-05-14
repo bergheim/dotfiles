@@ -157,17 +157,18 @@
     "No database loaded yet"))
 
 (use-package elfeed-org
-  :demand
   :after elfeed
+  :demand
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" org-directory)))
   :config
   (elfeed-org))
 
-(use-package elfeed-goodies
-  :after elfeed
-  :config
-  (elfeed-goodies/setup))
+;; (use-package elfeed-goodies
+;;   :after elfeed
+;;   :demand
+;;   :config
+;;   (elfeed-goodies/setup))
 
 (use-package minibuffer
   :ensure nil

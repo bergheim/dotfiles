@@ -4,6 +4,9 @@
   :ensure nil
   :bind (("C-r" . consult-history)))
 
+(use-package eat
+  :commands eat)
+
 (use-package shr
   :ensure nil
   :custom
@@ -26,6 +29,16 @@
   (denote-known-keywords '("emacs" "journal"))
   ;; This is the directory where your notes live.
   (denote-directory (expand-file-name "~/denote/"))
+  :config
+  (with-eval-after-load 'org-capture
+    (add-to-list 'org-capture-templates
+                 '("n" "New note (with Denote)" plain
+                   (file denote-last-path)
+                   #'denote-org-capture
+                   :no-save t
+                   :immediate-finish nil
+                   :kill-buffer t
+                   :jump-to-captured t)))
   :bind
   (("C-c n n" . denote)
    ("C-c n f" . denote-open-or-create)

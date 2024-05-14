@@ -46,8 +46,10 @@
   :init
   (setq evil-want-keybinding nil)
   (setq evil-want-integration t)
+  (setq evil-want-C-i-jump t) ;; C-i/C-o back and forth
   (setq evil-undo-system 'undo-tree)
   ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
+  ;; (setq evil-respect-visual-line-mode t)
   :config
   (setq evil-want-fine-undo t)
   (setq evil-want-C-u-scroll t)

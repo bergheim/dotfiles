@@ -28,6 +28,7 @@
 ;; gl/gL text-object char
 (use-package evil-lion
   :after (evil general)
+  :demand 10
   :config
   (general-define-key
    :states '(normal visual)

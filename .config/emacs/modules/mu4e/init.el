@@ -11,8 +11,8 @@
      (mu4e-search-bookmark ,bookmark-string)))
 
 (use-package mu4e
-  :commands (mu4e mu4e-compose-new mu4e-update-index)
   :ensure nil
+  :commands (mu4e mu4e-compose-new mu4e-update-index mu4e--jump-to-bookmark)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
