@@ -46,15 +46,31 @@
     (delete-other-windows)))
 
 (use-package bufler
-  :ensure t
   :config
-  (bufler-mode))
+  (bufler-mode)
+  :general
+  (:keymaps 'bufler-list-mode-map
+   :states '(normal visual)
+   "C-j" (lambda ()
+           (interactive)
+           (forward-line)
+           (bufler-list-buffer-peek))
+   "C-k" (lambda ()
+           (interactive)
+           (forward-line -1)
+           (bufler-list-buffer-peek))))
 
 (use-package burly
-  :ensure t
   :config
   (burly-tabs-mode 1))
 
+(use-package activities
+  :demand
+  :ensure (:host github :repo "alphapapa/activities.el")
+  :config
+  ;; Automatically save activities' states when Emacs is idle and upon exit.
+  (activities-mode)
+  (activities-tabs-mode))
 (use-package project
   :ensure nil
   :demand t
