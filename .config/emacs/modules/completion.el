@@ -149,6 +149,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
                    (buffer-substring-no-properties (region-beginning) (region-end)))))
     (consult-ripgrep (or dir (consult--project-root)) initial)))
 
+(defun bergheim/consult-ripgrep-with-selection-current-dir ()
+  "Run `consult-ripgrep' with the current visual selection as the initial input from current directory."
+  (interactive)
+  (bergheim/consult-ripgrep-with-selection "."))
+
 (defun bergheim/consult-ripgrep-with-selection-other-dir ()
   "Invoke `bergheim/consult-ripgrep-with-selection` with a chosen directory."
   (interactive)

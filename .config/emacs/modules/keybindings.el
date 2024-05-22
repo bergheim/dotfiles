@@ -123,6 +123,7 @@
     "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
             :which-key "switch to scratch")
     "bm" '(bookmark-set :which-key "Bookmark set")
+    "be" '(bookmark-bmenu-list :which-key "Bookmark edit")
     "bj" '(bookmark-jump :which-key "Bookmark jump")
     "bu" '(undo-tree-visualize :which-key "Undo tree")
 
@@ -137,6 +138,8 @@
     "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Magit")
     "df" '(bergheim/find-in-dotfiles :which-key "Find a file")
     "db" '(bergheim/browse-dotfiles :which-key "Browse")
+    "de" '((lambda () (interactive) (consult-ripgrep "~/.config/emacs")) :which-key "Grep emacs")
+    "dg" '((lambda () (interactive) (consult-ripgrep "~/.config/")) :which-key "Grep config")
 
     "f" '(:ignore t :which-key "Files")
     "fb" '(dirvish :which-key "Browse")
@@ -213,7 +216,7 @@
     "s" '(:ignore t :which-key "Search")
     "sa" '(consult-org-agenda :which-key "org agenda")
     "sb" '(consult-line-multi :which-key "open buffers")
-    "sd" '((lambda () (interactive) (bergheim/consult-ripgrep-with-selection ".")) :which-key "Current directory")
+    "sd" '(bergheim/consult-ripgrep-with-selection-current-dir :which-key "Current directory")
     "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
     "sA" '(affe-grep :which-key "Async grep")
     
