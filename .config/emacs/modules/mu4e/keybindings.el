@@ -3,6 +3,7 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (defun bergheim//mu4e-headers-setup ()
+  (setq-local display-line-numbers nil)
   (general-define-key
    :keymaps 'mu4e-headers-mode-map
    :states 'normal
@@ -16,10 +17,12 @@
    "T"     #'mu4e-headers-mark-thread))
 
 (defun bergheim//mu4e-view-setup ()
+  (setq-local display-line-numbers nil)
+  (message-goto-body)
   (general-define-key
    :keymaps 'mu4e-view-mode-map
    :states 'normal
-   "A"     #'+mu4e-view-select-mime-part-action
+   "A"     #'mu4e-view-mime-part-action
    ;; "C-h"   #'mu4e-search-prev
    ;; "C-l"   #'mu4e-search-next
    "C-S-h" #'helpful-key
