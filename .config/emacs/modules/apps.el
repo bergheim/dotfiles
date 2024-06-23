@@ -5,7 +5,9 @@
   :bind (("C-r" . consult-history)))
 
 (use-package eat
-  :commands eat)
+  :commands eat
+  :config
+  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
 
 (use-package shr
   :ensure nil
