@@ -50,16 +50,16 @@
       mu4e-headers-fields '((:account      .  8)
                             (:human-date   . 14)
                             (:flags        .  6)
-                            (:shortened-maildir     .  10)
+                            (:shortened-maildir     .  8)
                             ;; TODO: find a way to toggle this - it is sometimes useful
                             ;; (:mailing-list . 10)
-                            (:from         . 25)
+                            (:from         . 20)
                             (:subject))
 
       ;; show overview to left, email to the right
       mu4e-split-view 'horizontal
       mu4e-headers-visible-columns 110
-      mu4e-headers-visible-lines 10
+      mu4e-headers-visible-lines 8
 
       ;; SMTP stuff
       send-mail-function 'sendmail-send-it
