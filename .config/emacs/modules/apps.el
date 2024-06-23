@@ -57,6 +57,65 @@
     "ysp" '(0x0-popup :which-key "Text")
     "ysf" '(0x0-upload-file :which-key "File")))
 
+(use-package elfeed
+  :after general
+  :commands elfeed
+  :init
+  (setq elfeed-db-directory (bergheim/get-and-ensure-data-dir "elfeed/db/")
+        elfeed-enclosure-default-dir (bergheim/get-and-ensure-data-dir "elfeed/enclosures/"))
+
+  :hook
+  (elfeed-search . (lambda () (setq-local display-line-numbers nil)))
+  (elfeed-show . (lambda () (setq-local display-line-numbers nil)))
+
+  :general
+  (:keymaps 'elfeed-search-mode-map
+   :states 'normal
+   "d" #'bergheim/elfeed-by-domain
+   "C" #'bergheim/elfeed-by-domain)
+
+  :config
+  (defun bergheim/elfeed-by-domain ()
+    "Filter Elfeed search results to show only entries from the domain of the currently selected feed."
+    (interactive)
+    (let* ((entry (or (elfeed-search-selected :single)
+                      (user-error "No entry selected")))
+           (feed (elfeed-entry-feed entry))
+           (feed-url (elfeed-feed-url feed))
+           (url-host (when feed-url
+                       (url-host (url-generic-parse-url feed-url)))))
+      (unless url-host
+        (user-error "Unable to determine feed's domain"))
+      (elfeed-search-set-filter (format "=%s" url-host))))
+
+  (defhydra bergheim/hydra-elfeed (:foreign-keys run)
+    "filter"
+    ("a" (elfeed-search-set-filter "@6-months-ago")            "All")
+    ("d" (elfeed-search-set-filter "@6-months-ago +dev")       "Development")
+    ("e" (elfeed-search-set-filter "@6-months-ago +emacs")     "Emacs")
+    ("*" (elfeed-search-set-filter "@6-months-ago +star")      "Starred")
+    ("r" (elfeed-search-set-filter "@6-months-ago -unread")      "Read")
+    ("u" (elfeed-search-set-filter "@6-months-ago +unread")      "Unread")
+    ;; ("m" (bergheim/elfeed-toggle-starred)                                    "Star")
+    ("m" (lambda () (interactive) (elfeed-search-toggle-all 'star))                                    "Star")
+    ("t" (elfeed-search-set-filter "@1-day-ago")               "Today")
+    ("q" nil                                                   "quit" :color blue))
+
+  ;; (transient-define-prefix bergheim/elfeed-transient ()
+  ;;   "Elfeed Transient"
+  ;;   ["Elfeed Filters"
+  ;;    ("e" "emacs"       (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +emacs")) :transient t)
+  ;;    ("d" "dev"   (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +dev")))
+  ;;    ("*" "Starred"     (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +star")))
+  ;;    ;; ("M" "Mark"        elfeed-toggle-star)
+  ;;    ("a" "All"         (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago")))
+  ;;    ("t" "Today"       (lambda () (interactive) (elfeed-search-set-filter "@1-day-ago")))
+  ;;    ["General"
+  ;;     ;; ("Q" "Quit Elfeed" bjm/elfeed-save-db-and-bury)
+  ;;     ;; ("q" "quit" nil)
+  ;;     ]]
+  ;;   )
+  )
 (use-package smudge
   :custom
   (smudge-oauth2-client-secret bergheim/spotify/client-secret)

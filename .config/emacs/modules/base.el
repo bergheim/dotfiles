@@ -147,12 +147,6 @@
   (:states 'normal
    "K" #'helpful-at-point))
 
-(use-package elfeed
-  :commands elfeed
-  :init
-  (setq elfeed-db-directory (bergheim/get-and-ensure-data-dir "elfeed/db/")
-        elfeed-enclosure-default-dir (bergheim/get-and-ensure-data-dir "elfeed/enclosures/")))
-
 ;; from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
 (define-advice elfeed-search--header (:around (oldfun &rest args))
   (if elfeed-db
