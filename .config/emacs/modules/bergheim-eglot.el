@@ -57,6 +57,9 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
        :includeInlayPRopertyDeclarationTypeHints t
        :includeInlayVariableTypeHints t
        :includeInlayVariableTypeHintsWhenTypeMatchesName t))))
+  (add-to-list
+   'eglot-server-programs
+   '((elixir-mode elixir-ts-mode) "/usr/lib/elixir-ls/language_server.sh"))
 
   ;; ignore debug logging - should speed up LSP
   (fset #'jsonrpc--log-event #'ignore)
@@ -70,6 +73,7 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (web-mode . eglot-ensure)
   (python-ts-mode . eglot-ensure)
   (rust-ts-mode . eglot-ensure)
+  (elixir-ts-mode . eglot-ensure)
   (typescript-ts-base-mode . eglot-ensure)
 
   :general
