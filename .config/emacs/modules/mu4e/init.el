@@ -33,7 +33,8 @@
   :after mu4e)
 
 (use-package org-msg
-  :ensure t
+  ;; TODO temp fix while waiting on https://github.com/jeremy-compostella/org-msg/issues/182 to close
+  :ensure (:host github :repo "danielfleischer/org-msg" :branch "1.12")
   :after (org mu4e)
   :hook ((mu4e-compose-pre . org-msg-mode))
   :init
@@ -49,3 +50,7 @@
                                        (reply-to-text . (text)))
         ;; turn > into org quote blocks
         org-msg-convert-citation t))
+
+(use-package gnus-dired
+  :hook
+  (dired-mode . turn-on-gnus-dired-mode))
