@@ -45,6 +45,8 @@
   :demand t
   :init
   (setq evil-want-keybinding nil)
+  ;; use emacs bindings in insert-mode
+  (setq evil-disable-insert-state-bindings t)
   (setq evil-want-integration t)
   (setq evil-want-C-i-jump t) ;; C-i/C-o back and forth
   (setq evil-undo-system 'undo-tree)
