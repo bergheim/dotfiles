@@ -12,7 +12,7 @@
 
 (use-package mu4e
   :ensure nil
-  :commands (mu4e mu4e-compose-new mu4e-update-index mu4e--jump-to-bookmark)
+  :commands (mu4e mu4e-compose-new mu4e-update-index mu4e--jump-to-bookmark mu4e--server-filter)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config

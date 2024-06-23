@@ -33,11 +33,11 @@
 (defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
 (defvar bergheim/font-size-small 100 "Font size for small displays.")
 (defvar bergheim/font-size-medium 130 "Font size for medium displays.")
-(defvar bergheim/font-size-large 200 "Font size for large displays.")
+(defvar bergheim/font-size-large 180 "Font size for large displays.")
 (defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
 (defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
 (defvar bergheim/line-spacing-large 0.8 "Line spacing for large displays.")
-(defvar bergheim/screen-margin 400 "Margin to subtract from screen height.")
+(defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
 
 (custom-set-faces '(line-number-current-line ((t :weight bold))))
 
@@ -209,6 +209,11 @@
   ;; Enable horizontal scrolling
   (mouse-wheel-tilt-scroll t)
   (mouse-wheel-flip-direction t)
+
+  ;; always split vertically
+  (split-width-threshold 160)
+  (split-height-threshold 80)
+
   :config
   (setq scroll-step 1
         scroll-conservatively 10
@@ -313,6 +318,13 @@
   :config
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))
+
+;; dim the other windows
+(use-package dimmer
+  :custom
+  (dimmer-adjustment-mode :foreground)
+  :config
+  (dimmer-mode))
 
 (use-package dashboard
   :after nerd-icons
