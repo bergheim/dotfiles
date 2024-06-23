@@ -33,7 +33,8 @@
         ;; I _think_ this should be something else (ie the cache directory)
         backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
         ;; TODO I am seeing `#FILE#' in folders - see if this removes them
-        auto-save-file-name-transforms `((".*" ,bergheim/cache-dir t))
+        auto-save-file-name-transforms `((".*" ,(concat bergheim/cache-dir "auto-save-list/") t))
+        lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat bergheim/cache-dir "lock/" "\\1") t))
         custom-file (expand-file-name "custom.el" bergheim/config-dir)
 
         ;; updated things like dired buffers as well (tnx summer)
