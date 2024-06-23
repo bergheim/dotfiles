@@ -21,7 +21,7 @@
                 (mu4e-sent-folder   . "/glvortex/Sent")
                 (mu4e-trash-folder  . "/glvortex/Trash")
                 (mu4e-drafts-folder . "/glvortex/Drafts")
-                (mu4e-refile-folder . "/glvortex/Archive")
+                (mu4e-refile-folder . bergheim/mu4e-refile-mail)
                 (mu4e-spam-folder   . "/glvortex/Spam")
 
                 (mu4e-maildir-shortcuts  . (("/glvortex/Inbox"   . ?i)
@@ -46,7 +46,7 @@
                 (mu4e-sent-folder   . "/gmail/Sent")
                 (mu4e-trash-folder  . "/gmail/Trash")
                 (mu4e-drafts-folder . "/gmail/Drafts")
-                (mu4e-refile-folder . "/gmail/Archive")
+                (mu4e-refile-folder . bergheim/mu4e-refile-mail)
                 (mu4e-spam-folder   . "/gmail/Spam")
 
                 (mu4e-maildir-shortcuts  . (("/gmail/Inbox"  . ?i)
@@ -71,7 +71,7 @@
                 (mu4e-sent-folder   . "/ntnu/Sent")
                 (mu4e-trash-folder  . "/ntnu/Trash")
                 (mu4e-drafts-folder . "/ntnu/Drafts")
-                (mu4e-refile-folder . "/ntnu/Archive")
+                (mu4e-refile-folder . bergheim/mu4e-refile-mail)
                 (mu4e-spam-folder   . "/ntnu/Spam")
 
                 (mu4e-maildir-shortcuts  . (("/ntnu/Inbox"  . ?i)
@@ -95,7 +95,7 @@
                 (mu4e-sent-folder   . "/neptune/Sent")
                 (mu4e-trash-folder  . "/neptune/Trash")
                 (mu4e-drafts-folder . "/neptune/Drafts")
-                (mu4e-refile-folder . "/neptune/Archive")
+                (mu4e-refile-folder . bergheim/mu4e-refile-mail)
                 (mu4e-spam-folder   . "/neptune/Spam")
 
                 (mu4e-maildir-shortcuts  . (("/neptune/Inbox"   . ?i)

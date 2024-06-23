@@ -32,6 +32,16 @@
       (mu4e-headers-mark-for-spam)
     (mu4e-view-mark-for-spam)))
 
+(defun bergheim/mu4e-refile-mail (msg)
+  (let* ((maildir (mu4e-message-field msg :maildir))
+         (account (cl-second (split-string maildir "/"))))
+    (pcase maildir
+      ((pred (lambda (s) (string-suffix-p "/Sent" s)))
+       (concat "/" account "/Sent"))
+      ((pred (lambda (s) (string-suffix-p "/Archive" s)))
+       (concat "/" account "/Archive"))
+      (_ (concat "/" account "/Archive")))))
+
 ;; TODO: see if this works when sending works again
 ;; message-id is apparently not generated on the server..? which sounds strange
 ;; (add-hook 'message-send-mail-hook (lambda () (message "hello") (org-store-link nil)))
