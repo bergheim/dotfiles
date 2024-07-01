@@ -18,7 +18,16 @@ require("lazy").setup({
         -- import your plugins
         { import = "plugins" },
         "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
+        {
+            "nvim-telescope/telescope-file-browser.nvim",
+            dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+            config = function()
+                -- open file_browser with the path of the current buffer
+                vim.keymap.set("n", "<space>ff", ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
+            end,
+        },
         { "numToStr/Comment.nvim", opts = {} },
+        { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
         -- Here is a more advanced example where we pass configuration
         -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
         --    require('gitsigns').setup({ ... })
@@ -75,6 +84,192 @@ require("lazy").setup({
             end,
         },
 
+        {
+            "laytan/tailwind-sorter.nvim",
+            dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-lua/plenary.nvim" },
+            build = "cd formatter && npm ci && npm run build",
+            config = true,
+            config = function()
+                require("tailwind-sorter").setup({
+                    on_save_enabled = true,
+                })
+            end,
+        },
+
+        -- {
+        --    "hrsh7th/nvim-cmp",
+        --    dependencies = {
+        --       -- install different completion source
+        --       "hrsh7th/cmp-nvim-lsp",
+        --       "hrsh7th/cmp-buffer",
+        --       "hrsh7th/cmp-path",
+        --    },
+        --    config = function()
+        --       local cmp = require("cmp")
+        --       cmp.setup({
+        --             -- add different completion source
+        --             sources = cmp.config.sources({
+        --                   { name = "nvim_lsp" },
+        --                   { name = "buffer" },
+        --                   { name = "path" },
+        --             }),
+        --             -- using default mapping preset
+        --             mapping = cmp.mapping.preset.insert({
+        --                   ["<C-Space>"] = cmp.mapping.complete(),
+        --                   ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        --             }),
+        --             snippet = {
+        --                -- you must specify a snippet engine
+        --                expand = function(args)
+        --                   -- using neovim v0.10 native snippet feature
+        --                   -- you can also use other snippet engines
+        --                   vim.snippet.expand(args.body)
+        --                end,
+        --             },
+        --       })
+        --    end,
+        -- },
+
+        { -- Autocompletion
+            "hrsh7th/nvim-cmp",
+            event = "InsertEnter",
+            dependencies = {
+                -- Snippet Engine & its associated nvim-cmp source
+                {
+                    "L3MON4D3/LuaSnip",
+                    build = (function()
+                        -- Build Step is needed for regex support in snippets.
+                        -- This step is not supported in many windows environments.
+                        -- Remove the below condition to re-enable on windows.
+                        if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
+                            return
+                        end
+                        return "make install_jsregexp"
+                    end)(),
+                    dependencies = {
+                        -- `friendly-snippets` contains a variety of premade snippets.
+                        --    See the README about individual language/framework/plugin snippets:
+                        --    https://github.com/rafamadriz/friendly-snippets
+                        -- {
+                        --   'rafamadriz/friendly-snippets',
+                        --   config = function()
+                        --     require('luasnip.loaders.from_vscode').lazy_load()
+                        --   end,
+                        -- },
+                    },
+                },
+                "saadparwaiz1/cmp_luasnip",
+
+                -- Adds other completion capabilities.
+                --  nvim-cmp does not ship with all sources by default. They are split
+                --  into multiple repos for maintenance purposes.
+                "hrsh7th/cmp-nvim-lsp",
+                "hrsh7th/cmp-buffer",
+                "hrsh7th/cmp-path",
+            },
+            config = function()
+                -- See `:help cmp`
+                local cmp = require("cmp")
+                local luasnip = require("luasnip")
+                luasnip.config.setup({})
+
+                cmp.setup({
+                    snippet = {
+                        expand = function(args)
+                            luasnip.lsp_expand(args.body)
+                            -- using neovim v0.10 native snippet feature
+                            -- you can also use other snippet engines
+                            -- vim.snippet.expand(args.body)
+                        end,
+                    },
+                    completion = { completeopt = "menu,menuone,noinsert" },
+
+                    -- For an understanding of why these mappings were
+                    -- chosen, you will need to read `:help ins-completion`
+                    --
+                    -- No, but seriously. Please read `:help ins-completion`, it is really good!
+                    mapping = cmp.mapping.preset.insert({
+                        ["<C-n>"] = cmp.mapping.select_next_item(),
+                        ["<C-p>"] = cmp.mapping.select_prev_item(),
+                        ["<C-j>"] = cmp.mapping.select_next_item(),
+                        ["<C-k>"] = cmp.mapping.select_prev_item(),
+
+                        -- Scroll the documentation window [b]ack / [f]orward
+                        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+                        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+
+                        -- Accept ([y]es) the completion.
+                        --  This will auto-import if your LSP supports it.
+                        --  This will expand snippets if the LSP sent a snippet.
+                        -- ['<C-y>'] = cmp.mapping.confirm { select = true },
+
+                        -- If you prefer more traditional completion keymaps,
+                        -- you can uncomment the following lines
+                        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                        --['<Tab>'] = cmp.mapping.select_next_item(),
+                        --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+
+                        -- Manually trigger a completion from nvim-cmp.
+                        --  Generally you don't need this, because nvim-cmp will display
+                        --  completions whenever it has completion options available.
+                        ["<C-Space>"] = cmp.mapping.complete({}),
+
+                        -- Think of <c-l> as moving to the right of your snippet expansion.
+                        --  So if you have a snippet that's like:
+                        --  function $name($args)
+                        --    $body
+                        --  end
+                        --
+                        -- <c-l> will move you to the right of each of the expansion locations.
+                        -- <c-h> is similar, except moving you backwards.
+                        ["<C-l>"] = cmp.mapping(function()
+                            if luasnip.expand_or_locally_jumpable() then
+                                luasnip.expand_or_jump()
+                            end
+                        end, { "i", "s" }),
+                        ["<C-h>"] = cmp.mapping(function()
+                            if luasnip.locally_jumpable(-1) then
+                                luasnip.jump(-1)
+                            end
+                        end, { "i", "s" }),
+
+                        -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+                        --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
+                    }),
+                    sources = {
+                        { name = "nvim_lsp" },
+                        { name = "luasnip" }, -- snippets
+                        { name = "buffer" },
+                        { name = "path" },
+                    },
+                })
+            end,
+        },
+
+        -- {
+        -- 		"neovim/nvim-lspconfig",
+        -- 		config = function()
+        -- 			local lspconfig = require("lspconfig")
+        -- 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        -- 			lspconfig.elixirls.setup({
+        -- 				cmd = { "elixir-ls" },
+        -- 				-- set default capabilities for cmp lsp completion source
+        -- 				capabilities = capabilities,
+        -- 			})
+
+        --             lspconfig.tailwindcss.setup({
+        --                   init_options = {
+        --                      userLanguages = {
+        --                         elixir = "html-eex",
+        --                         eelixir = "html-eex",
+        --                         heex = "html-eex",
+        --                      },
+        --                   },
+        --             })
+
+        -- 		end,
+        -- 	},
+
         { -- LSP Configuration & Plugins
             "neovim/nvim-lspconfig",
             dependencies = {
@@ -92,35 +287,6 @@ require("lazy").setup({
                 { "folke/neodev.nvim", opts = {} },
             },
             config = function()
-                -- Brief aside: **What is LSP?**
-                --
-                -- LSP is an initialism you've probably heard, but might not understand what it is.
-                --
-                -- LSP stands for Language Server Protocol. It's a protocol that helps editors
-                -- and language tooling communicate in a standardized fashion.
-                --
-                -- In general, you have a "server" which is some tool built to understand a particular
-                -- language (such as `gopls`, `lua_ls`, `rust_analyzer`, etc.). These Language Servers
-                -- (sometimes called LSP servers, but that's kind of like ATM Machine) are standalone
-                -- processes that communicate with some "client" - in this case, Neovim!
-                --
-                -- LSP provides Neovim with features like:
-                --  - Go to definition
-                --  - Find references
-                --  - Autocompletion
-                --  - Symbol Search
-                --  - and more!
-                --
-                -- Thus, Language Servers are external tools that must be installed separately from
-                -- Neovim. This is where `mason` and related plugins come into play.
-                --
-                -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
-                -- and elegantly composed help section, `:help lsp-vs-treesitter`
-
-                --  This function gets run when an LSP attaches to a particular buffer.
-                --    That is to say, every time a new file is opened that is associated with
-                --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
-                --    function will be executed to configure the current buffer
                 vim.api.nvim_create_autocmd("LspAttach", {
                     group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
                     callback = function(event)
@@ -241,11 +407,7 @@ require("lazy").setup({
                 --  - settings (table): Override the default settings passed when initializing the server.
                 --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
                 local servers = {
-                    -- clangd = {},
-                    -- gopls = {},
-                    -- pyright = {},
-                    -- rust_analyzer = {},
-                    -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
+                    -- See `:help lspconfig-all` for a list of all the pre-configured LSPs
                     --
                     -- Some languages (like typescript) have entire language plugins that can be useful:
                     --    https://github.com/pmizio/typescript-tools.nvim
@@ -253,6 +415,44 @@ require("lazy").setup({
                     -- But for many setups, the LSP (`tsserver`) will work just fine
                     -- tsserver = {},
                     --
+
+                    elixirls = {
+                        cmd = { "elixir-ls" },
+                        filetypes = { "elixir" },
+                        capabilities = {
+                            textDocument = {
+                                completion = {
+                                    completionItem = {
+                                        snippetSupport = true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    html = { filetypes = { "html", "twig", "hbs", "heex", "templ" } },
+
+                    tailwindcss = {
+                        init_options = {
+                            userLanguages = {
+                                elixir = "html-eex",
+                                eelixir = "html-eex",
+                                heex = "html-eex",
+                            },
+                        },
+                        -- opts = {
+                        --    settings = {
+                        --       tailwindCSS = {
+                        --          classAttributes = { 'class' , 'className' , 'classList' },
+                        --          experimental = {
+                        --             classRegex = {
+                        --                'class[:]\\s*"([^"]*)"',
+                        --             },
+                        --          },
+                        --       }
+                        --    }
+                        -- }
+                    },
 
                     lua_ls = {
                         -- cmd = {...},
@@ -282,9 +482,15 @@ require("lazy").setup({
                 -- for you, so that they are available from within Neovim.
                 local ensure_installed = vim.tbl_keys(servers or {})
                 vim.list_extend(ensure_installed, {
+                    -- TODO: unpin this once the latest version > 0.0.18 works on .heex files again
+                    { "tailwindcss-language-server", version = "0.0.16" },
+                    "prettierd",
                     "stylua", -- Used to format Lua code
                 })
-                require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+                require("mason-tool-installer").setup({
+                    ensure_installed = ensure_installed,
+                    -- auto_update = true,
+                })
 
                 require("mason-lspconfig").setup({
                     handlers = {
@@ -297,118 +503,6 @@ require("lazy").setup({
                                 vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
                             require("lspconfig")[server_name].setup(server)
                         end,
-                    },
-                })
-            end,
-        },
-
-        { -- Autocompletion
-            "hrsh7th/nvim-cmp",
-            event = "InsertEnter",
-            dependencies = {
-                -- Snippet Engine & its associated nvim-cmp source
-                {
-                    "L3MON4D3/LuaSnip",
-                    build = (function()
-                        -- Build Step is needed for regex support in snippets.
-                        -- This step is not supported in many windows environments.
-                        -- Remove the below condition to re-enable on windows.
-                        if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
-                            return
-                        end
-                        return "make install_jsregexp"
-                    end)(),
-                    dependencies = {
-                        -- `friendly-snippets` contains a variety of premade snippets.
-                        --    See the README about individual language/framework/plugin snippets:
-                        --    https://github.com/rafamadriz/friendly-snippets
-                        -- {
-                        --   'rafamadriz/friendly-snippets',
-                        --   config = function()
-                        --     require('luasnip.loaders.from_vscode').lazy_load()
-                        --   end,
-                        -- },
-                    },
-                },
-                "saadparwaiz1/cmp_luasnip",
-
-                -- Adds other completion capabilities.
-                --  nvim-cmp does not ship with all sources by default. They are split
-                --  into multiple repos for maintenance purposes.
-                "hrsh7th/cmp-nvim-lsp",
-                "hrsh7th/cmp-path",
-            },
-            config = function()
-                -- See `:help cmp`
-                local cmp = require("cmp")
-                local luasnip = require("luasnip")
-                luasnip.config.setup({})
-
-                cmp.setup({
-                    snippet = {
-                        expand = function(args)
-                            luasnip.lsp_expand(args.body)
-                        end,
-                    },
-                    completion = { completeopt = "menu,menuone,noinsert" },
-
-                    -- For an understanding of why these mappings were
-                    -- chosen, you will need to read `:help ins-completion`
-                    --
-                    -- No, but seriously. Please read `:help ins-completion`, it is really good!
-                    mapping = cmp.mapping.preset.insert({
-                        ["<C-n>"] = cmp.mapping.select_next_item(),
-                        ["<C-p>"] = cmp.mapping.select_prev_item(),
-                        ["<C-j>"] = cmp.mapping.select_next_item(),
-                        ["<C-k>"] = cmp.mapping.select_prev_item(),
-
-                        -- Scroll the documentation window [b]ack / [f]orward
-                        ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                        ["<C-f>"] = cmp.mapping.scroll_docs(4),
-
-                        -- Accept ([y]es) the completion.
-                        --  This will auto-import if your LSP supports it.
-                        --  This will expand snippets if the LSP sent a snippet.
-                        -- ['<C-y>'] = cmp.mapping.confirm { select = true },
-
-                        -- If you prefer more traditional completion keymaps,
-                        -- you can uncomment the following lines
-                        ["<CR>"] = cmp.mapping.confirm({ select = true }),
-                        --['<Tab>'] = cmp.mapping.select_next_item(),
-                        --['<S-Tab>'] = cmp.mapping.select_prev_item(),
-
-                        -- Manually trigger a completion from nvim-cmp.
-                        --  Generally you don't need this, because nvim-cmp will display
-                        --  completions whenever it has completion options available.
-                        ["<C-Space>"] = cmp.mapping.complete({}),
-
-                        -- Think of <c-l> as moving to the right of your snippet expansion.
-                        --  So if you have a snippet that's like:
-                        --  function $name($args)
-                        --    $body
-                        --  end
-                        --
-                        -- <c-l> will move you to the right of each of the expansion locations.
-                        -- <c-h> is similar, except moving you backwards.
-                        ["<C-l>"] = cmp.mapping(function()
-                            if luasnip.expand_or_locally_jumpable() then
-                                luasnip.expand_or_jump()
-                            end
-                        end, { "i", "s" }),
-                        ["<C-h>"] = cmp.mapping(function()
-                            if luasnip.locally_jumpable(-1) then
-                                luasnip.jump(-1)
-                            end
-                        end, { "i", "s" }),
-
-                        -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-                        --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-                    }),
-                    sources = {
-                        { name = "nvim_lsp" },
-                        { name = "luasnip" }, -- snippets
-                        { name = "buffer" },
-                        { name = "path" },
                     },
                 })
             end,
@@ -440,13 +534,23 @@ require("lazy").setup({
                     }
                 end,
                 formatters_by_ft = {
+                   bash = { "shfmt" },
+                   sh = { "shfmt" },
                     lua = { "stylua" },
-                    -- Conform can also run multiple formatters sequentially
-                    -- python = { "isort", "black" },
-                    --
-                    -- You can use a sub-list to tell conform to run *until* a formatter
-                    -- is found.
-                    -- javascript = { { "prettierd", "prettier" } },
+                    python = { "isort", "black" },
+                    javascript = { { "prettierd", "prettier" } },
+                    typescript = { { "prettierd", "prettier" } },
+                    javascriptreact = { { "prettierd", "prettier" } },
+                    typescriptreact = { { "prettierd", "prettier" } },
+                    vue = { { "prettierd", "prettier" } },
+                    css = { { "prettierd", "prettier" } },
+                    scss = { { "prettierd", "prettier" } },
+                    less = { { "prettierd", "prettier" } },
+                    html = { { "prettierd", "prettier" } },
+                    json = { { "prettierd", "prettier" } },
+                    jsonc = { { "prettierd", "prettier" } },
+                    yaml = { { "prettierd", "prettier" } },
+                    markdown = { { "prettierd", "prettier" } },
                 },
             },
         },
@@ -488,7 +592,7 @@ require("lazy").setup({
                         -- "mtime",
                     },
 
-                    vim.keymap.set('n', '<leader>ff', vim.cmd.Oil, { desc = "Find file" }),
+                    vim.keymap.set("n", "<leader>fb", vim.cmd.Oil, { desc = "Find file" }),
                     keymaps = {
                         ["g?"] = "actions.show_help",
                         ["<CR>"] = "actions.select",
@@ -617,40 +721,40 @@ require("lazy").setup({
             end,
         },
 
-        {
-            "elixir-tools/elixir-tools.nvim",
-            version = "*",
-            event = { "BufReadPre", "BufNewFile" },
-            config = function()
-                local elixir = require("elixir")
-                local elixirls = require("elixir.elixirls")
+        -- {
+        --     "elixir-tools/elixir-tools.nvim",
+        --     version = "*",
+        --     event = { "BufReadPre", "BufNewFile" },
+        --     config = function()
+        --         local elixir = require("elixir")
+        --         local elixirls = require("elixir.elixirls")
 
-                elixir.setup({
-                    nextls = { enable = false },
-                    credo = {},
-                    elixirls = {
-                        enable = true,
-                        settings = elixirls.settings({
-                            dialyzerEnabled = false,
-                            enableTestLenses = false,
-                        }),
-                        on_attach = function(client, bufnr)
-                            vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
-                            vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
-                            vim.keymap.set(
-                                "v",
-                                "<space>em",
-                                ":ElixirExpandMacro<cr>",
-                                { buffer = true, noremap = true }
-                            )
-                        end,
-                    },
-                })
-            end,
-            dependencies = {
-                "nvim-lua/plenary.nvim",
-            },
-        },
+        --         elixir.setup({
+        --             nextls = { enable = false },
+        --             credo = {},
+        --             elixirls = {
+        --                 enable = true,
+        --                 settings = elixirls.settings({
+        --                     dialyzerEnabled = false,
+        --                     enableTestLenses = false,
+        --                 }),
+        --                 on_attach = function(client, bufnr)
+        --                     vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+        --                     vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+        --                     vim.keymap.set(
+        --                         "v",
+        --                         "<space>em",
+        --                         ":ElixirExpandMacro<cr>",
+        --                         { buffer = true, noremap = true }
+        --                     )
+        --                 end,
+        --             },
+        --         })
+        --     end,
+        --     dependencies = {
+        --         "nvim-lua/plenary.nvim",
+        --     },
+        -- },
     },
 
     -- Configure any other settings here. See the documentation for more details.
