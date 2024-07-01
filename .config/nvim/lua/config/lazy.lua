@@ -27,7 +27,15 @@ require("lazy").setup({
             end,
         },
         { "numToStr/Comment.nvim", opts = {} },
+
+        -- themes
         { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+        { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = {} },
+        { "EdenEast/nightfox.nvim", priority = 1000 },
+        { "sainnhe/everforest", priority = 1000 },
+        { "NLKNguyen/papercolor-theme", priority = 1000 },
+        { "vimpostor/vim-prism", priority = 1000 },
+        
         -- Here is a more advanced example where we pass configuration
         -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
         --    require('gitsigns').setup({ ... })
@@ -593,6 +601,7 @@ require("lazy").setup({
                     jsonc = { { "prettierd", "prettier" } },
                     yaml = { { "prettierd", "prettier" } },
                     markdown = { { "prettierd", "prettier" } },
+                    rust = { "rustfmt" },
                 },
             },
         },
@@ -764,39 +773,73 @@ require("lazy").setup({
         },
 
         -- {
-        --     "elixir-tools/elixir-tools.nvim",
-        --     version = "*",
-        --     event = { "BufReadPre", "BufNewFile" },
-        --     config = function()
-        --         local elixir = require("elixir")
-        --         local elixirls = require("elixir.elixirls")
+        --    "mfussenegger/nvim-lint",
+        --    event = {
+        --       "BufReadPre",
+        --       "BufNewFile",
+        --    },
+        --    config = function()
+        --       local lint = require("lint")
 
-        --         elixir.setup({
-        --             nextls = { enable = false },
-        --             credo = {},
-        --             elixirls = {
-        --                 enable = true,
-        --                 settings = elixirls.settings({
-        --                     dialyzerEnabled = false,
-        --                     enableTestLenses = false,
-        --                 }),
-        --                 on_attach = function(client, bufnr)
-        --                     vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
-        --                     vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
-        --                     vim.keymap.set(
-        --                         "v",
-        --                         "<space>em",
-        --                         ":ElixirExpandMacro<cr>",
-        --                         { buffer = true, noremap = true }
-        --                     )
-        --                 end,
-        --             },
-        --         })
-        --     end,
-        --     dependencies = {
-        --         "nvim-lua/plenary.nvim",
-        --     },
+        --       lint.linters_by_ft = {
+        --          -- FIXME: this does not work. See https://github.com/LazyVim/LazyVim/issues/3808 for a relevant discussion
+        --          elixir = { "credo "},
+        --          javascript = { "eslint_d" },
+        --          typescript = { "eslint_d" },
+        --          javascriptreact = { "eslint_d" },
+        --          typescriptreact = { "eslint_d" },
+        --          svelte = { "eslint_d" },
+        --       }
+
+        --       local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+
+        --       vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+        --             group = lint_augroup,
+        --             callback = function()
+        --                lint.try_lint()
+        --             end,
+        --       })
+
+        --       vim.keymap.set("n", "<leader>ll", function()
+        --                         lint.try_lint()
+        --       end, { desc = "Trigger linting for current file" })
+        --    end,
         -- },
+
+        {
+            "elixir-tools/elixir-tools.nvim",
+            version = "*",
+            event = { "BufReadPre", "BufNewFile" },
+            config = function()
+                local elixir = require("elixir")
+                local elixirls = require("elixir.elixirls")
+
+                elixir.setup({
+                    nextls = { enable = false },
+                    credo = {},
+                    elixirls = {
+                        enable = false,
+                        settings = elixirls.settings({
+                            dialyzerEnabled = false,
+                            enableTestLenses = false,
+                        }),
+                        on_attach = function(client, bufnr)
+                            vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+                            vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+                            vim.keymap.set(
+                                "v",
+                                "<space>em",
+                                ":ElixirExpandMacro<cr>",
+                                { buffer = true, noremap = true }
+                            )
+                        end,
+                    },
+                })
+            end,
+            dependencies = {
+                "nvim-lua/plenary.nvim",
+            },
+        },
     },
 
     -- Configure any other settings here. See the documentation for more details.
