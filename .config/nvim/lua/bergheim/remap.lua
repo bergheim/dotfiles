@@ -1,5 +1,8 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
+
+vim.keymap.set("n", "<M-x>", ":", { desc = "Enter command mode (Emacs style)" })
+
 vim.keymap.set("n", "<leader>fb", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>fs", vim.cmd.write, { desc = "Save current file" })
 
@@ -13,8 +16,8 @@ vim.keymap.set("n", "<leader>wv", vim.cmd.vsplit, { desc = "Split window vertica
 -- vim.keymap.set("n", "<M-]>", vim.cmd.vsplit, { desc = "Split window vertically" })
 vim.keymap.set("n", "<M-BS>", vim.cmd.close, { desc = "Delete current window" })
 vim.keymap.set("n", "<leader>wd", vim.cmd.close, { desc = "Delete current window" })
-vim.keymap.set('n', '<leader>wr', '<C-w>r', { desc = "Rotate window" })
-vim.keymap.set('n', '<leader>wR', '<C-w>R', { desc = "Rotate window counter" })
+vim.keymap.set("n", "<leader>wr", "<C-w>r", { desc = "Rotate window" })
+vim.keymap.set("n", "<leader>wR", "<C-w>R", { desc = "Rotate window counter" })
 
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
@@ -30,7 +33,7 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
-vim.keymap.set('n', '<M-h>', '<C-w>h', { desc = 'Move to left window' })
-vim.keymap.set('n', '<M-j>', '<C-w>j', { desc = 'Move to window below' })
-vim.keymap.set('n', '<M-k>', '<C-w>k', { desc = 'Move to window above' })
-vim.keymap.set('n', '<M-l>', '<C-w>l', { desc = 'Move to right window' })
+vim.keymap.set("n", "<M-h>", "<C-w>h", { desc = "Move to left window" })
+vim.keymap.set("n", "<M-j>", "<C-w>j", { desc = "Move to window below" })
+vim.keymap.set("n", "<M-k>", "<C-w>k", { desc = "Move to window above" })
+vim.keymap.set("n", "<M-l>", "<C-w>l", { desc = "Move to right window" })

@@ -17,6 +17,7 @@ require("lazy").setup({
     spec = {
         -- import your plugins
         { import = "plugins" },
+        { "editorconfig/editorconfig-vim" },
         "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
         {
             "nvim-telescope/telescope-file-browser.nvim",
@@ -28,14 +29,24 @@ require("lazy").setup({
         },
         { "numToStr/Comment.nvim", opts = {} },
 
+        {
+            "kylechui/nvim-surround",
+            version = "*", -- Use for stability; omit to use `main` branch for the latest features
+            event = "VeryLazy",
+            config = function()
+                require("nvim-surround").setup({
+                    -- Configuration here, or leave empty to use defaults
+                })
+            end,
+        },
         -- themes
         { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-        { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = {} },
+        { "ellisonleao/gruvbox.nvim", priority = 1000, config = true, opts = {} },
         { "EdenEast/nightfox.nvim", priority = 1000 },
         { "sainnhe/everforest", priority = 1000 },
         { "NLKNguyen/papercolor-theme", priority = 1000 },
         { "vimpostor/vim-prism", priority = 1000 },
-        
+
         -- Here is a more advanced example where we pass configuration
         -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
         --    require('gitsigns').setup({ ... })
@@ -54,21 +65,6 @@ require("lazy").setup({
             },
         },
 
-        -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-        --
-        -- This is often very useful to both group configuration, as well as handle
-        -- lazy loading plugins that don't need to be loaded immediately at startup.
-        --
-        -- For example, in the following configuration, we use:
-        --  event = 'VimEnter'
-        --
-        -- which loads which-key before all the UI elements are loaded. Events can be
-        -- normal autocommands events (`:help autocmd-events`).
-        --
-        -- Then, because we use the `config` key, the configuration only runs
-        -- after the plugin has been loaded:
-        --  config = function() ... end
-
         { -- Useful plugin to show you pending keybinds.
             "folke/which-key.nvim",
             event = "VimEnter", -- Sets the loading event to 'VimEnter'
@@ -77,17 +73,17 @@ require("lazy").setup({
 
                 -- Document existing key chains
                 require("which-key").register({
-                    ["<leader>c"] = { name = "[C]ode", _ = "which_key_ignore" },
+                    ["<leader>c"] = { name = "Code", _ = "which_key_ignore" },
                     ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-                    ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-                    ["<leader>s"] = { name = "[S]earch", _ = "which_key_ignore" },
+                    -- ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
+                    ["<leader>s"] = { name = "Search", _ = "which_key_ignore" },
                     ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
-                    ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-                    ["<leader>h"] = { name = "Git [H]unk", _ = "which_key_ignore" },
+                    ["<leader>t"] = { name = "Toggle", _ = "which_key_ignore" },
+                    ["<leader>g"] = { name = "Git", _ = "which_key_ignore" },
                 })
                 -- visual mode
                 require("which-key").register({
-                    ["<leader>h"] = { "Git [H]unk" },
+                    ["<leader>gh"] = { "hunk" },
                 }, { mode = "v" })
             end,
         },
@@ -254,30 +250,6 @@ require("lazy").setup({
             end,
         },
 
-        -- {
-        -- 		"neovim/nvim-lspconfig",
-        -- 		config = function()
-        -- 			local lspconfig = require("lspconfig")
-        -- 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-        -- 			lspconfig.elixirls.setup({
-        -- 				cmd = { "elixir-ls" },
-        -- 				-- set default capabilities for cmp lsp completion source
-        -- 				capabilities = capabilities,
-        -- 			})
-
-        --             lspconfig.tailwindcss.setup({
-        --                   init_options = {
-        --                      userLanguages = {
-        --                         elixir = "html-eex",
-        --                         eelixir = "html-eex",
-        --                         heex = "html-eex",
-        --                      },
-        --                   },
-        --             })
-
-        -- 		end,
-        -- 	},
-
         { -- LSP Configuration & Plugins
             "neovim/nvim-lspconfig",
             dependencies = {
@@ -322,23 +294,20 @@ require("lazy").setup({
                         -- Jump to the type of the word under your cursor.
                         --  Useful when you're not sure what type a variable is and you want to see
                         --  the definition of its *type*, not where it was *defined*.
-                        map("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
+                        map("<leader>cD", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
 
                         -- Fuzzy find all the symbols in your current document.
                         --  Symbols are things like variables, functions, types, etc.
                         map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
+                        map("<leader>si", require("telescope.builtin").lsp_document_symbols, "Symbols")
 
                         -- Fuzzy find all the symbols in your current workspace.
                         --  Similar to document symbols, except searches over your entire project.
-                        map(
-                            "<leader>ws",
-                            require("telescope.builtin").lsp_dynamic_workspace_symbols,
-                            "[W]orkspace [S]ymbols"
-                        )
+                        map("<leader>sI", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Project symbols")
 
                         -- Rename the variable under your cursor.
                         --  Most Language Servers support renaming across files, etc.
-                        map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+                        map("<leader>cR", vim.lsp.buf.rename, "Rename")
 
                         -- Execute a code action, usually your cursor needs to be on top of an error
                         -- or a suggestion from your LSP for this to activate.
@@ -478,16 +447,8 @@ require("lazy").setup({
                     },
                 }
 
-                -- Ensure the servers and tools above are installed
-                --  To check the current status of installed tools and/or manually install
-                --  other tools, you can run
-                --    :Mason
-                --
-                --  You can press `g?` for help in this menu.
                 require("mason").setup()
 
-                -- You can add other tools here that you want Mason to install
-                -- for you, so that they are available from within Neovim.
                 local ensure_installed = vim.tbl_keys(servers or {})
                 vim.list_extend(ensure_installed, {
                     -- TODO: unpin this once the latest version > 0.0.18 works on .heex files again
@@ -518,44 +479,44 @@ require("lazy").setup({
 
         -- error listing, diagnostics..
         {
-           "folke/trouble.nvim",
-           opts = {
-              warn_no_results = false,
-              open_no_results = true,
-           },
-           cmd = "Trouble",
-           keys = {
-              {
-                 "<leader>xx",
-                 "<cmd>Trouble diagnostics toggle<cr>",
-                 desc = "Diagnostics (Trouble)",
-              },
-              {
-                 "<leader>xX",
-                 "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-                 desc = "Buffer Diagnostics (Trouble)",
-              },
-              {
-                 "<leader>cs",
-                 "<cmd>Trouble symbols toggle focus=false<cr>",
-                 desc = "Symbols (Trouble)",
-              },
-              {
-                 "<leader>cl",
-                 "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-                 desc = "LSP Definitions / references / ... (Trouble)",
-              },
-              {
-                 "<leader>xL",
-                 "<cmd>Trouble loclist toggle<cr>",
-                 desc = "Location List (Trouble)",
-              },
-              {
-                 "<leader>xQ",
-                 "<cmd>Trouble qflist toggle<cr>",
-                 desc = "Quickfix List (Trouble)",
-              },
-           },
+            "folke/trouble.nvim",
+            opts = {
+                warn_no_results = false,
+                open_no_results = true,
+            },
+            cmd = "Trouble",
+            keys = {
+                {
+                    "<leader>xx",
+                    "<cmd>Trouble diagnostics toggle<cr>",
+                    desc = "Diagnostics (Trouble)",
+                },
+                {
+                    "<leader>xX",
+                    "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+                    desc = "Buffer Diagnostics (Trouble)",
+                },
+                {
+                    "<leader>cs",
+                    "<cmd>Trouble symbols toggle focus=false<cr>",
+                    desc = "Symbols (Trouble)",
+                },
+                {
+                    "<leader>cl",
+                    "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+                    desc = "LSP Definitions / references / ... (Trouble)",
+                },
+                {
+                    "<leader>xL",
+                    "<cmd>Trouble loclist toggle<cr>",
+                    desc = "Location List (Trouble)",
+                },
+                {
+                    "<leader>xQ",
+                    "<cmd>Trouble qflist toggle<cr>",
+                    desc = "Quickfix List (Trouble)",
+                },
+            },
         },
 
         { -- Autoformat
