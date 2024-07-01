@@ -13,6 +13,8 @@ vim.keymap.set("n", "<leader>wv", vim.cmd.vsplit, { desc = "Split window vertica
 -- vim.keymap.set("n", "<M-]>", vim.cmd.vsplit, { desc = "Split window vertically" })
 vim.keymap.set("n", "<M-BS>", vim.cmd.close, { desc = "Delete current window" })
 vim.keymap.set("n", "<leader>wd", vim.cmd.close, { desc = "Delete current window" })
+vim.keymap.set('n', '<leader>wr', '<C-w>r', { desc = "Rotate window" })
+vim.keymap.set('n', '<leader>wR', '<C-w>R', { desc = "Rotate window counter" })
 
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })

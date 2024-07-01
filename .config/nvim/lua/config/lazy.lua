@@ -615,14 +615,6 @@ require("lazy").setup({
             vim.keymap.set("n", "<leader>st", vim.cmd.TodoTelescope, { desc = "Search TODOs" }),
         },
 
-        {
-            "folke/todo-comments.nvim",
-            event = "VimEnter",
-            dependencies = { "nvim-lua/plenary.nvim" },
-            opts = { signs = false },
-            vim.keymap.set("n", "<leader>st", vim.cmd.TodoTelescope, { desc = "Search TODOs" }),
-        },
-
         -- file navigator
         {
             "stevearc/oil.nvim",
