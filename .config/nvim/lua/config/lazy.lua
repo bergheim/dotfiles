@@ -50,6 +50,15 @@ require("lazy").setup({
             end,
         },
 
+        {
+            "ggandor/leap.nvim",
+            opts = {},
+            config = function()
+                require("leap").opts.equivalence_classes = { " \t\r\n", "([{", ")]}", "'\"`" }
+                require("leap").create_default_mappings()
+            end,
+        },
+
         -- {
         --     'windwp/nvim-autopairs',
         --     event = "InsertEnter",

@@ -71,6 +71,6 @@ return {
         end
 
         -- Bind `gs` in normal mode to search the current word using Telescope's live_grep
-        vim.keymap.set("n", "gs", search_current_word, { desc = "Search word under cursor with live_grep" })
+        vim.keymap.set("n", "gS", search_current_word, { desc = "Search word under cursor with live_grep" })
     end,
 }
