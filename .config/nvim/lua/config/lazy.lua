@@ -17,7 +17,17 @@ require("lazy").setup({
     spec = {
         -- import your plugins
         { import = "plugins" },
+
+        {
+            "nvim-treesitter/nvim-treesitter-textobjects",
+            dependencies = { "nvim-treesitter/nvim-treesitter" },
+        },
         { "editorconfig/editorconfig-vim" },
+        -- {
+        --     'nvim-lualine/lualine.nvim',
+        --     dependencies = { 'nvim-tree/nvim-web-devicons' },
+        --     opts = {}
+        -- },
         "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
         {
             "nvim-telescope/telescope-file-browser.nvim",
@@ -39,6 +49,14 @@ require("lazy").setup({
                 })
             end,
         },
+
+        -- {
+        --     'windwp/nvim-autopairs',
+        --     event = "InsertEnter",
+        --     config = true,
+        --     opts = {}
+        -- },
+
         -- themes
         { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
         { "ellisonleao/gruvbox.nvim", priority = 1000, config = true, opts = {} },
@@ -393,19 +411,19 @@ require("lazy").setup({
                     -- tsserver = {},
                     --
 
-                    elixirls = {
-                        cmd = { "elixir-ls" },
-                        filetypes = { "elixir" },
-                        capabilities = {
-                            textDocument = {
-                                completion = {
-                                    completionItem = {
-                                        snippetSupport = true,
-                                    },
-                                },
-                            },
-                        },
-                    },
+                    -- elixirls = {
+                    --     cmd = { "elixir-ls" },
+                    --     filetypes = { "elixir" },
+                    --     capabilities = {
+                    --         textDocument = {
+                    --             completion = {
+                    --                 completionItem = {
+                    --                     snippetSupport = true,
+                    --                 },
+                    --             },
+                    --         },
+                    --     },
+                    -- },
 
                     html = { filetypes = { "html", "twig", "hbs", "heex", "templ" } },
 
@@ -545,8 +563,8 @@ require("lazy").setup({
                     }
                 end,
                 formatters_by_ft = {
-                   bash = { "shfmt" },
-                   sh = { "shfmt" },
+                    bash = { "shfmt" },
+                    sh = { "shfmt" },
                     lua = { "stylua" },
                     python = { "isort", "black" },
                     javascript = { { "prettierd", "prettier" } },
@@ -703,7 +721,7 @@ require("lazy").setup({
                 -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
                 -- - sd'   - [S]urround [D]elete [']quotes
                 -- - sr)'  - [S]urround [R]eplace [)] [']
-                require("mini.surround").setup()
+                -- require("mini.surround").setup()
 
                 -- Simple and easy statusline.
                 --  You could remove this setup call if you don't like it,
@@ -768,7 +786,7 @@ require("lazy").setup({
                 local elixirls = require("elixir.elixirls")
 
                 elixir.setup({
-                    nextls = { enable = false },
+                    nextls = { enable = true },
                     credo = {},
                     elixirls = {
                         enable = false,

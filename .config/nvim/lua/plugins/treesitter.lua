@@ -14,10 +14,15 @@ local M = {
             "markdown",
             "vim",
             "vimdoc",
+            "query",
+            "rust",
+            "javascript",
+            "typescript",
             "elixir",
             "eex",
             "heex",
         },
+
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = {

@@ -87,3 +87,25 @@ end
 
 -- Keybinding to copy the current file
 vim.keymap.set("n", "<leader>fc", copy_current_file, { desc = "Copy current file" })
+
+local function delete_current_file()
+  local file = vim.fn.expand("%")
+  if file == "" then
+    print("No file to delete")
+    return
+  end
+  
+  -- Ask for confirmation
+  local response = vim.fn.confirm("Are you sure you want to delete " .. file .. "?", "&Yes\n&No", 2)
+  
+  if response == 1 then
+    vim.fn.delete(file)
+    vim.cmd("bdelete!")
+    print("Deleted " .. file)
+  else
+    print("Deletion cancelled")
+  end
+end
+
+-- Bind the function to <leader>fD
+vim.keymap.set("n", "<leader>fD", delete_current_file, { desc = "Delete current file" })
