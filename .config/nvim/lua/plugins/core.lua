@@ -2,6 +2,7 @@ return {
 
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
     "farmergreg/vim-lastplace",
+    -- good comment (gc) support
     { "numToStr/Comment.nvim", opts = {} },
     {
         "kylechui/nvim-surround",
@@ -54,5 +55,31 @@ return {
         dependencies = { "nvim-lua/plenary.nvim" },
         opts = { signs = false },
         vim.keymap.set("n", "<leader>st", vim.cmd.TodoTelescope, { desc = "Search TODOs" }),
+    },
+    -- Session management. This saves your session in the background,
+    -- keeping track of open buffers, window arrangement, and more.
+    -- You can restore sessions when returning through the dashboard.
+    {
+        "folke/persistence.nvim",
+        event = "BufReadPre",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        opts = { options = vim.opt.sessionoptions:get() },
+        -- stylua: ignore
+        keys = {
+            { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+            { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+            { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+        },
+    },
+    {
+        "ahmedkhalf/project.nvim",
+        config = function()
+            require("project_nvim").setup({
+                require("telescope").load_extension("projects"),
+                vim.keymap.set("n", "<leader>pp", function()
+                    require("telescope").extensions.projects.projects({})
+                end, { desc = "Select project" }),
+            })
+        end,
     },
 }

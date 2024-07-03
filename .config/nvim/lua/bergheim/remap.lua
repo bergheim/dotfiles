@@ -6,7 +6,10 @@ vim.keymap.set("n", "<M-x>", ":", { desc = "Enter command mode (Emacs style)" })
 vim.keymap.set("n", "<leader>fb", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>fs", vim.cmd.write, { desc = "Save current file" })
 
-vim.keymap.set("n", "<leader>qq", vim.cmd.quitall, {})
+vim.keymap.set("n", "<leader>qq", vim.cmd.quitall, { desc = "Quit all" })
+vim.keymap.set("n", "<leader>qQ", function()
+    vim.cmd("quitall!")
+end, { desc = "Quit all without saving" })
 
 -- window navigation and management
 vim.keymap.set("n", "<leader>ws", vim.cmd.split, { desc = "Split window horizontally" })

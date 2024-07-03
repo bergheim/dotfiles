@@ -20,6 +20,16 @@ return {
             },
         },
     },
+    {
+        "nvimdev/dashboard-nvim",
+        event = "VimEnter",
+        config = function()
+            require("dashboard").setup({
+                -- config
+            })
+        end,
+        dependencies = { { "nvim-tree/nvim-web-devicons" } },
+    },
     -- themes
     { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
     { "ellisonleao/gruvbox.nvim", priority = 1000, config = true, opts = {} },
