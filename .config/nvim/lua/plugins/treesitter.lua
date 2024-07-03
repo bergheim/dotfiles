@@ -133,4 +133,9 @@ return {
         "nvim-treesitter/nvim-treesitter-textobjects",
         dependencies = { "nvim-treesitter/nvim-treesitter" },
     },
+    -- show the current context at the top of the window
+    -- {
+    --     "nvim-treesitter/nvim-treesitter-context",
+    --     dependencies = { "nvim-treesitter/nvim-treesitter" },
+    -- },
 }

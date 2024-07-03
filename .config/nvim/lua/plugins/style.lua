@@ -4,6 +4,22 @@ return {
     --     dependencies = { 'nvim-tree/nvim-web-devicons' },
     --     opts = {}
     -- },
+    -- {
+    --     "stevearc/dressing.nvim",
+    --     opts = {},
+    -- },
+    -- show error/warnings in the scrollbar
+    {
+        "petertriho/nvim-scrollbar",
+        opts = {
+            marks = {
+                Error = {
+                    -- text = { "-", "x" },
+                    color = "Red",
+                },
+            },
+        },
+    },
     -- themes
     { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
     { "ellisonleao/gruvbox.nvim", priority = 1000, config = true, opts = {} },
