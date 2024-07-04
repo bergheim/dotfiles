@@ -1,12 +1,4 @@
 #!/bin/sh
 
-emacs_pid=$(pidof emacs)
-
-if [ -z "$emacs_pid" ]; then
-  echo ""
-  exit 0
-fi
-
 CLOCK_STATUS=$(emacsclient --eval "(bergheim/org-clock-status)" 2>/dev/null)
-
 echo "${CLOCK_STATUS:1:-1}"
