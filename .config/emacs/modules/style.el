@@ -265,17 +265,15 @@
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
   (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
 
-
-;; TODO install this for smooth image scrolling
-;; https://github.com/casouri/iscroll
-
 (defun noct-relative ()
   "Show relative line numbers."
-  (setq-local display-line-numbers 'visual))
+  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode)
+    (setq-local display-line-numbers 'visual)))
 
 (defun noct-absolute ()
   "Show absolute line numbers."
-  (setq-local display-line-numbers t))
+  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode)
+    (setq-local display-line-numbers t)))
 
 
 ;;;; Tab bar
@@ -307,13 +305,7 @@
 (use-package focus)
 
 (use-package writeroom-mode
-  :config
-  (setq writeroom-width 80)
-  (setq writeroom-fullscreen-effect 'maximized)
-  (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
-  (setq writeroom-global-effects '(writeroom-set-fullscreen))
-  (setq writeroom-bottom-divider-width 1)
-
+  :init
   (defun bergheim/write-mode ()
     "Toggle zoom in on the current buffer."
     (interactive)
@@ -328,9 +320,17 @@
           (function-put 'bergheim/write-mode 'toggled nil))
       (writeroom-mode 1)
       (focus-mode 1)
+      (display-line-numbers-mode -1)
       ;; (tab-bar-mode -1)
       ;; (toggle-frame-fullscreen)
-      (function-put 'bergheim/write-mode 'toggled t))))
+      (function-put 'bergheim/write-mode 'toggled t)))
+  :config
+  (setq writeroom-width 80)
+  (setq writeroom-fullscreen-effect 'maximized)
+  (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
+  (setq writeroom-global-effects '(writeroom-set-fullscreen))
+  (setq writeroom-bottom-divider-width 1))
+
 
 (defun bergheim/present-mode ()
   "Toggle zoom in on the current buffer."

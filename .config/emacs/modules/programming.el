@@ -119,7 +119,9 @@
     "e b" '(eval-buffer :which-key "buffer")
     "e r" '(elisp-eval-region-or-buffer :which-key "region or buffer")))
 
-(use-package elixir-ts-mode)
+(use-package elixir-ts-mode
+  :config
+  (defalias 'elixir-mode 'elixir-ts-mode))
 
 (use-package yaml-mode)
 
@@ -146,6 +148,10 @@
 (use-package python-ts-mode
   :ensure nil
   :hook (python-mode . poetry-tracking-mode))
+
+(use-package lua-mode)
+
+(use-package sxhkdrc-mode)
 
 (use-package ob-typescript
   :after org
