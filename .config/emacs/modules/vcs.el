@@ -19,6 +19,8 @@
    "z 4" 'magit-section-show-level-4-all
    "M-RET" 'magit-diff-visit-worktree-file-other-window))
 
+(use-package git-timemachine)
+
 (use-package forge
   :ensure t
   :after magit)
@@ -30,6 +32,9 @@
   (magit-todos-depth 2)
   :config
   (magit-todos-mode 0))
+
+;; git org links
+(use-package orgit)
 
 ;; shows diffs in the fringe
 (use-package diff-hl
