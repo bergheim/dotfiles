@@ -4,6 +4,8 @@
 
 (bergheim/global-menu-keys
   "C" '(org-capture :which-key "capture")
+  "k" '(org-capture :which-key "capture")
+  "x" '(org-capture :which-key "capture")
 
   "o" '(:ignore t :which-key "Org Mode")
 
@@ -26,13 +28,18 @@
   "orm" '((lambda () (interactive) (org-ql-view-recent-items :num-days 31 :type 'clocked)) :which-key "Last month")
 
   "on" '(org-add-note :which-key "add note")
+  "oN" '(bergheim/org-add-note-to-clocked-task :which-key "add note for...")
   "om" '(bergheim/org-subtree-to-mu4e :which-key "subtree to mu4e")
 
   "os" '(:ignore t :which-key "Search")
-  "osa" '(consult-org-agenda :which-key "Search agenda")
-  "oss" '(consult-org-heading :which-key "Search headings")
+  "osa" '(consult-org-agenda :which-key "agenda")
+  "osn" '((lambda () (interactive) (consult-find org-directory)) :which-key "filenames")
+  "oss" '(consult-org-heading :which-key "headings")
+  "osS" '(org-ql-find-in-agenda :which-key "org-agenda files")
+  "ost" '(bergheim/org-ql-search-for-tag  :which-key "tags")
+  "osT" `(,(bergheim/call-with-universal-arg #'bergheim/org-ql-search-for-tag)  :which-key "ALL tags")
 
-  "ou" '(bergheim/org-copy-url-only :which-key "copy url only")
+  "ou" '(bergheim/org-copy-url-only :which-key "copy URL only")
   "oy" '(org-store-link :which-key "store link")
   "ol" '(org-insert-link :which-key "insert link")
 
@@ -49,7 +56,15 @@
   "ocl" '(org-clock-in-last :which-key "clock in last")
   "oco" '(org-clock-out :which-key "clock out")
   "ocr" '(bergheim/org-mru-clock-in :which-key "mru clock in")
-  "ocR" '(org-resolve-clocks :which-key "resolve"))
+  "ocR" '(org-resolve-clocks :which-key "resolve")
+
+  "oq" '(:ignore t :which-key "org-ql")
+  "oqv" #'org-ql-view
+  "oqr" #'org-ql-view-recent-items
+  "oqs" #'org-ql-search
+  "oqt" #'org-ql-sparse-tree
+  "oqq" #'org-ql-view
+  "oqb" #'org-ql-view-sidebar)
 
 (provide 'keybindings)
 ;;; keybindings.el ends here

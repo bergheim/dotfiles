@@ -49,13 +49,19 @@
 
   (bergheim/localleader-keys
     :keymaps 'org-mode-map
-    "a" 'org-attach
+    "," 'org-insert-structure-template
+    "a" '(org-attach :which-key "attach")
     "b" '(bergheim/org-open-attachments :which-key "open attachments")
+    "d" '(:ignore t :which-key "Dates")
+    "ds" 'org-schedule
+    "dd" 'org-deadline
+    "di" 'org-time-stamp-inactive
     "e" 'org-edit-special
     "l" 'org-store-link
     "i" 'org-toggle-item
     "h" 'org-toggle-heading
     "q" 'org-set-tags-command
+    "u" '(bergheim/org-copy-url-only :which-key "copy URL")
     "s" '(:ignore t :which-key "Subtree")
     "sA" 'org-archive-subtree
     "sa" 'org-toggle-archive-tag

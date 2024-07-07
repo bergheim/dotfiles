@@ -7,6 +7,9 @@
 
       org-confirm-babel-evaluate nil
 
+      ;; t means adapt indentation to outline node level
+      org-adapt-indentation t
+
       ;; continue on https://hugocisneros.com/org-config/
       calendar-date-style 'european
       org-icalendar-timezone "Europe/Oslo"
@@ -68,8 +71,7 @@
       org-agenda-files (append (file-expand-wildcards (concat org-directory "*.org"))
                                (directory-files-recursively (concat org-directory "neptune") "\\.org$")
                                (list bergheim/calendar/nextcloud/local)
-                               (directory-files-recursively (concat org-directory "ical") "\\.org$")
-                               (directory-files-recursively (concat org-directory "projects") "\\.org$"))
+                               (directory-files-recursively (expand-file-name "projects" org-directory) "\\.org$"))
 
       ;; org-agenda-clockreport-parameter-plist
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))

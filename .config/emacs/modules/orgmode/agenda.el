@@ -21,6 +21,8 @@
   ;; overwrite whatever is overwriting the binds
   :hook (org-agenda-mode . bergheim/org-agenda-setup-keys)
   :config
+  ;; the tags in the agenda is just clutter
+  (setq org-agenda-remove-tags t)
   ;; TODO I.. don't know what this comes from
   (setq org-agenda-text-search-extra-files '(agenda-archives))
   (setq org-agenda-custom-commands
@@ -48,6 +50,7 @@
 
                            (:discard (:todo "SOMEDAY"))
                            ;; (:name "Done today" :discard (:log t))
+
                            (:name "This is how your day looks 🌞"
                             :time-grid t
                             :order 1)
@@ -67,11 +70,11 @@
 
                            (:name "Scheduled for today ⏰"
                             :scheduled today
-                            :order 3)
+                            :order 2)
 
                            (:name "Upcoming deadlines 🚌"
                             :deadline future
-                            :order 6)
+                            :order 2)
 
                            (:name "Follow up 📆"
                             :tag "email"
