@@ -209,5 +209,9 @@ Lisp function does not specify a special indentation."
           (lambda () (setq-local lisp-indent-function #'lisp-indent-function)))
 
 
+;; newer versions required by dape etc
+(use-package jsonrpc
+  :ensure t)
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
