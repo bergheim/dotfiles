@@ -162,7 +162,8 @@
 (use-package site-lisp
   :demand t
   :config
-  (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
+  ;; (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
+  (setq site-lisp-directory (expand-file-name "modules" bergheim/config-dir))
   (site-lisp-initialise))
 
 (defun display-startup-time ()
