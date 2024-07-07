@@ -364,7 +364,7 @@
     (setq dashboard-startup-banner (get-random-file dashboard-banner-dir)))
 
   ;; Set the directory containing the pictures
-  (setq dashboard-banner-dir "~/Downloads/HDZi/")
+  (setq dashboard-banner-dir "~/Pictures/emacs-dashboard")
 
   ;; Set a random picture as the startup banner initially
   (set-random-startup-banner)
