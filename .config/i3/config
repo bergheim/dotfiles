@@ -301,7 +301,9 @@ for_window [class="Spotify"] move to workspace $ws3
 assign [class="^Microsoft Teams - Preview$"] $ws2
 assign [class="^discord$"] $ws2
 assign [class="Slack"] $ws2
+assign [class="^Element"] $ws2
 assign [class="^Chromium$"] $ws4
+assign [class="^steam"] $ws7
 # }}}
 
 # {{{ automatically starting applications on i3 startup
@@ -322,3 +324,5 @@ for_window [title="^floating"] floating enable
 for_window [class="Emacs" title="doom-capture"] floating enable
 for_window [class="Emacs" title="emacs-everywhere"] floating enable
 for_window [class="gnome-calendar"] floating enable
+
+for_window [window_role="P?p?opup"] floating enable
