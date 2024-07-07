@@ -24,7 +24,8 @@
   (message "Current font size: %s" (face-attribute 'default :height)))
 
 (defvar bergheim/theme-light 'ef-cyprus)
-(defvar bergheim/theme-dark 'ef-deuteranopia-dark)
+(defvar bergheim/theme-dark 'ef-night)
+;; (defvar bergheim/theme-dark 'ef-deuteranopia-dark)
 
 ;; so many to choose from.. "Ubuntu" "DejaVu Sans" "Open Sans" "Noto Sans" "IosevkaTerm Nerd Font Propo" "Iosevka Nerd Font"
 ;; Note: height = px * 100
@@ -33,10 +34,10 @@
 (defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
 (defvar bergheim/font-size-small 100 "Font size for small displays.")
 (defvar bergheim/font-size-medium 130 "Font size for medium displays.")
-(defvar bergheim/font-size-large 180 "Font size for large displays.")
+(defvar bergheim/font-size-large 170 "Font size for large displays.")
 (defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
 (defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
-(defvar bergheim/line-spacing-large 0.8 "Line spacing for large displays.")
+(defvar bergheim/line-spacing-large 0.6 "Line spacing for large displays.")
 (defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
 
 (custom-set-faces '(line-number-current-line ((t :weight bold))))
@@ -115,6 +116,11 @@
   (setq doom-modeline-support-imenu t)
   (doom-modeline-mode 1)
   :config
+
+  ;; the workspace name is in the tab
+  (setq doom-modeline-workspace-name nil)
+  ;; this is useless
+  (setq doom-modeline-modal nil)
 
   ;; Disable icons for a performance boost
   ;; (setq doom-modeline-icon nil)
@@ -306,7 +312,44 @@
   (setq writeroom-fullscreen-effect 'maximized)
   (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
   (setq writeroom-global-effects '(writeroom-set-fullscreen))
-  (setq writeroom-bottom-divider-width 1))
+  (setq writeroom-bottom-divider-width 1)
+
+  (defun bergheim/write-mode ()
+    "Toggle zoom in on the current buffer."
+    (interactive)
+    (if (function-get 'bergheim/write-mode 'toggled)
+        (progn
+          (writeroom-mode -1)
+          (focus-mode 0)
+          ;; FIXME: is this a bug with activities.el? seems to bug
+          ;; (tab-bar-mode 1)
+          ;; (toggle-tab-bar-mode-from-frame)
+          ;; (toggle-frame-fullscreen)
+          (function-put 'bergheim/write-mode 'toggled nil))
+      (writeroom-mode 1)
+      (focus-mode 1)
+      ;; (tab-bar-mode -1)
+      ;; (toggle-frame-fullscreen)
+      (function-put 'bergheim/write-mode 'toggled t))))
+
+(defun bergheim/present-mode ()
+  "Toggle zoom in on the current buffer."
+  (interactive)
+  (if (function-get 'bergheim/present-mode 'toggled)
+      (progn
+        (writeroom-mode -1)
+        (bergheim/toggle-big-font-mode 0)
+        (function-put 'bergheim/present-mode 'toggled nil))
+    (writeroom-mode 1)
+    (bergheim/toggle-big-font-mode)
+    (function-put 'bergheim/present-mode 'toggled t)))
+
+(use-package olivetti)
+
+;; golden ratio mode
+(use-package zoom
+  :custom
+  (zoom-size '(0.618 . 0.618)))
 
 (use-package hl-todo
   :defer t

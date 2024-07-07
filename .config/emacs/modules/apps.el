@@ -24,27 +24,65 @@
 (use-package treemacs-evil
   :after (treemacs evil))
 
-;; maybe actually try this
 (use-package denote
   :ensure t
   :custom
   (denote-known-keywords '("emacs" "journal"))
-  ;; This is the directory where your notes live.
   (denote-directory (expand-file-name "~/denote/"))
+  (denote-date-prompt-use-org-read-date t)
+  (denote-backlinks-show-context t)
   :config
-  (with-eval-after-load 'org-capture
-    (add-to-list 'org-capture-templates
-                 '("n" "New note (with Denote)" plain
-                   (file denote-last-path)
-                   #'denote-org-capture
-                   :no-save t
-                   :immediate-finish nil
-                   :kill-buffer t
-                   :jump-to-captured t)))
-  :bind
-  (("C-c n n" . denote)
-   ("C-c n f" . denote-open-or-create)
-   ("C-c n i" . denote-link)))
+  (defun my-denote-tmr ()
+    (tmr "5" "Write focused now.."))
+  (add-hook 'denote-journal-extras-hook 'my-denote-tmr)
+  ;; (add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
+  (denote-rename-buffer-mode 1)
+
+  ;; (setq denote-templates nil)
+  ;; `((report . "* Some heading\n\n* Another heading")
+  ;;   (memo . ,(concat "* Some heading"
+  ;;                    "\n\n"
+  ;;                    (shell-command-to-string "fortune -s")
+  ;;                    "* Another heading"
+  ;;                    "\n\n")))
+
+  (defun bergheim/denote-new-journal-entry ()
+    "Create a new journal entry and enter writer mode"
+    (interactive)
+    (denote-journal-extras-new-entry)
+    (bergheim/write-mode))
+
+  :general
+  (bergheim/global-menu-keys
+    "n" '(:ignore t :which-key "Denote")
+    "na" '(denote-add-links :which-key "Add all inks")
+    "nb" '(denote-find-backlink :which-key "Show backlinks")
+    "nB" '(denote-backlinks :which-key "Show backlinks")
+    "nd" '(denote :which-key "New note")
+    "nf" '(denote-open-or-create :which-key "Find")
+    ;;"ndj" '(denote-journal-extras-new-or-existing-entry :which-key "Journal")
+    "ne" '(denote-org-extras-extract-org-subtree :which-key "Extract from node")
+    "nh" '(denote-org-extras-link-to-heading :which-key "Link to heading")
+    "ni" '(:ignore t :which-key "Insert")
+    "nib" '(denote-org-extras-dblock-insert-backlinks :which-key "backlinks")
+    "nif" '(denote-org-extras-dblock-insert-files :which-key "files")
+    "nil" '(denote-org-extras-dblock-insert-links :which-key "links")
+    "nj" '(bergheim/denote-new-journal-entry :which-key "New journal")
+    "nJ" '(denote-journal-extras-new-or-existing-entry :which-key "Find journal")
+    "nL" '(denote-find-link :which-key "Show links")
+    "nl" '(denote-link-or-create :which-key "Link")
+    "nn" '(denote-open-or-create :which-key "Open/create")
+    "nr" '(denote-rename-file-using-front-matter :which-key "Rename")
+    "nr" '(denote-rename-file :which-key "Rename")
+    "nR" '(denote-rename-file-signature :which-key "Rename signature")
+    "ns" '(consult-notes-search-in-all-notes :which-key "Search")))
+
+(use-package consult-denote
+  :after denote)
+
+;; TODO: see https://lucidmanager.org/productivity/denote-explore/
+;; (use-package denote-explore
+;;   :after denote)
 
 ;; pastebin stuff
 (use-package 0x0
