@@ -135,6 +135,14 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
   :general
   (:states '(normal visual)
    "gR" 'iedit-mode))
+
+(use-package tmr
+  :config
+  (setq tmr-notification-urgency 'normal)
+  :general
+  (bergheim/global-menu-keys
+    "T" '(tmr-prefix-map :which-key "Timer")))
+
 ;; redefines the silly indent of keyword lists
 ;; before
 ;;   (:foo bar
@@ -226,6 +234,53 @@ Lisp function does not specify a special indentation."
 ;; newer versions required by dape etc
 (use-package jsonrpc
   :ensure t)
+
+(use-package powerthesaurus
+  ;; :cmd powerthesaurus-lookup
+  :general
+  (bergheim/global-menu-keys
+    "sw" '(powerthesaurus-lookup-dwim :which-key "Search word")
+    "lw" '(powerthesaurus-lookup-dwim :which-key "Lookup word")))
+
+;;;###autoload
+(defun bergheim/find-in-dotfiles ()
+  "Open a file somewhere in ~/.config via a fuzzy filename search."
+  (interactive)
+  (find-file (expand-file-name "~/.config/")))
+
+;;;###autoload
+(defun bergheim/search-in-dotfiles ()
+  "Open a file somewhere in ~/.config via a fuzzy filename search."
+  (interactive)
+  (consult-find (expand-file-name "~/.config/")))
+
+;;;###autoload
+(defun bergheim/browse-from-dir (dir)
+  "Traverse a file structure starting linearly from DIR."
+  (let ((default-directory (file-truename (expand-file-name dir))))
+    (call-interactively 'find-file)))
+
+;;;###autoload
+(defun bergheim/browse-dotfiles ()
+  "Browse the files in ~/.config."
+  (interactive)
+  (bergheim/browse-from-dir (expand-file-name "~/.config/")))
+
+;;;###autoload
+(defun +default/yank-buffer-path (&optional root)
+  "Copy the current buffer's path to the kill ring."
+  (interactive)
+  (if-let (filename (or (buffer-file-name (buffer-base-buffer))
+                        (bound-and-true-p list-buffers-directory)))
+      (let ((path (abbreviate-file-name
+                   (if root
+                       (file-relative-name filename root)
+                     filename))))
+        (kill-new path)
+        (if (string= path (car kill-ring))
+            (message "Copied path: %s" path)
+          (user-error "Couldn't copy filename in current buffer")))
+    (error "Couldn't find filename in current buffer")))
 
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
