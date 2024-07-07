@@ -52,5 +52,6 @@
         org-msg-convert-citation t))
 
 (use-package gnus-dired
+  :ensure nil
   :hook
   (dired-mode . turn-on-gnus-dired-mode))
