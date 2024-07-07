@@ -290,7 +290,7 @@
 
     "wB" '(:ignore t :which-key "Bufler")
     "wBb" '(bufler :which-key "Show buffers")
-    "wBs" '(bufler-switch-buffer :which-key "Switch to buffer"))
+    "wBs" '(bufler-switch-buffer :which-key "Switch to buffer")
 
     "y" '(:ignore t :which-key "Yanking"))
 
