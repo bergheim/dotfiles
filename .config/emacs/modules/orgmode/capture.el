@@ -24,6 +24,7 @@
   :ensure nil
   :after org
   :config
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (setq org-capture-templates
         (doct `(("Personal"
                  :icon ("nf-cod-person" :set "codicon" :color "green")
@@ -135,6 +136,13 @@
                  :default-tags "@work:interrupted"
                  :template-file ,(expand-file-name "interrupted.org" org-capture-custom-template-directory))
 
+                ("Spaced repetition" :keys "s"
+                 :icon ("nf-fa-repeat" :set "faicon" :color "red")
+                 :file ,(expand-file-name "habits.org" org-directory)
+                 :olp ("Skill honing")
+                 :template-file ,(expand-file-name "recall.org" org-capture-custom-template-directory)
+                 :immediate-finish nil)
+
                 ("Review"
                  :keys "r"
                  :icon ("nf-oct-code_review" :set "octicon" :color "yellow")
@@ -148,19 +156,19 @@
                              :icon ("nf-md-calendar_today" :set "mdicon" :color "green")
                              :keys "r"
                              :headline "Daily"
-                             :default-tags "@work:daily:review"
+                             :default-tags "daily:review"
                              :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
                             ("Weekly review"
                              :icon ("nf-md-calendar_weekend" :set "mdicon" :color "green")
                              :keys "w"
                              :headline "Weekly"
-                             :default-tags "@work:weekly:review"
+                             :default-tags "weekly:review"
                              :template-file ,(expand-file-name "review-weekly.org" org-capture-custom-template-directory))
                             ("Monthly review"
                              :icon ("nf-fa-lightbulb_o" :set "faicon" :color "green")
                              :keys "m"
                              :headline "Monthly"
-                             :default-tags "@work:monthly:review"
+                             :default-tags "monthly:review"
                              :template-file ,(expand-file-name "review-monthly.org" org-capture-custom-template-directory))
                             ("Yearly review"
                              :icon ("nf-md-calendar_today" :set "mdicon" :color "green")
