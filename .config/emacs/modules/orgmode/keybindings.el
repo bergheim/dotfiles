@@ -49,7 +49,7 @@
   "ocl" '(org-clock-in-last :which-key "clock in last")
   "oco" '(org-clock-out :which-key "clock out")
   "ocr" '(bergheim/org-mru-clock-in :which-key "mru clock in")
-  "ocR" '(org-resolve-clocks :which-key "resolve"))
+  "ocR" '(org-resolve-clocks :which-key "resolve")
 
 (provide 'keybindings)
 ;;; keybindings.el ends here
