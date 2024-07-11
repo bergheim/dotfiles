@@ -1,4 +1,5 @@
 #!/bin/sh
 
 CLOCK_STATUS=$(emacsclient --eval "(bergheim/org-clock-status)" 2>/dev/null)
-echo "${CLOCK_STATUS:1:-1}"
+CLEANED_STATUS=$(echo "${CLOCK_STATUS:1:-1}" | sed 's/\\"/"/g')
+echo "$CLEANED_STATUS"
