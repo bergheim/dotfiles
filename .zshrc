@@ -377,6 +377,26 @@ ta() {
   fi
 }
 
+function psfzf() {
+    local pid
+    pid=$(ps aux | fzf | awk '{print $2}')
+    if [ -n "$pid" ]; then
+        # echo -ne "${pid} "
+        LBUFFER+="${pid} "
+    fi
+}
+
+zle -N psfzf
+bindkey '^G' psfzf
+
+function killfzf() {
+    ps aux | fzf --multi | awk '{print $2}' | xargs -I {} kill {}
+}
+
+zle -N killfzf
+bindkey '^X' killfzf
+
+
 eval "$(zoxide init zsh)"
 
 # Import colorscheme from 'wal' asynchronously
