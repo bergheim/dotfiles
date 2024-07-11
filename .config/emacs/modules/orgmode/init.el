@@ -208,8 +208,28 @@
         org-mru-clock-how-many 100))
 
 (use-package org-ql
-  :ensure t
-  :after org)
+  :after org
+  :init
+  (defun bergheim/org-ql-search-for-tag (&optional arg)
+    "Search for an Org tag in `org-agenda-files'.
+With universal arg ARG, search all .org files under `org-directory`."
+    (interactive "P")
+    (let* ((files (if arg
+                      (directory-files-recursively org-directory "\\.org$")
+                    (org-agenda-files)))
+           (all-tags (org-global-tags-completion-table files))
+           (tag (completing-read "Tag: " all-tags)))
+      (org-ql-search files
+        `(tags ,tag)
+        :title "Items"
+        :sort 'todo
+        :super-groups '((:auto-todo t)))))
+  :general
+  (:keymaps 'org-ql-view-map
+   :states '(normal motion emacs)
+   "RET" 'org-ql-view-switch
+   "?" 'org-ql-view-dispatch
+   "q" 'kill-current-buffer))
 
 ;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
