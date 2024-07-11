@@ -22,6 +22,7 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
     sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES" "$BATCONF"
     sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
+    feh --bg-fill ~/Pictures/wallpapers/active/light/primary.jpg --bg-fill ~/Pictures/wallpapers/active/light/secondary.jpg
 else
     emacsclient -e '(bergheim/theme-dark)'
     gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
@@ -31,6 +32,7 @@ else
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
     sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES" "$BATCONF"
     sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
+    feh --bg-fill ~/Pictures/wallpapers/active/dark/primary.jpg --bg-fill ~/Pictures/wallpapers/active/dark/secondary.jpg
 fi
 
 # update any running vim instances
