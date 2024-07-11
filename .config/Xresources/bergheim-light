@@ -7,17 +7,17 @@
 ! -----------------------------------------------------------------------------
 
 ! hard contrast: *background: #f9f5d7
-*background: #fbf1c7
+*background: #f2f1e7
 ! soft contrast: *background: #f2e5bc
-*foreground: #3c3836
+*foreground: #1c1816
 ! Black + DarkGrey
-*color0:  #fdf4c1
+*color0:  #f4f2c1
 *color8:  #928374
 ! DarkRed + Red
 *color1:  #cc241d
 *color9:  #9d0006
 ! DarkGreen + Green
-*color2:  #98971a
+*color2:  #98a71a
 *color10: #79740e
 ! DarkYellow + Yellow
 *color3:  #d79921
