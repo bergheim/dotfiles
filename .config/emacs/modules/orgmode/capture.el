@@ -65,7 +65,7 @@
                              :template-file ,(expand-file-name "appointment.org" org-capture-custom-template-directory)
                              :after-finalize org-caldav-sync)
 
-                            ("Meeting"
+                            ("Meeting minutes"
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"
                              :headline "Meetings"
@@ -157,6 +157,7 @@
                              :keys "r"
                              :headline "Daily"
                              :default-tags "daily:review"
+                             :hook org-caldav-sync
                              :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
                             ("Weekly review"
                              :icon ("nf-md-calendar_weekend" :set "mdicon" :color "green")
@@ -257,17 +258,16 @@
                 ("Email Workflow" :keys "e"
                  :icon ("nf-oct-stop" :set "octicon" :color "red")
                  :type entry
-                 :file +org-capture-mail-file
                  :children (("Follow Up" :keys "f"
-                             :headline "Follow Up"
                              :clock-in t
-                             :file +org-capture-mail-file
+                             :file +org-capture-mail-followup-file
+                             :function bergheim/org-email-follow-up
                              :template-file ,(expand-file-name "email-follow-up.org" org-capture-custom-template-directory))
                             ("Read Later" :keys "l"
+                             :file +org-capture-mail-later-file
                              :template-file ,(expand-file-name "email-read-later.org" org-capture-custom-template-directory)
                              :immediate-finish t
                              :headline "Read Later")))))))
-
 
 (defun bergheim//delete-frame-after-capture ()
   "Delete frame after capturing."
@@ -300,5 +300,16 @@
 ;;   (cl-letf (((symbol-function 'switch-to-buffer-other-window)
 ;;              (symbol-function 'switch-to-buffer)))
 ;;     (org-capture)))
+
+(defun bergheim/org-email-follow-up ()
+  "Select a follow-up email category"
+  (save-window-excursion
+    (let* ((file +org-capture-mail-followup-file  )
+           (headings (org-ql-select +org-capture-mail-followup-file  '(level 2)
+                       :action (lambda ()
+                                 (org-get-heading t t t t))))
+           (choice (completing-read "Category: " headings)))
+      (find-file file)
+      (goto-char (org-find-exact-headline-in-buffer choice)))))
 
 ;;; capture.el ends here

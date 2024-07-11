@@ -3,7 +3,7 @@
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-today
   "Opens the inbox with unread and today's email."
-  "maildir:/Inbox/ AND date:1m..now")
+  "maildir:/Inbox/ AND date:1y..now")
 
 ;;;###autoload
 (define-mu4e-search-fn bergheim/email-inbox

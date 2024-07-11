@@ -53,6 +53,7 @@
   "e w" '(bergheim/email-week :which-key "This week's email")
   ;; "e w" '((lambda () (interactive)  :which-key "This week's email")
   "e W" '(bergheim/email-inbox-work :which-key "Work email inbox")
-  "e t" '(bergheim/email-trash :which-key "Trash"))
+  "e t" '(bergheim/email-trash :which-key "Trash")
+  "e q" '(mu4e-quit :which-key "Quit"))
 
 ;;; keybindings.el ends here

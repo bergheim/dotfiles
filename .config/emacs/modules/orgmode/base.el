@@ -79,7 +79,8 @@
       org-habit-graph-column 60
 
       +org-capture-todo-file "inbox.org"
-      +org-capture-mail-file (concat org-directory "mail.org")
+      +org-capture-mail-followup-file (expand-file-name "email/followup.org" org-directory)
+      +org-capture-mail-later-file (expand-file-name "email/later.org" org-directory)
       +org-capture-work-file (concat org-directory "work.org")
       +org-capture-personal-file (concat org-directory "personal.org")
       org-capture-custom-template-directory (concat org-directory "templates/capture/")
@@ -120,7 +121,7 @@
                   "SOMEDAY(s!)"
                   "|" "DONE(d@)" "CANCELLED(c@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")
-        (sequence "DRAFT(d)" "POST(p)" "|" "PUBLISH(b)")))
+        (sequence "DRAFT(D)" "POST(p)" "|" "PUBLISH(b)")))
 
 (add-to-list 'org-modules 'org-habit)
 
