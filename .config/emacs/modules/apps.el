@@ -52,8 +52,20 @@
   (defun bergheim/denote-new-journal-entry ()
     "Create a new journal entry and enter writer mode"
     (interactive)
+    (siren-tab-bar-switch-to-or-create-tab "journal")
     (denote-journal-extras-new-entry)
-    (bergheim/write-mode))
+    (bergheim/write-mode t)
+    (evil-insert 0))
+
+  (defun bergheim/denote-last-journal-entry ()
+    "Open the newest entry"
+    (interactive)
+    (let ((files (directory-files denote-journal-extras-directory nil "^[^.]")))
+      (when files
+        (siren-tab-bar-switch-to-or-create-tab "journal")
+        (find-file (expand-file-name
+                    (car (last (sort files 'string<))) denote-journal-extras-directory))
+        (bergheim/write-mode t))))
 
   :general
   (bergheim/global-menu-keys
@@ -70,8 +82,10 @@
     "nib" '(denote-org-extras-dblock-insert-backlinks :which-key "backlinks")
     "nif" '(denote-org-extras-dblock-insert-files :which-key "files")
     "nil" '(denote-org-extras-dblock-insert-links :which-key "links")
-    "nj" '(bergheim/denote-new-journal-entry :which-key "New journal")
-    "nJ" '(denote-journal-extras-new-or-existing-entry :which-key "Find journal")
+    "nj" '(:ignore t :which-key "Journal")
+    "njj" '(bergheim/denote-new-journal-entry :which-key "New journal")
+    "njl" '(bergheim/denote-last-journal-entry :which-key "Last journal entry")
+    "njb" '((lambda () (interactive) (find-file denote-journal-extras-directory)) :which-key "Browse journals")
     "nL" '(denote-find-link :which-key "Show links")
     "nl" '(denote-link-or-create :which-key "Link")
     "nn" '(denote-open-or-create :which-key "Open/create")
