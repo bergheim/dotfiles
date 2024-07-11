@@ -74,6 +74,9 @@ super + shift + F12
 super + r
   rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji,unifont:rofimoji,Power Menu:rofi-power-menu"
 
+super + shift + e
+  rofi -modes "emoji" -show emoji -display-window "Insert emoji:"
+
 # switch window
 alt + Tab
   rofi -show window -display-window "Switch to window: "
