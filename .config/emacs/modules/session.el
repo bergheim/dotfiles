@@ -6,21 +6,60 @@
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package desktop
-  :hook
-  (elpaca-after-init . desktop-read)
   :ensure nil
+  :demand
+  ;; :hook
+  ;; (desktop-after-read . (desktop-read (expand-file-name "desktops/default" bergheim/cache-dir)))
+  ;; (elpaca-after-init . desktop-read)
   ;; Auto-save and load without prompting.
-  (desktop-after-read  . (lambda () (desktop-save-mode 1)))
+  ;; (desktop-after-read  . (lambda () (desktop-save-mode 1)))
 
-  ;; :init
-  ;; (add-to-list 'desktop-minor-mode-handlers
-  ;;              '(eglot--managed-mode . ignore))
+  :init
+  (defconst bergheim/desktops-dir
+    (expand-file-name "desktops" bergheim/cache-dir)
+    "Directory of saved desktops.")
+
+  (defun bergheim/load-desktop ()
+    "Load a desktop from '`user-emacs-directory'/desktops/"
+    (interactive)
+    (let* ((desktops-dir bergheim/desktops-dir)
+           (desktops (directory-files desktops-dir nil "^[^.].*" t))
+           (name (completing-read "Load Desktop: " desktops nil t)))
+      (unless (string= name "")
+        (let ((desktop-dirname (expand-file-name name desktops-dir)))
+          (desktop-read desktop-dirname)
+          (set-frame-parameter nil 'desktop-dir desktop-dirname)))))
+
+  (defun bergheim/save-desktop (&optional name)
+    "Save current desktop with NAME at '`user-emacs-directory'/desktops/'"
+    (interactive)
+    (let* ((desktops-dir bergheim/desktops-dir)
+           (desktops (directory-files desktops-dir nil "^[^.].*" t))
+           (name (or name (completing-read "Save Desktop As: " desktops nil nil))))
+      (unless (string= name "")
+        (if (member name desktops)
+            (when (yes-or-no-p (format "Desktop `%s' already exists. Do you want to overwrite it?" name))
+              (let ((desktop-dirname (expand-file-name name desktops-dir)))
+                (make-directory desktop-dirname t)
+                (desktop-save desktop-dirname)))
+          (let ((desktop-dirname (expand-file-name name desktops-dir)))
+            (make-directory desktop-dirname t)
+            (desktop-save desktop-dirname))))))
+
+  (defun bergheim/delete-desktop ()
+    "Delete a desktop from `bergheim/desktops-dir'."
+    (interactive)
+    (let* ((desktops (directory-files bergheim/desktops-dir nil "^[^.].*" t))
+           (name (completing-read "Delete Desktop: " desktops nil t)))
+      (unless (string= name "")
+        (delete-directory (expand-file-name name bergheim/desktops-dir) t))))
+
   :config
-  (setq desktop-path (list (bergheim/get-and-ensure-data-dir "desktop"))
+  (setq desktop-path (list bergheim/desktops-dir)
         desktop-auto-save-timeout 3600
         desktop-save 'ask-if-new
         desktop-load-locked-desktop t
-        desktop-save-mode 1))
+        desktop-save-mode nil))
 
 (use-package restart-emacs
   :after desktop
@@ -29,8 +68,7 @@
   (defun bergheim/restart-emacs ()
     "Save desktop and then restart Emacs with custom init directory."
     (interactive)
-    (desktop-save (expand-file-name "desktop" bergheim/cache-dir))
-    (let ((restart-args `("--init-directory" ,(expand-file-name "~/.config/neodoom") "--debug-init")))
-      (restart-emacs restart-args))))
+    (desktop-save (bergheim/get-and-ensure-data-dir "desktops/restart"))
+    (restart-emacs)))
 
 ;;; session.el ends here
