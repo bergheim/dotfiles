@@ -44,7 +44,6 @@ msmtp
 msmtp-mta
 mpv
 net-tools
-# nitrogen # set background. but fev provides..
 nmap
 # notify-osd # unity crap
 numlockx # always set numlock
@@ -134,7 +133,8 @@ tidy
 isync
 gnuplot
 ncdu
-i3-gaps
+xorg
+i3-wm
 unclutter # hide the mouse when it is unused
 clipmenu # rofi clipboard history
 redshift
@@ -164,3 +164,16 @@ inotify-tools
 mediainfo
 xsettingsd
 pandoc-cli
+xorg-xinit
+polybar
+kbdd
+ttf-sourcecodepro-nerd
+ttf-jetbrains-mono-nerd
+ttf-ubuntu-mono-nerd
+ttf-ubuntu-nerd
+rofimoji
+nitrogen
+ntfs-3g
+pavucontrol
+pipewire-audio
+pipewire-pulse
