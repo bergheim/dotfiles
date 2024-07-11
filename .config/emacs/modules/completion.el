@@ -336,9 +336,15 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Make corfu popup come up in terminal overlay
 (use-package corfu-terminal
-  :if (not (display-graphic-p))
-  :config
-  (corfu-terminal-mode))
+  ;; TODO this should be a prog-mode hook as daemon mode will just not report graphics
+  ;; :config
+  ;; (unless (display-graphic-p)
+  ;;   (corfu-terminal-mode +1))
+  )
+
+;; (use-package corfu-doc-terminal
+;;   :after corfu-terminal
+;;   :ensure (:host "https://codeberg.org/akib/emacs-corfu-doc-terminal.git"))
 
 (use-package dabbrev
   :ensure nil

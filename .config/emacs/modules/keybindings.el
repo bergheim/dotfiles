@@ -79,7 +79,6 @@
     "gD" #'bergheim/evil-goto-definition-other-window)
 
   (bergheim/global-menu-keys
-    "RET" '(consult-bookmark :which-key "Bookmarks")
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")
     "æ" '(vertico-repeat :which-key "Repeat search")
@@ -128,6 +127,7 @@
     "bm" '(bookmark-set :which-key "Bookmark set")
     "be" '(bookmark-bmenu-list :which-key "Bookmark edit")
     "bj" '(bookmark-jump :which-key "Bookmark jump")
+    "bf" '(consult-bookmark :which-key "Bookmark find")
     "bu" '(undo-tree-visualize :which-key "Undo tree")
 
     "c" '(:ignore t :which-key "Code")
@@ -287,6 +287,7 @@
     "wr" '(evil-window-rotate-upwards :which-key "Rotate upwards")
     "wR" '(evil-window-rotate-downwards :which-key "Rotate downwards")
     "wm" '(bergheim/zoom-window :which-key "Maximize window")
+    "ww" '(activities-resume :which-key "Resume activity")
 
     "wB" '(:ignore t :which-key "Bufler")
     "wBb" '(bufler :which-key "Show buffers")

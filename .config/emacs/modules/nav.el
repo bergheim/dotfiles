@@ -18,7 +18,10 @@
          ("M-d" . consult-dir)
          ("M-f" . consult-dir-jump-file)
          ("C-c C-d" . consult-dir)
-         ("C-c C-f" . consult-dir-jump-file)))
+         ("C-c C-f" . consult-dir-jump-file))
+  :general
+  (bergheim/global-menu-keys
+    "RET" '(consult-dir :which-key "Bookmarks and history")))
 
 (use-package dired
   :ensure nil

@@ -107,8 +107,8 @@ With \\[universal-argument], include emails to this name as well"
       (bergheim/mu4e-search-this-subject msg t))
 
      ;; if it is a mailing list, just show everything from that
-     ;; (unforunately, many provide a "List-Unsubscribe", but not the List-Id itself)
-     (email-list
+     ;; (unfortunately, many provide a "List-Unsubscribe", but not the List-Id itself)
+     ((> 0 (length email-list))
       (mu4e-search
        (format "list:%s AND maildir:/Inbox/" email-list)
        nil nil nil
