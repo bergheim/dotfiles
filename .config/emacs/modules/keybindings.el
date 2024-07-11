@@ -135,6 +135,8 @@
     "cd" '(xref-find-definitions :which-key "Find definitions")
     "cD" '(xref-find-definitions-other-window :which-key "Find definitions other")
     "cr" '(xref-find-references :which-key "Find references")
+    ;; "cR" '(xref-query-replace-in-result :which-key "Rename")
+    ;; "cR" '(xref-find-references-and-replace :which-key "Rename")
     "ce" '(consult-flymake :which-key "Search errors")
     "cE" '(flymake-show-buffer-diagnostics :which-key "Show errors")
     

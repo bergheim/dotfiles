@@ -28,6 +28,8 @@
   (general-define-key
    :states '(normal insert visual)
    :keymaps 'org-mode-map
+   "C-M-<return>" #'bergheim/org-insert-indented-todo-subheading
+
    "C-M-h" #'org-metaleft
    "C-M-j" #'org-metadown
    "C-M-k" #'org-metaup

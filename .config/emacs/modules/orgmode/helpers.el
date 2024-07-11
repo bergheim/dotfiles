@@ -2,6 +2,20 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defun bergheim/org-insert-indented-todo-subheading ()
+  "Insert a TODO subheading at the end of the current node."
+  (interactive)
+
+  (if (org-in-item-p)
+      (progn
+        (end-of-line)
+        (org-insert-todo-subheading nil))
+    (org-insert-todo-heading-respect-content)
+    (org-demote-subtree)
+    (org-set-property "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]")))
+  (when (bound-and-true-p evil-mode)
+    (evil-insert 0)))
+
 ;; TODO: should this be interactive? if so, rename
 (defun bergheim/~id-get-or-generate()
   "Returns the ID property if set or generates and returns a new one if not set.
