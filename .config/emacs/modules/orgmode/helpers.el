@@ -181,6 +181,19 @@ you're done. This can be called from an external shell script."
          (message "org-capture: %s" (error-message-string ex))
          (delete-frame frame))))))
 
+
+(defun bergheim/org-archive-all-done-and-cancelled-tasks ()
+  "Archive all DONE and CANCELLED tasks in the current buffer."
+  (interactive)
+  (let ((count 0))
+    (org-map-entries (lambda ()
+                       (org-archive-subtree)
+                       ;; (bergheim/org-archive-subtree)
+                       (setq count (1+ count))
+                       (setq org-map-continue-from
+                             (org-element-property :begin (org-element-at-point))))
+                     "/DONE|CANCELLED|FIXED|IGNORED" 'file)
+    (message "Archived %s items" count)))
 (defun bergheim/org-get-tasks-for-rofi ()
   "Get a list of org tasks for ROFI."
   (let ((tasks (org-mru-clock--collection)))
