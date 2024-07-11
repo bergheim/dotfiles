@@ -153,6 +153,28 @@
 
 (use-package consult-todo :after consult)
 
+(use-package consult-recoll
+  :after consult
+  :general
+  (bergheim/global-menu-keys
+    "sR" '(consult-recoll :which-key "Recoll"))
+  :custom
+  (consult-recoll-group-by-mime t)
+  (consult-recoll-embark-setup)
+  :config
+  (defun bergheim/open-with-mu4e (file &optional _page)
+    (with-temp-buffer
+      (insert-file-contents-literally file)
+      (goto-char (point-min))
+      (if (re-search-forward "^Message-Id: <\\([^>]+\\)>$" nil t)
+          (progn
+            (message "Extracted Message-Id: %s" (match-string 1))
+            (mu4e-view-message-with-message-id (match-string 1)))
+        (message "Error: Message-Id not found in %s" file))))
+
+  (add-to-list 'consult-recoll-open-fns '("message/rfc822" . bergheim/open-with-mu4e)))
+
+
 (defun bergheim/consult-ripgrep-with-selection (&optional dir)
   "Run `consult-ripgrep' with the current visual selection as the initial input.
 If called interactively with a prefix argument, prompt for DIR, otherwise use the default behavior of `consult-ripgrep`."
