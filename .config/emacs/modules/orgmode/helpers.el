@@ -112,6 +112,14 @@
         (format "%s:  %s" org-clock-heading (org-duration-from-minutes (org-clock-get-clocked-time)))
       "")))
 
+(defun bergheim/org-add-note-to-clocked-task ()
+  "Add a note to the currently clocked-in task, or call `org-mru-clock-add-note` if no task is clocked in."
+  (interactive)
+  (if (org-clock-is-active)
+      (save-excursion
+        (org-clock-goto)
+        (org-add-note))
+    (org-mru-clock-add-note)))
 
 (defun bergheim/vertico--without-orderless (fn &rest args)
   (let ((completion-styles '(partial-completion)))
