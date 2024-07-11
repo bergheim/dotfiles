@@ -1,6 +1,5 @@
 return {
-
-    "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
+    -- "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
     "farmergreg/vim-lastplace",
     -- good comment (gc) support
     { "numToStr/Comment.nvim", opts = {} },

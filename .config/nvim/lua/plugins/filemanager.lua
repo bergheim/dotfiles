@@ -22,6 +22,7 @@ return {
                 keymaps = {
                     ["g?"] = "actions.show_help",
                     ["<CR>"] = "actions.select",
+                    ["L"] = "actions.select",
                     ["<C-s>"] = {
                         "actions.select",
                         opts = { vertical = true },
@@ -35,9 +36,11 @@ return {
                     ["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
                     ["<C-p>"] = "actions.preview",
                     ["<C-c>"] = "actions.close",
+                    ["q"] = "actions.close",
                     ["<C-l>"] = "actions.refresh",
                     ["-"] = "actions.parent",
                     ["H"] = "actions.parent",
+                    ["<bs>"] = "actions.parent",
                     ["_"] = "actions.open_cwd",
                     ["`"] = "actions.cd",
                     ["~"] = { "actions.cd", opts = { scope = "tab" }, desc = ":tcd to the current oil directory" },

@@ -8,13 +8,15 @@ return {
             local elixirls = require("elixir.elixirls")
 
             elixir.setup({
-                nextls = { enable = true },
+                nextls = { enable = false },
                 credo = {},
                 elixirls = {
-                    enable = false,
+                    enable = true,
                     settings = elixirls.settings({
-                        dialyzerEnabled = false,
+                        dialyzerEnabled = true,
+                        fetchDeps = false,
                         enableTestLenses = false,
+                        suggestSpecs = false,
                     }),
                     on_attach = function(client, bufnr)
                         vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
@@ -26,6 +28,26 @@ return {
         end,
         dependencies = {
             "nvim-lua/plenary.nvim",
+        },
+    },
+    {
+        "emmanueltouzery/elixir-extras.nvim",
+        keys = {
+            -- TODO should use localleader here
+            {
+                "<leader>sE",
+                function()
+                    require("elixir-extras").elixir_view_docs({ include_mix_libs = true })
+                end,
+                desc = "Search Elixir Docs",
+            },
+            {
+                "<leader>cE",
+                function()
+                    require("elixir-extras").module_complete()
+                end,
+                desc = "Complete module",
+            },
         },
     },
 }

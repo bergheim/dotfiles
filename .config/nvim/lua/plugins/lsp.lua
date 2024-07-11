@@ -53,6 +53,7 @@ return {
                     -- Fuzzy find all the symbols in your current workspace.
                     --  Similar to document symbols, except searches over your entire project.
                     map("<leader>sI", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Project symbols")
+                    map("<leader>sD", require("telescope.builtin").lsp_workspace_symbols, "Project symbols test")
 
                     -- Rename the variable under your cursor.
                     --  Most Language Servers support renaming across files, etc.
@@ -201,6 +202,7 @@ return {
             vim.list_extend(ensure_installed, {
                 -- TODO: unpin this once the latest version > 0.0.18 works on .heex files again
                 { "tailwindcss-language-server", version = "0.0.16" },
+                -- { "tailwindcss-language-server" },
                 "prettierd",
                 "stylua", -- Used to format Lua code
             })
