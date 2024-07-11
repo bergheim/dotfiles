@@ -36,6 +36,9 @@ super + z
 super + c
   emacs-capture --eval '(bergheim/capture)'
 
+super + t
+  emacs-clock-in
+
 # make sxhkd reload its configuration files:
 super + F6
   pkill -USR1 -x sxhkd

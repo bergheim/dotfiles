@@ -159,4 +159,19 @@ you're done. This can be called from an external shell script."
          (message "org-capture: %s" (error-message-string ex))
          (delete-frame frame))))))
 
+(defun bergheim/org-get-tasks-for-rofi ()
+  "Get a list of org tasks for ROFI."
+  (let ((tasks (org-mru-clock--collection)))
+    (mapconcat (lambda (task)
+                 (format "%s" (car task)))
+               tasks "\n")))
+
+(defun bergheim/org-clock-in-from-rofi (title)
+  "Clock into an org task by TITLE selected from ROFI."
+  (let* ((tasks (org-mru-clock--collection))
+         (task (assoc title tasks)))
+    (unless task
+      (error "No task found with title: %s" title))
+    (org-mru-clock--clock-in task)))
+
 ;;; helpers.el ends here

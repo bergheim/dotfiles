@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+tasks=$(emacsclient -e "(bergheim/org-get-tasks-for-rofi)" | sed 's/^"\|"$//g')
+echo "$tasks"
+selection=$(echo -e "$tasks" | rofi -i -dmenu -p "Clock into task:")
+
+if [ -n "$selection" ]; then
+    emacsclient -e "(bergheim/org-clock-in-from-rofi \"$selection\")"
+fi
