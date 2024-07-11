@@ -6,6 +6,9 @@
 
 (use-package eat
   :commands eat
+  :general
+  (bergheim/global-menu-keys
+    "aa" '(eat :which-key "Eat"))
   :config
   (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
 

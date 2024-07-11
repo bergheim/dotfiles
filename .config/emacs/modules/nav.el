@@ -100,7 +100,7 @@ With a universal argument, it allows entering the application to use."
   (:keymaps 'dirvish-mode-map
    :states 'normal
    "?"   #'dirvish-dispatch
-   "b"   #'dirvish-history-jump
+   "H"   #'dirvish-history-jump
    "q"   #'dirvish-quit
    "a"   #'dirvish-quick-access
    "C"   #'dired-create-directory
@@ -113,7 +113,6 @@ With a universal argument, it allows entering the application to use."
    "o"   #'dired-sort-toggle-or-edit
    "O"   #'dirvish-quicksort
    "s"   #'dirvish-narrow
-   "S"   #'dirvish-fd-ask
    "TAB" #'dirvish-subtree-toggle
    "C-h" #'dirvish-history-go-backward
    "C-l" #'dirvish-history-go-forward

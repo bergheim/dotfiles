@@ -74,10 +74,23 @@
        (cdr (ring-ref avy-ring 0))))
     t)
 
+  ;; TODO: make a selection take precedence..? that could support spaces..
+  (defun bergheim/embark-open-with (file)
+    "Open the current file in 'dired-mode' with an application of your choosing."
+    (interactive "sOpen externally: ")
+    (unless (string-match-p "\\`[a-z]+://" file)
+      (setq file (expand-file-name file)))
+    (let ((command (completing-read "Open current file with: "
+                                    (bergheim//executables-in-path))))
+      (start-process command nil command file)))
+
   ;; FIXME: this does not work
   ;; After invoking avy-goto-char-timer, hit "." to run embark at the next
   ;; candidate you select
-  (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark))
+  (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark)
+
+  :config
+  (define-key embark-file-map "X" #'bergheim/embark-open-with))
 
 (use-package embark-consult
   :after (embark consult)
