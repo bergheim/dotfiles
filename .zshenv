@@ -66,5 +66,6 @@ fi
 
 export N_PREFIX=~/local
 
+export TERM=tmux-direct
 
 source ~/.zshenv-private

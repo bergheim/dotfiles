@@ -12,8 +12,8 @@ unfocused_hollow = true
 blinking = "On"
 shape = "Block"
 
-[env]
-TERM = "xterm-256color"
+# [env]
+# TERM = "tmux-direct"
 
 [font]
 size = 14.0
