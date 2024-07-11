@@ -33,12 +33,6 @@
   (general-def :keymaps 'transient-map
     [escape] 'transient-quit-one)
 
-  ;; jk exits normal mode
-  (general-imap "j"
-    (general-key-dispatch 'self-insert-command
-      :timeout 0.25
-      "k" 'evil-normal-state))
-
   (general-define-key
    :states 'visual
    "u" 'undo-tree-undo

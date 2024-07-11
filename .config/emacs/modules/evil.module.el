@@ -7,6 +7,16 @@
   (setq evil-collection-want-unimpaired-p nil)
   (evil-collection-init))
 
+(use-package evil-escape
+  :after evil
+  :demand t
+  :config
+  (setq-default evil-escape-delay 0.2)
+  (setq-default evil-escape-key-sequence "jk")
+  (setq-default evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode))
+  (setq-default evil-escape-excluded-states '(visual))
+  (evil-escape-mode))
+
 (use-package evil-org
   :ensure t
   :after org
