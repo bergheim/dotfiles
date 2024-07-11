@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
-if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-  emacsclient -a "" -t "$@"
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_TTY" ]; then
+    TERM=xterm-direct emacsclient -a "" -t --eval '(bergheim/ssh-connect)' "$@"
 else
-  emacsclient -a "" -c "$@"
+    emacsclient -a "" -c "$@"
 fi
