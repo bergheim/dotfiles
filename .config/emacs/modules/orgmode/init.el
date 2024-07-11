@@ -11,6 +11,7 @@
 
   ;; LOL @this loading
   :init
+  (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/keybindings.el")
   (bergheim/load-file "modules/orgmode/capture.el")
@@ -19,7 +20,6 @@
 
   :config
   (bergheim/load-file "modules/orgmode/base.el")
-  (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/style.el")
@@ -63,8 +63,9 @@
     "q" 'org-set-tags-command
     "u" '(bergheim/org-copy-url-only :which-key "copy URL")
     "s" '(:ignore t :which-key "Subtree")
-    "sA" 'org-archive-subtree
-    "sa" 'org-toggle-archive-tag
+    ;; "sa" 'bergheim/org-archive-subtree
+    "sa" 'org-archive-subtree
+    "sA" 'org-toggle-archive-tag
     "sb" 'org-tree-to-indirect-buffer
     "sc" 'org-clone-subtree-with-time-shift
     "sn" 'org-narrow-to-subtree
@@ -136,7 +137,6 @@
     (cfw:open-calendar-buffer
      :contents-sources
      (list
-      (cfw:ical-create-source "outlook" bergheim/calendar/neptune/default "Orange")
       (cfw:org-create-file-source "personal" bergheim/calendar/nextcloud/local "DarkGreen"))
      ;; :view 'block-5-day
      :view 'transpose-two-weeks))
@@ -316,5 +316,6 @@
   (global-org-modern-mode))
 
 (use-package org-contrib
-  :after org)
+  :after org
+  :demand)
 ;;; org.el ends here

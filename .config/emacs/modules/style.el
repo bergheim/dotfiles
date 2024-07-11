@@ -306,10 +306,10 @@
 
 (use-package writeroom-mode
   :init
-  (defun bergheim/write-mode ()
+  (defun bergheim/write-mode (&optional write)
     "Toggle zoom in on the current buffer."
     (interactive)
-    (if (function-get 'bergheim/write-mode 'toggled)
+    (if (and (not write) (function-get 'bergheim/write-mode 'toggled))
         (progn
           (writeroom-mode -1)
           (focus-mode 0)

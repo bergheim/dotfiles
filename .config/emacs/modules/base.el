@@ -53,8 +53,8 @@
   :ensure nil
   :demand t
   :config
-  (setq recentf-max-menu-items 50)
-  (setq recentf-max-saved-items 200)
+  (setq recentf-max-menu-items 500)
+  (setq recentf-max-saved-items 2000)
   (add-to-list 'recentf-exclude
                (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude

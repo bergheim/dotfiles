@@ -82,6 +82,7 @@
     "RET" '(consult-bookmark :which-key "Bookmarks")
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")
+    "æ" '(vertico-repeat :which-key "Repeat search")
     "`" '(bergheim/toggle-scratch-buffer :which-key "Scratch buffer")
     ;; "SPC" '(bergheim/consult-project-or-buffer :which-key "Find stuff")
     ;; "SPC" '(consult-buffer :which-key "Switch")
@@ -140,6 +141,7 @@
     "d" '(:ignore t :which-key "dotfiles")
     "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Magit")
     "df" '(bergheim/find-in-dotfiles :which-key "Find a file")
+    "ds" '(bergheim/search-in-dotfiles :which-key "Search for a file")
     "db" '(bergheim/browse-dotfiles :which-key "Browse")
     "de" '((lambda () (interactive) (consult-ripgrep "~/.config/emacs")) :which-key "Grep emacs")
     "dg" '((lambda () (interactive) (consult-ripgrep "~/.config/")) :which-key "Grep config")
@@ -156,6 +158,7 @@
     "fR" '(rename-visited-file :which-key "Rename file")
     "fo" '(browse-url-of-buffer :which-key "Browse file")
     "fs" '(save-buffer :which-key "Save buffer")
+    "fS" `(,(bergheim/call-with-universal-arg #'save-some-buffers) :which-key "Save all buffers")
     "fy" '(+default/yank-buffer-path :which-key "Yank file path")
 
     "g" '(:ignore t :which-key "git")
@@ -230,7 +233,7 @@
     "sh" '(consult-isearch-history :which-key "Search history")
     "sr" '(consult-recent-file :which-key "recent files")
     "si" '(consult-imenu :which-key "imenu items")
-    "sI" '(consult-imenu-multi :which-key "imenu items in all buffers")
+    "sI" '(consult-imenu-multi :which-key "imenu items all buffers")
     "sk" '(consult-kmacro :which-key "kmacro")
     "sm" '(consult-global-mark :which-key "global marks")
     "sM" '(consult-man :which-key "man")
@@ -243,7 +246,7 @@
 
     "t" '(:ignore t :which-key "Toggle")
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
-    "t i" '(berhgeim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
+    "t i" '(bergheim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
     "t L" '(jinx-languages :which-key "Languages")
     ;; toggle-truncate-lines?
     "t l" '(visual-line-mode :which-key "Visual lines")

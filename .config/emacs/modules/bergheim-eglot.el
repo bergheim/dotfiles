@@ -12,7 +12,7 @@ See `me/eglot-inlay-hints-automatic'."
       (eglot-inlay-hints-mode 1)
     (eglot-inlay-hints-mode -1)))
 
-(defun berhgeim/eglot-inlay-hints-toggle ()
+(defun bergheim/eglot-inlay-hints-toggle ()
   "Toggle `me/eglot-inlay-hints-automatic'.
 Also toggle `eglot-inlay-hints-mode' accordingly."
   (interactive)
@@ -33,8 +33,11 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                      #'eglot-completion-at-point
                      ))))
 
+;; (use-package track-changes
+;; :ensure (:host "https://elpa.gnu.org/packages/track-changes"))
+
 (use-package eglot
-  ;; why not?
+  ;; FIXME: if we use the one on ELPA we need track-changes
   :ensure nil
   :defer t
   :bind (("M-<mouse-1>" . eglot-find-implementation))
