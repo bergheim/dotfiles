@@ -10,7 +10,7 @@ fi
 xsettingsd &
 
 # fancylocki3 &
-~/.config/screenlayout/default.sh
+# ~/.config/screenlayout/default.sh
 
 numlockx &  # turn numlock on
 unclutter & # hide the mouse when it is unused
@@ -23,11 +23,9 @@ element-desktop &
 (sleep 5 && discord) &
 
 (sleep 5 && firefox) &
-spotify &
+(sleep 5 && spotify) &
 
 # rsibreak &
-
-gnome-keyring-daemon --start --components=pkcs11,secrets,ssh &
 
 setxkbmap -option caps:escape # use caps as esc
 setxkbmap -layout 'us,no' -variant intl -option "grp:ctrls_toggle,terminate:ctrl_alt_bksp"

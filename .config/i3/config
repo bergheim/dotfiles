@@ -11,6 +11,38 @@ set $right l
 set $down j
 set $left h
 
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+set $ws11 "11"
+set $ws12 "12"
+set $ws13 "13"
+
+set $monitor1 $MONITOR_PRIMARY
+set $monitor2 $MONITOR_SECONDARY
+
+workspace $ws1 output $monitor1
+workspace $ws2 output $monitor1
+workspace $ws3 output $monitor1
+workspace $ws4 output $monitor1
+workspace $ws5 output $monitor1
+workspace $ws6 output $monitor1
+workspace $ws7 output $monitor1
+workspace $ws8 output $monitor1
+workspace $ws9 output $monitor1
+
+workspace $ws10 output $monitor2
+workspace $ws11 output $monitor2
+workspace $ws12 output $monitor2
+workspace $ws13 output $monitor2
+
 # reload the configuration file
 bindsym $mod+F5 reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -108,20 +140,6 @@ bindsym $mod+shift+n move workspace to output right
 # focus the child container
 #bindsym $mod+d focus child
 
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
-set $ws11 "11"
-set $ws12 "12"
-set $ws13 "13"
-
 exec_always --no-startup-id i3-scratchterm-toggle &
 bindsym $mod+grave [title="i3termscratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; [title="i3termscratchpad"] resize set 3546 1600; [title="i3termscratchpad"] move position center
 
@@ -132,23 +150,6 @@ for_window [title="i3termscratchpad"] move scratchpad
 # used by sxhkd, and that handled it anyway
 # bindsym $mod+Shift+comma    move scratchpad
 # bindsym $mod+comma          scratchpad show
-
-set $monitor1 DP-2
-set $monitor2 DP-0
-workspace $ws1 output $monitor1
-workspace $ws2 output $monitor1
-workspace $ws3 output $monitor1
-workspace $ws4 output $monitor1
-workspace $ws5 output $monitor1
-workspace $ws6 output $monitor1
-workspace $ws7 output $monitor1
-workspace $ws8 output $monitor1
-workspace $ws9 output $monitor1
-
-workspace $ws10 output $monitor2
-workspace $ws11 output $monitor2
-workspace $ws12 output $monitor2
-workspace $ws13 output $monitor2
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
