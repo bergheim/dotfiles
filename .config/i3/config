@@ -25,8 +25,11 @@ set $ws11 "11"
 set $ws12 "12"
 set $ws13 "13"
 
-set $monitor1 $MONITOR_PRIMARY
-set $monitor2 $MONITOR_SECONDARY
+# FIXME: why does this not work? they _are_ set
+# set $monitor1 $MONITOR_PRIMARY
+# set $monitor2 $MONITOR_SECONDARY
+set $monitor1 DP-0
+set $monitor2 DP-2
 
 workspace $ws1 output $monitor1
 workspace $ws2 output $monitor1
