@@ -252,7 +252,7 @@
                 ("Protocol Capture" :keys "z"
                  :icon ("nf-oct-stop" :set "octicon" :color "red")
                  :type entry
-                 :prepend t
+                 :prepend nil
                  :headline "Protocol"
                  :file +org-capture-protocol-file
                  :immediate-finish t
