@@ -25,7 +25,18 @@
   :after org
   :config
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
-  (setq org-capture-templates
+
+  (setq org-capture-custom-template-directory (concat org-directory "templates/capture/")
+        +org-capture-contacts-file (expand-file-name "contacts.org" org-directory)
+        +org-capture-habits-file (expand-file-name "habits.org" org-directory)
+        +org-capture-mail-followup-file (expand-file-name "email/followup.org" org-directory)
+        +org-capture-mail-later-file (expand-file-name "email/later.org" org-directory)
+        +org-capture-personal-file (concat org-directory "personal.org")
+        +org-capture-review-file (expand-file-name "review.org" org-directory)
+        +org-capture-protocol-file (expand-file-name "inbox.org" org-directory)
+        +org-capture-work-file (concat org-directory "work.org")
+        +org-capture-work-meeting (concat org-directory "roam/work/meetings.org")
+        org-capture-templates
         (doct `(("Personal"
                  :icon ("nf-cod-person" :set "codicon" :color "green")
                  :keys "p"
@@ -115,7 +126,7 @@
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"
                              :jump-to-captured t
-                             :file "~/org/roam/work/meetings.org"
+                             :file +org-capture-work-meeting
                              :headline "Meetings"
                              :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
@@ -138,7 +149,7 @@
 
                 ("Spaced repetition" :keys "s"
                  :icon ("nf-fa-repeat" :set "faicon" :color "red")
-                 :file ,(expand-file-name "habits.org" org-directory)
+                 :file +org-capture-habits-file
                  :olp ("Skill honing")
                  :template-file ,(expand-file-name "recall.org" org-capture-custom-template-directory)
                  :immediate-finish nil)
@@ -149,7 +160,7 @@
                  :type entry
                  :clock-in t
                  :clock-keep t
-                 :file "~/org/review.org"
+                 :file +org-capture-review-file
                  :jump-to-captured t
                  :default-tags "review"
                  :children (("Daily review"
@@ -182,7 +193,7 @@
                  :icon ("nf-oct-person" :set "octicon" :color "green")
                  :type entry
                  :headline "People"
-                 :file "~/org/contacts.org"
+                 :file +org-capture-contacts-file
                  :template ("* %(org-contacts-template-name)
                  :PROPERTIES:
                  :ADDRESS: %^{Address}
@@ -243,7 +254,7 @@
                  :type entry
                  :prepend t
                  :headline "Protocol"
-                 :file +org-capture-todo-file
+                 :file +org-capture-protocol-file
                  :immediate-finish t
                  :template-file ,(expand-file-name "protocol-capture.org" org-capture-custom-template-directory))
 

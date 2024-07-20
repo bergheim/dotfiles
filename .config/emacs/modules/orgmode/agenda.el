@@ -215,53 +215,54 @@
                     ))))))
 
 (use-package org-super-agenda
-  :ensure t
-  :commands (bergheim/org-super-agenda)
-  :config
+  :after org
+  :demand
+  ;; :commands (bergheim/org-super-agenda)
+  :init
   (defun bergheim/org-super-agenda (&rest args)
     (interactive)
-    (org-super-agenda-mode 1)
     (apply #'org-agenda args))
+  :config
   ;; don't break evil on org-super-agenda headings, see
   ;; https://github.com/alphapapa/org-super-agenda/issues/50
   (setq org-super-agenda-header-map (make-sparse-keymap))
   (org-super-agenda-mode 1)
 
   (org-super-agenda--def-auto-group
-   bergheim/clocked-or-created
-   "Group items based on the latest CLOCK or CREATED timestamp in the entry.
+    bergheim/clocked-or-created
+    "Group items based on the latest CLOCK or CREATED timestamp in the entry.
 The date is formatted according to `org-super-agenda-date-format'."
-   ;; :keyword :auto-
-   :key-form
-   (cl-labels ((latest-ts-up-to
-                (limit) ;; FIXME: What if the logbook is empty?
-                (-some->> (cl-loop for next-ts = (when (re-search-forward org-element--timestamp-regexp limit t)
-                                                   (ts-parse-org (match-string 1)))
-                                   while next-ts
-                                   collect next-ts)
-                  (-sort #'ts>)
-                  car)))
-     (org-super-agenda--when-with-marker-buffer
-      (org-super-agenda--get-marker item)
-      (let* ((created (when (org-entry-get (point) "CREATED")
-                        (ts-parse-org (org-entry-get (point) "CREATED"))))
-             (clocked (let ((drawer-name (org-clock-drawer-name))
-                            (entry-end (org-entry-end-position))
-                            ts)
-                        (when (and drawer-name
-                                   (re-search-forward (rx-to-string `(seq bol (0+ blank) ":" ,drawer-name ":"))
-                                                      entry-end 'noerror)
-                                   (org-at-drawer-p))
-                          (latest-ts-up-to (save-excursion
-                                             ;; End of drawer.
-                                             (re-search-forward (rx bol (0+ blank) ":END:") entry-end))))))
-             (latest-ts (car (sort (remq nil (list created clocked)) #'ts>))))
-        (when latest-ts
-          (propertize (ts-format org-super-agenda-date-format latest-ts)
-                      'org-super-agenda-ts latest-ts)))))
-   :key-sort-fn (lambda (a b)
-                  (ts> (get-text-property 0 'org-super-agenda-ts a)
-                       (get-text-property 0 'org-super-agenda-ts b)))))
+    ;; :keyword :auto-
+    :key-form
+    (cl-labels ((latest-ts-up-to
+                 (limit) ;; FIXME: What if the logbook is empty?
+                 (-some->> (cl-loop for next-ts = (when (re-search-forward org-element--timestamp-regexp limit t)
+                                                    (ts-parse-org (match-string 1)))
+                                    while next-ts
+                                    collect next-ts)
+                   (-sort #'ts>)
+                   car)))
+      (org-super-agenda--when-with-marker-buffer
+        (org-super-agenda--get-marker item)
+        (let* ((created (when (org-entry-get (point) "CREATED")
+                          (ts-parse-org (org-entry-get (point) "CREATED"))))
+               (clocked (let ((drawer-name (org-clock-drawer-name))
+                              (entry-end (org-entry-end-position))
+                              ts)
+                          (when (and drawer-name
+                                     (re-search-forward (rx-to-string `(seq bol (0+ blank) ":" ,drawer-name ":"))
+                                                        entry-end 'noerror)
+                                     (org-at-drawer-p))
+                            (latest-ts-up-to (save-excursion
+                                               ;; End of drawer.
+                                               (re-search-forward (rx bol (0+ blank) ":END:") entry-end))))))
+               (latest-ts (car (sort (remq nil (list created clocked)) #'ts>))))
+          (when latest-ts
+            (propertize (ts-format org-super-agenda-date-format latest-ts)
+                        'org-super-agenda-ts latest-ts)))))
+    :key-sort-fn (lambda (a b)
+                   (ts> (get-text-property 0 'org-super-agenda-ts a)
+                        (get-text-property 0 'org-super-agenda-ts b)))))
 
 ;; TODO: verify this works (from https://github.com/unhammer/org-mru-clock/)
 ;; (add-hook 'minibuffer-setup-hook #'org-mru-clock-embark-minibuffer-hook)

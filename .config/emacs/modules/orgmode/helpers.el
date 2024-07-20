@@ -186,6 +186,7 @@ you're done. This can be called from an external shell script."
   "Archive all DONE and CANCELLED tasks in the current buffer."
   (interactive)
   (let ((count 0))
+    (advice-remove 'org-archive-subtree #'org-save-all-org-buffers)
     (org-map-entries (lambda ()
                        (org-archive-subtree)
                        ;; (bergheim/org-archive-subtree)
@@ -193,7 +194,10 @@ you're done. This can be called from an external shell script."
                        (setq org-map-continue-from
                              (org-element-property :begin (org-element-at-point))))
                      "/DONE|CANCELLED|FIXED|IGNORED" 'file)
+    (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
+    (org-save-all-org-buffers)
     (message "Archived %s items" count)))
+
 (defun bergheim/org-get-tasks-for-rofi ()
   "Get a list of org tasks for ROFI."
   (let ((tasks (org-mru-clock--collection)))

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (setq org-directory (concat bergheim/home-directory "org/")
-      org-deadline-warning-days 14
+      org-deadline-warning-days 7
 
       org-confirm-babel-evaluate nil
 
@@ -46,6 +46,10 @@
       ;; stamp a CLOSED: [X] on DONE items
       org-log-done 'time
       org-log-into-drawer t
+
+      org-log-reschedule 'note
+      org-log-redeadline 'note
+
       org-agenda-start-with-log-mode t
 
       ;; TODO: remove this if it results in too much slowdown. Time spc n S for instance
@@ -62,14 +66,12 @@
       org-refile-use-outline-path 'file
       org-outline-path-complete-in-steps nil
 
-      ;; org-deadline-warning-days 7
       ;; org-agenda-compact-blocks nil ;; don't compact the agenda
       ;; give me all the possible completions at once so helm can present them
       ;; org-outline-path-complete-in-steps nil)
       ;; org-agenda-default-appointment-duration 60
 
       org-agenda-files (append (file-expand-wildcards (concat org-directory "*.org"))
-                               (directory-files-recursively (concat org-directory "neptune") "\\.org$")
                                (list bergheim/calendar/nextcloud/local)
                                (directory-files-recursively (expand-file-name "projects" org-directory) "\\.org$"))
 
@@ -77,13 +79,6 @@
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))
 
       org-habit-graph-column 60
-
-      +org-capture-todo-file "inbox.org"
-      +org-capture-mail-followup-file (expand-file-name "email/followup.org" org-directory)
-      +org-capture-mail-later-file (expand-file-name "email/later.org" org-directory)
-      +org-capture-work-file (concat org-directory "work.org")
-      +org-capture-personal-file (concat org-directory "personal.org")
-      org-capture-custom-template-directory (concat org-directory "templates/capture/")
 
       ;; include tags from all agenda files
       org-complete-tags-always-offer-all-agenda-tags t
@@ -126,10 +121,10 @@
 (add-to-list 'org-modules 'org-habit)
 
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
-;; (add-hook '(org-clock-out-hook org-clock-in-hook) #'org-save-all-org-buffers)
-;; this is handled by my/org-roam-copy-todo-to-today at the moment
+(advice-add 'org-refile :after #'org-save-all-org-buffers)
 ;; (advice-add #'org-todo :after (lambda (&rest _) (org-save-all-org-buffers)))
-;; (advice-add 'org-refile :after 'org-save-all-org-buffers)
+;; (add-hook 'org-clock-in-hook #'org-save-all-org-buffers)
+;; (add-hook 'org-clock-out-hook #'org-save-all-org-buffers)
 
 ;; open new notes etc in insert mode
 (add-hook 'org-log-buffer-setup-hook #'evil-insert-state)
