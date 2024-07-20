@@ -225,7 +225,7 @@ With universal arg ARG, search all .org files under `org-directory`."
         :sort 'todo
         :super-groups '((:auto-todo t)))))
   :general
-  (:keymaps 'org-ql-view-map
+  (:keymaps '(org-ql-view-map org-ql-view-list-map)
    :states '(normal motion emacs)
    "RET" 'org-ql-view-switch
    "?" 'org-ql-view-dispatch
