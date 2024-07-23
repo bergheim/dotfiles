@@ -72,6 +72,7 @@
       ;; org-agenda-default-appointment-duration 60
 
       org-agenda-files (append (file-expand-wildcards (concat org-directory "*.org"))
+                               (file-expand-wildcards (concat org-directory "email/*.org"))
                                (list bergheim/calendar/nextcloud/local)
                                (directory-files-recursively (expand-file-name "projects" org-directory) "\\.org$"))
 
@@ -107,6 +108,9 @@
       org-attach-id-dir "data/"
 
       org-protocol-default-template-key "z"
+
+      ;; unfinished child TODOs will block
+      org-enforce-todo-dependencies t
 
       org-todo-keywords
       '((sequence "TODO(t)"
