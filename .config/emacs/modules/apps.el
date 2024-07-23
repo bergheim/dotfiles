@@ -2,15 +2,20 @@
 
 (use-package eshell
   :ensure nil
-  :bind (("C-r" . consult-history)))
+  :bind (("C-r" . consult-history))
+  :general
+  (bergheim/global-menu-keys
+    "as" '(eshell :which-key "eshell")))
 
 (use-package eat
   :commands eat
+  :custom
+  (eat-kill-buffer-on-exit t)
   :general
   (bergheim/global-menu-keys
-    "aa" '(eat :which-key "Eat"))
-  :config
-  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
+    "aS" '(eat :which-key "Eat"))
+  :hook
+  (eshell-first-time-mode . eat-eshell-mode))
 
 (use-package shr
   :ensure nil

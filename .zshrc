@@ -414,6 +414,10 @@ eval "$(zoxide init zsh)"
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
   source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
+if [[ $INSIDE_EMACS == *eat* ]]; then
+  alias vi='emacsclient -n'
+  # alias vi='emacsclient -e "(find-file-other-window \"$1\")"'
+fi
 
 # Fix for TRAMP
 [ $TERM = "dumb" ] && unsetopt zle && PS1='$ '
