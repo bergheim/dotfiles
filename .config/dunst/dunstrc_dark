@@ -334,16 +334,16 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#fafafa"
-    foreground = "#6a6a6a"
+    background = "#3a3a3a"
+    foreground = "#cccccc"
     timeout = 10
     # Icon for notifications with low urgency, uncomment to enable
     # default_icon = gtk-dialog-information
     default_icon = /usr/share/icons/breeze-dark/emblems/24@3x/emblem-question.svg
 
 [urgency_normal]
-    background = "#fafafa"
-    foreground = "#4a4a4a"
+    background = "#3a3a3a"
+    foreground = "#eeeeee"
     timeout = 20
     override_pause_level = 30
     # Icon for notifications with normal urgency, uncomment to enable
@@ -351,7 +351,7 @@
     default_icon = /usr/share/icons/breeze-dark/emblems/24@3x/emblem-information.svg
 
 [urgency_critical]
-    background = "#fafafa"
+    background = "#3a3a3a"
     foreground = "#FFED01"
     frame_color = "#ff0000"
     timeout = 0
