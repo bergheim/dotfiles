@@ -61,6 +61,20 @@
         desktop-load-locked-desktop t
         desktop-save-mode nil))
 
+;; desktop-mode hacks. pretty sure https://github.com/jamescherti/easysession.el should replace this..
+
+(defun bergheim/desktop-delete-lock-file (&optional frame)
+  "Delete the desktop lock file for the given frame.
+If FRAME is nil or not provided, use the selected frame."
+  (let* ((frame (or frame (selected-frame)))
+         (desktop-dir (frame-parameter frame 'desktop-dir))
+         (lock-file (when desktop-dir
+                      (expand-file-name ".emacs.desktop.lock" desktop-dir))))
+    (when (and lock-file (file-exists-p lock-file))
+      (delete-file lock-file))))
+
+(add-to-list 'delete-frame-functions #'bergheim/desktop-delete-lock-file)
+
 (use-package restart-emacs
   :after desktop
   :commands 'restart-emacs
@@ -68,7 +82,26 @@
   (defun bergheim/restart-emacs ()
     "Save desktop and then restart Emacs with custom init directory."
     (interactive)
-    (desktop-save (bergheim/get-and-ensure-data-dir "desktops/restart"))
+    ;; (desktop-release-lock)
+    (bergheim/desktop-delete-lock-file)
+    ;; (desktop-save (bergheim/get-and-ensure-data-dir "desktops/restart"))
     (restart-emacs)))
+
+(use-package beframe)
+
+;; WIP. lol
+(defun bergheim/load ()
+  (interactive)
+  (tab-bar-mode -1)
+  (activities-tabs-mode -1)
+  (let ((frame (make-frame `((name . "email")))))
+    (select-frame-set-input-focus frame)
+    (bergheim/email-today))
+
+  (let ((frame (make-frame `((name . "org")))))
+    (select-frame-set-input-focus frame)
+    (activities-resume (activities-named "org"))
+    )
+  )
 
 ;;; session.el ends here
