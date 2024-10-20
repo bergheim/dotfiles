@@ -123,26 +123,6 @@
   (:states 'normal
    "K" #'helpful-at-point))
 
-;; from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
-(define-advice elfeed-search--header (:around (oldfun &rest args))
-  (if elfeed-db
-      (apply oldfun args)
-    "No database loaded yet"))
-
-(use-package elfeed-org
-  :after elfeed
-  :demand
-  :init
-  (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" org-directory)))
-  :config
-  (elfeed-org))
-
-;; (use-package elfeed-goodies
-;;   :after elfeed
-;;   :demand
-;;   :config
-;;   (elfeed-goodies/setup))
-
 (use-package minibuffer
   :ensure nil
   :after general

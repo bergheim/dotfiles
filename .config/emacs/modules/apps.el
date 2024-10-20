@@ -176,6 +176,74 @@
   ;;     ]]
   ;;   )
   )
+
+;; from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
+(define-advice elfeed-search--header (:around (oldfun &rest args))
+  (if elfeed-db
+      (apply oldfun args)
+    "No database loaded yet"))
+
+(use-package elfeed-org
+  :after elfeed
+  :demand
+  :init
+  (setq rmh-elfeed-org-files (list (expand-file-name "elfeed/elfeed.org" org-directory)))
+  :config
+  (elfeed-org))
+
+(use-package elfeed-protocol
+  :after elfeed
+  :demand
+  :general
+  (:keymaps 'elfeed-search-mode-map
+   :states 'normal
+   "gr" #'bergheim/elfeed-refresh)
+  :init
+  (defun bergheim/elfeed-refresh ()
+    (interactive)
+    (mark-whole-buffer)
+    (cl-loop for entry in (elfeed-search-selected)
+             do (elfeed-untag-1 entry 'unread))
+    (elfeed-search-update--force)
+    (elfeed-protocol-fever-reinit "https://tsb@thomasbergheim.com/rss"))
+  :config
+  (setq elfeed-use-curl t)
+  ;; nextcloud
+  ;; (setq elfeed-protocol-feeds '(("owncloud+https://tsb@cloud.thomasbergheim.com"
+  ;;                                :password (password-store-get "websites/cloud.thomasbergheim.com/tsb"))))
+  ;; (setq elfeed-protocol-enabled-protocols '(owncloud))
+  ;; (setq elfeed-protocol-owncloud-star-tag 'star)
+
+  ;; miniflux / fever
+  (setq elfeed-protocol-fever-update-unread-only nil)
+  (setq elfeed-protocol-fever-fetch-category-as-tag nil)
+  (setq elfeed-protocol-feeds '(("fever+https://tsb@thomasbergheim.com/rss"
+                                 :api-url "https://thomasbergheim.com/rss/fever/"
+                                 :password (password-store-get "mycloud/miniflux/fever"))))
+  (setq elfeed-protocol-enabled-protocols '(fever))
+
+  ;; (defvar elfeed-protocol-orig-feeds nil
+  ;;   "Store original content of `elfeed-feeds'.")
+  ;; (defadvice elfeed (after configure-elfeed-feeds activate)
+  ;;   "Make elfeed-org autotags rules works with elfeed-protocol."
+  ;;   (setq
+  ;;    elfeed-protocol-orig-feeds elfeed-protocol-feeds
+  ;;    elfeed-protocol-feeds (list
+  ;;                           (list "fever+https://tsb@thomasbergheim.com/rss"
+  ;;                                 :api-url "https://thomasbergheim.com/rss/fever/"
+  ;;                                 :password (password-store-get "mycloud/miniflux/fever")
+  ;;                                 :autotags  elfeed-protocol-orig-feeds)))
+  ;;   (elfeed-update))
+
+
+  ;; enable elfeed-protocol
+  (elfeed-protocol-enable))
+
+;; (use-package elfeed-goodies
+;;   :after elfeed
+;;   :demand
+;;   :config
+;;   (elfeed-goodies/setup))
 (use-package smudge
   :custom
   (smudge-oauth2-client-secret bergheim/spotify/client-secret)
