@@ -6,19 +6,17 @@
   :defer t
   ;; TODO: latest org does not work with org-habits etc so
   ;; use the internal one for now
-  :ensure nil
+  :ensure t
   :after general
 
   ;; LOL @this loading
-  :init
+  :config
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/keybindings.el")
   (bergheim/load-file "modules/orgmode/capture.el")
   (bergheim/load-file "modules/orgmode/agenda.el")
   (bergheim/load-file "modules/orgmode/roam.el")
-
-  :config
   (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/commands.el")
@@ -76,6 +74,8 @@
     "sr" 'org-refile
     "ss" 'org-sparse-tree
     "t" 'org-todo))
+
+(elpaca-wait)
 
 (use-package org-protocol
   :demand t
@@ -195,7 +195,6 @@
         calfw-blocks-lines-per-hour 3))
 
 (use-package org-clock
-  :ensure nil
   :ensure nil
   :after org
   :commands (org-clock-drawer-name))
