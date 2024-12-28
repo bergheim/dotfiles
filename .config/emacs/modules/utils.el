@@ -230,11 +230,6 @@ Lisp function does not specify a special indentation."
 (add-hook 'emacs-lisp-mode-hook
           (lambda () (setq-local lisp-indent-function #'lisp-indent-function)))
 
-
-;; newer versions required by dape etc
-(use-package jsonrpc
-  :ensure t)
-
 (use-package powerthesaurus
   ;; :cmd powerthesaurus-lookup
   :general
