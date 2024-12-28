@@ -12,6 +12,9 @@ case $session in
     bspwm)
         SXHKD_SHELL='/usr/bin/sh' sxhkd -c ~/.config/sxhkd/sxhkdrc.bspwm ~/.config/sxhkd/sxhkdrc &
         exec bspwm;;
+    sway)
+        SXHKD_SHELL='/usr/bin/sh' sxhkd -c ~/.config/sxhkd/sxhkdrc.i3 ~/.config/sxhkd/sxhkdrc &
+        exec sway;;
     *)
         # No known session, try to run it as command
         exec $1;;
