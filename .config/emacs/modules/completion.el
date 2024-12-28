@@ -314,6 +314,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
    ("S-SPC" . corfu-insert-separator)
    ("C-n" . corfu-next)
    ("C-p" . corfu-previous)
+   ("C-j" . corfu-next)
+   ("C-k" . corfu-previous)
    ("M-n" . nil)
    ("M-p" . nil))
   :custom
