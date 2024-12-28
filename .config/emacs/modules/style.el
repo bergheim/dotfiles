@@ -33,7 +33,7 @@
 (defvar bergheim/variable-font-name "IosevkaTerm Nerd Font" "Default font for variable width.")
 (defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
 (defvar bergheim/font-size-small 100 "Font size for small displays.")
-(defvar bergheim/font-size-medium 130 "Font size for medium displays.")
+(defvar bergheim/font-size-medium 110 "Font size for medium displays.")
 (defvar bergheim/font-size-large 170 "Font size for large displays.")
 (defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
 (defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
@@ -267,12 +267,12 @@
 
 (defun noct-relative ()
   "Show relative line numbers."
-  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode)
+  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode 'writeroom-mode)
     (setq-local display-line-numbers 'visual)))
 
 (defun noct-absolute ()
   "Show absolute line numbers."
-  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode)
+  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode 'writeroom-mode)
     (setq-local display-line-numbers t)))
 
 
