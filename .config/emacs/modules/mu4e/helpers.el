@@ -261,13 +261,13 @@ With \\[universal-argument], search all emails where I am a recipient"
         labeledparts)))
 
 (defun +mu4e-view-select-mime-part-action ()
-"Select a MIME part, and perform an action on it."
-(interactive)
-(let ((labeledparts (+mu4e-part-selectors (mu4e--view-gather-mime-parts))))
-  (if labeledparts
-      (mu4e-view-mime-part-action
-       (cadr (assoc (completing-read "Select part: " (mapcar #'car labeledparts))
-                    labeledparts)))
-    (user-error (mu4e-format "No parts found")))))
+  "Select a MIME part, and perform an action on it."
+  (interactive)
+  (let ((labeledparts (+mu4e-part-selectors (mu4e--view-gather-mime-parts))))
+    (if labeledparts
+        (mu4e-view-mime-part-action
+         (cadr (assoc (completing-read "Select part: " (mapcar #'car labeledparts))
+                      labeledparts)))
+      (user-error (mu4e-format "No parts found")))))
 
 ;;; helpers.el ends here
