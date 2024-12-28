@@ -11,7 +11,20 @@
      (mu4e-search-bookmark ,bookmark-string)))
 
 (use-package mu4e
-  :ensure nil
+  :ensure `(mu4e :host github :files ("mu4e/*.el" "build/mu4e/mu4e-meta.el" "build/mu4e/mu4e-config.el" "build/mu4e/mu4e.info") :repo "djcb/mu"
+                 :main "mu4e/mu4e.el"
+                 :pre-build (("./autogen.sh" "-Dtests=disabled")
+                             ("ninja" "-C" "build")
+                             (make-symbolic-link (expand-file-name "./build/mu/mu")
+                                                 (expand-file-name "~/local/bin/mu") 'ok-if-exists))
+                 :build (:not elpaca--compile-info)
+                 :post-build (("mu" "init" "--quiet" "--maildir" ,(concat (getenv "HOME") "/.mail")
+                               "--my-address=" ,bergheim/gmail/email
+                               "--my-address=" ,bergheim/ntnu/email
+                               "--my-address=" ,bergheim/glvortex/email
+                               "--my-address=" ,bergheim/glvortex/email-spam
+                               "--my-address=" ,bergheim/glvortex/email-me)
+                              ("mu" "index" "--quiet")))
   :commands (mu4e mu4e-compose-new mu4e-update-index mu4e--jump-to-bookmark mu4e--server-filter)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
