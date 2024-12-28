@@ -92,6 +92,9 @@ With \\[universal-argument], include emails to this name as well"
 (defun bergheim/mu4e-search-dwim (msg)
   (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
          (email-list (mu4e-message-field-at-point :list))
+         (email-list (if (stringp email-list)
+                         (s-trim email-list)
+                       ""))
          (email-references (car (mu4e-message-field-at-point :references)))
          (msgid (mu4e-message-field msg :message-id))
          (subject (mu4e-message-field msg :subject))
@@ -106,18 +109,18 @@ With \\[universal-argument], include emails to this name as well"
      ((bergheim/mu4e--pattern-match-subject subject t)
       (bergheim/mu4e-search-this-subject msg t))
 
+     ;; filter on the other "email lists"
+     ((seq-contains-p bergheim/email-dwim-lists email)
+      (bergheim/mu4e-search-from-address msg))
+
      ;; if it is a mailing list, just show everything from that
      ;; (unfortunately, many provide a "List-Unsubscribe", but not the List-Id itself)
-     ((> 0 (length email-list))
+     ((> (length email-list) 0)
       (mu4e-search
        (format "list:%s AND maildir:/Inbox/" email-list)
        nil nil nil
        msgid (and (eq major-mode 'mu4e-view-mode)
                   (not (eq mu4e-split-view 'single-window)))))
-
-     ;; filter on the other "email lists"
-     ((seq-contains-p bergheim/email-dwim-lists email)
-      (bergheim/mu4e-search-from-address msg))
 
      ;; filter on domains if they all send the same kind of emails
      ((when (cl-some (lambda (d) (string-match-p d domain))
