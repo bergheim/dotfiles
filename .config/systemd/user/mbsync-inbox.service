@@ -12,5 +12,5 @@ ExecStart=%h/local/bin/sync-mail
 # don't do this - only update index if we have new emails
 # ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
 
-# [Install]
-# WantedBy=multi-user.target
+[Install]
+WantedBy=default.target
