@@ -2,7 +2,7 @@
 
 # TODO: add metalerts. see https://api.met.no/weatherapi/metalerts/1.1/documentation
 FORECAST_URL="https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${LAT}&lon=${LONG}"
-FORECAST_FILE="./forecast.json"
+FORECAST_FILE="$HOME/.config/polybar/forecast.json"
 
 if test -e "$FORECAST_FILE"; then
     IF_MOD_DATE=$(date -u -r $FORECAST_FILE)
