@@ -34,6 +34,7 @@
         +org-capture-personal-file (concat org-directory "personal.org")
         +org-capture-review-file (expand-file-name "review.org" org-directory)
         +org-capture-protocol-file (expand-file-name "inbox.org" org-directory)
+        +org-capture-quotes-file (expand-file-name "quotes.org" org-directory)
         +org-capture-work-file (concat org-directory "work.org")
         +org-capture-work-meeting (concat org-directory "roam/work/meetings.org")
         org-capture-templates
@@ -227,7 +228,7 @@
                 ("Interesting"
                  :keys "I"
                  :icon ("nf-fa-eye" :set "faicon" :color "lcyan")
-                 :file +org-capture-todo-file
+                 :file +org-capture-personal-file
                  :prepend t
                  :headline "Interesting"
                  :type entry
@@ -265,6 +266,14 @@
                  :clock t
                  :immediate-finish t
                  :template-file ,(expand-file-name "protocol-active-task.org" org-capture-custom-template-directory))
+
+                ("Add quote" :keys "Q"
+                 :icon ("nf-md-email" :set "mdicon" :color "green")
+                 :type entry
+                 :prepend t
+                 ;; :clock t
+                 :file +org-capture-quotes-file
+                 :template-file ,(expand-file-name "quote.org" org-capture-custom-template-directory))
 
                 ("Email Workflow" :keys "e"
                  :icon ("nf-oct-stop" :set "octicon" :color "red")
