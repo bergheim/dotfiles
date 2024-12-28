@@ -2,4 +2,4 @@
 
 source ~/.zshrc
 
-/usr/bin/emacs --fg-daemon
+emacs --fg-daemon

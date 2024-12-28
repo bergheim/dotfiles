@@ -13,54 +13,6 @@ CopyArrivalDate yes
 
 Sync All # already global default
 
-# Neptune email
-# ----------
-IMAPAccount neptune
-    Host outlook.office365.com
-    Port 993
-    UserCmd "pass show email/neptune/address"
-    PassCmd oauth2ms
-    SSLType IMAPS
-    AuthMechs XOAUTH2
-    SSLVersions TLSv1.2
-    CertificateFile /etc/ssl/certs/ca-certificates.crt
-
-IMAPStore neptune-remote
-    Account neptune
-
-MaildirStore neptune-local
-    Subfolders Verbatim
-    # The trailing "/" is important
-    Path ~/.mail/neptune/
-    Inbox ~/.mail/neptune/Inbox
-
-Channel neptune-inbox
-    Far :neptune-remote:
-    Near :neptune-local:
-    Patterns "INBOX" "Drafts" "Archive"
-    Expunge Both
-
-Channel neptune-trash
-    Far :neptune-remote:"Deleted Items"
-    Near :neptune-local:"Trash"
-    Expunge Both
-
-Channel neptune-spam
-    Far :neptune-remote:"Junk Email"
-    Near :neptune-local:"Spam"
-    Expunge Both
-
-Channel neptune-sent
-    Far :neptune-remote:"Sent Items"
-    Near :neptune-local:"Sent"
-    Expunge Both
-
-Channel neptune
-    Far :neptune-remote:
-    Near :neptune-local:
-    Patterns * !"Deleted Items" !"Sent Items" !"Sent" !"Trash" !"Junk Email" "!Spam"
-    Expunge Both
-
 # glvortex account
 # ----------------
 IMAPAccount glvortex
@@ -86,7 +38,7 @@ Channel glvortex-inbox
     Far :glvortex-remote:
     Near :glvortex-local:
     # this setup ignores all mail because I do not want all the email lists etc..
-    Patterns "INBOX" "Archive" "Sent" "Trash" "Folders/git" "Drafts"
+    Patterns "INBOX" "Archive" "Sent" "Trash" "Folders/git" "Folders/bergtech" "Drafts"
     Expunge Both # sync changes like delete to server
 
 Channel glvortex
@@ -160,17 +112,6 @@ Channel gmail
     Near :gmail-local:
     Patterns  "INBOX" !"Archives" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
     Expunge Both # la akkurat denne til
-
-Group neptune
-    Channel neptune
-    Channel neptune-trash
-    Channel neptune-sent
-    Channel neptune-spam
-
-Group neptune-inbox
-    Channel neptune-inbox
-    Channel neptune-trash
-    Channel neptune-sent
 
 Group glvortex-inbox
     Channel glvortex-inbox

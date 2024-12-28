@@ -64,7 +64,6 @@ Used to quickly match similar messages"
 (defun bergheim/mu4e--get-account-email (maildir)
   (let ((account (bergheim/mu4e--get-account maildir)))
     (pcase account
-      ("neptune" bergheim/neptune/email)
       ("gmail" bergheim/gmail/email)
       ("glvortex" bergheim/glvortex/email))))
 

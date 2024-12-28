@@ -78,31 +78,6 @@
                                             ("/ntnu/Sent"   . ?s)
                                             ("/ntnu/Trash"  . ?t)
                                             ("/ntnu/Drafts" . ?d)
-                                            ))))
-
-       (make-mu4e-context
-        :name "work"
-        :match-func (lambda (msg)
-                      (when msg
-                        (string-match-p "^/neptune" (mu4e-message-field msg :maildir))))
-        :vars `((user-full-name         . ,bergheim/neptune/name)
-                (user-mail-address      . ,bergheim/neptune/email )
-                (mu4e-compose-signature . ,bergheim/neptune/signature)
-                (org-msg-signature      . ,bergheim/neptune/signature-html)
-
-                (mu4e-compose-format-flowed . t)
-
-                (mu4e-sent-folder   . "/neptune/Sent")
-                (mu4e-trash-folder  . "/neptune/Trash")
-                (mu4e-drafts-folder . "/neptune/Drafts")
-                (mu4e-refile-folder . bergheim/mu4e-refile-mail)
-                (mu4e-spam-folder   . "/neptune/Spam")
-
-                (mu4e-maildir-shortcuts  . (("/neptune/Inbox"   . ?i)
-                                            ("/neptune/Sent"    . ?s)
-                                            ("/neptune/Trash"   . ?t)
-                                            ("/neptune/Drafts"  . ?d)
-                                            ("/neptune/Archive" . ?a)
                                             ))))))
 
 ;;; accounts.el ends here

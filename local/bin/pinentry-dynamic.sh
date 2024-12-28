@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-# this has issues with ssh terminal emacs
+# Check for EMACS and tty conditions first
 if [ "$EMACS" == "t" ]; then
     exec pinentry-emacs "$@"
-elif [ -t 1 ]; then
-    exec pinentry-curses "$@"
-elif [ -n "$DISPLAY" ]; then
+elif [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
     exec pinentry-qt "$@"
+    # exec pinentry-kwallet "$@" || exec pinentry-qt "$@" # Attempt qt as fallback
 else
-    # Default to curses if none of the above conditions are met
     exec pinentry-curses "$@"
 fi
 

@@ -118,10 +118,6 @@
          :query "flag:unread AND maildir:/gmail/Inbox"
          :key ?Q)
 
-        (:name  "Support"
-         :query ,(concat "to:" bergheim/neptune/email " AND from:" bergheim/neptune/support " AND maildir:/neptune/Inbox")
-         :key ?s)
-
         ;; TODO does not work
         (:name "Today's messages"
          :query "maildir:/Inbox/ AND (date:1d..now)"
