@@ -204,6 +204,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     (consult-buffer)))
 
 (use-package xref
+  :ensure nil
   :custom
   (xref-show-xrefs-function #'consult-xref)
   (xref-show-definitions-function #'consult-xref))
