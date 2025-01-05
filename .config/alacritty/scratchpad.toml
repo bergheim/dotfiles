@@ -1,4 +1,4 @@
-import = ["/home/tsb/.config/alacritty/alacritty.toml"]
+general.import = ["/home/tsb/.config/alacritty/alacritty.toml"]
 
 [font]
 size = 16.0
