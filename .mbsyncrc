@@ -20,8 +20,7 @@ IMAPAccount glvortex
     Port 1143
     UserCmd "pass show email/glvortex/address"
     PassCmd "pass show email/glvortex/bridge"
-    # Use SSL
-    SSLType STARTTLS
+    TLSType STARTTLS
     CertificateFile /etc/ssl/certs/protonbridge.pem
 
 IMAPStore glvortex-remote
@@ -34,17 +33,48 @@ MaildirStore glvortex-local
     # Trash Trash
     # TODO trash?
 
-Channel glvortex-inbox
-    Far :glvortex-remote:
-    Near :glvortex-local:
-    # this setup ignores all mail because I do not want all the email lists etc..
-    Patterns "INBOX" "Archive" "Sent" "Trash" "Folders/git" "Folders/bergtech" "Drafts"
-    Expunge Both # sync changes like delete to server
-
 Channel glvortex
     Far :glvortex-remote:
     Near :glvortex-local:
     Patterns * !"Labels/*" !"Folders/*" !"All Mail"
+    Expunge Both
+
+Channel glvortex-inbox
+    Far :glvortex-remote:
+    Near :glvortex-local:
+    # this setup ignores all mail because I do not want all the email lists etc..
+    Patterns "INBOX" "Archive" "Sent" "Trash" "Folders/git" "Folders/bergtech" "Folders/opportunities" "Drafts"
+    Expunge Both # sync changes like delete to server
+
+# NTNU account
+# ----------------
+IMAPAccount ntnu
+    Host imap.alumni.ntnu.no
+    Port 993
+    UserCmd "pass show email/alumini/username"
+    PassCmd "pass show email/alumini/pass"
+    TLSType IMAPS
+
+IMAPStore ntnu-remote
+    Account ntnu
+
+MaildirStore ntnu-local
+    SubFolders Verbatim
+    Path ~/.mail/ntnu/
+    Inbox ~/.mail/ntnu/Inbox
+    # Trash Trash
+    # TODO trash?
+
+Channel ntnu
+    Far :ntnu-remote:
+    Near :ntnu-local:
+    Patterns *
+    Expunge Both
+
+Channel ntnu-inbox
+    Far :ntnu-remote:
+    Near :ntnu-local:
+    Patterns "INBOX" "Sent" "Trash" "Drafts"
     Expunge Both
 
 
@@ -55,8 +85,7 @@ IMAPAccount gmail
     UserCmd "pass show email/gmail/address"
     PassCmd "pass show email/gmail/mbsync"
     AuthMechs LOGIN
-    SSLType IMAPS
-    #SSLVersions SSLv3
+    TLSType IMAPS
     CertificateFile /etc/ssl/certs/ca-certificates.crt
 
 IMAPStore gmail-remote
@@ -74,8 +103,8 @@ Channel gmail-inbox
     Far :gmail-remote:
     Near :gmail-local:
     # Just sync things that operations on an email can affect
-    Patterns "INBOX" !"Archives" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
-    Expunge Both # la akkurat denne til
+    Patterns "INBOX"
+    Expunge Both
 
 Channel gmail-archive
     Far :gmail-remote:"Archives"
@@ -107,22 +136,23 @@ Channel gmail-spam
     Near :gmail-local:"Spam"
     Expunge Both
 
-Channel gmail
-    Far :gmail-remote:
-    Near :gmail-local:
-    Patterns  "INBOX" !"Archives" !"[Gmail]/Starred" !"[Gmail]/Drafts" !"[Gmail]/Trash" !"[Gmail]/Sent Mail"
-    Expunge Both # la akkurat denne til
+Group glvortex
+    Channel glvortex
 
 Group glvortex-inbox
     Channel glvortex-inbox
 
 Group gmail
-    Channel gmail
+    Channel gmail-inbox
+    Channel gmail-archive
+    Channel gmail-trash
+    Channel gmail-sent
+    Channel gmail-drafts
+    Channel gmail-starred
     Channel gmail-spam
 
 Group gmail-inbox
     Channel gmail-inbox
-    Channel gmail-archive
     Channel gmail-trash
     Channel gmail-sent
     Channel gmail-drafts
