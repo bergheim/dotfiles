@@ -1,5 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
+(use-package password-store)
+
 (use-package eshell
   :ensure nil
   :bind (("C-r" . consult-history))
@@ -244,6 +246,7 @@
 ;;   :demand
 ;;   :config
 ;;   (elfeed-goodies/setup))
+
 (use-package smudge
   :custom
   (smudge-oauth2-client-secret bergheim/spotify/client-secret)
