@@ -77,6 +77,9 @@
 
 (elpaca-wait)
 
+(use-package org-cliplink
+  :after org)
+
 (use-package org-protocol
   :demand t
   :ensure nil)
