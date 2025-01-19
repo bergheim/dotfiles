@@ -269,4 +269,28 @@ With \\[universal-argument], search all emails where I am a recipient"
                       labeledparts)))
       (user-error (mu4e-format "No parts found")))))
 
+(defun bergheim/mu4e-compose-email (arg)
+  "Compose an email. Use universal argument to compose in only plain text mode."
+  (interactive "P")
+  (let ((org-msg-default-alternatives (if arg
+                                          '((new           . (text))
+                                            (reply-to-html . (text))
+                                            (reply-to-text . (text)))
+                                        '((new           . (text html))
+                                          (reply-to-html . (text html))
+                                          (reply-to-text . (text))))))
+    (mu4e-compose-new)))
+
+(defun bergheim/mu4e-reply-email (arg)
+  "Compose a reply to an email. Use universal argument to compose in only plain text mode."
+  (interactive "P")
+  (let ((org-msg-default-alternatives (if arg
+                                          '((new           . (text))
+                                            (reply-to-html . (text))
+                                            (reply-to-text . (text)))
+                                        '((new           . (text html))
+                                          (reply-to-html . (text html))
+                                          (reply-to-text . (text))))))
+    (mu4e-compose-reply)))
+
 ;;; helpers.el ends here

@@ -7,6 +7,8 @@
   (general-define-key
    :keymaps 'mu4e-headers-mode-map
    :states 'normal
+   "R"     #'bergheim/mu4e-reply-email
+   "C"     #'bergheim/mu4e-compose-email
    "C-h"   #'mu4e-search-prev
    "C-l"   #'mu4e-search-next
    "C-S-h" #'helpful-key
@@ -14,6 +16,7 @@
    "L"     #'mu4e-search-next
    "M"     #'mu4e-headers-mark-for-move
    "m"     #'mu4e-headers-mark-for-something
+   "t"     #'mu4e-search-toggle-property
    "T"     #'mu4e-headers-mark-thread))
 
 (defun bergheim//mu4e-view-setup ()
@@ -23,14 +26,13 @@
    :keymaps 'mu4e-view-mode-map
    :states 'normal
    "A"     #'mu4e-view-mime-part-action
+   "R"     #'bergheim/mu4e-reply-email
+   "C"     #'bergheim/mu4e-compose-email
    ;; "C-h"   #'mu4e-search-prev
    ;; "C-l"   #'mu4e-search-next
    "C-S-h" #'helpful-key
+   "t"     #'mu4e-search-toggle-property
    "T"     #'mu4e-view-mark-thread))
-
-(bergheim/localleader-keys
-  :keymaps 'mu4e-headers-mode-map
-  "t" #'mu4e-search-toggle-property)
 
 (bergheim/global-menu-keys
   "e" '(:ignore t :which-key "E-mail")
