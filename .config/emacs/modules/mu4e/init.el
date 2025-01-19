@@ -11,7 +11,9 @@
      (mu4e-search-bookmark ,bookmark-string)))
 
 (use-package mu4e
-  :ensure `(mu4e :host github :files ("mu4e/*.el" "build/mu4e/mu4e-meta.el" "build/mu4e/mu4e-config.el" "build/mu4e/mu4e.info") :repo "djcb/mu"
+  :ensure `(mu4e :host github
+                 :files ("mu4e/*.el" "build/mu4e/mu4e-meta.el" "build/mu4e/mu4e-config.el" "build/mu4e/mu4e.info")
+                 :repo "djcb/mu"
                  :main "mu4e/mu4e.el"
                  :pre-build (("./autogen.sh" "-Dtests=disabled")
                              ("ninja" "-C" "build")
@@ -47,22 +49,23 @@
 
 (use-package org-msg
   ;; TODO temp fix while waiting on https://github.com/jeremy-compostella/org-msg/issues/182 to close
-  :ensure (:host github :repo "danielfleischer/org-msg" :branch "1.12")
+  :ensure (:host github :repo "danielfleischer/org-msg" :branch "master")
   :after (org mu4e)
-  :hook ((mu4e-compose-pre . org-msg-mode))
   :init
   (setq mail-user-agent 'mu4e-user-agent
         ;; Disable mu4e's default signature since we rely on org-msg here
-        mu4e-compose-signature-auto-include nil
+        message-signature nil
         org-msg-greeting-fmt "Hello%s,\n\n"
         org-msg-signature bergheim/signature-html
         org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil author:nil email:nil \\n:t"
+        org-msg-startup "hidestars indent inlineimages"
         org-msg-greeting-name-limit 3
         org-msg-default-alternatives '((new           . (text html))
                                        (reply-to-html . (text html))
                                        (reply-to-text . (text)))
         ;; turn > into org quote blocks
-        org-msg-convert-citation t))
+        org-msg-convert-citation t)
+  (org-msg-mode))
 
 (use-package gnus-dired
   :ensure nil

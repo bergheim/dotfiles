@@ -13,7 +13,7 @@
         :vars `(
                 (user-full-name         . ,bergheim/glvortex/name)
                 (user-mail-address      . ,bergheim/glvortex/email)
-                (mu4e-compose-signature . ,bergheim/glvortex/signature)
+                ;; (message-signature . ,bergheim/glvortex/signature)
                 (org-msg-signature      . ,bergheim/glvortex/signature-html)
 
                 (mu4e-compose-format-flowed . t)
@@ -38,7 +38,7 @@
         :vars `(
                 (user-full-name         . ,bergheim/gmail/name)
                 (user-mail-address      . ,bergheim/gmail/email)
-                (mu4e-compose-signature . ,bergheim/gmail/signature)
+                ;; (message-signature      . ,bergheim/gmail/signature)
                 (org-msg-signature      . ,bergheim/gmail/signature-html)
 
                 (mu4e-compose-format-flowed . t)
@@ -63,7 +63,7 @@
         :vars `(
                 (user-full-name         . ,bergheim/ntnu/name)
                 (user-mail-address      . ,bergheim/ntnu/email)
-                (mu4e-compose-signature . ,bergheim/ntnu/signature)
+                ;; (message-signature      . ,bergheim/ntnu/signature)
                 (org-msg-signature      . ,bergheim/ntnu/signature-html)
 
                 (mu4e-compose-format-flowed . t)
