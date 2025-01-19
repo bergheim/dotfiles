@@ -51,6 +51,11 @@
   ;; TODO temp fix while waiting on https://github.com/jeremy-compostella/org-msg/issues/182 to close
   :ensure (:host github :repo "danielfleischer/org-msg" :branch "master")
   :after (org mu4e)
+  :preface
+  (defun org-msg-no-temp-buffer (orig-fun &rest args)
+    "Advice to set `org-export-show-temporary-export-buffer' to `nil'."
+    (let ((org-export-show-temporary-export-buffer nil))
+      (apply orig-fun args)))
   :init
   (setq mail-user-agent 'mu4e-user-agent
         ;; Disable mu4e's default signature since we rely on org-msg here
@@ -65,7 +70,16 @@
                                        (reply-to-text . (text)))
         ;; turn > into org quote blocks
         org-msg-convert-citation t)
-  (org-msg-mode))
+  (org-msg-mode)
+  :config
+  (advice-add 'org-msg-preview :around #'org-msg-no-temp-buffer)
+  (advice-add 'org-msg-ctrl-c-ctrl-c :around #'org-msg-no-temp-buffer)
+  (add-hook 'message-sent-hook
+            (lambda ()
+              (interactive)
+              (kill-buffer "*Org ASCII Export*")
+              (switch-to-buffer "*mu4e-article*")
+              (mu4e-view-quit))))
 
 (use-package gnus-dired
   :ensure nil
