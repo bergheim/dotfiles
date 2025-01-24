@@ -196,12 +196,19 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (let ((dir (read-directory-name "Search Directory: ")))
     (bergheim/consult-ripgrep-with-selection dir)))
 
-(defun bergheim/consult-project-or-buffer ()
-  "Call `consult-project-buffer` if in a project, otherwise `consult-buffer`."
+(defun bergheim/switch-to-relevant-buffer ()
+  "Generate a buffer list that you can switch to based on the context."
+
   (interactive)
-  (if (project-current)
-      (consult-project-buffer)
-    (consult-buffer)))
+  (cond
+   ((and (fboundp 'activities-switch-buffer) (activities-current))
+    (call-interactively 'activities-switch-buffer))
+   ((project-current)
+    (consult-project-buffer))
+   ((fboundp 'beframe-switch-buffer)
+    (call-interactively 'beframe-switch-buffer))
+   (t
+    (consult-buffer))))
 
 (use-package xref
   :ensure nil

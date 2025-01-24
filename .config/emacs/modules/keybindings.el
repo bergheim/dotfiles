@@ -110,8 +110,8 @@
     "at" '(treemacs :which-key "Treemacs")
 
     "b" '(:ignore t :which-key "Buffers")
-    "bb" '(bergheim/consult-project-or-buffer :which-key "Switch")
-    "bB" '(consult-buffer :which-key "Switch")
+    "bb" '(bergheim/switch-to-relevant-buffer :which-key "buffers")
+    "bB" '(consult-buffer :which-key "Buffers")
 
     "bd" '(kill-current-buffer :which-key "Delete")
     "bn" '(evil-buffer-new :which-key "New")
