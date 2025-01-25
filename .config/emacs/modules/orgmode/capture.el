@@ -332,4 +332,9 @@
       (find-file file)
       (goto-char (org-find-exact-headline-in-buffer choice)))))
 
+;; Drag/drop and paste clipboard images
+(use-package org-download)
+;; Adding links quickly
+(use-package org-cliplink)
+
 ;;; capture.el ends here
