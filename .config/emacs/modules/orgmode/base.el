@@ -99,9 +99,8 @@
       org-clock-idle-time 30
       ;; keep clocks - makes it easier to see a list of recent tasks
       org-clock-out-remove-zero-time-clocks nil
-      ;; keep history between sessions
-      org-clock-persist 'history
-      ;; TODO: check out org-clock-persistence-insinuate
+      ;; keep clock and history between sessions
+      org-clock-persist t
 
       ;; org-archive-location "archive/%s_archive::datetree/"
 
@@ -121,6 +120,8 @@
                   "|" "DONE(d@)" "CANCELLED(c@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")
         (sequence "DRAFT(D)" "POST(p)" "|" "PUBLISH(b)")))
+
+(org-clock-persistence-insinuate)
 
 (add-to-list 'org-modules 'org-habit)
 
