@@ -200,7 +200,6 @@
   :commands (org-clock-drawer-name))
 
 (use-package org-mru-clock
-  :ensure t
   :after org
   :init
   (setq org-mru-clock-files #'org-agenda-files

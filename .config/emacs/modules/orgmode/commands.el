@@ -42,8 +42,9 @@
         data
         #'string-equal))))))
 
-(defun bergheim/org-mru-goto ()
+(defun bergheim/org-mru-goto (&optional n)
   (interactive)
+  (org-mru-clock-to-history n)
   (bergheim/vertico--without-sorting 'org-mru-clock-goto (org-mru-clock--completing-read)))
 
 (defun bergheim/org-mru-clock-in ()
