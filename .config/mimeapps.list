@@ -1,8 +1,9 @@
 [Added Associations]
 image/jpeg=org.kde.gwenview.desktop;vimiv.desktop;
+x-scheme-handler/tonsite=org.telegram.desktop.desktop;
 
 [Default Applications]
-application/octet-stream=emacs.desktop;
+application/octet-stream=emacsclient.desktop;
 application/pdf=org.pwmt.zathura.desktop
 application/x-extension-htm=firefox.desktop
 application/x-extension-html=firefox.desktop
@@ -13,12 +14,13 @@ application/xhtml+xml=firefox.desktop
 image/jpeg=org.kde.gwenview.desktop;
 image/png=pqiv.desktop;
 inode/directory=org.kde.dolphin.desktop;
-text/html=firefox.desktop;emacs.desktop;vim.desktop;
-text/plain=emacs.desktop;vim.desktop;
+text/html=firefox.desktop;emacsclient.desktop;vim.desktop;
+text/plain=emacsclient.desktop;vim.desktop;
 x-scheme-handler/chrome=firefox.desktop
 x-scheme-handler/ftp=firefox.desktop
 x-scheme-handler/http=firefox.desktop
 x-scheme-handler/https=firefox.desktop
 x-scheme-handler/msteams=teams.desktop
 x-scheme-handler/tg=org.telegram.desktop.desktop
-
+x-scheme-handler/org-protocol=org-protocol.desktop
+x-scheme-handler/tonsite=org.telegram.desktop.desktop

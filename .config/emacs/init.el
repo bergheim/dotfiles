@@ -99,7 +99,7 @@
 (setq visible-bell t ;; flash
       inhibit-startup-message t
       evil-want-Y-yank-to-eol t
-      package-user-dir (bergheim/get-and-ensure-data-dir "elpa") 
+      package-user-dir (bergheim/get-and-ensure-data-dir "elpa")
 
       bergheim/home-directory (expand-file-name "~/")
 
