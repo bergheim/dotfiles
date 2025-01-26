@@ -224,8 +224,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; (define-key minibuffer-local-map (kbd "M-f") #'bergheim/minibuffer-bookmarks)
 ;; Minibuffer completion
 (use-package vertico
-  :demand t
-  :ensure t
+  :demand
+  :ensure
   :custom
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)

@@ -175,7 +175,7 @@
     "hdq" '(toggle-debug-on-quit t :which-key "Debug on quit")
     "hf" '(helpful-callable :which-key "Callable function")
     "hF" '(helpful-function :which-key "Function")
-    "hi" '( :which-key "Info")
+    "hi" '(consult-info :which-key "Info")
     "hk" '(helpful-key :which-key "Key")
     "hy" '(describe-keymap :which-key "Keymap")
     "hl" '(find-library :which-key "Library")
@@ -244,6 +244,8 @@
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
     "t i" '(bergheim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
     "t L" '(jinx-languages :which-key "Languages")
+    "t n" '(display-line-numbers-mode :which-key "Toggle line numbers")
+
     ;; toggle-truncate-lines?
     "t l" '(visual-line-mode :which-key "Visual lines")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
