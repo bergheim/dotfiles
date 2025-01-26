@@ -94,7 +94,8 @@
     :keymaps 'override)
 
   (general-override-mode)
-  (general-evil-setup))
+  (general-evil-setup)
+  (general-auto-unbind-keys))
 
 ;; this must be loaded early because of `desktop`
 (use-package git-auto-commit-mode
