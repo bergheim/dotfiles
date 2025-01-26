@@ -50,7 +50,3 @@
    :states '(normal visual)
    "g p" 'diff-hl-previous-hunk
    "g n" 'diff-hl-next-hunk))
-
-(use-package browse-at-remote
-  :ensure t
-  :defer t)

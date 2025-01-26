@@ -159,10 +159,10 @@
 
     "g" '(:ignore t :which-key "git")
     "g g" '(magit :which-key "magit")
-    "g o" 'browse-at-remote
+    "g o" 'forge-browse
     "g l" `(,(bergheim/call-with-universal-arg #'magit-log-buffer-file) :which-key "Log buffer file")
     "g f" 'magit-find-file
-    "g y" 'browse-at-remote-kill
+    "g y" 'forge-copy-url-at-point-as-kill
     "g s" 'magit-stage-buffer-file
 
     "h" '(:ignore t :which-key "Help")
