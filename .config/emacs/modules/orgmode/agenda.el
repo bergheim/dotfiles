@@ -21,10 +21,13 @@
   ;; overwrite whatever is overwriting the binds
   :hook (org-agenda-mode . bergheim/org-agenda-setup-keys)
   :config
-  ;; the tags in the agenda is just clutter
+
+  ;; tags in the agenda is just clutter
   (setq org-agenda-remove-tags t)
-  ;; TODO I.. don't know what this comes from
+
+  ;; agenda commands search archives as well
   (setq org-agenda-text-search-extra-files '(agenda-archives))
+
   (setq org-agenda-custom-commands
         '(("d" "Dashboard for today"
            ((agenda "" ((org-agenda-overriding-header "Dashboard")

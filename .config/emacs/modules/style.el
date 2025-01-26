@@ -171,8 +171,9 @@
 ;;   :init (breadcrumb-mode))
 
 (use-package spacious-padding
-  :ensure (:host github :repo "protesilaos/spacious-padding")
-  :init (spacious-padding-mode)
+  :ensure
+  :init
+  (spacious-padding-mode)
   :config
   (setq spacious-padding-widths
         '( :internal-border-width 15
@@ -180,7 +181,8 @@
            :mode-line-width 6
            :tab-width 4
            :right-divider-width 30
-           :scroll-bar-width 8)
+           :scroll-bar-width 8
+           :fringe-width 8)
         spacious-padding-subtle-mode-line nil))
 
 ;; display match info in the modeline

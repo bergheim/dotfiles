@@ -110,6 +110,7 @@
 
       ;; unfinished child TODOs will block
       org-enforce-todo-dependencies t
+      org-enforce-todo-checkbox-dependencies t
 
       org-todo-keywords
       '((sequence "TODO(t)"

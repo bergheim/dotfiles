@@ -2,7 +2,6 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-
 (setq mu4e-read-option-use-builtin nil
       ;; use vertico
       mu4e-completing-read-function 'completing-read)

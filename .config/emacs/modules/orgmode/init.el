@@ -4,8 +4,6 @@
 
 (use-package org
   :defer t
-  ;; TODO: latest org does not work with org-habits etc so
-  ;; use the internal one for now
   :ensure t
   :after general
 
@@ -60,6 +58,7 @@
     "l" 'org-store-link
     "i" 'org-toggle-item
     "h" 'org-toggle-heading
+    "p" 'org-priority
     "q" 'org-set-tags-command
     "u" '(bergheim/org-copy-url-only :which-key "copy URL")
     "s" '(:ignore t :which-key "Subtree")
