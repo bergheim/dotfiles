@@ -52,9 +52,10 @@
   (setq evil-undo-system 'undo-tree)
   ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
   ;; (setq evil-respect-visual-line-mode t)
+  (setq evil-want-fine-undo t
+        evil-want-C-u-scroll t
+        evil-want-Y-yank-to-eol t)
   :config
-  (setq evil-want-fine-undo t)
-  (setq evil-want-C-u-scroll t)
   (defun bergheim/evil-search-symbol-forward ()
     "Search forward for the entire symbol under cursor, or fall back to word search."
     (interactive)
