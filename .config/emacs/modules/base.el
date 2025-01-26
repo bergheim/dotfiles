@@ -28,6 +28,7 @@
   (setq-default indent-tabs-mode nil) ;; I have given up on tabs
   (setq window-resize-pixelwise t
         frame-resize-pixelwise t
+        history-length 1000
         load-prefer-newer t
         backup-by-copying t
         ;; I _think_ this should be something else (ie the cache directory)
@@ -44,8 +45,8 @@
 
 ;; save on buffer switching, focus loss, everything
 (use-package super-save
-  :ensure t
-  :demand t
+  :ensure
+  :demand
   :config
   (super-save-mode +1))
 
