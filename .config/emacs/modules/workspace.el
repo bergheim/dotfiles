@@ -66,7 +66,7 @@
 
 (use-package activities
   :demand
-  :ensure (:host github :repo "alphapapa/activities.el")
+  :ensure
   :config
   ;; Automatically save activities' states when Emacs is idle and upon exit.
   (activities-mode)
