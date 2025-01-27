@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+check_command() {
+    if ! command -v "$1" &> /dev/null; then
+        echo "Error: $1 is not installed."
+        exit 1
+    fi
+}
+
+check_command xset
+check_command nvidia-settings
+check_command cpupower
+
+if [[ $1 == "slumber" ]]; then
+    # Set the CPU governor to powersave
+    sudo cpupower frequency-set -g powersave
+    # Disable Intel Turbo Boost
+    echo '1' | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
+    # Turn off the screen
+    xset dpms force off
+    # Set GPU to adaptive power management mode
+    nvidia-settings -a "[gpu:0]/GpuPowerMizerMode=1"
+    echo "Power-saving mode activated."
+elif [[ $1 == "performance" ]]; then
+    # Set the CPU governor to performance
+    sudo cpupower frequency-set -g performance
+    # Enable Intel Turbo Boost
+    echo '0' | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
+    # Restore screen settings - this will not turn on the screen but ensures it's not forced off
+    xset dpms force on
+    # Set GPU to maximum performance mode (this thing is _STILL_ an issue - one card and a monitor and a few years later. Unbelievable. https://github.com/NVIDIA/open-gpu-kernel-modules/issues/511)
+    nvidia-settings -a "[gpu:0]/GpuPowerMizerMode=0"
+    echo "Normal mode activated."
+else
+    echo "Usage: $0 [slumber|performance]"
+    echo "  slumber - Activates power-saving mode"
+    echo "  performance  - Reverts to normal performance mode"
+fi
