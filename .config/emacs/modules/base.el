@@ -52,7 +52,8 @@
 
 (use-package recentf
   :ensure nil
-  :demand t
+  :demand
+  :after tramp
   :config
   (setq recentf-max-menu-items 500)
   (setq recentf-max-saved-items 2000)
@@ -64,7 +65,8 @@
 
 (use-package saveplace
   :ensure nil
-  :demand t
+  :demand
+  :after tramp
   :config
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000)
@@ -138,7 +140,7 @@
   :defer t)
 
 (use-package tramp
-  :ensure nil
+  :demand
   :init
   (defun my--tramp-send-command--workaround-stty-icanon-bug (conn-vec orig-command &rest args)
     "See: https://github.com/magit/magit/issues/4720"
