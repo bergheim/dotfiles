@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 #
 # wm independent hotkeys
-#
-#
 
 # show keybindings
 super + shift + r
@@ -16,26 +14,27 @@ super + shift + BackSpace
 super + Return
   ldpi alacritty
 
-# alternate terminal emulator
+# emacsclient
 super + shift + Return
   emacsclient -nc
 
 # vifm file manager
-super + alt + Return
+super + ctrl + Return
   alacritty -e vifmrun
 
-# dolphin
+# dolphin file manager
 super + d
   dolphin
 
-# edit whatever in emacs
+# emacs: edit whatever
 super + z
   emacsclient --eval "(emacs-everywhere)"
 
-# org-capture
+# emacs: org-capture
 super + c
   emacs-capture --eval '(bergheim/capture)'
 
+# emacs: clock in to task
 super + t
   emacs-clock-in
 
@@ -59,11 +58,13 @@ super + F7
 super + F8
   (pkill redshift && dunstify "Disabling redhsift" --icon=to-the-moon) || (dunstify "Enabling redshift" --icon=to-the-moon && redshift)
 
+# toggle picom / hardware acceleration
 super + F9
   (pkill picom && dunstify "Disabling picom" --icon=to-the-moon) || (dunstify "Enabling picom" --icon=to-the-moon && picom)
 
-super + y
-   pulseaudio-control --node-type output --node-blacklist "alsa_output.pci-0000_02_00.1.hdmi-stereo,alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.mono-chat" next-node
+# toggle output
+super + F11
+    pulseaudio-control --node-type output --node-blacklist "*hdmi*","*chat*" next-node
 
 # lock screen
 super + F12
@@ -77,7 +78,11 @@ super + shift + F12
 super + r
   rofi -show combi -combi-modi "drun,run" -modi "combi,calc,emoji,unifont:rofimoji,Power Menu:rofi-power-menu"
 
+# pick emoji
 super + shift + e
+  rofi -modes "emoji" -show emoji -display-window "Insert emoji:"
+
+super + y
   rofi -modes "emoji" -show emoji -display-window "Insert emoji:"
 
 # switch window
@@ -102,17 +107,18 @@ XF86AudioMute
 {XF86AudioLowerVolume, XF86AudioRaiseVolume}
   pactl set-sink-volume @DEFAULT_SINK@ {-5%, +5%}
 
-# close notification
+# dunst: close notification
 super + ctrl + grave
   dunstctl close
 
-# restore notification
+# dunst: restore notification
 super + ctrl + 1
   dunstctl history-pop
 
+# dunst: close all notifications
 super + ctrl + 3
   dunstctl close-all
 
-# act on notification
+# dunst: act on notification
 super + ctrl + 2
   dunstctl context
