@@ -304,8 +304,6 @@ With universal arg ARG, search all .org files under `org-directory`."
    "p" #'org-journal-search-prev))
 
 (use-package org-modern
-  :ensure t
-  :demand t
   :after org
   :config
   ;; (setq ;; Edit settings
@@ -330,10 +328,8 @@ With universal arg ARG, search all .org files under `org-directory`."
   ;; org-agenda-current-time-string
   ;; "⭠ now ─────────────────────────────────────────────────")
 
-
-  ;; indent headings
-  (org-indent-mode)
-  (global-org-modern-mode))
+  ;; (global-org-modern-mode)
+  )
 
 (use-package org-contrib
   :after org
