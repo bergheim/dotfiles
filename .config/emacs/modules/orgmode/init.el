@@ -50,6 +50,7 @@
     "," 'org-insert-structure-template
     "a" '(org-attach :which-key "attach")
     "b" '(bergheim/org-open-attachments :which-key "open attachments")
+    "c" '(bergheim/org-src-block :which-key "source block")
     "d" '(:ignore t :which-key "Dates")
     "ds" 'org-schedule
     "dd" 'org-deadline

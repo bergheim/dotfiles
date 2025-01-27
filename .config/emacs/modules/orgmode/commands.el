@@ -2,6 +2,28 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defun bergheim/org-src-block ()
+  "Wrap the active region in an Org source block or edit inline code."
+  (interactive)
+  (if (org-in-src-block-p)
+      (org-edit-src-code)
+    (let* ((languages (mapcar #'symbol-name (mapcar #'car org-babel-load-languages)))
+           (lang (completing-read "Language: " languages)))
+      (if (use-region-p)
+          (let ((beg (region-beginning))
+                (end (region-end)))
+            (save-excursion
+              (goto-char end)
+              ;; I hate trailing newlines
+              (when (and (eq (char-before) ?\n)
+                         (not (eq (char-before (1- (point))) ?\n)))
+                (delete-char -1))
+              (insert "\n#+END_SRC\n")
+              (goto-char beg)
+              (insert (format "#+BEGIN_SRC %s\n" lang))))
+        (progn
+          (insert (format "#+BEGIN_SRC %s\n#+END_SRC" lang))
+          (org-edit-src-code))))))
 
 (defun bergheim/org-copy-url-only ()
   "Copy the URL (without description) of an Org-mode link under the cursor to the clipboard."

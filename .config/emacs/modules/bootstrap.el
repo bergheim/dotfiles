@@ -48,7 +48,7 @@
   ;; use emacs bindings in insert-mode
   (setq evil-disable-insert-state-bindings t)
   (setq evil-want-integration t)
-  (setq evil-want-C-i-jump t) ;; C-i/C-o back and forth
+  (setq evil-want-C-i-jump t) ;; C-i/C-o back and forth. breaks tab in terminals
   (setq evil-undo-system 'undo-tree)
   ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
   ;; (setq evil-respect-visual-line-mode t)
