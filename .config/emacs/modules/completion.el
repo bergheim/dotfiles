@@ -201,10 +201,10 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
   (interactive)
   (cond
-   ((and (fboundp 'activities-switch-buffer) (activities-current))
-    (call-interactively 'activities-switch-buffer))
    ((project-current)
     (consult-project-buffer))
+   ((and (fboundp 'activities-switch-buffer) (activities-current))
+    (call-interactively 'activities-switch-buffer))
    ((fboundp 'beframe-switch-buffer)
     (call-interactively 'beframe-switch-buffer))
    (t
