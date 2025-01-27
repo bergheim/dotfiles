@@ -71,7 +71,6 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
   :hook
   (eglot-managed-mode . me/eglot-inlay-hints-maybe)
-  (eglot-managed-mode . me/flymake-eslint-enable-maybe)
   (eglot-managed-mode . bergheim/eglot-capf)
   (web-mode . eglot-ensure)
   (python-ts-mode . eglot-ensure)
