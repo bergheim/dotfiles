@@ -77,10 +77,15 @@ With a universal argument, it allows entering the application to use."
   :ensure t
   :demand t
   :after general
-  ;; :commands (dirvish)
   :config
-  (setq dirvish-emerge-mode t)
-  (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)
+  (setq dirvish-emerge-mode nil)
+  ;; (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)
+  (setq dired-listing-switches "-al --group-directories-first")
+  (setq dired-omit-files
+        (rx (or (seq bol (? ".") "#")     ;; emacs autosave files
+                (seq bol "." (not (any "."))) ;; dot-files
+                (seq "~" eol)                 ;; backup-files
+                )))
   (dirvish-override-dired-mode)
   (setq dirvish-cache-dir (concat bergheim/cache-dir "dirvish/"))
   (setq dirvish-attributes
@@ -97,7 +102,7 @@ With a universal argument, it allows entering the application to use."
   (setq dirvish-quick-access-entries '(("h" "~/" "Home")
                                        ("d" "~/Downloads/" "Downloads")
                                        ("D" "~/dev" "Development")
-                                       ("e" "~/.config/neodoom/" "Emacs user directory")))
+                                       ("e" "~/.config/emacs/" "Emacs user directory")))
 
   :general
   (:keymaps 'dirvish-mode-map
