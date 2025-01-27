@@ -27,8 +27,8 @@
   "orp" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@life" "life"))) :which-key "private")
   "orm" '((lambda () (interactive) (org-ql-view-recent-items :num-days 31 :type 'clocked)) :which-key "Last month")
 
-  "on" '(org-add-note :which-key "add note")
-  "oN" '(bergheim/org-add-note-to-clocked-task :which-key "add note for...")
+  "on" '(bergheim/org-add-note-to-clocked-task :which-key "add note for...")
+  "oN" '(org-add-note :which-key "add note")
   "om" '(bergheim/org-subtree-to-mu4e :which-key "subtree to mu4e")
 
   "os" '(:ignore t :which-key "Search")
@@ -50,6 +50,7 @@
   "ojs" '(org-journal-search-forever :which-key "Search journal")
 
   "oc" '(:ignore t :which-key "org-clock")
+  "ocC" '(org-clock-cancel :which-key "cancel")
   "ocg" '(org-clock-goto :which-key "clock goto")
   "ocG" '(bergheim/org-mru-goto :which-key "mru goto")
   "oci" '(org-clock-in :which-key "clock in")
