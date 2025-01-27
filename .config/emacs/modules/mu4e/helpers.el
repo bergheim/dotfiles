@@ -284,6 +284,7 @@ With \\[universal-argument], search all emails where I am a recipient"
 (defun bergheim/mu4e-reply-email (arg)
   "Compose a reply to an email. Use universal argument to compose in only plain text mode."
   (interactive "P")
+  (call-interactively 'org-store-link)
   (let ((org-msg-default-alternatives (if arg
                                           '((new           . (text))
                                             (reply-to-html . (text))
