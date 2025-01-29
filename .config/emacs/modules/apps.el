@@ -4,10 +4,214 @@
 
 (use-package eshell
   :ensure nil
-  :bind (("C-r" . consult-history))
+  :bind (("C-r" . consult-history)
+         ("C-f" . consult-dir)
+         ("C-t" . eshell/find-file-with-consult)
+         ;; ("C-d" . eshell/z)
+         )
   :general
   (bergheim/global-menu-keys
-    "as" '(eshell :which-key "eshell")))
+    "as" '(eshell :which-key "eshell"))
+  :config
+  (defun eshell-get-old-input ()
+    "Retrieve the current input from the Eshell prompt in the buffer."
+    (buffer-substring-no-properties
+     (save-excursion (eshell-bol) (point))
+     (point)))
+
+  (defun eshell/vi (filename)
+    "Open FILENAME in another buffer within Eshell."
+    (if (file-exists-p filename)
+        (find-file-other-window filename)
+      (message "File does not exist: %s" filename)))
+
+  (defun eshell/mycat (&rest args)
+    "Open files in other buffer"
+    (if (null args)
+        (user-error "No file specified")
+      (dolist (file args)
+        (find-file-read-only-other-window file))))
+
+  (defun eshell/gst (&rest args)
+    (magit-status (pop args) nil)
+    (eshell/echo))   ;; The echo command suppresses output
+
+  (defun eshell/find-file-insert-path ()
+    "Use `fd` to find files and insert the selected path into the eshell prompt."
+    (interactive)
+    (let* ((query (read-string "Find file (query): "))
+           (results (split-string
+                     (shell-command-to-string (format "fd --type f %s" query))
+                     "\n" t))
+           (selected (completing-read "Select file: " results nil t)))
+      (when (and selected (not (string-empty-p selected)))
+        (insert selected))))
+
+  (defun eshell/find-file-with-affe ()
+    "Search for files using affe based on the current Eshell input and insert the selected file path into Eshell."
+    (interactive)
+    (let* ((input (eshell-get-old-input))
+           ;; Extract the command and arguments from the input
+           (args (split-string input "[ \t\n]+" t))
+           (command (car args))
+           ;; Use the second argument as the directory to search from, default to current
+           (raw-dir (or (nth 1 args) "."))
+           (base-dir (expand-file-name raw-dir default-directory))
+           (valid-dir (if (file-directory-p base-dir) base-dir default-directory))
+           ;; Customize affe's action to insert path in Eshell
+           (affe-filter-func
+            (lambda (path)
+              (eshell-bol)
+              (kill-line)
+              (insert (concat command " " (shell-quote-argument path))))))
+      (if (not valid-dir)
+          (user-error "Invalid path (%s)" base-dir)
+        (affe-find valid-dir))))
+
+  (defun eshell/find-file-with-consult ()
+    "Find files from your current dir args"
+    (interactive)
+    (let* ((input (eshell-get-old-input))
+           ;; Extract arguments from input
+           (args (split-string input "[ \t\n]+" t))
+           (command (or (car args) ""))
+           ;; Always expand the filepath no matter what
+           (second-arg (or (nth 1 args) "."))
+           (base-dir (expand-file-name second-arg default-directory))
+           ;; FIXME: . or default-directory?
+           (original-dir (or second-arg "."))
+           (search-type (if (string-equal command "cd")
+                            "d"  ; Search for directories
+                          "f")) ; Search for files
+           (valid-dir (if (file-directory-p base-dir) base-dir default-directory))
+           (selected (consult--read
+                      (split-string (shell-command-to-string
+                                     (format "fd --type %s --hidden . %s"
+                                             search-type
+                                             (shell-quote-argument valid-dir)))
+                                    "\n" t)
+                      :prompt (format "Select %s:"
+                                      (if (string-equal command "cd")
+                                          "directory"
+                                        "file"))
+                      :sort nil)))
+      (when (and selected (not (string-empty-p selected)))
+        (eshell-bol)
+        (kill-line)
+        (insert (concat command " " (shell-quote-argument selected))))))
+
+  ;; nicked from the consult-dir wiki
+  (defun eshell/z (&optional regexp)
+    "Navigate to a previously visited directory in eshell."
+    (interactive)
+    (let ((eshell-dirs (delete-dups (mapcar 'abbreviate-file-name
+                                            (ring-elements eshell-last-dir-ring)))))
+      (cond
+       ((and (not regexp) (featurep 'consult-dir))
+        (let* ((consult-dir--source-eshell `(:name "Eshell"
+                                             :narrow ?e
+                                             :category file
+                                             :face consult-file
+                                             :items ,eshell-dirs))
+               (consult-dir-sources (cons consult-dir--source-eshell consult-dir-sources)))
+          (eshell/cd (substring-no-properties (consult-dir--pick "Switch directory: ")))))
+       (t (eshell/cd (if regexp (eshell-find-previous-directory regexp)
+                       (completing-read "cd: " eshell-dirs)))))))
+
+  (defun bergheim/open-dired-and-insert-file ()
+    "Open Dired for the current input directory and insert selected file back into Eshell."
+    (interactive)
+    (let* ((current-input (eshell-get-old-input))
+           (parts (split-string current-input " "))
+           (command (car parts))
+           (path (mapconcat 'identity (cdr parts) " "))
+           (directory (or (file-name-directory (expand-file-name path)) default-directory))
+           (filename (progn
+                       (dired directory)
+                       (let ((selected-file (dired-get-file-for-visit)))
+                         (while (not selected-file)
+                           (dired-next-line 1)
+                           (setq selected-file (dired-get-file-for-visit)))
+                         (file-relative-name selected-file directory)))))
+      (when filename
+        (kill-region (point-at-bol) (point-at-eol))
+        (insert (concat command " " directory filename)))))
+
+  (defun bergheim/dired-return-path ()
+    "Exit Dired and return the path of the file or directory at point."
+    (interactive)
+    (let* ((path (dired-get-file-for-visit))
+           (relative-path (file-relative-name path bergheim/eshell-complete-from-dir)))
+      (dirvish-quit)
+      (insert relative-path)))
+
+  (defun bergheim/point-is-directory-p ()
+    "Check if the word at point is a directory path, or default-directory if not."
+    (let ((word (thing-at-point 'filename t)))
+      (if (or (not word) (string-empty-p word))
+          (file-directory-p default-directory)
+        (file-directory-p word))))
+
+  (defvar bergheim/last-completion-point nil
+    "Stores the last point of completion.")
+
+  (defvar bergheim/eshell-complete-from-dir nil
+    "Stores the directory where we started the completion.")
+
+  (defun bergheim/extract-path ()
+    "Extract the path or return nil if not found."
+    (interactive) ;; TODO remove this
+    (let* ((current-input (eshell-get-old-input))
+           (parts (split-string current-input " "))
+           (command (car parts))
+           (path (mapconcat 'identity (cdr parts) " "))
+           (directory (or (expand-file-name path) default-directory)))
+      (when (bergheim/point-is-directory-p)
+        (setq bergheim/eshell-complete-from-dir directory)
+        directory)))
+
+  (defun bergheim/completion-at-point-or-dired ()
+    "Trigger `completion-at-point` or `dired` if called twice without moving point.
+Open `dired` in the resolved directory of the current command."
+    (interactive)
+    (if (and (eq major-mode 'eshell-mode)
+             (eq last-command this-command)
+             (eq (point) bergheim/last-completion-point))
+        (let ((path (bergheim/extract-path)))
+          (when (and path (file-directory-p path))
+            (setq bergheim/last-completion-point nil)
+            (dirvish (or path default-directory))))
+      (setq bergheim/last-completion-point (point))
+      (completion-at-point)))
+
+  (add-hook 'eshell-first-time-mode-hook
+            (lambda ()
+              (evil-define-key 'insert eshell-mode-map (kbd "TAB") 'bergheim/completion-at-point-or-dired)
+
+              (eshell/alias "cat" "eshell/cat $*")
+
+              (evil-define-key 'normal eshell-mode-map
+                ;; this binding is pretty non-standard, but who uses A in the shell..
+                (kbd "A")
+                (lambda ()
+                  (interactive)
+                  (end-of-buffer)
+                  (evil-append-line 1)))))
+
+
+  (add-hook 'eshell-mode-hook (lambda ()
+                                (eshell/alias "ll" "ls -AFGhl --color=always $1")
+                                (eshell/alias "gs" "magit-status")
+                                (eshell/alias "gd" "magit-diff-unstaged")
+                                (eshell/alias "gds" "magit-diff-staged")
+
+
+                                (eshell/alias "cat" "eshell/mycat $1")
+
+                                (define-key eshell-mode-map (kbd "C-c f") 'eshell/find-file-with-consult)
+                                (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult)
+                                (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
+
 
 (use-package eat
   :commands eat

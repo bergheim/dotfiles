@@ -122,6 +122,7 @@ With a universal argument, it allows entering the application to use."
    "O"   #'dirvish-quicksort
    "s"   #'dirvish-narrow
    "TAB" #'dirvish-subtree-toggle
+   "C-<return>" #'bergheim/dired-return-path
    "C-h" #'dirvish-history-go-backward
    "C-l" #'dirvish-history-go-forward
    "C-M-k" #'dirvish-emerge-previous-group
@@ -159,6 +160,8 @@ With a universal argument, it allows entering the application to use."
       (kill-buffer))))
 
 (use-package affe
-  :ensure t)
+  :ensure t
+  :config
+  (setq affe-find-command "fd --color=never --hidden --follow --exclude .git --exclude node_modules --regex"))
 
 ;;; nav.el ends here
