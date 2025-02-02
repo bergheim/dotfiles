@@ -96,6 +96,12 @@
     "TAB p" '(bergheim/open-or-switch-to-project-tab :which-key "Switch project")
     "TAB r" '(tab-bar-rename-tab :which-key "Rename tab")
     "TAB x" '(tab-close :which-key "close tab")
+    "TAB 1" '((lambda () (interactive) (tab-select 1)) :which-key "Tab 1")
+    "TAB 2" '((lambda () (interactive) (tab-select 2)) :which-key "Tab 2")
+    "TAB 3" '((lambda () (interactive) (tab-select 3)) :which-key "Tab 3")
+    "TAB 4" '((lambda () (interactive) (tab-select 4)) :which-key "Tab 4")
+    "TAB 5" '((lambda () (interactive) (tab-select 5)) :which-key "Tab 5")
+    "TAB 6" '((lambda () (interactive) (tab-select 6)) :which-key "Tab 6")
 
     "a" '(:ignore t :which-key "Apps")
     "ac" '(bergheim/open-calendar :which-key "Calendar")
