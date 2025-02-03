@@ -2,6 +2,16 @@
 
 (use-package password-store)
 
+(use-package em-hist
+  :ensure nil
+  :config
+  (setq
+   eshell-hist-ignoredups t
+   ;; Set the history file.
+   ;; eshell-history-file-name "~/.bash_history"
+   ;; If nil, use HISTSIZE as the history size.
+   eshell-history-size nil))
+
 (use-package eshell
   :ensure nil
   :bind (("C-r" . consult-history)
