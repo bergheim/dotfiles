@@ -1,4 +1,4 @@
-;;; view.el --- Description -*- lexical-binding: t; -*-
+;;; viewer.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
@@ -20,4 +20,4 @@
                 :help "Modified Maildir"
                 :function bergheim/mu4e--msg-get-modified-maildir)))
 
-;;; view.el ends here
+;;; viewer.el ends here

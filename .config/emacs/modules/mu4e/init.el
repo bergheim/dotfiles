@@ -34,7 +34,7 @@
   (bergheim/load-file "modules/mu4e/settings.el")
   (bergheim/load-file "modules/mu4e/helpers.el")
   (bergheim/load-file "modules/mu4e/accounts.el")
-  (bergheim/load-file "modules/mu4e/view.el")
+  (bergheim/load-file "modules/mu4e/style.el")
   (bergheim/load-file "modules/mu4e/actions.el")
   (bergheim/load-file "modules/mu4e/search.el")
 
