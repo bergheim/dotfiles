@@ -248,6 +248,24 @@ Open `dired` in the resolved directory of the current command."
 (use-package treemacs-evil
   :after (treemacs evil))
 
+(use-package proced
+  :ensure nil
+  :commands proced
+  :general
+  (bergheim/global-menu-keys
+    "ap" '(proced :which-key "Proced"))
+  :custom
+  (proced-auto-update-flag t)
+  (proced-auto-update-interval 1)
+  (proced-goal-attribute nil) ;; don't move cursor to args when navigating
+  (proced-show-remote-processes t) ;; enable TRAMP support
+  (proced-enable-color-flag t)
+  (proced-format 'custom)
+  :config
+  (add-to-list
+   'proced-format-alist
+   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
+
 (use-package denote
   :ensure t
   :custom
