@@ -136,6 +136,16 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
   (:states '(normal visual)
    "gR" 'iedit-mode))
 
+;; display match info in the modeline
+(use-package evil-anzu
+  :after evil-collection
+  :general
+  (:states '(normal visual)
+   ;; unlike gR (iedit-mode) you have to confirm matches here
+   "gC" 'anzu-query-replace-at-cursor)
+  :config
+  (global-anzu-mode +1))
+
 (use-package tmr
   :config
   (setq tmr-notification-urgency 'normal)

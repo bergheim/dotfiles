@@ -185,13 +185,6 @@
            :fringe-width 8)
         spacious-padding-subtle-mode-line nil))
 
-;; display match info in the modeline
-;; has some replace stuff as well, not sure how useful
-(use-package evil-anzu
-  :after evil-collection
-  :config
-  (global-anzu-mode +1))
-
 (defun bergheim/toggle-visual-fluff ()
   "Toggle the menu bar and scroll bar on and off."
   (interactive)
