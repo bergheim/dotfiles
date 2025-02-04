@@ -120,6 +120,7 @@
     "bb" '(bergheim/switch-to-relevant-buffer :which-key "buffers")
     "bB" '(consult-buffer :which-key "Buffers")
 
+    "bc" '(clone-indirect-buffer-other-window :which-key "clone")
     "bd" '(kill-current-buffer :which-key "Delete")
     "bn" '(evil-buffer-new :which-key "New")
     "bS" '(scratch-buffer :which-key "switch to scratch")
