@@ -75,6 +75,7 @@
   (bergheim/global-menu-keys
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")
+    ";" '(embark-dwim :which-key "Embark DWIM")
     "æ" '(vertico-repeat :which-key "Repeat search")
     "`" '(bergheim/toggle-scratch-buffer :which-key "Scratch buffer")
     ;; "SPC" '(bergheim/consult-project-or-buffer :which-key "Find stuff")
