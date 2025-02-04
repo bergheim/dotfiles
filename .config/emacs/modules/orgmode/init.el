@@ -56,7 +56,12 @@
     "dd" 'org-deadline
     "di" 'org-time-stamp-inactive
     "e" 'org-edit-special
-    "l" 'org-store-link
+    "l" '(:ignore t :which-key "Links")
+    "ld" 'org-super-links-quick-insert-drawer-link
+    "li" 'org-super-links-quick-insert-inline-link
+    "ll" 'org-super-links-link
+    "lp" 'org-super-links-insert-link
+    "ly" 'org-super-links-store-link
     "i" 'org-toggle-item
     "h" 'org-toggle-heading
     "p" 'org-priority
@@ -334,4 +339,12 @@ With universal arg ARG, search all .org files under `org-directory`."
 (use-package org-contrib
   :after org
   :demand)
+
+(use-package org-super-links
+  :ensure ( :host github :repo "toshism/org-super-links" :branch "develop")
+  :after org
+  :config
+  (setq org-super-links-related-into-drawer t)
+  (advice-add 'org-capture :before #'org-super-links-store-link))
+
 ;;; org.el ends here

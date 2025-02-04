@@ -40,8 +40,8 @@
   "osT" `(,(bergheim/call-with-universal-arg #'bergheim/org-ql-search-for-tag)  :which-key "ALL tags")
 
   "ou" '(bergheim/org-copy-url-only :which-key "copy URL only")
-  "oy" '(org-store-link :which-key "store link")
-  "ol" '(org-insert-link :which-key "insert link")
+  "oy" '(org-super-links-store-link :which-key "store link")
+  "ol" '(org-super-links-insert-link :which-key "insert link")
 
   "oj" '(:ignore t :which-key "journal")
   "ojj" '(org-journal-new-entry :which-key "New entry")
