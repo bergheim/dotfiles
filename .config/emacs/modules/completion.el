@@ -89,8 +89,18 @@
   ;; candidate you select
   (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark)
 
+  (defun bergheim/grep-selected-buffers (buffers)
+    "Swoop across the selected BUFFERS"
+    (interactive)
+    (if (listp buffers)
+        (consult-line-multi (list :include buffers)))
+    (consult-line buffers))
+
   :config
-  (define-key embark-file-map "X" #'bergheim/embark-open-with))
+  (setq embark-confirm-act-all nil)
+  (add-to-list 'embark-multitarget-actions #'bergheim/grep-selected-buffers)
+  (define-key embark-buffer-map (kbd "g") #'bergheim/grep-selected-buffers)
+  (define-key embark-file-map (kbd "X") #'bergheim/embark-open-with))
 
 (use-package embark-consult
   :after (embark consult)
