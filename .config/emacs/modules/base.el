@@ -55,8 +55,21 @@
   :demand
   :after tramp
   :config
-  (setq recentf-max-menu-items 500)
-  (setq recentf-max-saved-items 2000)
+  ;; Track opened directories. Thank you karthink!
+  (defun recentf-track-opened-dir ()
+    (and default-directory
+         (recentf-add-file default-directory)))
+
+  (add-hook 'dired-mode-hook #'recentf-track-opened-dir)
+
+  ;; Track closed directories
+  (advice-add 'recentf-track-closed-file :override
+              (defun recentf-track-closed-advice ()
+                (cond (buffer-file-name (recentf-remove-if-non-kept buffer-file-name))
+                      ((equal major-mode 'dired-mode)
+                       (recentf-remove-if-non-kept default-directory)))))
+  (setq recentf-max-menu-items 500
+        recentf-max-saved-items 2000)
   (add-to-list 'recentf-exclude
                (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude
