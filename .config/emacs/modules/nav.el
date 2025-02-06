@@ -21,7 +21,15 @@
          ("C-c C-f" . consult-dir-jump-file))
   :general
   (bergheim/global-menu-keys
-    "RET" '(consult-dir :which-key "Bookmarks and history")))
+    "RET" '(consult-dir :which-key "Bookmarks and history"))
+  :config
+  ;; prefer recent files/dirs to static things
+  (setq consult-dir-sources
+        '(consult-dir--source-recentf
+          consult-dir--source-bookmark
+          consult-dir--source-default
+          consult-dir--source-project
+          consult-dir--source-tramp-local)))
 
 (use-package dired
   :ensure nil
