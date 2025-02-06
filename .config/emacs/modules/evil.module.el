@@ -13,7 +13,10 @@
   :config
   (setq-default evil-escape-delay 0.2)
   (setq-default evil-escape-key-sequence "jk")
-  (setq-default evil-escape-excluded-major-modes '(magit-status-mode magit-diff-mode))
+  (setq-default evil-escape-excluded-major-modes
+                '(magit-status-mode
+                  magit-diff-mode
+                  magit-log-mode))
   (setq-default evil-escape-excluded-states '(visual))
   (evil-escape-mode))
 
