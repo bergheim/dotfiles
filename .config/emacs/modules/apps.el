@@ -229,7 +229,6 @@ Open `dired` in the resolved directory of the current command."
                                 (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult)
                                 (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
 
-
 (use-package eat
   :commands eat
   :custom
@@ -298,9 +297,17 @@ Open `dired` in the resolved directory of the current command."
   (defun bergheim/denote-new-journal-entry ()
     "Create a new journal entry and enter writer mode"
     (interactive)
+    (unless (featurep 'denote-journal-extras)
+        (require 'denote-journal-extras))
     (siren-tab-bar-switch-to-or-create-tab "journal")
-    (denote-journal-extras-new-entry)
+    (let ((entry-today (denote-journal-extras--entry-today)))
+      (if entry-today
+          (denote-open-or-create (car entry-today))
+        (denote-journal-extras-new-entry)))
     (bergheim/write-mode t)
+    (goto-char (point-max))
+    (delete-trailing-whitespace)
+    (insert "\n* " (format-time-string "%H:%M") " ")
     (evil-insert 0))
 
   (defun bergheim/denote-last-journal-entry ()

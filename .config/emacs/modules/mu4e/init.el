@@ -7,7 +7,6 @@
      (interactive)
      (unless (featurep 'mu4e)
        (require 'mu4e))
-     (mu4e t)
      (mu4e-search-bookmark ,bookmark-string)))
 
 (use-package mu4e
@@ -27,7 +26,6 @@
                                "--my-address=" ,bergheim/glvortex/email-spam
                                "--my-address=" ,bergheim/glvortex/email-me)
                               ("mu" "index" "--quiet")))
-  :commands (mu4e mu4e-compose-new mu4e-update-index mu4e--jump-to-bookmark mu4e--server-filter)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
