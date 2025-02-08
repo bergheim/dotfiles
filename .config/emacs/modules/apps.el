@@ -194,9 +194,16 @@ Open `dired` in the resolved directory of the current command."
       (setq bergheim/last-completion-point (point))
       (completion-at-point)))
 
+  (defun bergheim/exit-eshell-from-insert-mode ()
+    "Exit Eshell if in `evil-insert' state."
+    (interactive)
+    (when (eq evil-state 'insert)
+      (eshell-life-is-too-much)))
+
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (evil-define-key 'insert eshell-mode-map (kbd "TAB") 'bergheim/completion-at-point-or-dired)
+              (evil-define-key 'insert eshell-mode-map (kbd "C-d") 'bergheim/exit-eshell-from-insert-mode)
 
               (eshell/alias "cat" "eshell/cat $*")
 
