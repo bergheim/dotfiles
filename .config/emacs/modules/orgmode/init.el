@@ -57,11 +57,13 @@
     "di" 'org-time-stamp-inactive
     "e" 'org-edit-special
     "l" '(:ignore t :which-key "Links")
-    "ld" 'org-super-links-quick-insert-drawer-link
-    "li" 'org-super-links-quick-insert-inline-link
-    "ll" 'org-super-links-link
-    "lp" 'org-super-links-insert-link
-    "ly" 'org-super-links-store-link
+    "ld" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
+    "li" '(org-insert-link :which-key "insert manually")
+    "ll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
+    "lP" '((lambda () (interactive) (let ((org-super-links-related-into-drawer nil)) (org-super-links-insert-link))) :which-key "paste here")
+    "lp" '(org-super-links-insert-link :which-key "paste to drawer")
+    "ls" '(org-super-links-quick-insert-inline-link :which-key "inline search")
+    "ly" '(org-super-links-store-link :which-key "copy")
     "i" 'org-toggle-item
     "h" 'org-toggle-heading
     "p" 'org-priority

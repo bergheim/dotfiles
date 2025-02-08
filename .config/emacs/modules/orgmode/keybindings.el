@@ -40,8 +40,15 @@
   "osT" `(,(bergheim/call-with-universal-arg #'bergheim/org-ql-search-for-tag)  :which-key "ALL tags")
 
   "ou" '(bergheim/org-copy-url-only :which-key "copy URL only")
-  "oy" '(org-super-links-store-link :which-key "store link")
-  "ol" '(org-super-links-insert-link :which-key "insert link")
+
+  "ol" '(:ignore t :which-key "Links")
+  "old" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
+  "oli" '(org-insert-link :which-key "insert manually")
+  "oll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
+  "olP" '((lambda () (interactive) (let ((org-super-links-related-into-drawer nil)) (org-super-links-insert-link))) :which-key "paste here")
+  "olp" '(org-super-links-insert-link :which-key "paste to drawer")
+  "ols" '(org-super-links-quick-insert-inline-link :which-key "inline search")
+  "oly" '(org-super-links-store-link :which-key "copy")
 
   "oj" '(:ignore t :which-key "journal")
   "ojj" '(org-journal-new-entry :which-key "New entry")
