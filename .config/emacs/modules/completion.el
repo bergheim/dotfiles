@@ -45,13 +45,12 @@
   ;;  "S" 'evil-avy-goto-char-2-above)
   )
 
-
 ;; right click from your keyboard
 (use-package embark
   :demand t
   :bind (("C-c a" . embark-act)
+         ("C-c e" . embark-export)
          ("C-'" . embark-act)
-         ("C-c b" . embark-bindings)
          ("C-;" . embark-dwim))
   :init
   ;; use embark to search the help menu
@@ -89,14 +88,16 @@
   ;; candidate you select
   (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark)
 
+  ;; TODO make buffers optional then bind this to "C-c g" or something to be
+  ;; called directly from the minibuffer
   (defun bergheim/grep-selected-buffers (buffers)
     "Swoop across the selected BUFFERS"
     (interactive)
-    (if (listp buffers)
-        (consult-line-multi (list :include buffers)))
-    (consult-line buffers))
+    (consult-line-multi (list :include buffers)))
+
 
   :config
+  (evil-collection-embark-setup)
   (setq embark-confirm-act-all nil)
   (add-to-list 'embark-multitarget-actions #'bergheim/grep-selected-buffers)
   (define-key embark-buffer-map (kbd "g") #'bergheim/grep-selected-buffers)
