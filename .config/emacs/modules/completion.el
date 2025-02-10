@@ -105,7 +105,7 @@
 
 (use-package embark-consult
   :after (embark consult)
-  :demand
+  :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -121,16 +121,13 @@
          ("M-r" . consult-history))
   :hook (completion-list-mode . consult-preview-at-point-mode)
   :init
-  ;; TODO: make preview also preview unopened files?
-  (defvar-local consult-toggle-preview-orig nil)
   (defun consult-toggle-preview ()
-    "Command to enable/disable preview."
+    "Previews candidate in vertico buffer, unless it's a consult command"
     (interactive)
-    (if consult-toggle-preview-orig
-        (setq consult--preview-function consult-toggle-preview-orig
-              consult-toggle-preview-orig nil)
-      (setq consult-toggle-preview-orig consult--preview-function
-            consult--preview-function #'ignore)))
+    (unless (bound-and-true-p consult--preview-function)
+      (save-selected-window
+        (let ((embark-quit-after-action nil))
+          (embark-dwim)))))
   :config
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<")
