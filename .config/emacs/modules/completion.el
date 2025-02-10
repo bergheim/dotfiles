@@ -449,23 +449,36 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :after corfu
   ;; Require trigger prefix before template name when completing.
   ;; :custom (tempel-trigger-prefix "!")
-  :bind (("C-c t" . tempel-expand)))
+  :bind (("M-n" . tempel-complete)
+         ("C-c t" . tempel-complete)
+          :map tempel-map
+          ("M-n" . tempel-next)
+          ("M-p" . tempel-previous)
+          ("C-l" . tempel-next)
+          ("C-h" . tempel-previous)
+          ("C-j" . tempel-next)
+          ("C-k" . tempel-previous)
+          ("<tab>" . tempel-next)
+          ("<backtab>" . tempel-previous))
+  :custom
+  (tempel-path (concat bergheim/config-dir "templates/*"))
+  :init
 
-(defun tempel-setup-capf ()
-  ;; Add the Tempel Capf to `completion-at-point-functions'.
-  ;; `tempel-expand' only triggers on exact matches. Alternatively use
-  ;; `tempel-complete' if you want to see all matches, but then you
-  ;; should also configure `tempel-trigger-prefix', such that Tempel
-  ;; does not trigger too often when you don't expect it. NOTE: We add
-  ;; `tempel-expand' *before* the main programming mode Capf, such
-  ;; that it will be tried first.
-  (setq-local completion-at-point-functions
-              (cons #'tempel-complete
-                    completion-at-point-functions)))
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-complete
+                      completion-at-point-functions)))
 
-(add-hook 'conf-mode-hook 'tempel-setup-capf)
-(add-hook 'prog-mode-hook 'tempel-setup-capf)
-(add-hook 'text-mode-hook 'tempel-setup-capf)
+  (add-hook 'conf-mode-hook 'tempel-setup-capf)
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf))
 
 (use-package tempel-collection
   :after tempel)
