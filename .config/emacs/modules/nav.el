@@ -122,15 +122,15 @@ With a universal argument, it allows entering the application to use."
    "q"   #'dirvish-quit
    "a"   #'dirvish-quick-access
    "C"   #'dired-create-directory
-   "f"   #'dirvish-fd
-   "F"   #'dirvish-fd-ask
+   "s"   #'dirvish-fd-ask
+   "S"   #'dirvish-fd
+   "f"   #'dirvish-narrow ;; "filter"
    ;; this is hilarious. yes, I do in fact want to copy it as kill
    "y"   #'dired-copy-filename-as-kill
    "Y"   #'dirvish-copy-file-name
    "p"   #'dirvish-yank-menu
    "o"   #'dired-sort-toggle-or-edit
    "O"   #'dirvish-quicksort
-   "s"   #'dirvish-narrow
    "TAB" #'dirvish-subtree-toggle
    "C-<return>" #'bergheim/dired-return-path
    "C-h" #'dirvish-history-go-backward
