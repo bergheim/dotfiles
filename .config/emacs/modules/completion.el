@@ -232,7 +232,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
          (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
 
-;; (define-key minibuffer-local-map (kbd "M-f") #'bergheim/minibuffer-bookmarks)
 ;; Minibuffer completion
 (use-package vertico
   :demand
@@ -241,7 +240,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (vertico-cycle t)
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
-  (completion-styles '(basic substring partial-completion flex))
+  (completion-styles '(basic substring partial-completion regex flex))
   :init
   (vertico-mode)
   (vertico-multiform-mode)
@@ -396,18 +395,12 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Orderless: powerful completion style
 (use-package orderless
+  :after vertico
   :custom
   (completion-styles '(orderless basic))
   ;; this has a bunch of other things set up.. so just set everything from orderless
   (completion-category-defaults nil)
   (completion-category-overrides '(file (styles basic partial-completion)))
-  (orderless-affix-dispatch-alist
-   '((37 . char-fold-to-regexp)       ; %
-     (33 . orderless-without-literal) ; !
-     (44 . orderless-initialism)      ; ,
-     (61 . orderless-literal)         ; =
-     (126 . orderless-flex)           ; ~
-     (43 . orderless-prefix)))        ; +
   ;; don't add rarely used things here, use dispatchers instead
   (orderless-matching-styles '(orderless-literal orderless-prefixes orderless-regexp)))
 
