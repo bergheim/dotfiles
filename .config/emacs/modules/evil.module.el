@@ -49,9 +49,35 @@
    "gl" 'evil-lion-left
    "gL" 'evil-lion-right))
 
-;; TODO add this and keybindings
-;; (use-package evil-textobj-tree-sitter
-;;   :ensure t)
+;; FIXME this doesn't work anymore atm..
+(use-package evil-textobj-tree-sitter
+  :after evil
+  :demand t
+  :config
+  ;; example of custom text object
+  ;; (define-key evil-outer-text-objects-map "m" (evil-textobj-tree-sitter-get-textobj "import"
+  ;;                                               '((python-mode . [(import_statement) @import])
+  ;;                                                 (go-mode . [(import_spec) @import])
+  ;;                                                 (rust-mode . [(use_declaration) @import]))))
+  (define-key evil-outer-text-objects-map "f" (cons "evil-outer-function" (evil-textobj-tree-sitter-get-textobj "function.outer")))
+  (define-key evil-inner-text-objects-map "f" (cons "evil-inner-function" (evil-textobj-tree-sitter-get-textobj "function.inner")))
+  (define-key evil-outer-text-objects-map "c" (cons "evil-outer-class" (evil-textobj-tree-sitter-get-textobj "class.outer")))
+  (define-key evil-inner-text-objects-map "c" (cons "evil-inner-class" (evil-textobj-tree-sitter-get-textobj "class.inner")))
+  (define-key evil-outer-text-objects-map "n" (cons "evil-outer-comment" (evil-textobj-tree-sitter-get-textobj "comment.outer")))
+  (define-key evil-inner-text-objects-map "n" (cons "evil-outer-comment" (evil-textobj-tree-sitter-get-textobj "comment.outer")))
+  (define-key evil-outer-text-objects-map "i" (cons "evil-outer-conditional-loop" (evil-textobj-tree-sitter-get-textobj ("conditional.outer" "loop.outer"))))
+  (define-key evil-inner-text-objects-map "i" (cons "evil-inner-conditional-loop" (evil-textobj-tree-sitter-get-textobj ("conditional.inner" "loop.inner"))))
+  (define-key evil-inner-text-objects-map "a" (cons "evil-inner-parameter" (evil-textobj-tree-sitter-get-textobj "parameter.inner")))
+  (define-key evil-outer-text-objects-map "a" (cons "evil-outer-parameter" (evil-textobj-tree-sitter-get-textobj "parameter.outer")))
+
+  (define-key evil-normal-state-map (kbd "]a") (cons "goto-parameter-start" (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "parameter.inner"))))
+  (define-key evil-normal-state-map (kbd "[a") (cons "goto-parameter-start" (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "parameter.inner" t))))
+  (define-key evil-normal-state-map (kbd "]A") (cons "goto-parameter-end" (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "parameter.inner" nil t))))
+  (define-key evil-normal-state-map (kbd "[A") (cons "goto-parameter-end" (lambda () (interactive) (evil-textobj-tree-sitter-goto-textobj "parameter.inner" t t))))
+  (define-key evil-normal-state-map (kbd "]f") (cons "goto-function-start" (lambda () (interactive) (progn (evil-textobj-tree-sitter-goto-textobj "function.outer") (reposition-window)))))
+  (define-key evil-normal-state-map (kbd "[f") (cons "goto-function-start" (lambda () (interactive) (progn (evil-textobj-tree-sitter-goto-textobj "function.outer" t) (reposition-window)))))
+  (define-key evil-normal-state-map (kbd "]F") (cons "goto-function-end" (lambda () (interactive) (progn (evil-textobj-tree-sitter-goto-textobj "function.outer" nil t) (reposition-window)))))
+  (define-key evil-normal-state-map (kbd "[F") (cons "goto-function-end" (lambda () (interactive) (progn (evil-textobj-tree-sitter-goto-textobj "function.outer" t t) (reposition-window))))))
 
 ;; gc  evil-commentary
 ;; gy  evil-commentary-yank
