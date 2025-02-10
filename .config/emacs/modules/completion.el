@@ -393,6 +393,31 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; Orderless: powerful completion style
 (use-package orderless
   :after vertico
+  :config
+  ;; from https://github.com/minad/consult/wiki
+  (defun +orderless--consult-suffix ()
+    "Regexp which matches the end of string with Consult tofu support."
+    (if (boundp 'consult--tofu-regexp)
+        (concat consult--tofu-regexp "*\\'")
+      "\\'"))
+
+  ;; Recognizes the following patterns:
+  ;; * .ext (file extension)
+  ;; * regexp$ (regexp matching at end)
+  (defun +orderless-consult-dispatch (word _index _total)
+    (cond
+     ;; Ensure that $ works with Consult commands, which add disambiguation suffixes
+     ((string-suffix-p "$" word)
+      `(orderless-regexp . ,(concat (substring word 0 -1) (+orderless--consult-suffix))))
+     ;; File extensions
+     ((and (or minibuffer-completing-file-name
+               (derived-mode-p 'eshell-mode))
+           (string-match-p "\\`\\.." word))
+      `(orderless-regexp . ,(concat "\\." (substring word 1) (+orderless--consult-suffix))))))
+
+  (setq orderless-style-dispatchers (list #'+orderless-consult-dispatch
+                                          #'orderless-kwd-dispatch
+                                          #'orderless-affix-dispatch))
   :custom
   (completion-styles '(orderless basic))
   ;; this has a bunch of other things set up.. so just set everything from orderless
