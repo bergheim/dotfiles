@@ -167,26 +167,26 @@
                  :children (("Daily review"
                              :icon ("nf-md-calendar_today" :set "mdicon" :color "green")
                              :keys "r"
-                             :headline "Daily"
+                             :file ,(expand-file-name "review/daily.org" org-directory)
                              :default-tags "daily:review"
                              :hook org-caldav-sync
                              :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
                             ("Weekly review"
                              :icon ("nf-md-calendar_weekend" :set "mdicon" :color "green")
                              :keys "w"
-                             :headline "Weekly"
+                             :file ,(expand-file-name "review/weekly.org" org-directory)
                              :default-tags "weekly:review"
                              :template-file ,(expand-file-name "review-weekly.org" org-capture-custom-template-directory))
                             ("Monthly review"
                              :icon ("nf-fa-lightbulb_o" :set "faicon" :color "green")
                              :keys "m"
-                             :headline "Monthly"
+                             :file ,(expand-file-name "review/monthly.org" org-directory)
                              :default-tags "monthly:review"
                              :template-file ,(expand-file-name "review-monthly.org" org-capture-custom-template-directory))
                             ("Yearly review"
                              :icon ("nf-md-calendar_today" :set "mdicon" :color "green")
                              :keys "y"
-                             :headline "Yearly"
+                             :file ,(expand-file-name "review/yearly.org" org-directory)
                              :default-tags "yearly:review"
                              :template-file ,(expand-file-name "review-yearly.org" org-capture-custom-template-directory))))
 

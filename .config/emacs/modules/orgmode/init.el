@@ -9,13 +9,13 @@
 
   ;; LOL @this loading
   :config
+  (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/keybindings.el")
   (bergheim/load-file "modules/orgmode/capture.el")
   (bergheim/load-file "modules/orgmode/agenda.el")
   (bergheim/load-file "modules/orgmode/roam.el")
-  (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/style.el")
