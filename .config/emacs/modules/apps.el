@@ -529,3 +529,103 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     ("x" smudge-controller-volume-mute-unmute :exit nil)
     ("d" smudge-select-device :exit nil)
     ("q" quit-window "quit" :color blue)))
+
+;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
+(use-package erc
+  :ensure nil
+  :hook
+  ;; (erc-mode . erc-spelling-mode)
+  (erc-mode . erc-notifications-mode)
+  :custom
+  (erc-autojoin-channels-alist '(("libera.chat" "#systemcrafters" "#emacs" "#neovim" "#elixir" "#test2k")))
+  (erc-autojoin-timing 'ident)
+  (erc-fill-column 90)
+  (erc-autojoin-delay 10)
+  (erc-fill-function 'erc-fill-static)
+  (erc-fill-static-center 16)
+  (erc-fool-highlight-type 'all)
+  (erc-save-buffer-on-part t)
+  ;; (erc-fools irc-fools)
+  (erc-header-line-format nil)
+  (erc-log-insert-log-on-open t)
+  (erc-hide-list '("JOIN" "PART" "QUIT"))
+  (erc-insert-timestamp-function 'erc-insert-timestamp-left)
+  (erc-timestamp-only-if-changed-flag nil)
+  (erc-interpret-mirc-color t)
+  (erc-join-buffer 'bury)
+  (erc-nick "bergheim")
+  (erc-prompt (format ">"))
+  ;; (erc-prompt-for-password nil)
+  (erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE" "AWAY" "333" "353"))
+  :general
+  (bergheim/global-menu-keys
+    "ai" '(:ignore t :which-key "irc (erc)")
+    "aii" '(bergheim/erc-connect :which-key "init")
+    "aib" '(bergheim/consult-erc-buffer :which-key "buffers"))
+  (bergheim/localleader-keys
+    :states 'normal
+    :keymaps 'erc-mode-map
+    ;; TODO erc-imenu-mode
+    "c" 'erc-bufbar-mode
+    "s" 'bergheim/erc-swoop-nick
+    "n" 'erc-nickbar-mode)
+  (:states 'normal
+   :keymaps 'erc-mode-map
+   "A" (lambda ()
+         (interactive)
+         (goto-char (point-max))
+         (evil-append 0)))
+  :init
+  (defun bergheim/erc-connect ()
+    "Open ERC and log in."
+    (interactive)
+    (erc-tls :server "irc.libera.chat" :port 6697
+             :user "bergheim"))
+  :config
+  (erc-log-mode t)
+  (autoload 'erc-buffer-list "erc")
+
+  (defvar erc-buffer-source
+    `(:name     "ERC"
+      :hidden   t
+      :narrow   ?e
+      :category buffer
+      :state    ,#'consult--buffer-state
+      :items    ,(lambda () (mapcar #'buffer-name (erc-buffer-list)))))
+
+  (add-to-list 'consult-buffer-sources 'erc-buffer-source 'append)
+
+  (defun bergheim/consult-erc-buffer ()
+    "Consult ERC buffers directly."
+    (interactive)
+    (let ((erc-buffer-source-visible (copy-sequence erc-buffer-source)))
+      ;; Temporarily set :hidden to nil for this buffer source
+      (setf (plist-get erc-buffer-source-visible :hidden) nil)
+      (let ((consult-buffer-sources (list erc-buffer-source-visible)))
+        (consult-buffer))))
+
+  (defun bergheim/erc-swoop-nick ()
+    "Search for nick in the current ERC buffer, prepopulated with nicks."
+    (interactive)
+    (let* ((nicks (bergheim/erc-collect-nicks))
+           (nick (completing-read "Choose nick: " nicks nil t)))
+      (consult-line (format "<%s>" (regexp-quote nick)))))
+
+  ;; ;; bergheim/erc-collect-nicks seems more useful since that is only active users
+  ;; (defun bergheim/erc-nicks-from-channel ()
+  ;;   "Get a list of nicks from the current ERC channel."
+  ;;   (let (nicks)
+  ;;     (when (bound-and-true-p erc-channel-users)
+  ;;       (maphash (lambda (nick _)
+  ;;                  (push nick nicks))
+  ;;                erc-channel-users))
+  ;;     nicks))
+
+  (defun bergheim/erc-collect-nicks ()
+    "Collect active/visible nicks from the current ERC buffer."
+    (let (nicks)
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "<\\(\\w+\\)> " nil t)
+          (add-to-list 'nicks (match-string 1))))
+      nicks)))
