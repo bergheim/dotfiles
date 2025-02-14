@@ -240,6 +240,8 @@
     "si" '(consult-imenu :which-key "imenu items")
     "sI" '(consult-imenu-multi :which-key "imenu items all buffers")
     "sk" '(consult-kmacro :which-key "kmacro")
+    "sl" '(bergheim/avy-goto-link :which-key "open URL")
+    "sL" `(,(bergheim/call-with-universal-arg  #'bergheim/consult-browse-links) :which-key "list and open URL")
     "sm" '(consult-global-mark :which-key "global marks")
     "sM" '(consult-man :which-key "man")
     "sn" '(consult-focus-lines :which-key "narrow view")

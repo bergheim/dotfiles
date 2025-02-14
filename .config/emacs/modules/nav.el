@@ -6,17 +6,19 @@
   :custom
   (avy-timeout-seconds 0.3)
   :config
-
   (defun bergheim/avy-goto-link ()
     "Browse a visible link in the current frame."
     (interactive)
-    (let ((avy-keys (number-sequence ?a ?z)) ; Prefer a single char
-          ;; (avy-all-windows nil)
-          )
-      (save-excursion
-        (if (avy-jump "https?://" :beg (point-min) :end (point-max))
-            (browse-url-at-point)
-          (message "No visible links found.")))))
+    (let* ((avy-keys (number-sequence ?a ?z))
+           (avy-all-windows t)
+           (candidates (avy--regex-candidates "https?://")))
+      (if (not candidates)
+          (message "No visible links found.")
+        (save-window-excursion
+          (let ((pt (cdr (avy--process candidates))))
+            (when pt
+              (goto-char pt)
+              (browse-url-at-point)))))))
 
   ;; this allows us to go back. strange the evil version does not do this..
   (defadvice evil-avy-goto-char-timer (around bergheim/save-position activate)
@@ -212,4 +214,44 @@ With a universal argument, it allows entering the application to use."
   :config
   (setq affe-find-command "fd --color=never --hidden --follow --exclude .git --exclude node_modules --regex"))
 
+(defun bergheim/consult-browse-links ()
+  "Find and open URLs in the current buffer.
+
+Search through lines in the current buffer containing URLs.
+Prompt the user to select a line, then open the chosen URL in the
+default web browser. Navigate forward through the buffer if a prefix
+argument is given, otherwise navigate backward."
+  (interactive)
+  (let ((vertico-sort-function nil)
+        candidates
+        (search-fn (if current-prefix-arg 're-search-forward 're-search-backward))
+        (url-regex "\\(https?://[^][:space:]\n]+\\)"))
+    (save-excursion
+      (goto-char (if current-prefix-arg (point-min) (point-max)))
+      (while (funcall search-fn url-regex nil t)
+        (let ((url (match-string-no-properties 0))
+              (line (string-trim (thing-at-point 'line t)))
+              (pos (point)))
+          (push (cons line (cons url pos)) candidates)))
+
+      (unless candidates ; Abort if no candidates found
+        (user-error "No URLs found"))
+
+      (let ((selected nil))
+        (consult--read
+         (mapcar #'car candidates)
+         :prompt "Lines with URLs: "
+         :lookup (lambda (user-query cands narrow input)
+                   (when-let ((entry (assoc user-query candidates)))
+                     (goto-char (cdr (cdr entry)))
+                     (cons user-query t)))
+         :require-match t
+         :state (lambda (action cand)
+                  (when (eq action 'return)
+                    (setq selected (car cand)))))
+
+        (when selected
+          (when-let (url (car (cdr (assoc selected candidates))))
+            (message "Opening URL: %s" url)
+            (browse-url url)))))))
 ;;; nav.el ends here
