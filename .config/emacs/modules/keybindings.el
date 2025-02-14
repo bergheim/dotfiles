@@ -117,8 +117,9 @@
     "at" '(treemacs :which-key "Treemacs")
 
     "b" '(:ignore t :which-key "Buffers")
+    "ba" '(consult-buffer :which-key "All buffers")
     "bb" '(bergheim/switch-to-relevant-buffer :which-key "buffers")
-    "bB" '(consult-buffer :which-key "Buffers")
+    "bB" '(consult-buffer :which-key "All buffers")
 
     "bc" '(clone-indirect-buffer-other-window :which-key "clone")
     "bd" '(kill-current-buffer :which-key "Delete")
