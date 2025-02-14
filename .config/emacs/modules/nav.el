@@ -128,7 +128,7 @@ With a universal argument, it allows entering the application to use."
   :config
   (setq dirvish-emerge-mode nil)
   ;; (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)
-  (setq dired-listing-switches "-al --group-directories-first")
+  (setq dired-listing-switches "-alGh --group-directories-first")
   (setq dired-omit-files
         (rx (or (seq bol (? ".") "#")     ;; emacs autosave files
                 (seq bol "." (not (any "."))) ;; dot-files

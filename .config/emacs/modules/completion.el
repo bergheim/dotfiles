@@ -427,15 +427,15 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   ;; :custom (tempel-trigger-prefix "!")
   :bind (("M-n" . tempel-complete)
          ("C-c t" . tempel-complete)
-          :map tempel-map
-          ("M-n" . tempel-next)
-          ("M-p" . tempel-previous)
-          ("C-l" . tempel-next)
-          ("C-h" . tempel-previous)
-          ("C-j" . tempel-next)
-          ("C-k" . tempel-previous)
-          ("<tab>" . tempel-next)
-          ("<backtab>" . tempel-previous))
+         :map tempel-map
+         ("M-n" . tempel-next)
+         ("M-p" . tempel-previous)
+         ("C-l" . tempel-next)
+         ("C-h" . tempel-previous)
+         ("C-j" . tempel-next)
+         ("C-k" . tempel-previous)
+         ("<tab>" . tempel-next)
+         ("<backtab>" . tempel-previous))
   :custom
   (tempel-path (concat bergheim/config-dir "templates/*"))
   :init

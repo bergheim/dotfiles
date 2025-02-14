@@ -298,7 +298,7 @@ Open `dired` in the resolved directory of the current command."
     "Create a new journal entry and enter writer mode"
     (interactive)
     (unless (featurep 'denote-journal-extras)
-        (require 'denote-journal-extras))
+      (require 'denote-journal-extras))
     (siren-tab-bar-switch-to-or-create-tab "journal")
     (let ((entry-today (denote-journal-extras--entry-today)))
       (if entry-today
