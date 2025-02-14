@@ -33,11 +33,12 @@
 
   "os" '(:ignore t :which-key "Search")
   "osa" '(consult-org-agenda :which-key "agenda")
+  "osi" '(consult-org-heading :which-key "headings")
   "osn" '((lambda () (interactive) (consult-find org-directory)) :which-key "filenames")
-  "oss" '(consult-org-heading :which-key "headings")
+  "oss" '(bergheim/org-ql-find-in-org-directory-recursively :which-key "headings")
   "osS" '(org-ql-find-in-agenda :which-key "org-agenda files")
-  "ost" '(bergheim/org-ql-search-for-tag  :which-key "tags")
   "osT" `(,(bergheim/call-with-universal-arg #'bergheim/org-ql-search-for-tag)  :which-key "ALL tags")
+  "ost" '(bergheim/org-ql-search-for-tag  :which-key "tags")
 
   "ou" '(bergheim/org-copy-url-only :which-key "copy URL only")
 

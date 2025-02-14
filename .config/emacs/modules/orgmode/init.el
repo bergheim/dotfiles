@@ -229,6 +229,16 @@ With universal arg ARG, search all .org files under `org-directory`."
         :title "Items"
         :sort 'todo
         :super-groups '((:auto-todo t)))))
+
+  ;; TODO: this sort of feels like it probably is in org-ql already, but I couldn't find it
+  (defun bergheim/org-ql-find-in-org-directory-recursively ()
+    "Search Org files in `org-directory` recursively using `org-ql-find`."
+    (interactive)
+    (let* ((org-files (directory-files-recursively org-directory "\\.org$"))
+           (filtered-files (seq-remove (lambda (file)
+                                         (string-prefix-p org-roam-directory file))
+                                       org-files)))
+      (org-ql-find filtered-files)))
   :general
   (:keymaps '(org-ql-view-map org-ql-view-list-map)
    :states '(normal motion emacs)
