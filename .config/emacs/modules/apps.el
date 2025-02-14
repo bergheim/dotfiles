@@ -582,9 +582,14 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     (erc-tls :server "irc.libera.chat" :port 6697
              :user "bergheim"))
   :config
-  (erc-log-mode t)
-  (autoload 'erc-buffer-list "erc")
+  (erc-log-mode 1)
 
+  (defun bergheim/erc-setup-completions ()
+    "Set up completions for ERC"
+    (setq-local completion-at-point-functions (list #'cape-emoji))
+    (corfu-mode 1))
+
+  (autoload 'erc-buffer-list "erc")
   (defvar erc-buffer-source
     `(:name     "ERC"
       :hidden   t

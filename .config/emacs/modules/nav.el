@@ -1,5 +1,43 @@
 ;;; nav.el --- Description -*- lexical-binding: t; -*-
 
+(use-package avy
+  :demand t
+  :after evil
+  :custom
+  (avy-timeout-seconds 0.3)
+  :config
+
+  (defun bergheim/avy-goto-link ()
+    "Browse a visible link in the current frame."
+    (interactive)
+    (let ((avy-keys (number-sequence ?a ?z)) ; Prefer a single char
+          ;; (avy-all-windows nil)
+          )
+      (save-excursion
+        (if (avy-jump "https?://" :beg (point-min) :end (point-max))
+            (browse-url-at-point)
+          (message "No visible links found.")))))
+
+  ;; this allows us to go back. strange the evil version does not do this..
+  (defadvice evil-avy-goto-char-timer (around bergheim/save-position activate)
+    (evil-set-jump)
+    ad-do-it)
+
+  (general-define-key
+   :states '(normal visual)
+   "M-d" 'evil-avy-goto-char-timer
+   "g SPC" 'evil-avy-goto-char-timer
+   "gu" 'avy-resume)
+  ;; FIXME: too broad; this messes up the surround operator, say ds(
+  ;; (general-define-key
+  ;;  :states 'operator
+  ;;  "z" 'evil-avy-goto-char-2
+  ;;  "x" 'evil-avy-goto-char-2
+  ;;  "s" 'evil-avy-goto-char-2-below
+  ;;  "S" 'evil-avy-goto-char-2-above)
+  )
+
+
 (use-package consult-notes
   :commands (consult-notes
              consult-notes-search-in-all-notes
