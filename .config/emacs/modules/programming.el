@@ -158,4 +158,8 @@
 
 (use-package dape)
 
+(when (< emacs-major-version 30)
+  ;; needed for dape
+  (use-package jsonrpc))
+
 ;;; programming.el ends here
