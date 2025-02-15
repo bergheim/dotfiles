@@ -675,6 +675,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     (let (nicks)
       (save-excursion
         (goto-char (point-min))
-        (while (re-search-forward "<\\(\\w+\\)> " nil t)
+        (while (re-search-forward "<\\(@?\\w+\\)> " nil t)
           (add-to-list 'nicks (match-string 1))))
       nicks)))
