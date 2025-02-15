@@ -351,6 +351,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; combine completion at point functions. if the name cape was not clear
 (use-package cape
   :demand t
+  :hook (erc-mode . (lambda ()
+                      (setq-local completion-at-point-functions '(cape-emoji
+                                                                  erc-complete-word-at-point))))
   :config
   ;; globally available CAPE completions (with lower priority)
   (add-hook 'completion-at-point-functions #'cape-dabbrev 80)
