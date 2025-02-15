@@ -533,22 +533,45 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
 (use-package erc
   :ensure nil
+  :init
+  (setq erc-hide-list
+        '("JOIN" "PART" "QUIT" "NICK" "MODE"  ; standard events
+          "324"                               ; channel mode
+          "329"                               ; channel creation time
+          "332" "333"                         ; topic and topic setter
+          "353" "366"                         ; names list and end of names
+          "477"                               ; channel not available
+          "305" "306"                         ; away status
+          "328"                               ; channel URL
+          "250" "251" "252" "253" "254" "255" ; server stats
+          "265" "266"                         ; local/global users
+          "401" "404" "405" "406"             ; various errors
+          "471" "473" "474" "475"             ; channel errors
+          "476")                              ; bad channel mask
+        erc-track-exclude-types erc-hide-list)
   :hook
   ;; (erc-mode . erc-spelling-mode)
   (erc-mode . erc-notifications-mode)
   :custom
   (erc-autojoin-channels-alist '(("libera.chat" "#systemcrafters" "#emacs" "#neovim" "#elixir" "#test2k")))
+
   (erc-autojoin-timing 'ident)
-  (erc-fill-column 90)
-  (erc-autojoin-delay 10)
-  (erc-fill-function 'erc-fill-static)
+  (erc-fill-column 1800) ;; don't break lines plz
+  (erc-autojoin-delay 5)
+  (erc-fill-function 'erc-fill-static) ;; align nick names
   (erc-fill-static-center 16)
   (erc-fool-highlight-type 'all)
+
+  ;;;; Logging
+  (erc-log-channels-directory (expand-file-name "logs/erc/channels/" bergheim/home-dir))
+  (erc-log-write-after-insert t)
+  (erc-log-write-after-send t)
   (erc-save-buffer-on-part t)
+  (erc-save-queries-on-quit t)
+
   ;; (erc-fools irc-fools)
   (erc-header-line-format nil)
   (erc-log-insert-log-on-open t)
-  (erc-hide-list '("JOIN" "PART" "QUIT"))
   (erc-insert-timestamp-function 'erc-insert-timestamp-left)
   (erc-timestamp-only-if-changed-flag nil)
   (erc-interpret-mirc-color t)
@@ -556,7 +579,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-nick "bergheim")
   (erc-prompt (format ">"))
   ;; (erc-prompt-for-password nil)
-  (erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE" "AWAY" "333" "353"))
   :general
   (bergheim/global-menu-keys
     "ai" '(:ignore t :which-key "irc (erc)")
@@ -566,6 +588,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     :states 'normal
     :keymaps 'erc-mode-map
     ;; TODO erc-imenu-mode
+    "b" '(bergheim/consult-erc-buffer :which-key "channels")
     "c" 'erc-bufbar-mode
     "s" 'bergheim/erc-swoop-nick
     "n" 'erc-nickbar-mode)
@@ -583,6 +606,27 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
              :user "bergheim"))
   :config
   (erc-log-mode 1)
+  (if (< emacs-major-version 30)
+      (use-package erc-hl-nicks)
+    (add-to-list 'erc-modules 'nicks))
+
+  (defun slot/erc-channel-users (&rest ignore)
+    "Display how many users (and ops) the current channel has."
+    (let ((users 0) (ops 0))
+      (if (not (hash-table-p erc-channel-users))
+          ""
+        (maphash (lambda (k _v)
+                   (cl-incf users)
+                   (when (erc-channel-user-op-p k)
+                     (cl-incf ops)))
+                 erc-channel-users)
+        (pcase (cons (= 0 ops) (= 0 users))
+          ('(t . t  ) "")
+          ('(t . nil) (format "[%s] " users))
+          (_          (format "[%s (@%s)] " users ops))))))
+
+  (setq erc-prompt (lambda () (format "%s%s ⟩" (slot/erc-channel-users) (buffer-name))))
+  (setq erc-timestamp-format "[%Y-%m-%d %H:%M]")
 
   (defun bergheim/erc-setup-completions ()
     "Set up completions for ERC"
