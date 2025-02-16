@@ -559,7 +559,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-fill-column 1800) ;; don't break lines plz
   (erc-autojoin-delay 5)
   (erc-fill-function 'erc-fill-static) ;; align nick names
-  (erc-fill-static-center 16)
+  (erc-fill-static-center 13)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
@@ -576,7 +576,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-timestamp-only-if-changed-flag nil)
   (erc-interpret-mirc-color t)
   (erc-join-buffer 'bury)
-  (erc-nick "bergheim")
+  (erc-nick "tsb")
   (erc-prompt (format ">"))
   (erc-prompt-for-password nil)
   :general
@@ -627,7 +627,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
           (_          (format "[%s (@%s)] " users ops))))))
 
   (setq erc-prompt (lambda () (format "%s%s ⟩" (slot/erc-channel-users) (buffer-name))))
-  (setq erc-timestamp-format "[%Y-%m-%d %H:%M]")
 
   (defun bergheim/erc-setup-completions ()
     "Set up completions for ERC"
