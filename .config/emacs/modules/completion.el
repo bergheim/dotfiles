@@ -39,16 +39,6 @@
   ;;       (lambda () (which-key--show-popup which-key--buffer))
   ;;       prefix-help-command 'which-key-show-top-level)
 
-  ;; Add the option to run embark when using avy
-  (defun bedrock/avy-action-embark (pt)
-    (unwind-protect
-        (save-excursion
-          (goto-char pt)
-          (embark-act))
-      (select-window
-       (cdr (ring-ref avy-ring 0))))
-    t)
-
   ;; TODO: make a selection take precedence..? that could support spaces..
   (defun bergheim/embark-open-with (file)
     "Open the current file in 'dired-mode' with an application of your choosing."
@@ -58,11 +48,6 @@
     (let ((command (completing-read "Open current file with: "
                                     (bergheim//executables-in-path))))
       (start-process command nil command file)))
-
-  ;; FIXME: this does not work
-  ;; After invoking avy-goto-char-timer, hit "." to run embark at the next
-  ;; candidate you select
-  (setf (alist-get ?. avy-dispatch-alist) 'bedrock/avy-action-embark)
 
   ;; TODO make buffers optional then bind this to "C-c g" or something to be
   ;; called directly from the minibuffer

@@ -14,12 +14,16 @@
 
 (use-package eshell
   :ensure nil
-  :bind (("C-r" . consult-history)
-         ("C-f" . consult-dir)
-         ("C-t" . eshell/find-file-with-consult)
-         ;; ("C-d" . eshell/z)
-         )
+  :after evil
   :general
+  (:keymaps 'eshell-mode-map
+   :states 'insert
+   "C-r" #'consult-history
+   "C-f" #'consult-dir
+   "C-t" #'eshell/find-file-with-consult
+   ;; "C-d" . eshell/z
+   "C-k" #'eshell-previous-matching-input-from-input
+   "C-j" #'eshell-next-matching-input-from-input)
   (bergheim/global-menu-keys
     "as" '(eshell :which-key "eshell"))
   :config
