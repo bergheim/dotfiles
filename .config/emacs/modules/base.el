@@ -250,3 +250,5 @@
          ("\\.automount\\'" . systemd-mode)
          ("\\.slice\\'" . systemd-mode)
          ("\\.path\\'" . systemd-mode)))
+
+(use-package docker-compose-mode)

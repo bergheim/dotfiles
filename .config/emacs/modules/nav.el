@@ -6,6 +6,7 @@
   :custom
   (avy-timeout-seconds 0.3)
   :config
+  ;; TODO this is probably better https://github.com/abo-abo/ace-link
   (defun bergheim/avy-goto-link ()
     "Browse a visible link in the current frame."
     (interactive)
