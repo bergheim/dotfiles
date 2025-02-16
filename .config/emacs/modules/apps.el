@@ -578,11 +578,12 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-join-buffer 'bury)
   (erc-nick "bergheim")
   (erc-prompt (format ">"))
-  ;; (erc-prompt-for-password nil)
+  (erc-prompt-for-password nil)
   :general
   (bergheim/global-menu-keys
     "ai" '(:ignore t :which-key "irc (erc)")
     "aii" '(bergheim/erc-connect :which-key "init")
+    "aiq" '(erc-quit-server :which-key "quit")
     "aib" '(bergheim/consult-erc-buffer :which-key "buffers"))
   (bergheim/localleader-keys
     :states 'normal
@@ -676,5 +677,5 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
       (save-excursion
         (goto-char (point-min))
         (while (re-search-forward "<\\(@?\\w+\\)> " nil t)
-          (add-to-list 'nicks (match-string 1))))
+          (push (match-string 1) nicks)))
       nicks)))

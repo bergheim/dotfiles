@@ -39,7 +39,6 @@
   ;;  "S" 'evil-avy-goto-char-2-above)
   )
 
-
 (use-package consult-notes
   :commands (consult-notes
              consult-notes-search-in-all-notes
