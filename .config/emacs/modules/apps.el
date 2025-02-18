@@ -612,11 +612,42 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
          (goto-char (point-max))
          (evil-append 0)))
   :init
+  (defun bergheim/erc-buffer-connected-p (buffer)
+    "Check if ERC BUFFER is connected."
+    (with-current-buffer buffer
+      (and (derived-mode-p 'erc-mode)
+           (erc-server-process-alive)
+           erc-server-connected)))
+
+  (defun bergheim/erc-connected-p ()
+    "Check if any ERC buffer is connected."
+    (seq-some #'bergheim/erc-buffer-connected-p (erc-buffer-list)))
+
   (defun bergheim/erc-connect ()
-    "Open ERC and log in."
+    "Open ERC in a dedicated frame and show specified channels."
     (interactive)
-    (erc-tls :server "irc.libera.chat" :port 6697
-             :user "bergheim"))
+    (unless (bergheim/erc-connected-p)
+      (erc-tls :server "irc.libera.chat" :port 7667 :user "tsb/libera"))
+    ;; create or switch to erc frame
+    (let* ((frame-name "erc")
+           (target-frame
+            (or (car (seq-filter
+                      (lambda (frame)
+                        (and (frame-live-p frame)
+                             (string= frame-name (frame-parameter frame 'name))))
+                      (frame-list)))
+                (make-frame ((name . frame-name))))))
+      (select-frame-set-input-focus target-frame)
+      (delete-other-windows) ;; Ensure any existing splits are removed
+      (split-window-right)
+      (let ((buffer-a "#systemcrafters")
+            (buffer-b "#emacs"))
+        (when (get-buffer buffer-a)
+          (switch-to-buffer buffer-a))
+        (other-window 1)
+        (when (get-buffer buffer-b)
+          (switch-to-buffer buffer-b)))))
+
   :config
   (erc-log-mode 1)
   (if (< emacs-major-version 30)
