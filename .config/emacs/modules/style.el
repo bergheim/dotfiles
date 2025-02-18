@@ -260,14 +260,20 @@
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
   (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
 
+(defun bergheim/display-line-numbers? ()
+  "Check if the current mode should disable line numbers."
+  (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode
+                  'writeroom-mode 'erc-mode
+                  'erc-status-sidebar-mode 'speedbar-mode))
+
 (defun noct-relative ()
-  "Show relative line numbers."
-  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode 'writeroom-mode)
+  "Show relative line numbers, unless the mode is in the exception list."
+  (unless (bergheim/display-line-numbers?)
     (setq-local display-line-numbers 'visual)))
 
 (defun noct-absolute ()
-  "Show absolute line numbers."
-  (unless (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode 'writeroom-mode)
+  "Show absolute line numbers, unless the mode is in the exception list."
+  (unless (bergheim/display-line-numbers?)
     (setq-local display-line-numbers t)))
 
 

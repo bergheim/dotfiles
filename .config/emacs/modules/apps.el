@@ -556,6 +556,14 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   :hook
   ;; (erc-mode . erc-spelling-mode)
   (erc-mode . erc-notifications-mode)
+  (erc-mode . (lambda ()
+                (setq-local orderless-matching-styles '(orderless-literal-prefix))
+                (setq-local confirm-kill-processes nil)
+                (if (featurep 'jinx)
+                    (jinx-mode 1))
+                (display-line-numbers-mode 0)))
+  (erc-status-sidebar-mode . (lambda () (display-line-numbers-mode 0)))
+  (speedbar-mode . (lambda () (display-line-numbers-mode 0)))
   :custom
   (erc-autojoin-channels-alist '(("libera.chat" "#systemcrafters" "#emacs" "#neovim" "#elixir" "#test2k")))
 
@@ -563,7 +571,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-fill-column 1800) ;; don't break lines plz
   (erc-autojoin-delay 5)
   (erc-fill-function 'erc-fill-static) ;; align nick names
-  (erc-fill-static-center 13)
+  (erc-fill-static-center 16)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
