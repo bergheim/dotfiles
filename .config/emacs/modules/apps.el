@@ -636,7 +636,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
                         (and (frame-live-p frame)
                              (string= frame-name (frame-parameter frame 'name))))
                       (frame-list)))
-                (make-frame ((name . frame-name))))))
+                (make-frame `((name . ,frame-name))))))
       (select-frame-set-input-focus target-frame)
       (delete-other-windows) ;; Ensure any existing splits are removed
       (split-window-right)
@@ -718,6 +718,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     (let (nicks)
       (save-excursion
         (goto-char (point-min))
-        (while (re-search-forward "<\\(@?\\w+\\)> " nil t)
+        (while (re-search-forward
+                "<\\(@?[A-Za-z0-9_]+\\)> "
+                nil t)
           (push (match-string 1) nicks)))
       nicks)))
