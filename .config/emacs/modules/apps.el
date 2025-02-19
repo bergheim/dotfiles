@@ -598,12 +598,15 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     "aiq" '(erc-quit-server :which-key "quit")
     "aib" '(bergheim/consult-erc-buffer :which-key "buffers"))
   (bergheim/localleader-keys
-    :states 'normal
+    :states '(normal visual)
     :keymaps 'erc-mode-map
     ;; TODO erc-imenu-mode
     "b" '(bergheim/consult-erc-buffer :which-key "channels")
     "c" 'erc-bufbar-mode
-    "s" 'bergheim/erc-swoop-nick
+    "s" '(bergheim/erc-swoop-nick :which-key "swoop")
+    "d" '(bergheim/erc-open-or-capture-user-note-denote :which-key "denote")
+    "o" '(bergheim/erc-open-or-capture-user-note-roam :which-key "org-roam")
+    "O" '(bergheim/erc-open-or-capture-user-note-roam-simple :which-key "org-roam simplified")
     "n" 'erc-nickbar-mode)
   (:states 'normal
    :keymaps 'erc-mode-map
@@ -702,6 +705,81 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     (let* ((nicks (bergheim/erc-collect-nicks))
            (nick (completing-read "Choose nick: " nicks nil t)))
       (consult-line (format "<%s>" (regexp-quote nick)))))
+
+  (defun bergheim/erc-open-or-capture-user-note-roam-simple ()
+    "Search for nick in the current ERC buffer, prepopulated with nicks."
+    (interactive)
+    (let* ((nicks (bergheim/erc-collect-nicks))
+           (nick (completing-read "Choose nick: " nicks nil t)))
+      (org-roam-node-find nil (concat nick "-" (symbol-name (erc-network))))))
+
+  (defun bergheim/erc-open-or-capture-user-note-roam ()
+    "Open or capture information in an org-roam note for an IRC user in the current network."
+    (interactive)
+    (require 'org-roam)
+    (let* ((nicks (bergheim/erc-collect-nicks))
+           (nick (completing-read "Choose nick: " nicks nil t))
+           (network (symbol-name (erc-network)))
+           (title (concat nick "-" network))
+           (choice (completing-read "Action: " '("Open note" "Capture info") nil t))
+           (selected-text (when (use-region-p)
+                            (string-trim (buffer-substring-no-properties (region-beginning) (region-end)))))
+           (node (org-roam-node-from-title-or-alias title)))
+      (if node
+          (with-current-buffer (find-file-other-window (org-roam-node-file node))
+            (when (string-equal choice "Capture info")
+              (goto-char (point-min))
+              (unless (re-search-forward "^\\* Notes and Quotes" nil t)
+                (goto-char (point-max))
+                (insert "\n* Notes and Quotes\n"))
+              (goto-char (point-max))
+              (insert (format "** %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
+              (when selected-text
+                (insert (format "#+BEGIN_QUOTE\n%s\n#+END_QUOTE\n" selected-text)))
+              (when (featurep 'evil)
+                (evil-insert-state))))
+        ;; Create a new note
+        (org-roam-capture- :node (org-roam-node-create :title title)
+                           :templates '(("u" "user note" plain
+                                         "* Contact Info\n- Name: \n- Website: \n- GitHub: \n- Email: \n* About\n\n* Notes and Quotes\n**
+                                         %U\n#+BEGIN_QUOTE\n%?\n#+END_QUOTE\n"
+                                         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                                                            "#+title: ${title}\n")
+                                         :unnarrowed t
+                                         :empty-lines-after 1))))))
+
+  (defun bergheim/erc-open-or-capture-user-note-denote ()
+    "Open or capture information in a denote note for an IRC user in the current network."
+    (interactive)
+    (require 'denote)
+    (let* ((nicks (bergheim/erc-collect-nicks))
+           (nick (completing-read "Choose nick: " nicks nil t))
+           (network (symbol-name (erc-network)))
+           (slugified-title (denote-sluggify 'title nick))
+           (keywords `("irc" ,network))
+           (selected-text (when (use-region-p)
+                            (string-trim (buffer-substring-no-properties (region-beginning) (region-end)))))
+           (choice (completing-read "Action: " '("Open note" "Capture info") nil t))
+           (file-regex (format ".*%s.*%s"
+                               (regexp-quote slugified-title)
+                               (string-join (mapcar (lambda (kw)
+                                                      (denote-sluggify 'keyword kw))
+                                                    keywords) ".*")))
+           (existing-file (car (denote-directory-files file-regex))))
+      (if existing-file
+          (find-file-other-window existing-file)
+        (let ((new-file (denote slugified-title keywords)))
+          (with-current-buffer (find-file-other-window new-file)
+            (insert "* Contact Info\n- Name: \n- Website: \n- GitHub: \n- Email: \n\n* About\n\n* Notes and Quotes\n")
+            (save-buffer))))
+      (when (string-equal choice "Capture info")
+        (goto-char (point-max))
+        (insert (format "\n** %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
+        (when selected-text
+          (insert (format "#+BEGIN_QUOTE\n%s\n#+END_QUOTE\n" selected-text)))
+        (save-buffer)
+        (when (featurep 'evil)
+          (evil-insert-state)))))
 
   ;; ;; bergheim/erc-collect-nicks seems more useful since that is only active users
   ;; (defun bergheim/erc-nicks-from-channel ()
