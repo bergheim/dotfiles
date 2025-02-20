@@ -537,6 +537,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
 (use-package erc
   :ensure nil
+  :autoload erc-buffer-list
   :init
   (setq erc-hide-list
         '("JOIN" "PART" "QUIT" "NICK" "MODE"  ; standard events
@@ -561,6 +562,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
                 (setq-local confirm-kill-processes nil)
                 (if (featurep 'jinx)
                     (jinx-mode 1))
+                (erc-fill-wrap-mode 1)
                 (display-line-numbers-mode 0)))
   (erc-status-sidebar-mode . (lambda () (display-line-numbers-mode 0)))
   (speedbar-mode . (lambda () (display-line-numbers-mode 0)))
@@ -568,10 +570,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-autojoin-channels-alist '(("libera.chat" "#systemcrafters" "#emacs" "#neovim" "#elixir" "#test2k")))
 
   (erc-autojoin-timing 'ident)
-  (erc-fill-column 1800) ;; don't break lines plz
   (erc-autojoin-delay 5)
-  (erc-fill-function 'erc-fill-static) ;; align nick names
-  (erc-fill-static-center 16)
+  (erc-fill-static-center 10)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
@@ -591,6 +591,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-nick "tsb")
   (erc-prompt (format ">"))
   (erc-prompt-for-password nil)
+  (erc-prompt "⟩")
+
   :general
   (bergheim/global-menu-keys
     "ai" '(:ignore t :which-key "irc (erc)")
@@ -656,23 +658,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (if (< emacs-major-version 30)
       (use-package erc-hl-nicks)
     (add-to-list 'erc-modules 'nicks))
-
-  (defun slot/erc-channel-users (&rest ignore)
-    "Display how many users (and ops) the current channel has."
-    (let ((users 0) (ops 0))
-      (if (not (hash-table-p erc-channel-users))
-          ""
-        (maphash (lambda (k _v)
-                   (cl-incf users)
-                   (when (erc-channel-user-op-p k)
-                     (cl-incf ops)))
-                 erc-channel-users)
-        (pcase (cons (= 0 ops) (= 0 users))
-          ('(t . t  ) "")
-          ('(t . nil) (format "[%s] " users))
-          (_          (format "[%s (@%s)] " users ops))))))
-
-  (setq erc-prompt (lambda () (format "%s%s ⟩" (slot/erc-channel-users) (buffer-name))))
 
   (defun bergheim/erc-setup-completions ()
     "Set up completions for ERC"
