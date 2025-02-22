@@ -558,8 +558,9 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   ;; (erc-mode . erc-spelling-mode)
   (erc-mode . erc-notifications-mode)
   (erc-mode . (lambda ()
-                (setq-local orderless-matching-styles '(orderless-literal-prefix))
-                (setq-local confirm-kill-processes nil)
+                (setq-local orderless-matching-styles '(orderless-literal-prefix)
+                            confirm-kill-processes nil
+                            corfu-auto-prefix 3)
                 (if (featurep 'jinx)
                     (jinx-mode 1))
                 (erc-fill-wrap-mode 1)
