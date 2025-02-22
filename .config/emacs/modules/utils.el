@@ -241,11 +241,21 @@ Lisp function does not specify a special indentation."
           (lambda () (setq-local lisp-indent-function #'lisp-indent-function)))
 
 (use-package powerthesaurus
-  ;; :cmd powerthesaurus-lookup
+  :after embark
   :general
   (bergheim/global-menu-keys
-    "sw" '(powerthesaurus-lookup-dwim :which-key "Search word")
-    "lw" '(powerthesaurus-lookup-dwim :which-key "Lookup word")))
+    "st" '(powerthesaurus-lookup-dwim :which-key "Search thesaurus"))
+  :bind
+  (:map embark-general-map
+   ("D" . bergheim/embark-powerthesaurus))
+  :config
+  (defun bergheim/embark-powerthesaurus ()
+    "Use Powerthesaurus to find synonyms for the word at point."
+    (interactive)
+    (let ((word (thing-at-point 'word t)))
+      (if word
+          (powerthesaurus-lookup word :definitions)
+        (message "No word at point")))))
 
 (use-package engine-mode
   :general
