@@ -58,6 +58,17 @@
 
 
   :config
+  (with-eval-after-load 'avy
+    ;; why not call embark on avy targets
+    (defun avy-action-embark (pt)
+      (unwind-protect
+          (save-excursion
+            (goto-char pt)
+            (embark-act))
+        (select-window
+         (cdr (ring-ref avy-ring 0))))
+      t)
+    (setf (alist-get ?' avy-dispatch-alist) 'avy-action-embark))
   (evil-collection-embark-setup)
   (setq embark-confirm-act-all nil)
   (add-to-list 'embark-multitarget-actions #'bergheim/grep-selected-buffers)
