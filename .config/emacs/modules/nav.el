@@ -124,36 +124,34 @@ With a universal argument, it allows entering the application to use."
    "l"   #'dired-find-file))
 
 (use-package dirvish
-  :ensure t
-  :demand t
-  :after general
+  :after dired
   :config
-  (setq dirvish-emerge-mode nil)
   ;; (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)
-  (setq dired-listing-switches "-alGh --group-directories-first")
-  (setq dired-omit-files
-        (rx (or (seq bol (? ".") "#")     ;; emacs autosave files
+  (setq dirvish-emerge-mode nil
+        dired-listing-switches "-alGh --group-directories-first"
+        dired-omit-files
+        (rx (or (seq bol (? ".") "#")         ;; emacs autosave files
                 (seq bol "." (not (any "."))) ;; dot-files
-                (seq "~" eol)                 ;; backup-files
-                )))
-  (dirvish-override-dired-mode)
-  (setq dirvish-cache-dir (concat bergheim/cache-dir "dirvish/"))
-  (setq dirvish-attributes
-        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size))
-  (setq dirvish-subtree-state-style 'nerd)
+                (seq "~" eol)))               ;; backup-files
+        dirvish-cache-dir (expand-file-name "dirvish/" bergheim/cache-dir)
+        dirvish-attributes
+        '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
+        dirvish-subtree-state-style 'nerd
 
-  (setq dirvish-emerge-groups '(("Recent files" (predicate . recent-files-today))
+        dirvish-emerge-groups '(("Recent files" (predicate . recent-files-today))
                                 ("Documents" (extensions "pdf" "tex" "bib" "epub" "doc"))
                                 ("Video" (extensions "mp4" "mkv" "webm"))
                                 ("Pictures" (extensions "jpg" "png" "svg" "gif"))
                                 ("Audio" (extensions "mp3" "flac" "wav" "ape" "aac"))
-                                ("Archives" (extensions "gz" "rar" "zip"))))
+                                ("Archives" (extensions "gz" "rar" "zip")))
 
-  (setq dirvish-quick-access-entries '(("h" "~/" "Home")
+        dirvish-quick-access-entries '(("h" "~/" "Home")
                                        ("d" "~/Downloads/" "Downloads")
                                        ("D" "~/dev" "Development")
                                        ("e" "~/.config/emacs/" "Emacs user directory")))
-
+  (dirvish-override-dired-mode)
+  ;; see https://github.com/alexluigit/dirvish/issues/188
+  (evil-make-overriding-map dirvish-mode-map 'normal)
   :general
   (:keymaps 'dirvish-mode-map
    :states 'normal
@@ -164,6 +162,7 @@ With a universal argument, it allows entering the application to use."
    "C"   #'dired-create-directory
    "s"   #'dirvish-fd-ask
    "S"   #'dirvish-fd
+   "v"   'dirvish-vc-menu
    "f"   #'dirvish-narrow ;; "filter"
    ;; this is hilarious. yes, I do in fact want to copy it as kill
    "y"   #'dired-copy-filename-as-kill
@@ -177,6 +176,11 @@ With a universal argument, it allows entering the application to use."
    "C-l" #'dirvish-history-go-forward
    "C-M-k" #'dirvish-emerge-previous-group
    "C-M-j" #'dirvish-emerge-next-group)
+
+  (:keymaps 'dirvish-mode-map
+   :states '(normal visual)
+   "G" #'end-of-buffer
+   "gg" #'beginning-of-buffer)
 
   (bergheim/localleader-keys
     :keymaps 'dirvish-mode-map
