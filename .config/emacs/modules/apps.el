@@ -27,6 +27,27 @@
   (bergheim/global-menu-keys
     "as" '(eshell :which-key "eshell"))
   :config
+  (defun bergheim/eshell-git-info ()
+    "Return git branch and status."
+    (when (eq (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree") 0)
+      (let* ((branch (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD")))
+             (dirty (not (string= "" (string-trim (shell-command-to-string "git status --porcelain")))))
+             (dirty-info (if dirty
+                             (propertize " ✎" 'face 'error)
+                           (propertize " ✔" 'face 'success))))
+        (concat (propertize "⎇ " 'face 'success)
+                (propertize branch 'face 'warning)
+                dirty-info))))
+
+  (defun bergheim/eshell-prompt ()
+    "Simple but kewl Eshell prompt with git info."
+    (let ((dir (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-ls-directory))
+          (git-info (or (bergheim/eshell-git-info) ""))
+          (prompt (propertize (if (= (user-uid) 0) "#" "λ") 'face 'warning)))
+      (concat dir " " git-info " " prompt " ")))
+
+  (setq eshell-prompt-function 'bergheim/eshell-prompt)
+
   (defun eshell-get-old-input ()
     "Retrieve the current input from the Eshell prompt in the buffer."
     (buffer-substring-no-properties
@@ -572,7 +593,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
   (erc-autojoin-timing 'ident)
   (erc-autojoin-delay 5)
-  (erc-fill-static-center 10)
+  (erc-fill-static-center 11)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
