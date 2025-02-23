@@ -266,6 +266,7 @@
 
     ;; toggle-truncate-lines?
     "t l" '(visual-line-mode :which-key "Visual lines")
+    "t g" '(zoom-mode :which-key "Golden ratio")
     "t p" '(popper-toggle-type :which-key "Toggle popup")
     "t s" '(jinx-mode :which-key "Spelling")
     "t o" '(org-toggle-link-display :which-key "Org links")
