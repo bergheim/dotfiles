@@ -72,6 +72,13 @@
     :keymaps '(evil-motion-state-map)
     "gD" #'bergheim/evil-goto-definition-other-window)
 
+  (general-def
+    :keymaps 'elpaca-log-mode-map
+    :states 'normal
+    "M-RET" 'elpaca-log-view-diff
+    "gx" 'elpaca-ui-browse-package
+    "gd" 'elpaca-log-view-diff)
+
   (bergheim/global-menu-keys
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")

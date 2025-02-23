@@ -65,6 +65,7 @@
     "ls" '(org-super-links-quick-insert-inline-link :which-key "inline search")
     "ly" '(org-super-links-store-link :which-key "copy")
     "i" 'org-toggle-item
+    "n" 'bergheim/org-roam-create-node
     "h" 'org-toggle-heading
     "p" 'org-priority
     "q" 'org-set-tags-command

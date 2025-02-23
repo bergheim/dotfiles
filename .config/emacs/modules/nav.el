@@ -4,7 +4,9 @@
   :demand t
   :after evil
   :custom
-  (avy-timeout-seconds 0.3)
+  (avy-timeout-seconds 0.4)
+  ;; this is needed if we want to allow actions on single matches
+  ;; (avy-single-candidate-jump nil)
   :config
   ;; TODO this is probably better https://github.com/abo-abo/ace-link
   (defun bergheim/avy-goto-link ()
