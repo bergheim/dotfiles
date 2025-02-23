@@ -27,6 +27,7 @@
   (bergheim/global-menu-keys
     "as" '(eshell :which-key "eshell"))
   :config
+  (setq eshell-destroy-buffer-when-process-dies t)
   (defun bergheim/eshell-git-info ()
     "Return git branch and status."
     (when (eq (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree") 0)
