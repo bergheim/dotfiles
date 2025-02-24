@@ -162,6 +162,7 @@ unicode-emoji
 shfmt
 inotify-tools
 mediainfo
+oculante
 xsettingsd
 pandoc-cli
 xorg-xinit
@@ -177,3 +178,4 @@ ntfs-3g
 pavucontrol
 pipewire-audio
 pipewire-pulse
+perl-curses-ui # for tmux copycat
