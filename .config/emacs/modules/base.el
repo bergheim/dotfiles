@@ -3,6 +3,7 @@
 (use-package savehist
   :ensure nil
   :demand t
+  :after recentf
   :config
   ;; .. a lot of it
   (dolist (hist '(command-history
@@ -18,7 +19,7 @@
                   vertico-repeat-history))
     (add-to-list 'savehist-additional-variables hist))
   :init
-  (savehist-mode)
+  (savehist-mode 1)
   :hook
   (kill-emacs . savehist-save))
 
@@ -68,7 +69,12 @@
                 (cond (buffer-file-name (recentf-remove-if-non-kept buffer-file-name))
                       ((equal major-mode 'dired-mode)
                        (recentf-remove-if-non-kept default-directory)))))
+
+  ;; track files in all new buffers for recentf (not just from find-file)
+  (add-hook 'buffer-list-update-hook #'recentf-track-opened-file)
+
   (setq recentf-max-menu-items 500
+        recentf-auto-cleanup 'never
         recentf-max-saved-items 2000)
   (add-to-list 'recentf-exclude
                (recentf-expand-file-name no-littering-var-directory))
