@@ -298,6 +298,14 @@
   ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
   )
 
+;; make vertico listing perrdy
+(use-package nerd-icons-completion
+  :after (:all nerd-icons marginalia)
+  :demand
+  :config
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
 (use-package rainbow-mode)
 
 (use-package rainbow-delimiters
