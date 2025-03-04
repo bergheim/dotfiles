@@ -221,6 +221,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     "C-j" 'vertico-next
     "C-k" 'vertico-previous
     "C-l" 'vertico-insert
+    "C-," 'embark-select
     "C-M-j" 'vertico-next-group
     "C-M-k" 'vertico-previous-group
     "C-S-H" 'helpful-key)
