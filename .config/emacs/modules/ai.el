@@ -33,6 +33,11 @@
   (bergheim/global-menu-keys
     "ja" '(gptel-abort :which-key "abort")
     "jj" '(bergheim/gptel :which-key "gptel")
+    "jJ" '(lambda () (interactive)
+            ;; jump straight to model selection
+            (call-interactively 'bergheim/gptel)
+            (bergheim/gptel-select-model)
+            :which-key "gptel model")
     "jt" '(gptel :which-key "gptel basic")
     "js" '(gptel-send :which-key "Send bufffer"))
 
@@ -163,7 +168,6 @@
              (backup-file-name (expand-file-name (concat gptel-folder timestamp "_" file-name))))
         (write-file backup-file-name))))
 
-
   (defun bergheim/gptel--maybe-save-buffer ()
     "Save the gptel buffer when gptel-mode is enabled, the buffer is killed, and the buffer has unsaved changes."
     (interactive)
@@ -174,7 +178,6 @@
                ;; (not (string-match-p "^\\s-*\\*?\\s-*$" (buffer-string))))
                (not (string= (buffer-string) "* ")))
       (bergheim/gptel--save-buffer)))
-
 
   ;; (defvar bergheim/gptel-buffer-name "*gptel*")
 
@@ -359,7 +362,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "jG" '(chatgpt-shell-prompt-header-write-git-commit :which-key "Prompt git commit")
     "ju" '(chatgpt-shell-generate-unit-test :which-key "Generate unit tests")
     "jr" '(chatgpt-shell-refactor-code :which-key "Refactor")
-    "jJ" '(chatgpt-shell-prompt-compose :which-key "Compose prompt")
+    ;; "jJ" '(chatgpt-shell-prompt-compose :which-key "Compose prompt")
     ))
 
 (use-package ob-chatgpt-shell
