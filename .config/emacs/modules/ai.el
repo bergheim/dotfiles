@@ -75,25 +75,60 @@
      (directory-files dir-path t "\\.md\\'")))
   :config
   (defun bergheim/gptel-select-model ()
+    "Select a gptel model using completing-read."
     (interactive)
-    (if (eq gptel-model 'claude-3-7-sonnet-20250219)
-        (setq gptel-model 'gpt-4o)
-      (setq gptel-model 'claude-3-7-sonnet-20250219)))
+    (let* ((backends (mapcar 'cdr gptel--known-backends))
+           (models-with-backends
+            (seq-mapcat
+             (lambda (backend)
+               (let ((provider (gptel-backend-name backend))
+                     (model-list (gptel-backend-models backend)))
+                 (mapcar (lambda (model)
+                           (list (format "%s: %s" provider model) backend model))
+                         model-list)))
+             backends))
+           (choice (completing-read "Select model: "
+                                    (mapcar #'car models-with-backends)))
+           (selected (assoc choice models-with-backends)))
+
+      (when selected
+        (setq-local gptel-backend (nth 1 selected)
+                    gptel-model (nth 2 selected))
+        (message "Model set to %s (%s)"
+                 gptel-model
+                 (gptel-backend-name gptel-backend)))))
+
   (defun bergheim/gptel-ready-archived-files ()
     (when (and (buffer-file-name)
                ;; TODO: extract this dir out to a defvar
                (string-match-p "/llm/" (buffer-file-name)))
       (gptel-mode 1)))
 
-  (gptel-make-ollama "Ollama" :host "localhost:11434"
-    :stream t
-    :models '("deepseek-r1:latest"
-              "deepseek-r1:14b"
-              "deepseek-r1:32b"))
+  ;; (setq gptel-model 'claude-3-7-sonnet-20250219)
+  (setq gptel-backend
+        (gptel-make-anthropic "Claude"
+          :stream t
+          :key (auth-source-pick-first-password :host "anthropic" :user "claude")))
 
-  (gptel-make-anthropic "Claude"
-    :stream t
-    :key (auth-source-pick-first-password :host "anthropic" :user "claude"))
+  (defun bergheim/ollama-get-models ()
+    "Fetch available models from Ollama API and return as a list."
+    (let* ((url (concat "http://" bergheim/ollama-endpoint "/api/tags"))
+           (response (with-current-buffer
+                         (url-retrieve-synchronously url t)
+                       (goto-char (point-min))
+                       (re-search-forward "^$")
+                       (buffer-substring-no-properties (point) (point-max))))
+           (json-object-type 'hash-table)
+           (json-array-type 'list)
+           (json-key-type 'string)
+           (data (json-read-from-string response)))
+      (mapcar (lambda (model)
+                (gethash "name" model))
+              (gethash "models" data))))
+
+  (gptel-make-ollama "Ollama" :host bergheim/ollama-endpoint
+                     :stream t
+                     :models (bergheim/ollama-get-models))
 
   (defun bergheim/gptel-submit ()
     (interactive)
@@ -210,24 +245,15 @@ Prompts for session name if none provided. Inserts selected region text into cha
 
   (defun bergheim/gptel--annotate-directives (s &optional metadata)
     "Annotate a given directive S with a description, using optional METADATA."
-    (if-let ((item (assoc (intern s) gptel-directives)))
-        (let ((desc (s-truncate 200 (s-replace "\n" " " (cdr item)))))
-          (concat (string-pad "" (- 20 (string-width s))) desc))))
-
-  (defun bergheim/find-key-by-value (value alist)
-    "Search ALIST for VALUE and return associated key."
-    (let ((pair (seq-find (lambda (item) (equal (cdr item) value)) alist)))
-      (when pair (car pair))))
+    (when-let ((item (assoc (intern s) gptel-directives)))
+      (let ((desc (s-truncate 200 (s-replace "\n" " " (cdr item)))))
+        (concat (string-pad "" (- 20 (string-width s))) desc))))
 
   (defvar-local gptel--system-message-name 'default)
 
   (defun bergheim/gptel-select-system-prompt (&optional directive-key)
     "Set system message in local gptel buffer to directive/prompt indicated by DIRECTIVE-KEY."
     (interactive)
-    ;; the name of the `directive` is not set in gptel so just map it every time..
-    ;; TODO remove
-    (setq-local gptel--system-message-name (bergheim/find-key-by-value gptel--system-message gptel-directives))
-
     (let* ((completion-extra-properties '(:annotation-function bergheim/gptel--annotate-directives))
            (current-name (or gptel--system-message-name "default"))
            (directive-key (or directive-key
@@ -240,15 +266,14 @@ Prompts for session name if none provided. Inserts selected region text into cha
                                 nil ;; do not require a match - allow custom prompt
                                 nil ;; no initial input
                                 nil ;; no history specified
-                                "default" ;; default value if return is nil
-                                )))))
+                                "default")))))
 
       (if-let ((directive (assoc directive-key gptel-directives)))
           (progn
             (setq-local gptel--system-message-name (car directive))
-            (setq-local gptel--system-message (cdr directive)))
+            (setq-local gptel--system-message (cdr directive))
+            (message "Set system prompt to \"%s\"" (car directive)))
         (message "No directive found for key %s" directive-key))))
-
 
   (defun bergheim//copy-text-from-other-window ()
     "Copy the diff from the other window."
@@ -283,12 +308,10 @@ Prompts for session name if none provided. Inserts selected region text into cha
               :stream t))
         (funcall curr-mode))))
 
-
   :custom
   ;; (gptel-post-stream-hook . gptel-auto-scroll)
   ;; (gptel-post-response-hook . gptel-end-of-response)
   (gptel-default-mode 'org-mode)
-  (gptel-model 'claude-3-7-sonnet-20250219)
   (gptel-directives (bergheim/read-directives (expand-file-name "prompts" bergheim/config-dir)))
   ;; (gptel-temperature 1.0)
   ;; (gptel-max-tokens 400)
@@ -300,8 +323,6 @@ Prompts for session name if none provided. Inserts selected region text into cha
    '((markdown-mode . "# ")
      (org-mode . "* ")
      (text-mode . "# "))))
-
-
 
 (use-package org-ai
   :ensure t
