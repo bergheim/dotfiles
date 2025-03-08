@@ -104,7 +104,7 @@
                (string-match-p "/llm/" (buffer-file-name)))
       (gptel-mode 1)))
 
-  ;; (setq gptel-model 'claude-3-7-sonnet-20250219)
+  (setq gptel-model "claude-3-7-sonnet-20250219")
   (setq gptel-backend
         (gptel-make-anthropic "Claude"
           :stream t
@@ -194,11 +194,10 @@ Prompts for session name if none provided. Inserts selected region text into cha
                                         (region-beginning) (region-end)))))
            (gptel-buffers (bergheim/gptel--get-chat-buffers))
            (chat-buffer-name
-            (if (featurep 'consult)
+            (if (and (featurep 'consult) gptel-buffers)
                 (consult--read 
                  (cons "*gptel*" gptel-buffers) 
                  :prompt "GPTeL Session Name: " 
-                 ;; FIXME: this break on new sess
                  :category 'buffer
                  :state (consult--buffer-preview)
                  :default "*gptel*")
