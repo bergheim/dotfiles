@@ -153,6 +153,8 @@
   (load-file (concat module-dir "orgmode/init.el"))
   (load-file (concat module-dir "mu4e/init.el"))
   (load-file (concat module-dir "apps.el"))
+  ;; I for one welcome our new AI overlords
+  (load-file (concat module-dir "ai.el"))
   (load-file (concat module-dir "session.el"))
   )
 
