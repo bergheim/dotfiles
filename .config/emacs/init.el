@@ -155,8 +155,7 @@
   (load-file (concat module-dir "apps.el"))
   ;; I for one welcome our new AI overlords
   (load-file (concat module-dir "ai.el"))
-  (load-file (concat module-dir "session.el"))
-  )
+  (load-file (concat module-dir "session.el")))
 
 (add-hook 'after-make-frame-functions #'bergheim/frame-setup)
 (add-hook 'emacs-startup-hook #'bergheim/frame-setup)

@@ -109,7 +109,7 @@
                (string-match-p "/llm/" (buffer-file-name)))
       (gptel-mode 1)))
 
-  (setq gptel-model "claude-3-7-sonnet-20250219")
+  (setq gptel-model 'claude-3-7-sonnet-20250219)
   (setq gptel-backend
         (gptel-make-anthropic "Claude"
           :stream t
