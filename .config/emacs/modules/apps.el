@@ -339,7 +339,8 @@ Open `dired` in the resolved directory of the current command."
   (defun bergheim/denote-last-journal-entry ()
     "Open the newest entry"
     (interactive)
-    (let ((files (directory-files denote-journal-extras-directory nil "^[^.]")))
+    (let* ((all-entries (directory-files denote-journal-extras-directory t "^[^.]"))
+           (files (seq-filter #'file-regular-p all-entries)))
       (when files
         (siren-tab-bar-switch-to-or-create-tab "journal")
         (find-file (expand-file-name
