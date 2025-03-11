@@ -263,7 +263,7 @@
 (defun bergheim/display-line-numbers? ()
   "Check if the current mode should disable line numbers."
   (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode
-                  'writeroom-mode 'erc-mode
+                  'writeroom-mode 'erc-mode 'org-mode
                   'erc-status-sidebar-mode 'speedbar-mode))
 
 (defun noct-relative ()
