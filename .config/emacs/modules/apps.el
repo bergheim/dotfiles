@@ -302,7 +302,7 @@ Open `dired` in the resolved directory of the current command."
   :ensure t
   :custom
   (denote-known-keywords '("emacs" "journal"))
-  (denote-directory (expand-file-name "~/denote/"))
+  (denote-directory (expand-file-name "denote" org-directory))
   (denote-date-prompt-use-org-read-date t)
   (denote-backlinks-show-context t)
   :config
