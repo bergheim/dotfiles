@@ -23,7 +23,10 @@
    "C-t" #'eshell/find-file-with-consult
    ;; "C-d" . eshell/z
    "C-k" #'eshell-previous-matching-input-from-input
-   "C-j" #'eshell-next-matching-input-from-input)
+   "C-j" #'eshell-next-matching-input-from-input
+   :states '(insert visual normal)
+   "M-h" #'evil-window-left
+   "M-l" #'evil-window-right)
   (bergheim/global-menu-keys
     "as" '(eshell :which-key "eshell"))
   :config
