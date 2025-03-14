@@ -676,13 +676,13 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (:states 'insert
    :keymaps 'erc-mode-map
    "M-h" (lambda ()
-         (interactive)
-         (evil-normal-state)
-         (evil-window-left 1))
+           (interactive)
+           (evil-normal-state)
+           (evil-window-left 1))
    "M-l" (lambda ()
-         (interactive)
-         (evil-normal-state)
-         (evil-window-right 1)))
+           (interactive)
+           (evil-normal-state)
+           (evil-window-right 1)))
 
   :config
   (erc-log-mode 1)

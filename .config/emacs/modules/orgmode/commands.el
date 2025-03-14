@@ -211,6 +211,24 @@ derived from `dired-mode'."
 
 
 ;; stolen straight from doom
+(defun +org--toggle-inline-images-in-subtree (&optional beg end refresh)
+  "Refresh inline image previews in the current heading/tree."
+  (let* ((beg (or beg
+                  (if (org-before-first-heading-p)
+                      (save-excursion (point-min))
+                    (save-excursion (org-back-to-heading) (point)))))
+         (end (or end
+                  (if (org-before-first-heading-p)
+                      (save-excursion (org-next-visible-heading 1) (point))
+                    (save-excursion (org-end-of-subtree) (point)))))
+         (overlays (cl-remove-if-not (lambda (ov) (overlay-get ov 'org-image-overlay))
+                                     (ignore-errors (overlays-in beg end)))))
+    (dolist (ov overlays nil)
+      (delete-overlay ov)
+      (setq org-inline-image-overlays (delete ov org-inline-image-overlays)))
+    (when (or refresh (not overlays))
+      (org-display-inline-images t t beg end)
+      t)))
 (defun +org/dwim-at-point (&optional arg)
   "Do-what-I-mean at point.
 
@@ -335,12 +353,11 @@ If on a:
                 (org-element-property :end lineage))
              (org-open-at-point arg))))
 
+        ((guard (org-element-property :checkbox (org-element-lineage context '(item) t)))
+         (org-toggle-checkbox))
+
         (`paragraph
          (+org--toggle-inline-images-in-subtree))
-
-        ((guard (org-element-property :checkbox (org-element-lineage context '(item) t)))
-         (let ((match (and (org-at-item-checkbox-p) (match-string 1))))
-           (org-toggle-checkbox (if (equal match "[ ]") '(16)))))
 
         (_
          (if (or (org-in-regexp org-ts-regexp-both nil t)
