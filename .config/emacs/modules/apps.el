@@ -311,7 +311,7 @@ Open `dired` in the resolved directory of the current command."
   :config
   (defun my-denote-tmr ()
     (tmr "5" "Write focused now.."))
-  (add-hook 'denote-journal-extras-hook 'my-denote-tmr)
+  (add-hook 'denote-journal-hook 'my-denote-tmr)
   ;; (add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
   (denote-rename-buffer-mode 1)
 
@@ -326,13 +326,11 @@ Open `dired` in the resolved directory of the current command."
   (defun bergheim/denote-new-journal-entry ()
     "Create a new journal entry and enter writer mode"
     (interactive)
-    (unless (featurep 'denote-journal-extras)
-      (require 'denote-journal-extras))
     (siren-tab-bar-switch-to-or-create-tab "journal")
-    (let ((entry-today (denote-journal-extras--entry-today)))
+    (let ((entry-today (denote-journal--entry-today)))
       (if entry-today
           (denote-open-or-create (car entry-today))
-        (denote-journal-extras-new-entry)))
+        (denote-journal-new-entry)))
     (bergheim/write-mode t)
     (goto-char (point-max))
     (delete-trailing-whitespace)
@@ -342,12 +340,12 @@ Open `dired` in the resolved directory of the current command."
   (defun bergheim/denote-last-journal-entry ()
     "Open the newest entry"
     (interactive)
-    (let* ((all-entries (directory-files denote-journal-extras-directory t "^[^.]"))
+    (let* ((all-entries (directory-files denote-journal-directory t "^[^.]"))
            (files (seq-filter #'file-regular-p all-entries)))
       (when files
         (siren-tab-bar-switch-to-or-create-tab "journal")
         (find-file (expand-file-name
-                    (car (last (sort files 'string<))) denote-journal-extras-directory))
+                    (car (last (sort files 'string<))) denote-journal-directory))
         (bergheim/write-mode t))))
 
   :general
@@ -368,7 +366,7 @@ Open `dired` in the resolved directory of the current command."
     "nj" '(:ignore t :which-key "Journal")
     "njj" '(bergheim/denote-new-journal-entry :which-key "New journal")
     "njl" '(bergheim/denote-last-journal-entry :which-key "Last journal entry")
-    "njb" '((lambda () (interactive) (find-file denote-journal-extras-directory)) :which-key "Browse journals")
+    "njb" '((lambda () (interactive) (find-file denote-journal-directory)) :which-key "Browse journals")
     "nL" '(denote-find-link :which-key "Show links")
     "nl" '(denote-link-or-create :which-key "Link")
     "nn" '(denote-open-or-create :which-key "Open/create")
@@ -377,6 +375,8 @@ Open `dired` in the resolved directory of the current command."
     "nR" '(denote-rename-file-signature :which-key "Rename signature")
     "ns" '(consult-notes-search-in-all-notes :which-key "Search")))
 
+(use-package denote-journal :after denote)
+(use-package denote-journal-capture :after denote-journal)
 (use-package consult-denote
   :after denote)
 
