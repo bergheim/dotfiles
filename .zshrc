@@ -247,10 +247,10 @@ bindkey '^U'      cdUndoKey
 export FZF_COMPLETION_TRIGGER="''"
 
 if [ -f ~/.fzf.zsh ]; then
-  source ~/.fzf.zsh
+    source <(fzf --zsh)
 elif [ -d /usr/share/fzf ]; then
-  source /usr/share/fzf/key-bindings.zsh
-  source /usr/share/fzf/completion.zsh
+    source /usr/share/fzf/key-bindings.zsh
+    source /usr/share/fzf/completion.zsh
 fi
 
 # use rg

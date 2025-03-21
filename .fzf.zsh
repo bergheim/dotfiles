@@ -11,8 +11,6 @@
 # - $FZF_ALT_C_COMMAND
 # - $FZF_ALT_C_OPTS
 
-[[ -o interactive ]] || return 0
-
 
 # Key bindings
 # ------------
@@ -38,17 +36,24 @@ fi
 'builtin' 'emulate' 'zsh' && 'builtin' 'setopt' 'no_aliases'
 
 {
+if [[ -o interactive ]]; then
+
+__fzf_defaults() {
+  # $1: Prepend to FZF_DEFAULT_OPTS_FILE and FZF_DEFAULT_OPTS
+  # $2: Append to FZF_DEFAULT_OPTS_FILE and FZF_DEFAULT_OPTS
+  echo "--height ${FZF_TMUX_HEIGHT:-40%} --min-height 20+ --bind=ctrl-z:ignore $1"
+  command cat "${FZF_DEFAULT_OPTS_FILE-}" 2> /dev/null
+  echo "${FZF_DEFAULT_OPTS-} $2"
+}
 
 # CTRL-T - Paste the selected file path(s) into the command line
-__fsel() {
-  local cmd="${FZF_CTRL_T_COMMAND:-"command find -L . -mindepth 1 \\( -path '*/.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune \
-    -o -type f -print \
-    -o -type d -print \
-    -o -type l -print 2> /dev/null | cut -b3-"}"
+__fzf_select() {
   setopt localoptions pipefail no_aliases 2> /dev/null
   local item
-  eval "$cmd" | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --scheme=path --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} ${FZF_CTRL_T_OPTS-}" $(__fzfcmd) -m "$@" | while read item; do
-    echo -n "${(q)item} "
+  FZF_DEFAULT_COMMAND=${FZF_CTRL_T_COMMAND:-} \
+  FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --walker=file,dir,follow,hidden --scheme=path" "${FZF_CTRL_T_OPTS-} -m") \
+  FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) "$@" < /dev/tty | while read -r item; do
+    echo -n -E "${(q)item} "
   done
   local ret=$?
   echo
@@ -61,50 +66,65 @@ __fzfcmd() {
 }
 
 fzf-file-widget() {
-  LBUFFER="${LBUFFER}$(__fsel)"
+  LBUFFER="${LBUFFER}$(__fzf_select)"
   local ret=$?
   zle reset-prompt
   return $ret
 }
-zle     -N            fzf-file-widget
-bindkey -M emacs '^T' fzf-file-widget
-bindkey -M vicmd '^T' fzf-file-widget
-bindkey -M viins '^T' fzf-file-widget
+if [[ "${FZF_CTRL_T_COMMAND-x}" != "" ]]; then
+  zle     -N            fzf-file-widget
+  bindkey -M emacs '^T' fzf-file-widget
+  bindkey -M vicmd '^T' fzf-file-widget
+  bindkey -M viins '^T' fzf-file-widget
+fi
 
 # ALT-C - cd into the selected directory
 fzf-cd-widget() {
-  local cmd="${FZF_ALT_C_COMMAND:-"command find -L . -mindepth 1 \\( -path '*/.*' -o -fstype 'sysfs' -o -fstype 'devfs' -o -fstype 'devtmpfs' -o -fstype 'proc' \\) -prune \
-    -o -type d -print 2> /dev/null | cut -b3-"}"
   setopt localoptions pipefail no_aliases 2> /dev/null
-  local dir="$(eval "$cmd" | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --scheme=path --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} ${FZF_ALT_C_OPTS-}" $(__fzfcmd) +m)"
+  local dir="$(
+    FZF_DEFAULT_COMMAND=${FZF_ALT_C_COMMAND:-} \
+    FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --walker=dir,follow,hidden --scheme=path" "${FZF_ALT_C_OPTS-} +m") \
+    FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd) < /dev/tty)"
   if [[ -z "$dir" ]]; then
     zle redisplay
     return 0
   fi
   zle push-line # Clear buffer. Auto-restored on next prompt.
-  BUFFER="builtin cd -- ${(q)dir}"
+  BUFFER="builtin cd -- ${(q)dir:a}"
   zle accept-line
   local ret=$?
   unset dir # ensure this doesn't end up appearing in prompt expansion
   zle reset-prompt
   return $ret
 }
-zle     -N             fzf-cd-widget
-bindkey -M emacs '\ec' fzf-cd-widget
-bindkey -M vicmd '\ec' fzf-cd-widget
-bindkey -M viins '\ec' fzf-cd-widget
+if [[ "${FZF_ALT_C_COMMAND-x}" != "" ]]; then
+  zle     -N             fzf-cd-widget
+  bindkey -M emacs '\ec' fzf-cd-widget
+  bindkey -M vicmd '\ec' fzf-cd-widget
+  bindkey -M viins '\ec' fzf-cd-widget
+fi
 
 # CTRL-R - Paste the selected command from history into the command line
 fzf-history-widget() {
-  local selected num
-  setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases 2> /dev/null
-  selected="$(fc -rl 1 | awk '{ cmd=$0; sub(/^[ \t]*[0-9]+\**[ \t]+/, "", cmd); if (!seen[cmd]++) print $0 }' |
-    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} ${FZF_DEFAULT_OPTS-} -n2..,.. --scheme=history --bind=ctrl-r:toggle-sort,ctrl-z:ignore ${FZF_CTRL_R_OPTS-} --query=${(qqq)LBUFFER} +m" $(__fzfcmd))"
+  local selected
+  setopt localoptions noglobsubst noposixbuiltins pipefail no_aliases noglob nobash_rematch 2> /dev/null
+  # Ensure the module is loaded if not already, and the required features, such
+  # as the associative 'history' array, which maps event numbers to full history
+  # lines, are set. Also, make sure Perl is installed for multi-line output.
+  if zmodload -F zsh/parameter p:{commands,history} 2>/dev/null && (( ${+commands[perl]} )); then
+    selected="$(printf '%s\t%s\000' "${(kv)history[@]}" |
+      perl -0 -ne 'if (!$seen{(/^\s*[0-9]+\**\t(.*)/s, $1)}++) { s/\n/\n\t/g; print; }' |
+      FZF_DEFAULT_OPTS=$(__fzf_defaults "" "-n2..,.. --scheme=history --bind=ctrl-r:toggle-sort --wrap-sign '\t↳ ' --highlight-line ${FZF_CTRL_R_OPTS-} --query=${(qqq)LBUFFER} +m --read0") \
+      FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd))"
+  else
+    selected="$(fc -rl 1 | awk '{ cmd=$0; sub(/^[ \t]*[0-9]+\**[ \t]+/, "", cmd); if (!seen[cmd]++) print $0 }' |
+      FZF_DEFAULT_OPTS=$(__fzf_defaults "" "-n2..,.. --scheme=history --bind=ctrl-r:toggle-sort --wrap-sign '\t↳ ' --highlight-line ${FZF_CTRL_R_OPTS-} --query=${(qqq)LBUFFER} +m") \
+      FZF_DEFAULT_OPTS_FILE='' $(__fzfcmd))"
+  fi
   local ret=$?
   if [ -n "$selected" ]; then
-    num=$(awk '{print $1}' <<< "$selected")
-    if [[ "$num" =~ '^[1-9][0-9]*\*?$' ]]; then
-      zle vi-fetch-history -n ${num%\*}
+    if [[ $(awk '{print $1; exit}' <<< "$selected") =~ ^[1-9][0-9]* ]]; then
+      zle vi-fetch-history -n $MATCH
     else # selected is a custom query, not from history
       LBUFFER="$selected"
     fi
@@ -116,6 +136,7 @@ zle     -N            fzf-history-widget
 bindkey -M emacs '^R' fzf-history-widget
 bindkey -M vicmd '^R' fzf-history-widget
 bindkey -M viins '^R' fzf-history-widget
+fi
 
 } always {
   eval $__fzf_key_bindings_options
@@ -127,12 +148,12 @@ bindkey -M viins '^R' fzf-history-widget
 #  / __/ / /_/ __/
 # /_/   /___/_/ completion.zsh
 #
-# - $FZF_TMUX               (default: 0)
-# - $FZF_TMUX_OPTS          (default: '-d 40%')
-# - $FZF_COMPLETION_TRIGGER (default: '**')
-# - $FZF_COMPLETION_OPTS    (default: empty)
-
-[[ -o interactive ]] || return 0
+# - $FZF_TMUX                 (default: 0)
+# - $FZF_TMUX_OPTS            (default: empty)
+# - $FZF_COMPLETION_TRIGGER   (default: '**')
+# - $FZF_COMPLETION_OPTS      (default: empty)
+# - $FZF_COMPLETION_PATH_OPTS (default: empty)
+# - $FZF_COMPLETION_DIR_OPTS  (default: empty)
 
 
 # Both branches of the following `if` do the same thing -- define
@@ -198,26 +219,34 @@ fi
 # This brace is the start of try-always block. The `always` part is like
 # `finally` in lesser languages. We use it to *always* restore user options.
 {
+# The 'emulate' command should not be placed inside the interactive if check;
+# placing it there fails to disable alias expansion. See #3731.
+if [[ -o interactive ]]; then
 
 # To use custom commands instead of find, override _fzf_compgen_{path,dir}
-if ! declare -f _fzf_compgen_path > /dev/null; then
-  _fzf_compgen_path() {
-    echo "$1"
-    command find -L "$1" \
-      -name .git -prune -o -name .hg -prune -o -name .svn -prune -o \( -type d -o -type f -o -type l \) \
-      -a -not -path "$1" -print 2> /dev/null | sed 's@^\./@@'
-  }
-fi
-
-if ! declare -f _fzf_compgen_dir > /dev/null; then
-  _fzf_compgen_dir() {
-    command find -L "$1" \
-      -name .git -prune -o -name .hg -prune -o -name .svn -prune -o -type d \
-      -a -not -path "$1" -print 2> /dev/null | sed 's@^\./@@'
-  }
-fi
+#
+#   _fzf_compgen_path() {
+#     echo "$1"
+#     command find -L "$1" \
+#       -name .git -prune -o -name .hg -prune -o -name .svn -prune -o \( -type d -o -type f -o -type l \) \
+#       -a -not -path "$1" -print 2> /dev/null | sed 's@^\./@@'
+#   }
+#
+#   _fzf_compgen_dir() {
+#     command find -L "$1" \
+#       -name .git -prune -o -name .hg -prune -o -name .svn -prune -o -type d \
+#       -a -not -path "$1" -print 2> /dev/null | sed 's@^\./@@'
+#   }
 
 ###########################################################
+
+__fzf_defaults() {
+  # $1: Prepend to FZF_DEFAULT_OPTS_FILE and FZF_DEFAULT_OPTS
+  # $2: Append to FZF_DEFAULT_OPTS_FILE and FZF_DEFAULT_OPTS
+  echo "--height ${FZF_TMUX_HEIGHT:-40%} --min-height 20+ --bind=ctrl-z:ignore $1"
+  command cat "${FZF_DEFAULT_OPTS_FILE-}" 2> /dev/null
+  echo "${FZF_DEFAULT_OPTS-} $2"
+}
 
 __fzf_comprun() {
   if [[ "$(type _fzf_comprun 2>&1)" =~ function ]]; then
@@ -235,25 +264,18 @@ __fzf_comprun() {
   fi
 }
 
-# Extract the name of the command. e.g. foo=1 bar baz**<tab>
+# Extract the name of the command. e.g. ls; foo=1 ssh **<tab>
 __fzf_extract_command() {
-  local token tokens
-  tokens=(${(z)1})
-  for token in $tokens; do
-    token=${(Q)token}
-    if [[ "$token" =~ [[:alnum:]] && ! "$token" =~ "=" ]]; then
-      echo "$token"
-      return
-    fi
-  done
-  echo "${tokens[1]}"
+  # Control completion with the "compstate" parameter, insert and list nothing
+  compstate[insert]=
+  compstate[list]=
+  cmd_word="${(Q)words[1]}"
 }
 
 __fzf_generic_path_completion() {
-  local base lbuf cmd compgen fzf_opts suffix tail dir leftover matches
+  local base lbuf compgen fzf_opts suffix tail dir leftover matches
   base=$1
   lbuf=$2
-  cmd=$(__fzf_extract_command "$lbuf")
   compgen=$3
   fzf_opts=$4
   suffix=$5
@@ -271,10 +293,26 @@ __fzf_generic_path_completion() {
       leftover=${leftover/#\/}
       [ -z "$dir" ] && dir='.'
       [ "$dir" != "/" ] && dir="${dir/%\//}"
-      matches=$(eval "$compgen $(printf %q "$dir")" | FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --scheme=path --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} ${FZF_COMPLETION_OPTS-}" __fzf_comprun "$cmd" ${(Q)${(Z+n+)fzf_opts}} -q "$leftover" | while read item; do
-        item="${item%$suffix}$suffix"
-        echo -n "${(q)item} "
-      done)
+      matches=$(
+        export FZF_DEFAULT_OPTS
+        FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse --scheme=path" "${FZF_COMPLETION_OPTS-}")
+        unset FZF_DEFAULT_COMMAND FZF_DEFAULT_OPTS_FILE
+        if declare -f "$compgen" > /dev/null; then
+          eval "$compgen $(printf %q "$dir")" | __fzf_comprun "$cmd_word" ${(Q)${(Z+n+)fzf_opts}} -q "$leftover"
+        else
+          if [[ $compgen =~ dir ]]; then
+            walker=dir,follow
+            rest=${FZF_COMPLETION_DIR_OPTS-}
+          else
+            walker=file,dir,follow,hidden
+            rest=${FZF_COMPLETION_PATH_OPTS-}
+          fi
+          __fzf_comprun "$cmd_word" ${(Q)${(Z+n+)fzf_opts}} -q "$leftover" --walker "$walker" --walker-root="$dir" ${(Q)${(Z+n+)rest}} < /dev/tty
+        fi | while read -r item; do
+          item="${item%$suffix}$suffix"
+          echo -n -E "${(q)item} "
+        done
+      )
       matches=${matches% }
       if [ -n "$matches" ]; then
         LBUFFER="$lbuf$matches$tail"
@@ -297,11 +335,11 @@ _fzf_dir_completion() {
     "" "/" ""
 }
 
-_fzf_feed_fifo() (
+_fzf_feed_fifo() {
   command rm -f "$1"
   mkfifo "$1"
-  cat <&0 > "$1" &
-)
+  cat <&0 > "$1" &|
+}
 
 _fzf_complete() {
   setopt localoptions ksh_arrays
@@ -326,15 +364,17 @@ _fzf_complete() {
     rest=("$@")
   fi
 
-  local fifo lbuf cmd matches post
+  local fifo lbuf matches post
   fifo="${TMPDIR:-/tmp}/fzf-complete-fifo-$$"
   lbuf=${rest[0]}
-  cmd=$(__fzf_extract_command "$lbuf")
   post="${funcstack[1]}_post"
   type $post > /dev/null 2>&1 || post=cat
 
   _fzf_feed_fifo "$fifo"
-  matches=$(FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse --bind=ctrl-z:ignore ${FZF_DEFAULT_OPTS-} ${FZF_COMPLETION_OPTS-} $str_arg" __fzf_comprun "$cmd" "${args[@]}" -q "${(Q)prefix}" < "$fifo" | $post | tr '\n' ' ')
+  matches=$(
+    FZF_DEFAULT_OPTS=$(__fzf_defaults "--reverse" "${FZF_COMPLETION_OPTS-} $str_arg") \
+    FZF_DEFAULT_OPTS_FILE='' \
+      __fzf_comprun "$cmd_word" "${args[@]}" -q "${(Q)prefix}" < "$fifo" | $post | tr '\n' ' ')
   if [ -n "$matches" ]; then
     LBUFFER="$lbuf$matches"
   fi
@@ -361,13 +401,14 @@ _fzf_complete_telnet() {
 # The first and the only argument is the LBUFFER without the current word that contains the trigger.
 # The current word without the trigger is in the $prefix variable passed from the caller.
 _fzf_complete_ssh() {
-  local tokens=(${(z)1})
+  local -a tokens
+  tokens=(${(z)1})
   case ${tokens[-1]} in
     -i|-F|-E)
       _fzf_path_completion "$prefix" "$1"
       ;;
     *)
-      local user=
+      local user
       [[ $prefix =~ @ ]] && user="${prefix%%@*}@"
       _fzf_complete +m -- "$@" < <(__fzf_list_hosts | awk -v user="$user" '{print user $0}')
       ;;
@@ -393,9 +434,36 @@ _fzf_complete_unalias() {
 }
 
 _fzf_complete_kill() {
-  _fzf_complete -m --header-lines=1 --preview 'echo {}' --preview-window down:3:wrap --min-height 15 -- "$@" < <(
+  local transformer
+  transformer='
+    if [[ $FZF_KEY =~ ctrl|alt|shift ]] && [[ -n $FZF_NTH ]]; then
+      nths=( ${FZF_NTH//,/ } )
+      new_nths=()
+      found=0
+      for nth in ${nths[@]}; do
+        if [[ $nth = $FZF_CLICK_HEADER_NTH ]]; then
+          found=1
+        else
+          new_nths+=($nth)
+        fi
+      done
+      [[ $found = 0 ]] && new_nths+=($FZF_CLICK_HEADER_NTH)
+      new_nths=${new_nths[*]}
+      new_nths=${new_nths// /,}
+      echo "change-nth($new_nths)+change-prompt($new_nths> )"
+    else
+      if [[ $FZF_NTH = $FZF_CLICK_HEADER_NTH ]]; then
+        echo "change-nth()+change-prompt(> )"
+      else
+        echo "change-nth($FZF_CLICK_HEADER_NTH)+change-prompt($FZF_CLICK_HEADER_WORD> )"
+      fi
+    fi
+  '
+  _fzf_complete -m --header-lines=1 --no-preview --wrap --color fg:dim,nth:regular \
+    --bind "click-header:transform:$transformer" -- "$@" < <(
     command ps -eo user,pid,ppid,start,time,command 2> /dev/null ||
-      command ps -eo user,pid,ppid,time,args # For BusyBox
+      command ps -eo user,pid,ppid,time,args 2> /dev/null || # For BusyBox
+      command ps --everyone --full --windows # For cygwin
   )
 }
 
@@ -404,7 +472,7 @@ _fzf_complete_kill_post() {
 }
 
 fzf-completion() {
-  local tokens cmd prefix trigger tail matches lbuf d_cmds
+  local tokens prefix trigger tail matches lbuf d_cmds cursor_pos cmd_word
   setopt localoptions noshwordsplit noksh_arrays noposixbuiltins
 
   # http://zsh.sourceforge.net/FAQ/zshfaq03.html
@@ -415,11 +483,9 @@ fzf-completion() {
     return
   fi
 
-  cmd=$(__fzf_extract_command "$LBUFFER")
-
   # Explicitly allow for empty trigger.
   trigger=${FZF_COMPLETION_TRIGGER-'**'}
-  [ -z "$trigger" -a ${LBUFFER[-1]} = ' ' ] && tokens+=("")
+  [[ -z $trigger && ${LBUFFER[-1]} == ' ' ]] && tokens+=("")
 
   # When the trigger starts with ';', it becomes a separate token
   if [[ ${LBUFFER} = *"${tokens[-2]-}${tokens[-1]}" ]]; then
@@ -432,7 +498,28 @@ fzf-completion() {
 
   # Trigger sequence given
   if [ ${#tokens} -gt 1 -a "$tail" = "$trigger" ]; then
-    d_cmds=(${=FZF_COMPLETION_DIR_COMMANDS:-cd pushd rmdir})
+    d_cmds=(${=FZF_COMPLETION_DIR_COMMANDS-cd pushd rmdir})
+
+    {
+      cursor_pos=$CURSOR
+      # Move the cursor before the trigger to preserve word array elements when
+      # trigger chars like ';' or '`' would otherwise reset the 'words' array.
+      CURSOR=$((cursor_pos - ${#trigger} - 1))
+      # Check if at least one completion system (old or new) is active.
+      # If at least one user-defined completion widget is detected, nothing will
+      # be completed if neither the old nor the new completion system is enabled.
+      # In such cases, the 'zsh/compctl' module is loaded as a fallback.
+      if ! zmodload -F zsh/parameter p:functions 2>/dev/null || ! (( ${+functions[compdef]} )); then
+        zmodload -F zsh/compctl 2>/dev/null
+      fi
+      # Create a completion widget to access the 'words' array (man zshcompwid)
+      zle -C __fzf_extract_command .complete-word __fzf_extract_command
+      zle __fzf_extract_command
+    } always {
+      CURSOR=$cursor_pos
+      # Delete the completion widget
+      zle -D __fzf_extract_command  2>/dev/null
+    }
 
     [ -z "$trigger"      ] && prefix=${tokens[-1]} || prefix=${tokens[-1]:0:-${#trigger}}
     if [[ $prefix = *'$('* ]] || [[ $prefix = *'<('* ]] || [[ $prefix = *'>('* ]] || [[ $prefix = *':='* ]] || [[ $prefix = *'`'* ]]; then
@@ -440,10 +527,10 @@ fzf-completion() {
     fi
     [ -n "${tokens[-1]}" ] && lbuf=${lbuf:0:-${#tokens[-1]}}
 
-    if eval "type _fzf_complete_${cmd} > /dev/null"; then
-      prefix="$prefix" eval _fzf_complete_${cmd} ${(q)lbuf}
+    if eval "noglob type _fzf_complete_${cmd_word} >/dev/null"; then
+      prefix="$prefix" eval _fzf_complete_${cmd_word} ${(q)lbuf}
       zle reset-prompt
-    elif [ ${d_cmds[(i)$cmd]} -le ${#d_cmds} ]; then
+    elif [ ${d_cmds[(i)$cmd_word]} -le ${#d_cmds} ]; then
       _fzf_dir_completion "$prefix" "$lbuf"
     else
       _fzf_path_completion "$prefix" "$lbuf"
@@ -460,11 +547,14 @@ fzf-completion() {
   unset binding
 }
 
+# Normal widget
 zle     -N   fzf-completion
 bindkey '^I' fzf-completion
+fi
 
 } always {
   # Restore the original options.
   eval $__fzf_completion_options
   'unset' '__fzf_completion_options'
 }
+
