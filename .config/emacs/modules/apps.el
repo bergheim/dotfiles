@@ -326,13 +326,16 @@ Open `dired` in the resolved directory of the current command."
   ;; (add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
   (denote-rename-buffer-mode 1)
 
-  ;; (setq denote-templates nil)
-  ;; `((report . "* Some heading\n\n* Another heading")
-  ;;   (memo . ,(concat "* Some heading"
-  ;;                    "\n\n"
-  ;;                    (shell-command-to-string "fortune -s")
-  ;;                    "* Another heading"
-  ;;                    "\n\n")))
+  (setq denote-templates
+        `((default . "")
+          (person . ,(concat "* Contact Info\n"
+                             "- Name: \n"
+                             "- Website: \n"
+                             "- Github: \n"
+                             "- Email: \n"
+                             "\n"
+                             "* About\n"
+                             "* Notes and Quotes\n"))))
 
   (defun bergheim/denote-new-journal-entry ()
     "Create a new journal entry and enter writer mode"
@@ -574,6 +577,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
 (use-package erc
   :ensure nil
+  :after consult
   :autoload erc-buffer-list
   :init
   (setq erc-hide-list
@@ -618,8 +622,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
                 (make-frame `((name . ,frame-name))))))
       (select-frame-set-input-focus target-frame)
       (delete-other-windows) ;; Ensure any existing splits are removed
-      (split-window-right)
-    )
+      (split-window-right)))
   :hook
   ;; (erc-mode . erc-spelling-mode)
   (erc-mode . erc-notifications-mode)
@@ -637,11 +640,11 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-status-sidebar-mode . (lambda () (display-line-numbers-mode 0)))
   (speedbar-mode . (lambda () (display-line-numbers-mode 0)))
   :custom
-  (erc-autojoin-channels-alist '(("libera.chat" "#systemcrafters" "#emacs" "#neovim" "#elixir" "#test2k")))
+  (erc-autojoin-channels-alist bergheim/irc-channels)
 
   (erc-autojoin-timing 'ident)
   (erc-autojoin-delay 5)
-  (erc-fill-static-center 11)
+  (erc-fill-static-center 12)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
@@ -651,7 +654,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-save-buffer-on-part t)
   (erc-save-queries-on-quit t)
 
-  ;; (erc-fools irc-fools)
+  (erc-fools bergheim/irc-fools)
   (erc-header-line-format nil)
   (erc-log-insert-log-on-open t)
   (erc-insert-timestamp-function 'erc-insert-timestamp-left)
@@ -696,7 +699,48 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
    "M-l" (lambda ()
            (interactive)
            (evil-normal-state)
-           (evil-window-right 1)))
+           (evil-window-right 1))
+   "C-k" 'erc-previous-command
+   "C-j" 'erc-next-command
+   "M-h" 'evil-window-left
+   "M-l" 'evil-window-right
+   "C-u" #'evil-change-whole-line)
+  :init
+  (defun bergheim/erc-buffer-connected-p (buffer)
+    "Check if ERC BUFFER is connected."
+    (with-current-buffer buffer
+      (and (derived-mode-p 'erc-mode)
+           (erc-server-process-alive)
+           erc-server-connected)))
+
+  (defun bergheim/erc-connected-p ()
+    "Check if any ERC buffer is connected."
+    (seq-some #'bergheim/erc-buffer-connected-p (erc-buffer-list)))
+
+  (defun bergheim/erc-connect ()
+    "Open ERC in a dedicated frame and show specified channels."
+    (interactive)
+    (unless (bergheim/erc-connected-p)
+      (erc-tls :server bergheim/irc-server :port 7667 :user bergheim/irc-username))
+    ;; create or switch to erc frame
+    (let* ((frame-name "erc")
+           (target-frame
+            (or (car (seq-filter
+                      (lambda (frame)
+                        (and (frame-live-p frame)
+                             (string= frame-name (frame-parameter frame 'name))))
+                      (frame-list)))
+                (make-frame `((name . ,frame-name))))))
+      (select-frame-set-input-focus target-frame)
+      (delete-other-windows) ;; Ensure any existing splits are removed
+      (split-window-right)
+      (let ((buffer-a bergheim/irc-channel-a)
+            (buffer-b bergheim/irc-channel-b))
+        (when (get-buffer buffer-a)
+          (switch-to-buffer buffer-a))
+        (other-window 1)
+        (when (get-buffer buffer-b)
+          (switch-to-buffer buffer-b)))))
 
   :config
   (erc-log-mode 1)
@@ -771,8 +815,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
         ;; Create a new note
         (org-roam-capture- :node (org-roam-node-create :title title)
                            :templates '(("u" "user note" plain
-                                         "* Contact Info\n- Name: \n- Website: \n- GitHub: \n- Email: \n* About\n\n* Notes and Quotes\n**
-                                         %U\n#+BEGIN_QUOTE\n%?\n#+END_QUOTE\n"
+                                         "* Contact Info\n- Name: \n- Website: \n- GitHub: \n- Email: \n* About\n\n* Notes and Quotes\n** %U\n#+BEGIN_QUOTE\n%?\n#+END_QUOTE\n"
                                          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
                                                             "#+title: ${title}\n")
                                          :unnarrowed t
@@ -796,12 +839,13 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
                                                       (denote-sluggify 'keyword kw))
                                                     keywords) ".*")))
            (existing-file (car (denote-directory-files file-regex))))
+
       (if existing-file
           (find-file-other-window existing-file)
-        (let ((new-file (denote slugified-title keywords)))
-          (with-current-buffer (find-file-other-window new-file)
-            (insert "* Contact Info\n- Name: \n- Website: \n- GitHub: \n- Email: \n\n* About\n\n* Notes and Quotes\n")
-            (save-buffer))))
+        (if (one-window-p)
+            (split-window-right))
+        (other-window 1)
+        (denote slugified-title keywords nil nil nil 'person))
       (when (string-equal choice "Capture info")
         (goto-char (point-max))
         (insert (format "\n** %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
