@@ -31,10 +31,13 @@
     "as" '(eshell :which-key "eshell"))
   :config
   (setq eshell-destroy-buffer-when-process-dies t)
+
   (defun bergheim/eshell-git-info ()
     "Return git branch and status."
     (when (eq (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree") 0)
-      (let* ((branch (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD")))
+      (let* ((branch (string-trim
+                      (shell-command-to-string
+                       "git symbolic-ref --short HEAD 2>/dev/null || echo 'no commits'")))
              (dirty (not (string= "" (string-trim (shell-command-to-string "git status --porcelain")))))
              (dirty-info (if dirty
                              (propertize " ✎" 'face 'error)
@@ -60,9 +63,7 @@
 
   (defun eshell/vi (filename)
     "Open FILENAME in another buffer within Eshell."
-    (if (file-exists-p filename)
-        (find-file-other-window filename)
-      (message "File does not exist: %s" filename)))
+    (find-file-other-window filename))
 
   (defun eshell/mycat (&rest args)
     "Open files in other buffer"
@@ -267,6 +268,16 @@ Open `dired` in the resolved directory of the current command."
     "aS" '(eat :which-key "Eat"))
   :hook
   (eshell-first-time-mode . eat-eshell-mode))
+
+(use-package vterm
+  :ensure t
+  :commands vterm
+  :config
+  (setq vterm-max-scrollback 10000)
+  (add-hook 'vterm-mode-hook
+            (lambda ()
+              (setq-local evil-insert-state-cursor 'box)
+              (evil-insert-state))))
 
 (use-package shr
   :ensure nil

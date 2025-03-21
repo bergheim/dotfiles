@@ -29,6 +29,7 @@
   (setq-default indent-tabs-mode nil) ;; I have given up on tabs
   (setq window-resize-pixelwise t
         frame-resize-pixelwise t
+        save-abbrevs t
         history-length 1000
         load-prefer-newer t
         backup-by-copying t
@@ -182,6 +183,7 @@
   ;; (setq tramp-verbose 10)
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
   (setq
+   remote-file-name-access-timeout 5 ;; give up quickly instead of locking all of emacs
    remote-file-name-inhibit-locks t ;; do not create remote locks - should speed things up a bit
    vc-handled-backends '(Git)
    tramp-connection-timeout 10
