@@ -179,3 +179,4 @@ pavucontrol
 pipewire-audio
 pipewire-pulse
 perl-curses-ui # for tmux copycat
+libvips # used by dirvish

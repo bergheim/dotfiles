@@ -44,25 +44,26 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   :config
   ;; disabling event logging
   (setq eglot-events-buffer-size 0)
-  (add-to-list
-   'eglot-server-programs
-   '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode typescript-mode)
-     "typescript-language-server" "--stdio"
-     ;; I totally came up with these myself
-     :initializationOptions
-     (:preferences
-      (
-       :includeInlayEnumMemberValueHints t
-       :includeInlayFunctionLikeReturnTypeHints t
-       :includeInlayFunctionParameterTypeHints t
-       :includeInlayParameterNameHints "all" ; "none" | "literals" | "all"
-       :includeInlayParameterNameHintsWhenArgumentMatchesName t
-       :includeInlayPRopertyDeclarationTypeHints t
-       :includeInlayVariableTypeHints t
-       :includeInlayVariableTypeHintsWhenTypeMatchesName t))))
-  (add-to-list
-   'eglot-server-programs
-   '((elixir-mode elixir-ts-mode) "/usr/lib/elixir-ls/language_server.sh"))
+  (add-to-list 'eglot-server-programs
+               '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode typescript-mode)
+                 "typescript-language-server" "--stdio"
+                 ;; I totally came up with these myself
+                 :initializationOptions
+                 (:preferences
+                  (:includeInlayEnumMemberValueHints t
+                   :includeInlayFunctionLikeReturnTypeHints t
+                   :includeInlayFunctionParameterTypeHints t
+                   :includeInlayParameterNameHints "all" ; "none" | "literals" | "all"
+                   :includeInlayParameterNameHintsWhenArgumentMatchesName t
+                   :includeInlayPropertyDeclarationTypeHints t
+                   :includeInlayVariableTypeHints t
+                   :includeInlayVariableTypeHintsWhenTypeMatchesName t))))
+
+  (add-to-list 'eglot-server-programs
+               '((html-mode css-mode web-mode) "tailwindcss-language-server" "--stdio"))
+
+  (add-to-list 'eglot-server-programs
+               '((elixir-mode elixir-ts-mode) "/usr/lib/elixir-ls/language_server.sh"))
 
   ;; ignore debug logging - should speed up LSP
   (fset #'jsonrpc--log-event #'ignore)

@@ -244,9 +244,10 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
         vertico-resize 'grow-only
         vertico-cycle t))
 
-;; these look ice and all but I dunno..
+;; these look nice and all but I dunno..
 ;; (use-package vertico-posframe
 ;;   :ensure t
+;;   :after vertico
 ;;   :config
 ;;   (setq vertico-posframe-parameters
 ;;         '((left-fringe . 32)
@@ -254,16 +255,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;;           (bottom-fringe . 32)
 ;;           (right-fringe . 32)))
 ;;   (vertico-posframe-mode 1))
-
-;; (use-package mini-frame
-;;   :custom
-;;   (custom-set-variables
-;;    '(mini-frame-show-parameters
-;;      '((top . 10)
-;;        (width . 0.7)
-;;        (left . 0.5))))
-;;   :config
-;;   (mini-frame-mode))
 
 (use-package vertico-directory
   :ensure nil
@@ -300,6 +291,10 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :bind
   (:map corfu-map
    ("S-SPC" . corfu-insert-separator)
+   ("BACKTAB" . corfu-previous)
+   ([backtab] . corfu-previous)
+   ("S-TAB" . corfu-previous)
+   ("TAB" . corfu-next)
    ("C-n" . corfu-next)
    ("C-p" . corfu-previous)
    ("C-j" . corfu-next)
