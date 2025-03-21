@@ -1,4 +1,15 @@
 ;; -*- lexical-binding: t; -*-
+
+;; for some reason elpaca-diff doesn't use other window, it always comes
+;; up at the bottom and we cannot allow that can we
+(add-to-list 'display-buffer-alist
+             '("\\*elpaca-diff\\*"
+               (lambda (buffer _)
+                 (when (one-window-p)
+                   (split-window-right))
+                 (display-buffer-use-some-window buffer nil))
+               (inhibit-same-window . t)))
+
 ;; save minibuffer history
 (use-package savehist
   :ensure nil
