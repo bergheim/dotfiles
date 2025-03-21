@@ -115,7 +115,8 @@
     "a" '(:ignore t :which-key "Apps")
     "ac" '(bergheim/open-calendar :which-key "Calendar")
     "aC" '((lambda () (interactive) (find-file bergheim/calendar/nextcloud/local)) :which-key "Calendar org")
-    "ad" '((lambda () (interactive) (dirvish "~/")) :which-key "Dirvish")
+    "ad" '(dirvish :which-key "Dirvish")
+    "aD" '((lambda () (interactive) (dirvish "~/")) :which-key "Dirvish home")
     "ae" '(elfeed :which-key "Elfeed")
     "am" '(:ignore t :which-key "Spotify")
     "amh" '(hydra-spotify/body :which-key "Hydra")
@@ -177,7 +178,8 @@
     "g" '(:ignore t :which-key "git")
     "g g" '(magit :which-key "magit")
     "g o" 'forge-browse
-    "g l" `(,(bergheim/call-with-universal-arg #'magit-log-buffer-file) :which-key "Log buffer file")
+    "g l" `(,(bergheim/call-with-universal-arg #'magit-log-buffer-file) :which-key "log buffer file")
+    "g L" `(,(bergheim/call-with-universal-arg #'magit-log-all) :which-key "Log project")
     "g f" 'magit-find-file
     "g y" 'forge-copy-url-at-point-as-kill
     "g s" 'magit-stage-buffer-file
