@@ -8,21 +8,6 @@
   ;; this is needed if we want to allow actions on single matches
   ;; (avy-single-candidate-jump nil)
   :config
-  ;; TODO this is probably better https://github.com/abo-abo/ace-link
-  (defun bergheim/avy-goto-link ()
-    "Browse a visible link in the current frame."
-    (interactive)
-    (let* ((avy-keys (number-sequence ?a ?z))
-           (avy-all-windows t)
-           (candidates (avy--regex-candidates "https?://")))
-      (if (not candidates)
-          (message "No visible links found.")
-        (save-window-excursion
-          (let ((pt (cdr (avy--process candidates))))
-            (when pt
-              (goto-char pt)
-              (browse-url-at-point)))))))
-
   ;; this allows us to go back. strange the evil version does not do this..
   (defadvice evil-avy-goto-char-timer (around bergheim/save-position activate)
     (evil-set-jump)
@@ -41,6 +26,14 @@
   ;;  "s" 'evil-avy-goto-char-2-below
   ;;  "S" 'evil-avy-goto-char-2-above)
   )
+
+(use-package link-hint
+  :ensure t
+  :defer t
+  :general
+  (:states 'normal
+   "gl" #'link-hint-open-link
+   "gL" #'link-hint-copy-link))
 
 (use-package consult-notes
   :commands (consult-notes
