@@ -17,6 +17,7 @@
   (setq ediff-merge-split-window-function 'split-window-horizontally))
 
 (use-package editorconfig
+  :ensure nil ;; part of emacs 30
   :config
   (editorconfig-mode 1))
 

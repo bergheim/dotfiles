@@ -4,11 +4,15 @@
 
 
 (use-package org-roam
-  :ensure t
+  :ensure nil
+  :disabled
   :defer t
   :after org
   :init
   (setq org-roam-directory (expand-file-name "~/org/roam"))
+  :general
+  (bergheim/global-menu-keys
+    "nN" '(org-roam-node-find :which-key "Open/capture org-roam"))
   :config
   (setq org-roam-completion-everywhere t)
   ;; If you're using a vertical completion framework, you might want a more informative completion interface
