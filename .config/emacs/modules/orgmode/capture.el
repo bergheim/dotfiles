@@ -304,22 +304,8 @@
   ;; HACK to make the capture fullscreen
   (cl-letf (((symbol-function 'switch-to-buffer-other-window)
              (symbol-function 'switch-to-buffer)))
-    (org-capture)))
-
-;; (defun bergheim/capture ()
-;;   "Create a new frame and run `org-capture'."
-;;   (interactive)
-;;   (make-frame '((name . "floating emacs-capture")
-;;                 (top . 300)
-;;                 (left . 700)
-;;                 (width . 80)
-;;                 (height . 25)))
-;;   (select-frame-by-name "floating emacs-capture")
-;;   (delete-other-windows)
-;;   (add-hook 'org-capture-after-finalize-hook #'bergheim//delete-frame-after-capture)
-;;   (cl-letf (((symbol-function 'switch-to-buffer-other-window)
-;;              (symbol-function 'switch-to-buffer)))
-;;     (org-capture)))
+    (org-capture))
+  (delete-other-windows))
 
 (defun bergheim/org-email-follow-up ()
   "Select a follow-up email category"
