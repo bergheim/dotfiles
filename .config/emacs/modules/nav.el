@@ -167,6 +167,7 @@ With a universal argument, it allows entering the application to use."
    "O"   #'dirvish-quicksort
    "TAB" #'dirvish-subtree-toggle
    "C-<return>" #'bergheim/dired-return-path
+   "M-<return>" #'bergheim/dired-leave-for-eshell
    "C-h" #'dirvish-history-go-backward
    "C-l" #'dirvish-history-go-forward
    "C-M-k" #'dirvish-emerge-previous-group
@@ -196,7 +197,16 @@ With a universal argument, it allows entering the application to use."
             (call-interactively 'bergheim/org-attach-dired-to-subtree))
           :which-key "Copy to org")
     "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
-          :which-key "Move to org")))
+          :which-key "Move to org"))
+
+  (defun bergheim/dired-leave-for-eshell ()
+    "Quit dirvish and open eshell in the current directory."
+    (interactive)
+    (let ((current-dir default-directory))
+      (dirvish-quit)
+      (eshell)
+      (eshell/cd current-dir)
+      (eshell-send-input))))
 
 (defun bergheim/delete-current-file ()
   "Delete the current file and kill its buffer, after asking for confirmation."
