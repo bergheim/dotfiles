@@ -103,7 +103,7 @@
   :config
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<")
-
+  (setq consult-preview-key 'any)
   (with-eval-after-load 'consult-xref
     ;; nicked from https://github.com/minad/consult/issues/1015#issuecomment-2107283203
     ;; TODO remove after move to emacs 30
@@ -302,30 +302,57 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
    ("M-n" . nil)
    ("M-p" . nil))
   :custom
+  ;; use `cape-dict' instead
+  (text-mode-ispell-word-completion nil)
   (corfu-auto t) ;; enable auto completion
   (corfu-cycle t)
   ;; if we have applied the separator, never quit
   ;; (corfu-quit-no-match 'separator)
-  (corfu-auto-prefix 2)) ;; min chars
+  ;; TODO add a timer here or increase max chars
+  (corfu-auto-prefix 3)) ;; min chars
 
-;; Part of corfu
 (use-package corfu-popupinfo
+  ;; Part of corfu
   :ensure nil
   :after corfu
   :hook (corfu-mode . corfu-popupinfo-mode)
+  :general
+  (corfu-map
+   "C-h" 'corfu-popupinfo-documentation)
   :custom
   (corfu-popupinfo-delay '(0.25 . 0.1))
   (corfu-popupinfo-hide nil)
   :config
   (corfu-popupinfo-mode))
 
+(use-package corfu-history
+  :ensure nil
+  :after corfu
+  :hook
+  (corfu-mode-hook . corfu-history-mode))
+
+(use-package corfu-echo
+  :ensure nil
+  :after corfu
+  :hook
+  (corfu-mode-hook . corfu-echo-mode))
+
+(use-package corfu-info
+  :ensure nil
+  :after corfu
+  :unless (display-graphic-p)
+  :after corfu
+  :general
+  (corfu-map
+   "C-h" 'corfu-info-documentation))
+
 ;; Make corfu popup come up in terminal overlay
 (use-package corfu-terminal
-  ;; TODO this should be a prog-mode hook as daemon mode will just not report graphics
-  ;; :config
-  ;; (unless (display-graphic-p)
-  ;;   (corfu-terminal-mode +1))
-  )
+  :if (< emacs-major-version 31)
+  :unless (featurep 'tty-child-frames)
+  :unless (display-graphic-p)
+  :hook
+  (corfu-mode-hook . corfu-terminal-mode))
 
 ;; (use-package corfu-doc-terminal
 ;;   :after corfu-terminal
@@ -336,28 +363,40 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand))
-  ;; Other useful Dabbrev configurations.
   :custom
-  (dabbrev-ignored-buffer-regexps '("\\.\\(?:pdf\\|jpe?g\\|png\\)\\'")))
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+  ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
 
 ;; combine completion at point functions. if the name cape was not clear
 (use-package cape
   :demand t
+  :bind ("C-c p" . cape-prefix-map)
   :config
   ;; globally available CAPE completions (with lower priority)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev 80)
-  (add-hook 'completion-at-point-functions #'cape-file 80)
+  (add-hook 'completion-at-point-functions (cape-capf-super #'cape-dabbrev
+                                                            #'cape-dict))
+  (add-hook 'completion-at-point-functions #'cape-file)
+  ;; (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
   (dolist (hook '(text-mode-hook markdown-mode-hook org-mode-hook erc-mode-hook))
     (add-hook hook
               (lambda ()
                 (add-hook 'completion-at-point-functions #'cape-emoji 80 t)))))
 
 (defun bergheim/org-mode-setup-corfu ()
-  (add-to-list 'completion-at-point-functions 'org-block-capf)
-  (add-to-list 'completion-at-point-functions #'cape-tex 80)
-  ;; TODO: set up a dict and enable this
-  ;; (add-to-list 'completion-at-point-functions #'cape-dict 80)
-  (add-to-list 'completion-at-point-functions #'cape-keyword 80))
+  ;; TODO: replace this with denote or org-gnossis
+  ;; (add-to-list 'completion-at-point-functions #'org-roam-complete-link-at-point 70)
+
+  (setq-local completion-at-point-functions
+              (list #'cape-tex       ;; expands \
+                    #'org-block-capf ;; expands <
+                    #'cape-elisp-block
+                    (cape-capf-super #'cape-dabbrev
+                                     #'cape-dict
+                                     #'cape-keyword)
+                    #'cape-emoji)))  ;; expands :
 
 (add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu)
 
