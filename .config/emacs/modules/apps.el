@@ -272,6 +272,9 @@ Open `dired` in the resolved directory of the current command."
 (use-package vterm
   :ensure t
   :commands vterm
+  :general
+  (bergheim/global-menu-keys
+    "av" '(vterm :which-key "vterm"))
   :config
   (setq vterm-max-scrollback 10000)
   (add-hook 'vterm-mode-hook

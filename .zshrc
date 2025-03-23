@@ -201,8 +201,6 @@ bindkey '^P' history-search-backward
 bindkey '^N' history-search-forward
 bindkey '^R' history-incremental-search-backward
 bindkey '^S' history-incremental-search-forward
-bindkey "^K" vi-up-line-or-history
-bindkey "^J" vi-down-line-or-history
 bindkey '^O' autosuggest-accept
 bindkey '^A' beginning-of-line
 bindkey '^E' end-of-line
