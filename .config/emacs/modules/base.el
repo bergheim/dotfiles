@@ -173,23 +173,12 @@
 (use-package tramp
   :demand
   :init
-  (defun my--tramp-send-command--workaround-stty-icanon-bug (conn-vec orig-command &rest args)
-    "See: https://github.com/magit/magit/issues/4720"
-    (let ((command
-           (if (string= "stty -icrnl -icanon min 1 time 0" orig-command)
-               "stty -icrnl"
-             orig-command)))
-      (append (list conn-vec command) args)))
-  (defun my--tramp-send-command--workaround-stty-icanon-bug--filter-args (args)
-    (apply #'my--tramp-send-command--workaround-stty-icanon-bug args))
   (defun tramp-abort ()
     (interactive)
     (recentf-cleanup)
     (tramp-cleanup-all-buffers)
     (tramp-cleanup-all-connections))
   :config
-  (advice-add 'tramp-send-command :filter-args
-              #'my--tramp-send-command--workaround-stty-icanon-bug--filter-args)
   (setq tramp-pipe-stty-settings "")
   ;; (setq tramp-verbose 10)
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
