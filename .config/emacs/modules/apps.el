@@ -230,6 +230,18 @@ Open `dired` in the resolved directory of the current command."
     (when (eq evil-state 'insert)
       (eshell-life-is-too-much)))
 
+  (defun bergheim/eshell-tramp-cd-advice (orig-func &rest args)
+    "Make `cd` with no args go to remote home when in a TRAMP connection."
+    (if (and (file-remote-p default-directory)
+             (or (null args) (= (length args) 0)))
+        ;; If we're remote and no args, go to remote home
+        (let ((remote-prefix (file-remote-p default-directory)))
+          (funcall orig-func (concat remote-prefix "~")))
+      ;; Otherwise use normal behavior
+      (apply orig-func args)))
+
+  (advice-add 'eshell/cd :around #'bergheim/eshell-tramp-cd-advice)
+
   (add-hook 'eshell-first-time-mode-hook
             (lambda ()
               (evil-define-key 'insert eshell-mode-map (kbd "TAB") 'bergheim/completion-at-point-or-dired)
