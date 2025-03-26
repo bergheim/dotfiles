@@ -392,8 +392,16 @@ Open `dired` in the resolved directory of the current command."
     "nR" '(denote-rename-file-signature :which-key "Rename signature")
     "ns" '(consult-notes-search-in-all-notes :which-key "Search")))
 
-(use-package denote-journal :after denote)
-(use-package denote-journal-capture :after denote-journal)
+(use-package denote-journal
+  :after denote
+  :demand)
+
+(use-package denote-journal-capture
+  :after denote-journal
+  :demand)
+
+(use-package denote-menu :after denote)
+
 (use-package consult-denote
   :after denote)
 
@@ -853,7 +861,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
         (goto-char (point-max))
         (insert (format "\n** %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
         (when selected-text
-          (insert (format "#+BEGIN_QUOTE\n%s\n#+END_QUOTE\n" selected-text)))
+          (insert (format "#+begin_quote\n%s\n#+end_quote\n" selected-text)))
         (save-buffer)
         (when (featurep 'evil)
           (evil-insert-state)))))
