@@ -171,7 +171,6 @@
   :defer t)
 
 (use-package tramp
-  :demand
   :init
   (defun tramp-abort ()
     (interactive)
@@ -179,22 +178,18 @@
     (tramp-cleanup-all-buffers)
     (tramp-cleanup-all-connections))
   :config
-  (setq tramp-pipe-stty-settings "")
-  ;; (setq tramp-verbose 10)
-  (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir))
-  (setq
-   remote-file-name-access-timeout 5 ;; give up quickly instead of locking all of emacs
-   remote-file-name-inhibit-locks t ;; do not create remote locks - should speed things up a bit
-   vc-handled-backends '(Git)
-   tramp-connection-timeout 10
-   ;; `ssh` should be quicker than the default `scp`
-   tramp-default-method "sshx"
-   ;; Disable version control to avoid delays:
-   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                vc-ignore-dir-regexp tramp-file-name-regexp)
-   tramp-copy-size-limit nil)
-
-  ;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='~/.ssh/sockets/tramp-%%r@%%h-%%p' -o ControlPersist=600")
+  (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir)
+        remote-file-name-access-timeout 5 ;; give up quickly instead of locking all of emacs
+        remote-file-name-inhibit-locks t ;; do not create remote locks - should speed things up a bit
+        vc-handled-backends '(Git)
+        tramp-connection-timeout 10
+        ;; `ssh` should be quicker than the default `scp`
+        tramp-default-method "sshx"
+        ;; Disable version control to avoid delays:
+        vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                     vc-ignore-dir-regexp tramp-file-name-regexp)
+        tramp-copy-size-limit nil
+        tramp-use-ssh-controlmaster-options t)
 
   (add-to-list 'tramp-methods
                '("yadm"

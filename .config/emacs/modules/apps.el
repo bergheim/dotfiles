@@ -247,7 +247,8 @@ Open `dired` in the resolved directory of the current command."
 
 
   (add-hook 'eshell-mode-hook (lambda ()
-                                (eshell/alias "ll" "ls -AFGhl --color=always $1")
+                                (eshell/alias "ll" "ls -lh $*")
+                                (eshell/alias "l" "ll")
                                 (eshell/alias "gs" "magit-status")
                                 (eshell/alias "gd" "magit-diff-unstaged")
                                 (eshell/alias "gds" "magit-diff-staged")
