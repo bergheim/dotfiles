@@ -185,11 +185,15 @@
         tramp-connection-timeout 10
         ;; `ssh` should be quicker than the default `scp`
         tramp-default-method "sshx"
-        ;; Disable version control to avoid delays:
-        vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                     vc-ignore-dir-regexp tramp-file-name-regexp)
+        ;; Only use Git for version control and exclude non-TRAMP paths that match vc-ignore-dir-regexp
+        ;; This improves performance while still allowing project detection over TRAMP
+        vc-ignore-dir-regexp (format "\\(%s\\)" vc-ignore-dir-regexp)
         tramp-copy-size-limit nil
         tramp-use-ssh-controlmaster-options t)
+
+  (add-to-list 'tramp-remote-path "/home/tsb/local/bin")
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (add-to-list 'tramp-remote-path 'tramp-default-remote-path)
 
   (add-to-list 'tramp-methods
                '("yadm"
