@@ -5,10 +5,6 @@
   :ensure t
   :after diff-hl
   :commands (magit magit-status magit--handle-bookmark)
-  :hook
-  (with-editor-mode        . evil-insert-state)
-  (magit-post-refresh-hook . diff-hl-magit-post-refresh)
-
   :general
   (:states '(normal visual emacs)
    :keymaps 'magit-mode-map
@@ -17,7 +13,12 @@
    "z 2" 'magit-section-show-level-2-all
    "z 3" 'magit-section-show-level-3-all
    "z 4" 'magit-section-show-level-4-all
-   "M-RET" 'magit-diff-visit-worktree-file-other-window))
+   "M-RET" 'magit-diff-visit-worktree-file-other-window)
+  :hook
+  (with-editor-mode        . evil-insert-state)
+  (magit-post-refresh-hook . diff-hl-magit-post-refresh)
+  :config
+  (setopt magit-format-file-function #'magit-format-file-nerd-icons))
 
 (use-package git-timemachine)
 
