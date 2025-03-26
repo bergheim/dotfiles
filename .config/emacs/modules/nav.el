@@ -100,7 +100,7 @@ With a universal argument, it allows entering the application to use."
         ;; Always copy/delete recursively
         dired-recursive-copies  'always
         dired-recursive-deletes 'top
-
+        dired-use-ls-dired t ;; parse names reliably
         dired-clean-confirm-killing-deleted-buffers nil
         ;; Ask whether destination dirs should get created when copying/removing files.
         dired-create-destination-dirs 'ask
