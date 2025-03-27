@@ -146,6 +146,8 @@
  'org-babel-load-languages
  '((emacs-lisp . t)
    (calc . t)
+   (C . t)
+   (typescript . t)
    (js .t)))
 
 ;; TODO: what is this again
