@@ -428,3 +428,5 @@ if [[ $INSIDE_EMACS == *eat* ]]; then
   # alias vi='emacsclient -e "(find-file-other-window \"$1\")"'
 fi
 
+export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+alias docker=podman
