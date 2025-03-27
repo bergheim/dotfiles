@@ -68,4 +68,9 @@ export N_PREFIX=~/local
 
 export TERM=tmux-direct
 
+# fix Ubuntu
+skip_global_compinit=1
+
+export CANDLE_FLASH_ATTN_BUILD_DIR=~/.cache/candle
+
 source ~/.zshenv-private
