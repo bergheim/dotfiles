@@ -9,7 +9,7 @@
 
       ;; t means adapt indentation to outline node level
       org-adapt-indentation t
-
+      org-startup-folded 'fold
       ;; continue on https://hugocisneros.com/org-config/
       calendar-date-style 'european
       org-icalendar-timezone "Europe/Oslo"
@@ -37,6 +37,9 @@
 
       ;; start on monday instead of current day
       org-agenda-start-on-weekday 1
+
+      ;; INCLUDE archived stuff in the agenda. this is for time tracking etc
+      org-agenda-archives-mode t
 
       ;; https://github.com/correl/dotfiles/blob/master/.doom.d/config.org
       ;; https://github.com/PRDeltoid/doom-dotfiles/blob/master/config.el
@@ -73,6 +76,7 @@
 
       org-agenda-files (append (file-expand-wildcards (concat org-directory "*.org"))
                                (file-expand-wildcards (concat org-directory "email/*.org"))
+                               (file-expand-wildcards (concat org-directory "areas/*.org"))
                                (list bergheim/calendar/nextcloud/local)
                                (directory-files-recursively (expand-file-name "projects" org-directory) "\\.org$"))
 
