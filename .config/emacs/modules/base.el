@@ -172,7 +172,7 @@
 
 (use-package tramp
   :init
-  (defun tramp-abort ()
+  (defun bergheim/tramp-abort ()
     (interactive)
     (recentf-cleanup)
     (tramp-cleanup-all-buffers)
@@ -184,7 +184,7 @@
         vc-handled-backends '(Git)
         tramp-connection-timeout 10
         ;; `ssh` should be quicker than the default `scp`
-        tramp-default-method "sshx"
+        tramp-default-method "ssh"
         ;; Only use Git for version control and exclude non-TRAMP paths that match vc-ignore-dir-regexp
         ;; This improves performance while still allowing project detection over TRAMP
         vc-ignore-dir-regexp (format "\\(%s\\)" vc-ignore-dir-regexp)

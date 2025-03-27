@@ -1,3 +1,14 @@
+## tramp gets hung up on precmd(), unset some features
+if [[ "$TERM" == "dumb" ]]; then
+    unsetopt zle
+    unsetopt prompt_cr
+    unsetopt prompt_subst
+    unfunction precmd
+    unfunction preexec
+    PS1='$ '
+    return
+fi
+
 # Start configuration added by Zim install {{{
 #
 # User configuration sourced by interactive shells
@@ -417,5 +428,3 @@ if [[ $INSIDE_EMACS == *eat* ]]; then
   # alias vi='emacsclient -e "(find-file-other-window \"$1\")"'
 fi
 
-# Fix for TRAMP
-[ $TERM = "dumb" ] && unsetopt zle && PS1='$ '
