@@ -14,6 +14,10 @@
    "z 3" 'magit-section-show-level-3-all
    "z 4" 'magit-section-show-level-4-all
    "M-RET" 'magit-diff-visit-worktree-file-other-window)
+  (:states 'normal
+   :keymaps 'git-rebase-mode-map
+   "C-j" 'git-rebase-move-line-down
+   "C-k" 'git-rebase-move-line-up)
   :hook
   (with-editor-mode        . evil-insert-state)
   (magit-post-refresh-hook . diff-hl-magit-post-refresh)
