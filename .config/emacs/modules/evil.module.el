@@ -23,12 +23,13 @@
 (use-package evil-org
   :ensure t
   :after org
-  :commands (evil-org-mode)
-  :hook
-  (org-mode . evil-org-mode)
-  (org-agenda-mode . evil-org-mode)
+  :hook (org-mode . (lambda () (evil-org-mode))))
+
+(use-package evil-org-agenda
+  :ensure nil
+  :demand
+  :after org-agenda
   :config
-  (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
 ;; much better node matching
