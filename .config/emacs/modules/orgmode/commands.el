@@ -18,11 +18,11 @@
               (when (and (eq (char-before) ?\n)
                          (not (eq (char-before (1- (point))) ?\n)))
                 (delete-char -1))
-              (insert "\n#+END_SRC\n")
+              (insert "\n#+end_src\n")
               (goto-char beg)
-              (insert (format "#+BEGIN_SRC %s\n" lang))))
+              (insert (format "#+begin_src %s\n" lang))))
         (progn
-          (insert (format "#+BEGIN_SRC %s\n#+END_SRC" lang))
+          (insert (format "#+begin_src %s\n#+end_src" lang))
           (org-edit-src-code))))))
 
 (defun bergheim/org-copy-url-only ()

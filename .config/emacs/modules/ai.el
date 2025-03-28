@@ -216,9 +216,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
                             ;; BEGIN_SRC does not use the -mode suffix
                             (let ((lang (string-remove-suffix "-mode" 
                                                               (symbol-name major-mode))))
-                              (format "#+BEGIN_SRC %s\n%s\n#+END_SRC"
+                              (format "#+begin_src %s\n%s\n#+end_src"
                                       lang  region-text))
-                          (format "#+BEGIN_QUOTE\n%s\n#+END_QUOTE" region-text)))
+                          (format "#+begin_quote\n%s\n#+end_quote" region-text)))
            (custom-prompts (bergheim/load-project-prompt)))
       (when (buffer-live-p chat-buffer)
         (with-current-buffer chat-buffer
