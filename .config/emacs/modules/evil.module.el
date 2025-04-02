@@ -16,6 +16,7 @@
   (setq-default evil-escape-excluded-major-modes
                 '(magit-status-mode
                   magit-diff-mode
+                  magit-revision-mode
                   magit-log-mode))
   (setq-default evil-escape-excluded-states '(visual))
   (evil-escape-mode))
