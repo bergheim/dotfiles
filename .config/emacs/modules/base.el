@@ -61,6 +61,7 @@
   :ensure
   :demand
   :config
+  (setq super-save-auto-save-when-idle t)
   (super-save-mode +1))
 
 (use-package recentf
