@@ -219,13 +219,10 @@
 
 (use-package org-super-agenda
   :after org
-  :demand
-  ;; :commands (bergheim/org-super-agenda)
-  :init
+  :config
   (defun bergheim/org-super-agenda (&rest args)
     (interactive)
     (apply #'org-agenda args))
-  :config
   ;; don't break evil on org-super-agenda headings, see
   ;; https://github.com/alphapapa/org-super-agenda/issues/50
   (setq org-super-agenda-header-map (make-sparse-keymap))

@@ -17,7 +17,8 @@
                 '(magit-status-mode
                   magit-diff-mode
                   magit-revision-mode
-                  magit-log-mode))
+                  magit-log-mode
+                  org-agenda-mode))
   (setq-default evil-escape-excluded-states '(visual))
   (evil-escape-mode))
 
