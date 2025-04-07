@@ -219,6 +219,7 @@
 
 (use-package org-super-agenda
   :after org
+  :commands (bergheim/org-super-agenda)
   :config
   (defun bergheim/org-super-agenda (&rest args)
     (interactive)
