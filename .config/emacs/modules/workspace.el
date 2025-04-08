@@ -85,6 +85,14 @@
           (magit-project-status "Magit" "m")
           (project-eshell "Eshell"))))
 
+(defun bergheim/project-find-file-other-window (&optional include-all)
+  "Run `project-find-file' but open the selected file in another window.
+With INCLUDE-ALL prefix arg, include all files, not just tracked files."
+  (interactive "P")
+  (let ((current-prefix-arg include-all)
+        (display-buffer-overriding-action '(display-buffer-use-some-window . ((inhibit-same-window . t)))))
+    (call-interactively #'project-find-file)))
+
 (defun bergheim/open-or-switch-to-project-tab (new-frame)
   "Open a selected project in a new tab, or switch to it if it already exists.
 If NEW-FRAME is non-nil, open the project in a new frame."
