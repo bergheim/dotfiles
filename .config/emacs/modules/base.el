@@ -51,6 +51,7 @@
         lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat bergheim/cache-dir "lock/" "\\1") t))
         custom-file (expand-file-name "custom.el" bergheim/config-dir)
 
+        auto-revert-remote-files t
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
   ;; Reload files that are changed outside of Emacs
