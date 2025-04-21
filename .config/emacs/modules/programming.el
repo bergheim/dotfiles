@@ -45,11 +45,19 @@
 ;;   :demand t
 ;;   :after tree-sitter)
 
-;; (electric-pair-mode t) ;; insert closing parens
+(use-package aggressive-indent-mode
+  :config
+  (aggressive-indent-global-mode t))
 
 (use-package emacs
   :ensure nil
   :after treesit
+  :config
+  (electric-pair-mode t)
+  :custom
+  (xref-search-program 'ripgrep)
+  (grep-command "rg -nS --no-heading "
+                grep-use-null-device nil)
   :custom-face
   (typescript-ts-jsx-tag-face
    ((t ( :inherit font-lock-type-face))))
@@ -60,7 +68,7 @@
 
 (use-package dumb-jump
   :ensure t
-  :after (evil)
+  :after evil
   :demand t
   :config
   ;; should use `consult-xref`?
