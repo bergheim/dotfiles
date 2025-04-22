@@ -49,10 +49,11 @@
       ;; and make room for the subject
       mu4e-headers-fields '((:account      .  8)
                             (:human-date   . 14)
-                            (:flags        .  6)
-                            (:shortened-maildir     .  8)
+                            ;; (:flags        .  6)
+                            ;; (:shortened-maildir     .  8)
                             ;; TODO: find a way to toggle this - it is sometimes useful
                             ;; (:mailing-list . 10)
+                            (:to           . 22)
                             (:from         . 20)
                             (:subject))
 
