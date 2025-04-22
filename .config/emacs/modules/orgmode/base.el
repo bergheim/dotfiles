@@ -145,6 +145,7 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
+   (C . t)
    (calc . t)
    (C . t)
    (typescript . t)
