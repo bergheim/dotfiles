@@ -34,13 +34,24 @@
 
 (defun bergheim/mu4e-refile-mail (msg)
   (let* ((maildir (mu4e-message-field msg :maildir))
-         (account (cl-second (split-string maildir "/"))))
-    (pcase maildir
-      ((pred (lambda (s) (string-suffix-p "/Sent" s)))
-       (concat "/" account "/Sent"))
-      ((pred (lambda (s) (string-suffix-p "/Archive" s)))
-       (concat "/" account "/Archive"))
-      (_ (concat "/" account "/Archive")))))
+         (parts (split-string maildir "/"))
+         (account (nth 1 parts)))
+    (cond
+     ;; sent by me → Sent folder
+     ((mu4e-message-sent-by-me msg)
+      mu4e-sent-folder)
+
+     ((and account (string-suffix-p "/Sent" maildir))
+      (concat "/" account "/Sent"))
+
+     ((and account (string-suffix-p "/Archive" maildir))
+      (concat "/" account "/Archive"))
+
+     ;; default: /Account/Archive
+     (account
+      (concat "/" account "/Archive"))
+     ;; no idea what to do here
+     (t nil))))
 
 ;; TODO: see if this works when sending works again
 ;; message-id is apparently not generated on the server..? which sounds strange
