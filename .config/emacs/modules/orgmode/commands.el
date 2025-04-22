@@ -2,6 +2,30 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defun bergheim/org-block ()
+  "Wrap the active region in an Org structure template."
+  (interactive)
+  (let* ((templates (mapcar (lambda (x) (cons (cdr x) (cdr x)))
+                            org-structure-template-alist))
+         (template (completing-read "Template: " templates)))
+    (if (use-region-p)
+        (let ((beg (region-beginning))
+              (end (region-end)))
+          (save-excursion
+            (goto-char end)
+            ;; Remove trailing newline if needed
+            (when (and (eq (char-before) ?\n)
+                       (not (eq (char-before (1- (point))) ?\n)))
+              (delete-char -1))
+            (insert (format "\n#+end_%s\n" template))
+            (goto-char beg)
+            (insert (format "#+begin_%s\n" template))))
+      (progn
+        (insert (format "#+begin_%s\n#+end_%s" template template))
+        (forward-line -1)
+        (end-of-line)
+        (insert " ")))))
+
 (defun bergheim/org-src-block ()
   "Wrap the active region in an Org source block or edit inline code."
   (interactive)

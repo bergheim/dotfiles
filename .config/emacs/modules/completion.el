@@ -56,7 +56,6 @@
     (interactive)
     (consult-line-multi (list :include buffers)))
 
-
   :bind
   (:map embark-general-map
    ("g" . #'bergheim/grep-selected-buffers))
@@ -295,7 +294,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   ;; (setq corfu-max-width 150)
   ;; (setq corfu-max-height 35)
   (global-corfu-mode)
-  :bind
+  :bind ("C-c p" . cape-prefix-map)
   (:map corfu-map
    ("S-SPC" . corfu-insert-separator)
    ("BACKTAB" . corfu-previous)

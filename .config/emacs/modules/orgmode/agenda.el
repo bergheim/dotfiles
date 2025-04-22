@@ -34,6 +34,7 @@
                         (org-agenda-span 'day)
                         ;; (org-agenda-current-span 'day)
                         (org-agenda-start-day (org-today))
+                        ;; (org-agenda-use-time-grid nil)
                         ;; (org-agenda-remove-tags t)
                         ;; (org-agenda-current-time-string "ᐊ┈┈┈┈┈┈┈ Now")
                         ;; (org-agenda-show-log nil)
