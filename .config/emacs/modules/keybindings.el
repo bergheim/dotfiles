@@ -176,6 +176,7 @@
     "fy" '(+default/yank-buffer-path :which-key "Yank file path")
 
     "g" '(:ignore t :which-key "git")
+    "g b" '(magit-blame :which-key "blame")
     "g g" '(magit :which-key "magit")
     "g o" 'forge-browse
     "g l" `(,(bergheim/call-with-universal-arg #'magit-log-buffer-file) :which-key "log buffer file")
