@@ -28,6 +28,8 @@
 
 # typeset -U path
 # path=(~/local/bin $path[@])
+export GOBIN="$HOME/.local/bin"
+export PATH=$GOBIN:~/bin:$PATH
 export PATH=~/local/bin:~/.local/bin:~/.cargo/bin:$PATH
 
 export RANGER_LOAD_DEFAULT_RC=FALSE

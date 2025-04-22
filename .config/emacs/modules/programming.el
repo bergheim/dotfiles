@@ -46,6 +46,7 @@
 ;;   :after tree-sitter)
 
 (use-package aggressive-indent-mode
+  :ensure nil
   :config
   (aggressive-indent-global-mode t))
 
