@@ -14,7 +14,6 @@
 
 (use-package eshell
   :ensure nil
-  :after evil
   :general
   (:keymaps 'eshell-mode-map
    :states 'insert
@@ -23,10 +22,8 @@
    "C-t" #'eshell/find-file-with-consult
    ;; "C-d" . eshell/z
    "C-k" #'eshell-previous-matching-input-from-input
-   "C-j" #'eshell-next-matching-input-from-input
-   :states '(insert visual normal)
-   "M-h" #'evil-window-left
-   "M-l" #'evil-window-right)
+   "C-j" #'eshell-next-matching-input-from-input)
+
   (bergheim/global-menu-keys
     "as" '(eshell :which-key "eshell"))
   :config
@@ -364,7 +361,7 @@ Open `dired` in the resolved directory of the current command."
     (bergheim/write-mode t)
     (goto-char (point-max))
     (delete-trailing-whitespace)
-    (insert "\n* " (format-time-string "%H:%M") " ")
+    (insert "\n* [" (format-time-string "%H:%M") "] ")
     (evil-insert 0))
 
   (defun bergheim/denote-last-journal-entry ()
@@ -387,12 +384,12 @@ Open `dired` in the resolved directory of the current command."
     "nd" '(denote :which-key "New note")
     "nf" '(denote-open-or-create :which-key "Find")
     ;;"ndj" '(denote-journal-extras-new-or-existing-entry :which-key "Journal")
-    "ne" '(denote-org-extras-extract-org-subtree :which-key "Extract from node")
-    "nh" '(denote-org-extras-link-to-heading :which-key "Link to heading")
+    "ne" '(denote-org-extract-org-subtree :which-key "Extract from node")
+    "nh" '(denote-org-link-to-heading :which-key "Link to heading")
     "ni" '(:ignore t :which-key "Insert")
-    "nib" '(denote-org-extras-dblock-insert-backlinks :which-key "backlinks")
-    "nif" '(denote-org-extras-dblock-insert-files :which-key "files")
-    "nil" '(denote-org-extras-dblock-insert-links :which-key "links")
+    "nib" '(denote-org-dblock-insert-backlinks :which-key "backlinks")
+    "nif" '(denote-org-dblock-insert-files :which-key "files")
+    "nil" '(denote-org-dblock-insert-links :which-key "links")
     "nj" '(:ignore t :which-key "Journal")
     "njj" '(bergheim/denote-new-journal-entry :which-key "New journal")
     "njl" '(bergheim/denote-last-journal-entry :which-key "Last journal entry")
@@ -403,9 +400,14 @@ Open `dired` in the resolved directory of the current command."
     "nr" '(denote-rename-file-using-front-matter :which-key "Rename")
     "nr" '(denote-rename-file :which-key "Rename")
     "nR" '(denote-rename-file-signature :which-key "Rename signature")
-    "ns" '(consult-notes-search-in-all-notes :which-key "Search")))
+    "ns" '(consult-notes-search-in-all-notes :which-key "Search")
+    "nS" '(denote-grep :which-key "Grep")))
 
 (use-package denote-journal
+  :after denote
+  :demand)
+
+(use-package denote-org
   :after denote
   :demand)
 
