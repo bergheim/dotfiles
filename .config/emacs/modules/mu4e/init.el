@@ -22,6 +22,8 @@
                  :post-build (("mu" "init" "--quiet" "--maildir" ,(concat (getenv "HOME") "/.mail")
                                "--my-address=" ,bergheim/gmail/email
                                "--my-address=" ,bergheim/ntnu/email
+                               "--my-address=" ,bergheim/personal/email
+                               "--my-address=" ,bergheim/mailbox/email
                                "--my-address=" ,bergheim/glvortex/email
                                "--my-address=" ,bergheim/glvortex/email-spam
                                "--my-address=" ,bergheim/glvortex/email-me)
