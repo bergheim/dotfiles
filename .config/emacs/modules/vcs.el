@@ -3,21 +3,23 @@
 
 (use-package magit
   :ensure t
-  :after diff-hl
   :commands (magit magit-status magit--handle-bookmark)
   :general
   (:states '(normal visual emacs)
    :keymaps 'magit-mode-map
+
    "Z" 'magit-stash
    "z 1" 'magit-section-show-level-1-all
    "z 2" 'magit-section-show-level-2-all
    "z 3" 'magit-section-show-level-3-all
    "z 4" 'magit-section-show-level-4-all
    "M-RET" 'magit-diff-visit-worktree-file-other-window)
+
   (:states 'normal
    :keymaps 'git-rebase-mode-map
    "C-j" 'git-rebase-move-line-down
    "C-k" 'git-rebase-move-line-up)
+
   :hook
   (with-editor-mode        . evil-insert-state)
   (magit-post-refresh-hook . diff-hl-magit-post-refresh)
@@ -43,14 +45,13 @@
 
 ;; shows diffs in the fringe
 (use-package diff-hl
-  :ensure t
   :defer t
-  :hook ((prog-mode . diff-hl-mode)
-         (vc-dir-mode . diff-hl-mode)
-         (magit-post-refresh . diff-hl-magit-post-refresh))
+  ;; :hook ((prog-mode . diff-hl-mode)
+  ;;        (vc-dir-mode . diff-hl-mode)
+  ;;        (magit-post-refresh . diff-hl-magit-post-refresh))
   :config
-  ;; (global-diff-hl-mode)
-  ;; To keep in line with your vim-style keybindings preference:
+  (setq diff-hl-disable-on-remote t)
+  (global-diff-hl-mode)
   (general-define-key
    :states '(normal visual)
    "g p" 'diff-hl-previous-hunk
