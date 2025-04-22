@@ -115,7 +115,7 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
 (use-package ox-hugo
   :after ox
   :config
-  (defun ad/org-change-draft-when-blog-state-changes ()
+  (defun my/org-change-draft-when-blog-state-changes ()
     (interactive)
     (pcase (org-get-todo-state)
       ("PUBLISH" (org-set-property "EXPORT_HUGO_DRAFT" "false")
@@ -123,12 +123,10 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
       ("DRAFT" (org-set-property "EXPORT_HUGO_DRAFT" "true"))
       ("POST" (org-set-property "EXPORT_HUGO_DRAFT" "true")
        (org-hugo-export-wim-to-md))
-      (_ ())
-      )
-    )
+      (_ ())))
 
   (add-hook 'org-after-todo-state-change-hook
-            'my/org-change-draft-when-state-changes-to-publish))
+            'my/org-change-draft-when-blog-state-changes))
 
 (use-package iedit
   :demand t
