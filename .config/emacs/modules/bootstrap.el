@@ -113,6 +113,7 @@
   :config
   (setq undo-tree-auto-save-history t)
   (setq undo-tree-enable-undo-in-region t)
+  (add-to-list 'undo-tree-incompatible-major-modes #'magit-status-mode)
   :general
   (general-nmap
     "u" 'undo-tree-undo

@@ -191,7 +191,7 @@
         ;; This improves performance while still allowing project detection over TRAMP
         vc-ignore-dir-regexp (format "\\(%s\\)" vc-ignore-dir-regexp)
         tramp-copy-size-limit nil
-        tramp-use-ssh-controlmaster-options t)
+        tramp-use-connection-share t)
 
   (add-to-list 'tramp-remote-path "/home/tsb/local/bin")
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
