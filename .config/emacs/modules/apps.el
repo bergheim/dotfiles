@@ -299,7 +299,7 @@ Open `dired` in the resolved directory of the current command."
   (shr-max-width 120))
 
 (use-package treemacs
-  :ensure t
+  :defer t
   :config
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t))
@@ -679,8 +679,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     "c" 'erc-bufbar-mode
     "s" '(bergheim/erc-swoop-nick :which-key "swoop")
     "d" '(bergheim/erc-open-or-capture-user-note-denote :which-key "denote")
-    "o" '(bergheim/erc-open-or-capture-user-note-roam :which-key "org-roam")
-    "O" '(bergheim/erc-open-or-capture-user-note-roam-simple :which-key "org-roam simplified")
     "n" 'erc-nickbar-mode)
   (:states 'normal
    :keymaps 'erc-mode-map
@@ -786,40 +784,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     (let* ((nicks (bergheim/erc-collect-nicks))
            (nick (completing-read "Choose nick: " nicks nil t)))
       (org-roam-node-find nil (concat nick "-" (symbol-name (erc-network))))))
-
-  (defun bergheim/erc-open-or-capture-user-note-roam ()
-    "Open or capture information in an org-roam note for an IRC user in the current network."
-    (interactive)
-    (require 'org-roam)
-    (let* ((nicks (bergheim/erc-collect-nicks))
-           (nick (completing-read "Choose nick: " nicks nil t))
-           (network (symbol-name (erc-network)))
-           (title (concat nick "-" network))
-           (choice (completing-read "Action: " '("Open note" "Capture info") nil t))
-           (selected-text (when (use-region-p)
-                            (string-trim (buffer-substring-no-properties (region-beginning) (region-end)))))
-           (node (org-roam-node-from-title-or-alias title)))
-      (if node
-          (with-current-buffer (find-file-other-window (org-roam-node-file node))
-            (when (string-equal choice "Capture info")
-              (goto-char (point-min))
-              (unless (re-search-forward "^\\* Notes and Quotes" nil t)
-                (goto-char (point-max))
-                (insert "\n* Notes and Quotes\n"))
-              (goto-char (point-max))
-              (insert (format "** %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
-              (when selected-text
-                (insert (format "#+BEGIN_QUOTE\n%s\n#+END_QUOTE\n" selected-text)))
-              (when (featurep 'evil)
-                (evil-insert-state))))
-        ;; Create a new note
-        (org-roam-capture- :node (org-roam-node-create :title title)
-                           :templates '(("u" "user note" plain
-                                         "* Contact Info\n- Name: \n- Website: \n- GitHub: \n- Email: \n* About\n\n* Notes and Quotes\n** %U\n#+BEGIN_QUOTE\n%?\n#+END_QUOTE\n"
-                                         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                            "#+title: ${title}\n")
-                                         :unnarrowed t
-                                         :empty-lines-after 1))))))
 
   (defun bergheim/erc-open-or-capture-user-note-denote ()
     "Open or capture information in a denote note for an IRC user in the current network."
