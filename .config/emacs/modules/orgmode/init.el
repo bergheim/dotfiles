@@ -52,12 +52,12 @@
     "b" '(bergheim/org-open-attachments :which-key "open attachments")
     "c" '(bergheim/org-block :which-key "source block")
     "C" '(bergheim/org-src-block :which-key "source block")
-    "d" '(:ignore t :which-key "Dates")
+    "d" '(nil :which-key "Dates")
     "ds" 'org-schedule
     "dd" 'org-deadline
     "di" 'org-time-stamp-inactive
     "e" 'org-edit-special
-    "l" '(:ignore t :which-key "Links")
+    "l" '(nil :which-key "Links")
     "ld" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
     "li" '(org-insert-link :which-key "insert manually")
     "ll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
@@ -71,7 +71,7 @@
     "p" 'org-priority
     "q" 'org-set-tags-command
     "u" '(bergheim/org-copy-url-only :which-key "copy URL")
-    "s" '(:ignore t :which-key "Subtree")
+    "s" (cons "Subtree" (make-sparse-keymap))
     ;; "sa" 'bergheim/org-archive-subtree
     "sa" 'org-archive-subtree
     "sA" 'org-toggle-archive-tag

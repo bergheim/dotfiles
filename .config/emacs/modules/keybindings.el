@@ -214,6 +214,11 @@
     "hb" '(embark-bindings :which-key "Bindings")
     "hc" '(describe-char :which-key "Char")
     "he" '(view-echo-area-messages t :which-key "Echo area")
+    "hw" '((lambda ()
+             (interactive)
+             (switch-to-buffer-other-window "*Warnings*"))
+           :which-key "Warnings")
+
     "hd" '(nil t :which-key "Debug")
     "hda" '(debugger-quit :which-key "Abort debugging")
     "hdb" '(debug-on-entry :which-key "Debug function")
