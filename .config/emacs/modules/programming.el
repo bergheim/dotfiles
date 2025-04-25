@@ -86,18 +86,46 @@
   :config
   (smartparens-global-mode t))
 
-(use-package emacs-lisp-mode
+;; emacs lisp debuggers
+(use-package emacs
   :ensure nil
-  :after general
   :general
+  (:keymaps 'emacs-lisp-mode-map
+   "<C-return>" 'eval-defun)
+
   (bergheim/localleader-keys
     :states 'normal
     :keymaps 'emacs-lisp-mode-map
-    "e" '(:ignore t :which-key "Eval")
-    "e d" '(eval-defun :which-key "last defun")
-    "e e" '(eval-last-sexp :which-key "last sexp")
-    "e b" '(eval-buffer :which-key "buffer")
-    "e r" '(elisp-eval-region-or-buffer :which-key "region or buffer")))
+
+    "d" '(nil :which-key "debug")
+    "de" '(edebug-defun             :which-key "edebug defun")
+    "da" '(edebug-all-defs          :which-key "edebug all defs (buffer)")
+    "di" '(edebug-on-entry          :which-key "edebug on entry")
+    "dI" '(cancel-edebug-on-entry   :which-key "Cancel edebug on entry")
+
+    "dt" '(toggle-debug-on-error    :which-key "toggle debug-on-error")
+    "dq" '(toggle-debug-on-quit     :which-key "toggle debug-on-quit")
+
+    "dd" '(debug-on-entry           :which-key "native debug on entry")
+    "dD" '(cancel-debug-on-entry    :which-key "Cancel native debug on entry")
+    "dw" '(debug-watch              :which-key "native debug watch variable")
+    "dW" '(cancel-debug-watch       :which-key "Cancel native debug watch")
+
+    "e" '(nil :which-key "eval")
+    "eb" '(eval-buffer              :which-key "buffer")
+    "ed" '(eval-defun               :which-key "defun")
+    "ee" '(eval-last-sexp           :which-key "defun")
+    "es" '(eval-last-sexp           :which-key "last sexp")
+    "er" '(eval-region              :which-key "region")
+    "el" '(eval-print-last-sexp     :which-key "print last sexp")
+    "ep" '(pp-eval-last-sexp        :which-key "pprint last sexp")
+    "eP" '(pp-eval-defun            :which-key "pprint defun")
+
+    "c" '(check-parens              :which-key "Check parens")
+
+    "m" '(macroexpand-last-sexp     :which-key "Macroexpand last sexp")
+    "M" '(macroexpand-all           :which-key "Macroexpand all")))
+
 
 (use-package elixir-ts-mode
   :config
