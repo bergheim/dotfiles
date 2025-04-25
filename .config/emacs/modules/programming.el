@@ -191,7 +191,8 @@
     (setq-local comment-start "// ")
     (setq-local comment-end "")))
 
-(use-package poetry)
+(use-package poetry
+  :disabled)
 
 (use-package dape)
 
