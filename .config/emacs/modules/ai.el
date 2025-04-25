@@ -109,12 +109,6 @@
                (string-match-p "/llm/" (buffer-file-name)))
       (gptel-mode 1)))
 
-  (setq gptel-model 'claude-3-7-sonnet-20250219)
-  (setq gptel-backend
-        (gptel-make-anthropic "Claude"
-          :stream t
-          :key (auth-source-pick-first-password :host "anthropic" :user "claude")))
-
   (defun bergheim/ollama-get-models ()
     "Fetch available models from Ollama API and return as a list."
     (let* ((url (concat "http://" bergheim/ollama-endpoint "/api/tags"))
@@ -131,9 +125,20 @@
                 (gethash "name" model))
               (gethash "models" data))))
 
-  (gptel-make-ollama "Ollama" :host bergheim/ollama-endpoint
-                     :stream t
-                     :models (bergheim/ollama-get-models))
+  (gptel-make-ollama "Ollama"
+    :stream t
+    :host bergheim/ollama-endpoint :models (bergheim/ollama-get-models))
+
+  (gptel-make-gemini "Gemini"
+    :stream t
+    :key (auth-source-pick-first-password :host "google" :user "gemini"))
+
+  (setq gptel-backend
+        (gptel-make-anthropic "Claude"
+          :stream t
+          :key (auth-source-pick-first-password :host "anthropic" :user "claude")))
+
+  (setq gptel-model 'claude-3-7-sonnet-20250219)
 
   (defun bergheim/gptel-submit ()
     (interactive)
