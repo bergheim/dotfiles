@@ -238,7 +238,7 @@ With universal arg ARG, search all .org files under `org-directory`."
     (interactive)
     (let* ((org-files (directory-files-recursively org-directory "\\.org$"))
            (filtered-files (seq-remove (lambda (file)
-                                         (string-prefix-p org-roam-directory file))
+                                         (string-prefix-p denote-directory file))
                                        org-files)))
       (org-ql-find filtered-files)))
   :general
