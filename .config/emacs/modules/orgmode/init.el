@@ -323,6 +323,7 @@ With universal arg ARG, search all .org files under `org-directory`."
    "p" #'org-journal-search-prev))
 
 (use-package org-modern
+  :disabled
   :after org
   :config
   ;; (setq ;; Edit settings
@@ -346,9 +347,7 @@ With universal arg ARG, search all .org files under `org-directory`."
   ;;   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
   ;; org-agenda-current-time-string
   ;; "⭠ now ─────────────────────────────────────────────────")
-
-  ;; (global-org-modern-mode)
-  )
+  (global-org-modern-mode))
 
 (use-package org-contrib
   :after org
