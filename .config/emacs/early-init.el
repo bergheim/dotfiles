@@ -11,9 +11,19 @@
 (setq package-enable-at-startup nil)
 
 ;; Startup speed, annoyance suppression
-(setq gc-cons-threshold 10000000)
-;; not sure if this is needed
-;; (setq read-process-output-max (* 1024 1024)) ; 1mb
+
+;; Startup speed (ignore gc at startup), annoyance suppression
+(defvar last-file-name-handler-alist file-name-handler-alist)
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6
+      file-name-handler-alist nil)
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 50 1024 1024)
+                  gc-cons-percentage 0.1
+                  file-name-handler-alist last-file-name-handler-alist)))
+
 (setq byte-compile-warnings '(not obsolete))
 (setq warning-suppress-log-types '((comp) (bytecomp)))
 (setq native-comp-async-report-warnings-errors 'silent)
