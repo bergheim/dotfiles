@@ -128,6 +128,7 @@
   (load custom-file))
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
+  (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "base.el"))
   (load-file (concat module-dir "style.el"))
   (load-file (concat module-dir "utils.el"))
@@ -137,7 +138,6 @@
   (load-file (concat module-dir "nav.el"))
   (load-file (concat module-dir "keybindings.el"))
   (load-file (concat module-dir "bergheim-eglot.el"))
-  (load-file (concat module-dir "evil.module.el"))
   (load-file (concat module-dir "programming.el"))
   (load-file (concat module-dir "completion.el"))
   (load-file (concat module-dir "orgmode/init.el"))
