@@ -12,6 +12,15 @@
    ;; If nil, use HISTSIZE as the history size.
    eshell-history-size nil))
 
+(use-package shell
+  :ensure nil
+  :config
+  (setq comint-prompt-read-only t
+        comint-scroll-to-bottom-on-input 'this
+        tramp-default-remote-shell "/bin/zsh"
+        shell-command-prompt-show-cwd t
+        shell-kill-buffer-on-exit t))
+
 (use-package eshell
   :ensure nil
   :general

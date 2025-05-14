@@ -1,5 +1,6 @@
 ## tramp gets hung up on precmd(), unset some features
-if [[ "$TERM" == "dumb" ]]; then
+## (but let shell through)
+if [[ -z "$INSIDE_EMACS" && "$TERM" == "dumb" ]]; then
     unsetopt zle
     unsetopt prompt_cr
     unsetopt prompt_subst
