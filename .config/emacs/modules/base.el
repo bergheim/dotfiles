@@ -261,3 +261,29 @@
          ("\\.path\\'" . systemd-mode)))
 
 (use-package docker-compose-mode)
+
+(use-package info
+  :ensure nil
+  :general
+  (:states 'normal
+   :keymaps 'Info-mode-map
+   "H" 'Info-history-back
+   "L" 'Info-history-forward
+   "o" 'Info-history
+   "J" 'Info-menu
+   ;; "l" 'Info-follow-nearest-node
+   "u" 'Info-up
+   "C-n" 'Info-next
+   "C-p" 'Info-prev
+   "d" 'Info-directory)
+
+  ;; TODO: when searching (s/S) n/N does not work. should be bound to `Info-search-next' etc
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'Info-mode-map
+    "a" '(Info-apropos :which-key "apropos")
+    "d" '(Info-directory :which-key "directory")
+    "i" '(Info-virtual-index :which-key "index")
+    "h" '(Info-history :which-key "history")
+    "m" '(Info-menu :which-key "menu items")
+    "s" '(consult-info :which-key "search")))
