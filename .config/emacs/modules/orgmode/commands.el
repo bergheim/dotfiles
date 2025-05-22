@@ -3,28 +3,39 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (defun bergheim/org-block ()
-  "Wrap the active region in an Org structure template."
+  "Wrap region in an Org block or edit existing block."
   (interactive)
-  (let* ((templates (mapcar (lambda (x) (cons (cdr x) (cdr x)))
-                            org-structure-template-alist))
-         (template (completing-read "Template: " templates)))
-    (if (use-region-p)
-        (let ((beg (region-beginning))
-              (end (region-end)))
-          (save-excursion
+  (if (org-in-src-block-p)
+      (org-edit-src-code)
+    (let* ((block-types '("src" "quote" "example" "verse" "center" "comment" "notes"))
+           (block-type (completing-read "Block type: " block-types))
+           (lang (when (string= block-type "src")
+                   (completing-read "Language: "
+                                    (mapcar #'symbol-name
+                                            (mapcar #'car org-babel-load-languages)))))
+           (begin-str (if lang
+                          (format "#+begin_%s %s" block-type lang)
+                        (format "#+begin_%s" block-type)))
+           (end-str (format "#+end_%s" block-type)))
+      (if (use-region-p)
+          (let ((beg (region-beginning))
+                (end (region-end)))
+            (save-excursion
+              (goto-char end)
+              (when (and (eq (char-before) ?\n)
+                         (not (eq (char-before (1- (point))) ?\n)))
+                (delete-char -1))
+              (insert (format "\n%s\n" end-str))
+              (setq final-pos (point))
+              (goto-char beg)
+              (insert (format "%s\n" begin-str)))
             (goto-char end)
-            ;; Remove trailing newline if needed
-            (when (and (eq (char-before) ?\n)
-                       (not (eq (char-before (1- (point))) ?\n)))
-              (delete-char -1))
-            (insert (format "\n#+end_%s\n" template))
-            (goto-char beg)
-            (insert (format "#+begin_%s\n" template))))
-      (progn
-        (insert (format "#+begin_%s\n#+end_%s" template template))
-        (forward-line -1)
-        (end-of-line)
-        (insert " ")))))
+            (forward-line 2))
+        (insert (format "%s\n%s" begin-str end-str))
+        (when (bound-and-true-p evil-mode)
+          (evil-org-open-above 1))
+        (when (string= block-type "src")
+          (org-edit-src-code))))))
 
 (defun bergheim/org-src-block ()
   "Wrap the active region in an Org source block or edit inline code."
