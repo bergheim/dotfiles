@@ -16,8 +16,13 @@
 
       ;; this fixes some sync issues with mbsync and office365
       mu4e-change-filenames-when-moving t
-      ;; the servers handle this
-      mu4e-sent-messages-behavior 'delete
+      mu4e-sent-messages-behavior
+      (lambda ()
+        ;; gmail does this itself
+        (if (string-match-p "@gmail.com" (message-sendmail-envelope-from))
+            'delete
+          'sent))
+
       ;; the servers handle this
       mu4e-compose-dont-reply-to-self t
       ;; display is nicer with these. in theory. in practice, alignme
