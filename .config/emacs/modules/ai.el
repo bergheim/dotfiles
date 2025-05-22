@@ -344,6 +344,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
 
 ;; TODO see shell-maker-set-prompt
 (use-package chatgpt-shell
+  :disabled
   :after general
   :demand t
   :config
