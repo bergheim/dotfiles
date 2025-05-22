@@ -391,7 +391,9 @@
   :demand
   :init
   (setq dashboard-items '((recents  . 5)
-                          (bookmarks . 5)
+                          ;; this will FUBAR your session if something is TRAMPed
+                          ;; see https://github.com/emacs-dashboard/emacs-dashboard/issues/408
+                          ;; (bookmarks . 5)
                           (projects . 5)))
   (setq dashboard-banner-logo-title "NeoDOOM")
   (setq dashboard-startup-banner 'logo)
