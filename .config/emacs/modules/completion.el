@@ -389,22 +389,22 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (dolist (hook '(text-mode-hook markdown-mode-hook org-mode-hook erc-mode-hook))
     (add-hook hook
               (lambda ()
-                (add-hook 'completion-at-point-functions #'cape-emoji 80 t)))))
+                (add-hook 'completion-at-point-functions #'cape-emoji 80 t))))
 
-(defun bergheim/org-mode-setup-corfu ()
-  ;; TODO: replace this with denote or org-gnossis
-  ;; (add-to-list 'completion-at-point-functions #'org-roam-complete-link-at-point 70)
+  (defun bergheim/org-mode-setup-corfu ()
+    "Configure CAPFs for Org buffers."
+    (when (and (derived-mode-p 'org-mode)
+               buffer-file-name)
+      (dolist (capf (list #'cape-tex       ;; expands \
+                          #'org-block-capf ;; expands <
+                          #'cape-elisp-block
+                          (cape-capf-super #'cape-dabbrev
+                                           #'cape-dict
+                                           #'cape-keyword)
+                          #'cape-emoji))   ;; expands :
+        (add-hook 'completion-at-point-functions capf nil 'local))))
 
-  (setq-local completion-at-point-functions
-              (list #'cape-tex       ;; expands \
-                    #'org-block-capf ;; expands <
-                    #'cape-elisp-block
-                    (cape-capf-super #'cape-dabbrev
-                                     #'cape-dict
-                                     #'cape-keyword)
-                    #'cape-emoji)))  ;; expands :
-
-(add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu)
+  (add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu))
 
 ;; Orderless: powerful completion style
 (use-package orderless
