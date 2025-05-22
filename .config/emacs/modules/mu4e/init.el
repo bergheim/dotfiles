@@ -38,6 +38,12 @@
   (bergheim/load-file "modules/mu4e/actions.el")
   (bergheim/load-file "modules/mu4e/search.el")
 
+  (setq mml-secure-openpgp-signers '((auth-source-pick-first-password :host "local" :user "pgp")))
+  ;; (setq mm-verify-option 'always)
+  ;; (setq mm-decrypt-option 'always)
+  ;; (add-hook 'mu4e-compose-mode-hook 'mml-secure-message-sign)
+  ;; (add-hook 'mu4e-compose-mode-hook 'mml-secure-message-encrypt)
+
   ;; `evil-collection` is so aggressive here. I couldn't find a proper way to
   ;; bind them. I give up - just add this to the end
   (add-hook 'mu4e-headers-mode-hook #'bergheim//mu4e-headers-setup)
