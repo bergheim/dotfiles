@@ -9,6 +9,7 @@
   :hook
   ((js-mode
     typescript-mode
+    tsx-ts-mode
     html-mode
     css-mode
     web-mode) . lsp-deferred)
