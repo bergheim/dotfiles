@@ -4,7 +4,7 @@
 
 (use-package org
   :defer t
-  :ensure t
+  :ensure nil
   :after general
 
   ;; LOL @this loading
