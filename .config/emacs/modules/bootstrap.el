@@ -49,8 +49,7 @@
   (setq evil-disable-insert-state-bindings nil)
   (setq evil-want-integration t)
   (setq evil-want-C-i-jump t) ;; C-i/C-o back and forth. breaks tab in terminals
-  (setq evil-undo-system 'undo-tree)
-  ;; (setq evil-undo-system 'undo-redo) ;; for vundo etc
+  (setq evil-undo-system 'undo-redo)
   ;; (setq evil-respect-visual-line-mode t)
   (setq evil-want-fine-undo t
         evil-want-C-u-scroll t
@@ -103,20 +102,3 @@
 
 ;; general modifies use-package so make sure we get it before moving on
 (elpaca-wait)
-
-;; as long as this doesn't destroy my data..
-(use-package undo-tree
-  :demand t
-  :after general
-  :init
-  (global-undo-tree-mode)
-  :config
-  (setq undo-tree-auto-save-history t)
-  (setq undo-tree-enable-undo-in-region t)
-  (add-to-list 'undo-tree-incompatible-major-modes #'magit-status-mode)
-  :general
-  (general-nmap
-    "u" 'undo-tree-undo
-    "U" 'undo-tree-visualize
-    "C-r" 'undo-tree-redo))
-

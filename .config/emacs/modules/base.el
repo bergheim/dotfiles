@@ -205,32 +205,19 @@
                  (tramp-remote-shell "/bin/sh")
                  (tramp-remote-shell-args ("-c")))))
 
-;; if undo-tree fails, switch to this
-;; (use-package vundo
-;;   :ensure t
-;;   :after general
-;;   :config
-;;   (setq vundo-dir bergheim/cache-dir)
-;;   (setq vundo-glyph-alist vundo-unicode-symbols)
-;;   (general-define-key
-;;    :states 'normal
-;;    "U" 'vundo))
+(use-package vundo
+  :ensure t
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols)
+  :general
+  (general-define-key
+   :states 'normal
+   "U" 'vundo))
 
-;; (use-package undo-fu
-;;   :ensure t
-;;   :after evil)
-
-;; (use-package undo-fu-session
-;;   :after undo-fu
-;;   :config
-;;   (setq undo-fu-session-directory (concat bergheim/cache-dir "/undo-fu-session")
-;;         undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
-;;   ;; Enable the undo-fu session globally
-;;   (global-undo-fu-session-mode)
-;;   :general
-;;   (general-nmap
-;;    "u" 'undo-fu-only-undo
-;;    "C-r" 'undo-fu-only-redo))
+(use-package undo-fu-session
+  :config
+  (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
+  (undo-fu-session-global-mode))
 
 ;; act across files
 (use-package wgrep

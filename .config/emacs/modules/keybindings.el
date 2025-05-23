@@ -35,8 +35,8 @@
 
   (general-define-key
    :states 'visual
-   "u" 'undo-tree-undo
-   "C-r" 'undo-tree-redo)
+   "u" 'evil-undo
+   "C-r" 'evil-redo)
 
   (general-define-key
    :states '(normal visual emacs)
@@ -140,7 +140,6 @@
     "be" '(bookmark-bmenu-list :which-key "Bookmark edit")
     "bj" '(bookmark-jump :which-key "Bookmark jump")
     "bf" '(consult-bookmark :which-key "Bookmark find")
-    "bu" '(undo-tree-visualize :which-key "Undo tree")
 
     "c" '(:ignore t :which-key "Code")
     "cb" '(eldoc-doc-buffer :which-key "Eldoc other buffer")
