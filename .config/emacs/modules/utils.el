@@ -264,17 +264,16 @@ Lisp function does not specify a special indentation."
   (defengine duckduckgo "https://duckduckgo.com/?q=%s"
              :keybinding "e")
   (defengine duckduckgo "https://duckduckgo.com/?q=\"%s\""
-             :keybinding "E")
+             :keybinding "E"
+             :browser 'eww)
   (defengine github "https://github.com/search?ref=simplesearch&q=%s"
              :keybinding "h")
   (defengine google "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
              :keybinding "g")
   (defengine wikipedia "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
              :keybinding "w")
-  (defengine wikipedia "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
-             :keybinding "n")
-
-  (defengine wolfram-alpha "https://www.wolframalpha.com/input/?i=%s")
+  (defengine wolfram-alpha "https://www.wolframalpha.com/input/?i=%s"
+             :keybinding "a")
   (defengine youtube "https://www.youtube.com/results?aq=f&oq=&search_query=%s"
              :keybinding "t"))
 
