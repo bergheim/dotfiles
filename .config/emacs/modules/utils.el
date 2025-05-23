@@ -258,7 +258,7 @@ Lisp function does not specify a special indentation."
 (use-package engine-mode
   :general
   (bergheim/global-menu-keys
-    "se" '(engine-mode-prefixed-map :which-key "Search Engine"))
+    "se" '(:keymap engine-mode-prefixed-map :which-key "Search Engine"))
   :config
   (engine-mode t)
   (defengine duckduckgo "https://duckduckgo.com/?q=%s"
