@@ -215,6 +215,7 @@
    "U" 'vundo))
 
 (use-package undo-fu-session
+  :demand
   :config
   (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
   (undo-fu-session-global-mode))
