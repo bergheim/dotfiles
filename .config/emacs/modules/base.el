@@ -172,6 +172,7 @@
   :defer t)
 
 (use-package tramp
+  :ensure nil
   :init
   (defun bergheim/tramp-abort ()
     (interactive)
