@@ -19,50 +19,71 @@
 ;;
 ;;; Code:
 
-(defun bergheim/get-font-size ()
-  (interactive)
-  (message "Current font size: %s" (face-attribute 'default :height)))
-
 (defvar bergheim/theme-light 'ef-cyprus)
 (defvar bergheim/theme-dark 'ef-night)
-;; (defvar bergheim/theme-dark 'ef-deuteranopia-dark)
 
-;; so many to choose from.. "Ubuntu" "DejaVu Sans" "Open Sans" "Noto Sans" "IosevkaTerm Nerd Font Propo" "Iosevka Nerd Font"
-;; Note: height = px * 100
-(defvar bergheim/font-name "Ubuntu Mono" "Default font for fixed-width.")
-(defvar bergheim/variable-font-name "IosevkaTerm Nerd Font" "Default font for variable width.")
-(defvar bergheim/fixed-font-name "Ubuntu Mono" "Alternate font for fixed-width.")
-(defvar bergheim/font-size-small 100 "Font size for small displays.")
-(defvar bergheim/font-size-medium 110 "Font size for medium displays.")
-(defvar bergheim/font-size-large 170 "Font size for large displays.")
-(defvar bergheim/line-spacing-small 0.2 "Line spacing for small displays.")
-(defvar bergheim/line-spacing-medium 0.4 "Line spacing for medium displays.")
-(defvar bergheim/line-spacing-large 0.6 "Line spacing for large displays.")
-(defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
+(use-package fontaine
+  :hook
+  ;; Persist the latest font preset when closing/starting Emacs.
+  ((after-init . fontaine-mode)
+   (after-init . (lambda ()
+                   ;; Set last preset or fall back to desired style from `fontaine-presets'.
+                   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular)))))
+  :bind (("C-c f" . fontaine-set-preset)
+         ("C-c F" . fontaine-toggle-preset))
+  :config
+  ;; This is defined in Emacs C code: it belongs to font settings.
+  (setq x-underline-at-descent-line nil)
 
-(custom-set-faces '(line-number-current-line ((t :weight bold))))
+  ;; And this is for Emacs28.
+  (setq-default text-scale-remap-header-line t)
 
-(defun bergheim/set-font-based-on-frame-resolution ()
-  "Set font size based on the resolution of the frame's display."
-  (let ((height (- (display-pixel-height) bergheim/screen-margin))
-        font-size global-line-spacing)
-    (cond
-     ((< height 1440)
-      (setq font-size bergheim/font-size-small
-            global-line-spacing bergheim/line-spacing-small))
-     ((< height 2160)
-      (setq font-size bergheim/font-size-medium
-            global-line-spacing bergheim/line-spacing-medium))
-     (t
-      (setq font-size bergheim/font-size-large
-            global-line-spacing bergheim/line-spacing-large)))
-
-    (setq-default line-spacing global-line-spacing)
-    (set-face-attribute 'default nil :font bergheim/font-name :height font-size)
-    (set-face-attribute 'variable-pitch nil :family bergheim/variable-font-name :height font-size)
-    (set-face-attribute 'fixed-pitch nil :font bergheim/fixed-font-name :height font-size)))
-
-(bergheim/set-font-based-on-frame-resolution)
+  (setq fontaine-presets
+        '((small
+           :default-height 90
+           :line-spacing 0.2)
+          (medium
+           :default-height 110
+           :line-spacing 0.3)
+          (large
+           :default-height 180
+           :line-spacing 0.4)
+          (regular
+           :inherit large)
+          (presentation
+           :inherit medium
+           :default-height 240)
+          (jumbo
+           :inherit medium
+           :default-height 280)
+          (hack
+           :inherit medium
+           :default-family "Hack Nerd Font"
+           :default-height 180)
+          (ubuntu
+           :inherit large
+           :default-family "Ubuntu Mono")
+          (noto
+           :inherit large
+           :default-family "Noto Sans")
+          (iosevka
+           :inherit large
+           :default-height 200
+           :line-height 0.3
+           :default-family "Iosevka Nerd Font")
+          (inconsolata
+           :default-family "Inconsolata Nerd Font"
+           :default-height 200)
+          (opensans
+           :default-family "Open Sans"
+           :default-height 200)
+          (t
+           :default-family "MonaspiceNE NF"
+           :fixed-pitch-family "MonaspiceNE NF"
+           ;;:variable-pitch-family "Open Sans"
+           :variable-pitch-family "Atkinson Hyperlegible"
+           :default-height 150
+           :tab-bar-height .8))))
 
 (defun bergheim//system-dark-mode-enabled-p ()
   "Check if system dark mode is enabled."
@@ -70,8 +91,6 @@
 
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
-    ;; Adjust font for new frames
-    (bergheim/set-font-based-on-frame-resolution)
     (scroll-bar-mode -1)
     (with-eval-after-load 'ef-themes
       (if (bergheim//system-dark-mode-enabled-p)
@@ -81,7 +100,23 @@
 (use-package ef-themes
   :demand t
   :config
-  (setq ef-themes-to-toggle '(ef-cyprus ef-deuteranopia-dark)))
+  (setq ef-themes-to-toggle '(ef-cyprus ef-deuteranopia-dark))
+  ;; crazy Summer settings
+  ;; (setq ef-themes-variable-pitch-ui t
+  ;;       ef-themes-mixed-fonts t
+  ;;       ef-themes-headings ; read the manual's entry of the doc string
+  ;;       '((0 . (variable-pitch Book 1.9))
+  ;;         (1 . (variable-pitch Book 1.6))
+  ;;         (2 . (variable-pitch Book 1.1))
+  ;;         (3 . (variable-pitch Book 1.0))
+  ;;         (4 . (variable-pitch Light 1.0))
+  ;;         (5 . (variable-pitch Light 1.0)) ; absence of weight means `bold'
+  ;;         (6 . (variable-pitch Light 1.0))
+  ;;         (7 . (variable-pitch Light 1.0))
+  ;;         (agenda-date . (semilight 1.1))
+  ;;         (agenda-structure . (variable-pitch Book 1.2))
+  ;;         (t . (variable-pitch 1.1))))
+  )
 
 (defun bergheim/theme-dark ()
   (interactive)

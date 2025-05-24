@@ -43,7 +43,6 @@
 
    "C-=" 'global-text-scale-adjust
    "C--" '(lambda () (interactive) (global-text-scale-adjust -1))
-   "C-0" '(lambda () (interactive) (bergheim/set-font-based-on-frame-resolution))
 
    "[b" 'previous-buffer
    "]b" 'next-buffer
@@ -133,9 +132,9 @@
     "bc" '(clone-indirect-buffer-other-window :which-key "clone")
     "bd" '(kill-current-buffer :which-key "Delete")
     "bn" '(evil-buffer-new :which-key "New")
-    "bS" '(scratch-buffer :which-key "switch to scratch")
-    "bs" '(lambda () (interactive) (switch-to-buffer-other-window "*scratch*")
-            :which-key "switch to scratch")
+    "bS" '(scratch-buffer :which-key "scratch")
+    "bs" '((lambda () (interactive) (switch-to-buffer-other-window "*scratch*"))
+           :which-key "scratch other window")
     "bm" '(bookmark-set :which-key "Bookmark set")
     "be" '(bookmark-bmenu-list :which-key "Bookmark edit")
     "bj" '(bookmark-jump :which-key "Bookmark jump")
@@ -246,7 +245,8 @@
     "hpm" '(elpaca-merge-all :which-key "Merge")
 
     "hr" '(bergheim/reload-init-file :which-key "Reload")
-    "ht" '(consult-theme :which-key "Switch theme")
+    "ht" '(consult-theme :which-key "theme")
+    "hT" '(fontaine-set-preset :which-key "fonts")
     "hv" '(helpful-variable :which-key "Variable")
     "hs" '(helpful-symbol :which-key "Symbol")
     "hx" '(helpful-command :which-key "Command")
