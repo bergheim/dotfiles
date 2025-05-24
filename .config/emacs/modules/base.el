@@ -68,7 +68,6 @@
 (use-package recentf
   :ensure nil
   :demand
-  :after tramp
   :config
   ;; Track opened directories. Thank you karthink!
   (defun recentf-track-opened-dir ()
