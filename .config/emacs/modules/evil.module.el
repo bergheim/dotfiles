@@ -262,4 +262,13 @@
                             ("\\[" . "\\]")
                             ("\"" . "\""))))))
 
+(use-package better-jumper
+  :demand
+  :after evil
+  :config
+  (better-jumper-mode +1)
+  (with-eval-after-load 'evil-maps
+    (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
+    (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward)))
+
 ;;; evil.module.el ends here
