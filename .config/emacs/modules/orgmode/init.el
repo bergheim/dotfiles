@@ -50,7 +50,7 @@
     "," 'org-insert-structure-template
     "a" '(org-attach :which-key "attach")
     "b" '(bergheim/org-open-attachments :which-key "open attachments")
-    "c" '(bergheim/org-block :which-key "source block")
+    "c" '(bergheim/org-block :which-key "block")
     "C" '(bergheim/org-src-block :which-key "source block")
     "d" '(nil :which-key "Dates")
     "ds" 'org-schedule
@@ -82,6 +82,7 @@
     "so" 'org-sort
     "sr" 'org-refile
     "ss" 'org-sparse-tree
+    "x" 'org-table-blank-field
     "t" 'org-todo))
 
 (elpaca-wait)
