@@ -317,5 +317,16 @@ Lisp function does not specify a special indentation."
           (user-error "Couldn't copy filename in current buffer")))
     (error "Couldn't find filename in current buffer")))
 
+(use-package docker
+  :config
+  (setq docker-show-messages nil)
+  (bergheim/global-menu-keys
+    "ad" '(:ignore t :which-key "Docker")
+    "add" '(docker :which-key "Docker")
+    "adc" '(docker-containers :which-key "Containers")
+    "adi" '(docker-images :which-key "Images")
+    "adn" '(docker-networks :which-key "Networks")
+    "adv" '(docker-volumes :which-key "Volumes")))
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here

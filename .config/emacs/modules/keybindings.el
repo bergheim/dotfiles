@@ -114,8 +114,8 @@
     "a" '(:ignore t :which-key "Apps")
     "ac" '(bergheim/open-calendar :which-key "Calendar")
     "aC" '((lambda () (interactive) (find-file bergheim/calendar/nextcloud/local)) :which-key "Calendar org")
-    "ad" '(dirvish :which-key "Dirvish")
-    "aD" '((lambda () (interactive) (dirvish "~/")) :which-key "Dirvish home")
+    "af" '(dirvish :which-key "Files")
+    "aF" '((lambda () (interactive) (dirvish "~/")) :which-key "Files home")
     "ae" '(elfeed :which-key "Elfeed")
     "am" '(:ignore t :which-key "Spotify")
     "amh" '(hydra-spotify/body :which-key "Hydra")
@@ -321,7 +321,7 @@
     "t w" '(bergheim/write-mode :which-key "Writer room")
     "t z" '(bergheim/present-mode :which-key "Present")
 
-    "r" '(:ignore :which-key "Run")
+    "r" '(:ignore t :which-key "Run")
     "re" '(eval-expression :which-key "Expression")
 
     "u" '(universal-argument :which-key "Universal argument")
