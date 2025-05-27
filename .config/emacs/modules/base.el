@@ -38,6 +38,11 @@
   :ensure nil
   :config
   (setq-default indent-tabs-mode nil) ;; I have given up on tabs
+  ;; (setq confirm-nonexistent-file-or-buffer nil)
+  (setq use-short-answers t
+        ;; don't confirm to kill attached buffer processes
+        kill-buffer-query-functions (remq 'process-kill-buffer-query-function
+                                          kill-buffer-query-functions))
   (setq window-resize-pixelwise t
         frame-resize-pixelwise t
         save-abbrevs t
