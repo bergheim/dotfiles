@@ -290,6 +290,9 @@
 
 ;; Nice line wrapping when working with text
 (add-hook 'text-mode-hook 'visual-line-mode)
+;; Indent wrapped lines so they line up
+(when (>= emacs-major-version 30)
+  (add-hook 'text-mode-hook 'visual-wrap-prefix-mode))
 
 ;; Modes to highlight the current line with
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
