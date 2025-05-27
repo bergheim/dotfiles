@@ -361,4 +361,31 @@ With universal arg ARG, search all .org files under `org-directory`."
   (setq org-super-links-related-into-drawer t)
   (advice-add 'org-capture :before #'org-super-links-store-link))
 
+(use-package org-noter
+  :after pdf-tools
+  :defer
+  :config
+  (setq org-noter-notes-window-location 'other-frame
+        org-noter-always-create-property-drawer t
+        org-noter-insert-note-no-questions t
+        org-noter-separate-notes-from-heading t
+        org-noter-auto-save-last-location t)
+  :general
+  (general-define-key
+   :states 'normal
+   :keymaps 'pdf-view-mode-map
+   "i" 'org-noter-insert-note
+   "I" 'org-noter-insert-precise-note
+   "M-p" 'org-noter-sync-prev-note
+   "M-n" 'org-noter-sync-next-note
+   "M-." 'org-noter-sync-current-note)
+
+  (general-define-key
+   :states 'normal
+   :keymaps 'org-noter-notes-mode-map
+   "M-p" 'org-noter-sync-prev-note
+   "M-n" 'org-noter-sync-next-note
+   "M-." 'org-noter-sync-current-note
+   "q" 'org-noter-kill-session))
+
 ;;; org.el ends here

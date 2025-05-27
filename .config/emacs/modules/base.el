@@ -241,7 +241,10 @@
   :config
   (persistent-scratch-setup-default))
 
-(use-package pdf-tools)
+(use-package pdf-tools
+  :defer t
+  :config
+  (pdf-tools-install :no-query))
 
 (use-package systemd
   :mode (("\\.service\\'" . systemd-mode)
