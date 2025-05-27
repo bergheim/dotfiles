@@ -230,7 +230,8 @@
 
     "hf" '(helpful-callable :which-key "Callable function")
     "hF" '(helpful-function :which-key "Function")
-    "hi" '(consult-info :which-key "Info")
+    "hi" '(consult-info :which-key "Search info")
+    "hI" '(info :which-key "Info")
     "hk" '(helpful-key :which-key "Key")
     "hy" '(describe-keymap :which-key "Keymap")
     "hl" '(find-library :which-key "Library")
@@ -246,7 +247,7 @@
 
     "hr" '(bergheim/reload-init-file :which-key "Reload")
     "ht" '(consult-theme :which-key "theme")
-    "hT" '(fontaine-set-preset :which-key "fonts")
+    "hg" '(fontaine-set-preset :which-key "glyphs")
     "hv" '(helpful-variable :which-key "Variable")
     "hs" '(helpful-symbol :which-key "Symbol")
     "hx" '(helpful-command :which-key "Command")

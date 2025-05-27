@@ -181,8 +181,8 @@ With a universal argument, it allows entering the application to use."
   (bergheim/localleader-keys
     :keymaps 'dirvish-mode-map
 
-    "b" '(bergheim/open-file :which-key "Open")
-    "B" `(,(bergheim/call-with-universal-arg #'bergheim/open-file) :which-key "Open With")
+    "x" '(bergheim/open-file :which-key "Open")
+    "X" `(,(bergheim/call-with-universal-arg #'bergheim/open-file) :which-key "Open With")
     "c" '(dired-create-empty-file :which-key "Create empty file")
     "C" '(dired-create-directory :which-key "Create directory")
     "e" '(gnus-dired-attach :which-key "Attach to email")
