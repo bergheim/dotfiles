@@ -289,13 +289,14 @@ Open `dired` in the resolved directory of the current command."
   (eshell-first-time-mode . eat-eshell-mode))
 
 (use-package vterm
-  :ensure t
   :commands vterm
   :general
   (bergheim/global-menu-keys
     "av" '(vterm :which-key "vterm"))
   :config
+  (setq vterm-shell "/usr/bin/zsh")
   (setq vterm-max-scrollback 10000)
+  (setq vterm-set-bold-hightbright t)
   (add-hook 'vterm-mode-hook
             (lambda ()
               (setq-local evil-insert-state-cursor 'box)
@@ -424,7 +425,8 @@ Open `dired` in the resolved directory of the current command."
   :after denote-journal
   :demand)
 
-(use-package denote-menu :after denote)
+(use-package denote-menu
+  :after denote)
 
 (use-package consult-denote
   :after denote)
@@ -748,11 +750,11 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
       (run-with-timer
        3 nil
        (lambda ()
-           (when (get-buffer bergheim/irc-channel-a)
-             (switch-to-buffer bergheim/irc-channel-a))
-           (other-window 1)
-           (when (get-buffer bergheim/irc-channel-b)
-             (switch-to-buffer bergheim/irc-channel-b))))))
+         (when (get-buffer bergheim/irc-channel-a)
+           (switch-to-buffer bergheim/irc-channel-a))
+         (other-window 1)
+         (when (get-buffer bergheim/irc-channel-b)
+           (switch-to-buffer bergheim/irc-channel-b))))))
 
 
   (defun bergheim/erc-setup-completions ()
