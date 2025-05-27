@@ -20,10 +20,26 @@
    "C-j" 'git-rebase-move-line-down
    "C-k" 'git-rebase-move-line-up)
 
+  (bergheim/localleader-keys
+    :states 'normal
+    :keymaps 'magit-mode-map
+    "s" '(bergheim/magit-swoop-all :which-key "swoop worktree"))
+
   :hook
   (with-editor-mode        . evil-insert-state)
   (magit-post-refresh-hook . diff-hl-magit-post-refresh)
   :config
+  (defun bergheim/magit-swoop-all ()
+    "Show all magit sections and then call swoop."
+    (interactive)
+    (cond
+     ((derived-mode-p 'magit-status-mode)
+      (magit-section-show-level-4-all)
+      (consult-line))
+     ((derived-mode-p 'magit-mode)
+      (consult-line))
+     (t
+      (user-error "Not in a magit buffer"))))
   (setopt magit-format-file-function #'magit-format-file-nerd-icons))
 
 (use-package git-timemachine)

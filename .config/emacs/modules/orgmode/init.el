@@ -26,6 +26,11 @@
    :keymaps 'org-mode-map
    "C-M-<return>" #'bergheim/org-insert-indented-todo-subheading
 
+   "H-a" #'org-archive-subtree
+   "H-r" #'org-refile
+   "H-t" #'org-todo
+   "H-q" #'org-set-tags-command
+
    "C-M-h" #'org-metaleft
    "C-M-j" #'org-metadown
    "C-M-k" #'org-metaup
