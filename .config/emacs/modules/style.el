@@ -247,7 +247,7 @@
   (mouse-wheel-flip-direction t)
 
   ;; always split vertically
-  (split-width-threshold 160)
+  (split-width-threshold 140)
   (split-height-threshold 80)
 
   :config
