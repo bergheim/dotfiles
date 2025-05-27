@@ -237,7 +237,7 @@
   (indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
   (indent-tabs-mode nil)
   (tab-width 4)
-  (display-line-numbers 'visual)
+  (display-line-numbers nil)
   (display-line-numbers-widen t)
   (display-line-numbers-width 3)
   (display-line-numbers-current-absolute t)
@@ -297,19 +297,17 @@
 
 (defun bergheim/display-line-numbers? ()
   "Check if the current mode should disable line numbers."
-  (derived-mode-p 'mu4e-headers-mode 'mu4e-raw-view-mode
-                  'writeroom-mode 'erc-mode 'org-mode
-                  'erc-status-sidebar-mode 'speedbar-mode))
+  (derived-mode-p 'prog-mode))
 
 (defun noct-relative ()
   "Show relative line numbers, unless the mode is in the exception list."
-  (unless (bergheim/display-line-numbers?)
-    (setq-local display-line-numbers 'visual)))
+  (if (bergheim/display-line-numbers?)
+      (setq-local display-line-numbers 'visual)))
 
 (defun noct-absolute ()
   "Show absolute line numbers, unless the mode is in the exception list."
-  (unless (bergheim/display-line-numbers?)
-    (setq-local display-line-numbers t)))
+  (if (bergheim/display-line-numbers?)
+      (setq-local display-line-numbers t)))
 
 
 ;;;; Tab bar
