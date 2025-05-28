@@ -229,6 +229,8 @@
 (use-package wgrep
   :ensure t)
 
+(use-package dotenv-mode)
+
 (use-package flymake
   :ensure nil
   :defer t
