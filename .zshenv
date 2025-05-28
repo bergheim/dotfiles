@@ -68,7 +68,10 @@ fi
 
 export N_PREFIX=~/local
 
-export TERM=tmux-direct
+# this usually means TRAMP
+if [[ "$TERM" != "dumb" ]]; then
+    export TERM=tmux-direct
+fi
 
 # fix Ubuntu
 skip_global_compinit=1
