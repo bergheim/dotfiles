@@ -37,7 +37,8 @@
 (use-package emacs
   :ensure nil
   :config
-  (setq-default indent-tabs-mode nil) ;; I have given up on tabs
+  (setq-default abbrev-mode t
+                indent-tabs-mode nil) ;; I have given up on tabs
   ;; (setq confirm-nonexistent-file-or-buffer nil)
   (setq use-short-answers t
         ;; don't confirm to kill attached buffer processes
@@ -45,7 +46,7 @@
                                           kill-buffer-query-functions))
   (setq window-resize-pixelwise t
         frame-resize-pixelwise t
-        save-abbrevs t
+        save-abbrevs 'silently
         history-length 1000
         load-prefer-newer t
         backup-by-copying t
