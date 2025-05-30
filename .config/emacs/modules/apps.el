@@ -667,7 +667,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-header-line-format nil)
   (erc-log-insert-log-on-open t)
   (erc-insert-timestamp-function 'erc-insert-timestamp-left)
-  (erc-timestamp-only-if-changed-flag nil)
+  (erc-timestamp-only-if-changed-flag t)
   (erc-interpret-mirc-color t)
   (erc-join-buffer 'buffer)
   ;; (erc-nicks-contrast-range '(1 . 100))
