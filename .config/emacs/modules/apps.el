@@ -653,7 +653,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
   (erc-autojoin-timing 'ident)
   (erc-autojoin-delay 5)
-  (erc-fill-static-center 12)
+  (erc-fill-static-center 14)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
