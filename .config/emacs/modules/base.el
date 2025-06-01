@@ -50,6 +50,8 @@
         history-length 1000
         load-prefer-newer t
         backup-by-copying t
+        undo-limit 500000         ; 500KB
+        undo-strong-limit 1000000 ; 1MB
         ;; I _think_ this should be something else (ie the cache directory)
         backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
         ;; TODO I am seeing `#FILE#' in folders - see if this removes them
