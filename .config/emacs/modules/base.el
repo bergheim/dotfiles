@@ -59,7 +59,6 @@
         lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat bergheim/cache-dir "lock/" "\\1") t))
         custom-file (expand-file-name "custom.el" bergheim/config-dir)
 
-        auto-revert-remote-files t
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
   ;; Reload files that are changed outside of Emacs
@@ -191,15 +190,22 @@
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir)
         remote-file-name-access-timeout 5 ;; give up quickly instead of locking all of emacs
         remote-file-name-inhibit-locks t ;; do not create remote locks - should speed things up a bit
+        ;; this causes Remote file error: Forbidden reentrant call of Tramp calls
+        auto-revert-remote-files nil
+        ;; optional performance improvements
+        remote-file-name-inhibit-auto-save t
+        remote-file-name-inhibit-auto-save-visited t
         vc-handled-backends '(Git)
         tramp-connection-timeout 10
         ;; `ssh` should be quicker than the default `scp`
         tramp-default-method "ssh"
-        ;; Only use Git for version control and exclude non-TRAMP paths that match vc-ignore-dir-regexp
-        ;; This improves performance while still allowing project detection over TRAMP
-        vc-ignore-dir-regexp (format "\\(%s\\)" vc-ignore-dir-regexp)
         tramp-copy-size-limit nil
-        tramp-use-connection-share t)
+        ;; just use the SSH settings
+        tramp-use-connection-share nil
+        ;; copy directly between hosts with no progress bar
+        tramp-use-scp-direct-remote-copying nil
+        ;; show warnings and connection status
+        tramp-verbose 3)
 
   (add-to-list 'tramp-remote-path "/home/tsb/local/bin")
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
