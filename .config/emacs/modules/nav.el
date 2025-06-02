@@ -192,7 +192,7 @@ With a universal argument, it allows entering the application to use."
     "j" '(consult-dir :which-key "switch dir")
     "s" '(dirvish-setup-menu :which-key "setup menu")
     "m" '(dirvish-mark-menu :which-key "mark menu")
-    "o" '((lambda ()
+    "o" `(,(lambda ()
             (interactive)
             (call-interactively 'bergheim/org-attach-dired-to-subtree))
           :which-key "Copy to org")
