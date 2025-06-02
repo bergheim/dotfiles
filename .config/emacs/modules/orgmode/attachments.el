@@ -35,4 +35,10 @@ Assumes the ID will be unique across all items."
 (with-eval-after-load 'org-attach
   (add-to-list 'org-attach-id-to-path-function-list 'bergheim/org-attach-id-uuid-folder-format))
 
+(defun bergheim/org-attach-save-file-list-to-property (dir)
+  "Save list of attachments to ORG_ATTACH_FILES property."
+  (when-let* ((files (org-attach-file-list dir)))
+    (org-set-property "ORG_ATTACH_FILES" (mapconcat #'identity files ", "))))
+(add-hook 'org-attach-after-change-hook #'bergheim/org-attach-save-file-list-to-property)
+
 ;;; attachments.el ends here
