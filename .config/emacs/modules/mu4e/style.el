@@ -1,4 +1,4 @@
-;;; viewer.el --- Description -*- lexical-binding: t; -*-
+;;; style.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 

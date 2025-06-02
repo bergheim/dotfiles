@@ -14,12 +14,12 @@
 (use-package savehist
   :ensure nil
   :demand t
-  :after recentf
   :config
   ;; .. a lot of it
   (dolist (hist '(command-history
                   extended-command-history
                   buffer-name-history
+                  file-name-history
                   evil-jumps-history
                   global-mark-ring
                   kill-ring
@@ -29,7 +29,6 @@
                   search-ring
                   vertico-repeat-history))
     (add-to-list 'savehist-additional-variables hist))
-  :init
   (savehist-mode 1)
   :hook
   (kill-emacs . savehist-save))
