@@ -132,6 +132,7 @@ With a universal argument, it allows entering the application to use."
         dirvish-attributes
         '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
         dirvish-subtree-state-style 'nerd
+        dirvish-epub-thumbnailer-program "gnome-epub-thumbnailer"
 
         dirvish-emerge-groups '(("Recent files" (predicate . recent-files-today))
                                 ("Documents" (extensions "pdf" "tex" "bib" "epub" "doc"))
