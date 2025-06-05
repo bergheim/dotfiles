@@ -182,9 +182,9 @@
   :init
   (defun bergheim/tramp-abort ()
     (interactive)
-    (recentf-cleanup)
     (tramp-cleanup-all-buffers)
-    (tramp-cleanup-all-connections))
+    (tramp-cleanup-all-connections)
+    (recentf-cleanup))
   :config
   (setq tramp-persistency-file-name (expand-file-name "tramp" bergheim/cache-dir)
         remote-file-name-access-timeout 5 ;; give up quickly instead of locking all of emacs
