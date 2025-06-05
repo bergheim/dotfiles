@@ -118,13 +118,18 @@
   ;;         (t . (variable-pitch 1.1))))
   )
 
+(defvar bergheim/dark-mode-p nil
+  "Is dark mode enabled?")
+
 (defun bergheim/theme-dark ()
   (interactive)
-  (consult-theme bergheim/theme-dark))
+  (consult-theme bergheim/theme-dark)
+  (setq bergheim/dark-mode-p t))
 
 (defun bergheim/theme-light ()
   (interactive)
-  (consult-theme bergheim/theme-light))
+  (consult-theme bergheim/theme-light)
+  (setq bergheim/dark-mode-p nil))
 
 ;; (use-package doom-themes
 ;;   :ensure t
