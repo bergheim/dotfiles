@@ -1,0 +1,22 @@
+@define-color bg_primary #0a0f14;
+@define-color fg_primary #3f493f;
+
+@define-color bg_secondary #2c3e50;
+@define-color fg_secondary #9b59b6;
+
+@define-color focus_bg #086608;
+@define-color focus_fg #ecf0f1;
+
+@define-color alert_bg #8b0000;
+@define-color alert_fg #ecf0f1;
+
+@define-color dim_bg #2c3e50;
+@define-color dim_fg #98d1ce;
+
+@define-color accent_1 #33859d;  /* cyan */
+@define-color accent_2 #edb54b;  /* yellow */
+@define-color accent_3 #3498db;  /* blue */
+@define-color accent_4 #1abc9c;  /* bright cyan */
+@define-color accent_5 #f39c12;  /* bright yellow */
+
+@import "style.css";

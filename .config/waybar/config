@@ -1,0 +1,263 @@
+/*
+ * _      __          __
+ *| | /| / /__ ___ __/ /  ___ _____
+ *| |/ |/ / _ `/ // / _ \/ _ `/ __/
+ *|__/|__/\_,_/\_, /_.__/\_,_/_/
+ *            /___/
+ */
+
+{
+  /* Bar Settings */
+
+    "id" : "bar",
+    "layer": "top", // Waybar at top layer
+    "position": "top",
+    "height": 30,
+    "spacing": 4,
+
+    "modules-left": [
+      // "custom/misc_menu",
+      "sway/workspaces",
+      // "sway/scratchpad",
+      "sway/mode",
+    ],
+
+    "modules-center": [
+      "sway/window"
+    ],
+
+    "modules-right": [
+      // "idle_inhibitor",
+      // "cpu",
+      "memory",
+      "temperature",
+      "mpris",
+      "pulseaudio",
+      "backlight",
+      "battery",
+      "custom/tux-power",
+      "clock",
+      // "keyboard-state",
+      "tray"
+    ],
+
+    /* Modules-Left */
+
+    "custom/misc_menu": {
+      "format" : " 󰄛 ",
+      "tooltip": true,
+      "tooltip-format": "Miscellaneous Features",
+      "menu": "on-click",
+      "menu-file": "$XDG_CONFIG_HOME/waybar/misc_menu.xml",
+      "menu-actions": {
+        "dunst_toggle": "notify-send 'Toggle Do Not Disturb' && dunstctl set-paused toggle",
+        "dunst_pop": "dunstctl history-pop",
+        "dunst_clear": "dunstctl history-clear",
+      }
+    },
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "format": "{icon}",
+        "format-icons": {
+            "1": "󰈹",      // firefox (browser)
+            "2": "󰭹",      // chat
+            "3": "󰝚",      // music/spotify
+            "4": "󰇮",      // email
+            "5": "󰚀",      // emacs
+            "5": "λ",       // lambda
+            "6": "󰚀",      // emacs (second workspace)
+            "7": "󰊴",      // games
+            "8": "󰧞",      // general
+            "9": "󰧞",      // general
+            "10": "󰍹",     // monitor2 
+            "11": "󰍹",     // monitor2
+            "12": "󰍹",     // monitor2
+            "13": "󰍹",     // monitor2
+            "urgent": "󰀪",
+            // "focused": "󰮯",
+            "default": "󰧞"
+        }
+    },
+
+    "sway/scratchpad": {
+      "format": "[{count}]=",
+      "show-empty": true,
+      "tooltip": true,
+      "tooltip-format": "{app}: {title}"
+    },
+
+    "sway/window": {
+      "format": "{shell}: {title}",
+      "max-length": 100,
+      "icon": true,
+      "icon-size": 20,
+      "rewrite": {
+        "xdg_shell: (.*)": "  $1",
+        "xwayland: (.*)": "  $1",  // rise monads
+      },
+    },
+
+    /* Modules-Center */
+
+    "sway/mode": {
+      "format": "<span style=\"italic\">{}</span>",
+      "max-length": 150,
+    },
+
+    "disk": {
+      "format": "󰋊 {used}",
+      "tooltip-format": "{used} used out of {total} in {path}",
+    },
+
+    "cpu": {
+      "interval": 15,
+      "format": "{icon} {usage}%",
+      "format-icons": "󰍛",
+      "tooltip": false,
+    },
+
+    "memory": {
+      "interval": 15,
+      "format": "{icon}  {percentage}%",
+      "format-icons": "",
+      "tooltip-format": "{used} used out of {total}",
+    },
+
+    "temperature": {
+      // "thermal-zone": 2,
+      // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+      "format": "{icon} {temperatureC}°C",
+      "format-icons": ""
+    },
+
+    /* Modules-Right */
+
+    "mpris": {
+      "format": "{player_icon} {dynamic}",
+      "format-paused": "{status_icon} <s>{dynamic}</s>",
+      "on-click-middle": "",
+      "on-click-right": "",
+      "player-icons": {
+        "default": "▶",
+        "mpv": "🎵"
+      },
+      "status-icons": {
+        "paused": "⏸"
+      },
+      "max-length": 20,
+    },
+
+    "pulseaudio": {
+      // "scroll-step": 1, // %, can be a float
+      // "format": "{icon} {volume}% {format_source}",
+      "format": "{icon} {volume}%",
+      "format-bluetooth": "{volume}% {icon} {format_source}",
+      "format-bluetooth-muted": "󰂲 {icon} {format_source}",
+      "format-muted": "󰝟 {format_source}",
+      "format-source": " {volume}%",
+      "format-source-muted": "",
+      "format-icons": {
+        "headphone": " ",
+        "hands-free": "󰂑 ",
+        "headset": "󰂑 ",
+        "phone": " ",
+        "portable": " ",
+        "car": " ",
+        "default": [" ", " ", " "],
+      },
+      "on-click": "pavucontrol"
+    },
+
+    "idle_inhibitor": {
+      "format": "{icon}",
+      "format-icons": {
+          "activated": "󰅶",
+          "deactivated": "󰾪"
+      },
+      "tooltip-format-activated": "CAFFEINATED",
+      "tooltip-format-deactivated": "a bit sleepy",
+    },
+
+    "backlight": {
+      // "device": "acpi_video1",
+      "format": "{icon} {percent}%",
+      "format-icons": [" ", " ", " ", " ", " ", " ", " ", " ", " "],
+    },
+
+    "custom/tux-power": {
+        "format": "{}",
+        "tooltip": true,
+        "interval": 10,
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/tux-power-status.sh",
+        "on-click": "tux-power-menu"
+    },
+
+    "power-profiles-daemon": {
+      "format": "{icon}",
+      "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+      "tooltip": true,
+      "format-icons": {
+        "default": " ",
+        "performance": " ",
+        "balanced": " ",
+        "power-saver": " "
+      }
+    },
+
+    "battery": {
+      "bat": "BAT0",
+      "states": {
+        "good": 95,
+        "warning": 30,
+        "critical": 15,
+      },
+      "format": "{icon} {capacity}%",
+      "format-charging": "󰃨 {capacity}%",
+      "format-plugged": " {capacity}%",
+      "format-icons": [" ", " ", " ", " ", " "],
+      "tooltip-format": "{timeTo}",
+      "interval": 30
+    },
+
+    "network": {
+      "interval": 30,
+      "format-wifi": "{essid} ({bandwidthUpBytes} {bandwidthDownBytes})  ",
+      "format-ethernet": "{ipaddr}/{cidr} 󰈁 ",
+      "format-linked": "{ifname} (No IP) 󰈁 ",
+      "format-disconnected": "Disconnected ⚠ ",
+      "tooltip-format": "{ifname}, {ipaddr}, {frequency}Mhz"
+    },
+
+    "clock": {
+      "timezone": "Europe/Oslo",
+      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+      "format-alt": "  {:%Y-%m-%d %R}",
+      "format": "  {:%a %b %e %H:%M}",
+    },
+
+    "keyboard-state": {
+      "numlock": false,
+      "capslock": true,
+      "scrolllock": false,
+      "format": {
+        "numlock": "N {icon}",
+        "capslock": "{icon}"
+      },
+      "format-icons": {
+          "locked": "󰪛 ",
+          "unlocked": ""
+      },
+      // Default [58, 69, 70] for capslock, numlock, scrolllock (/usr/include/linux/input-event-codes.h)
+      // Changed since I swapped capslock and left control
+      "binding-keys": [29,69,70],
+    },
+
+    "tray": {
+      "icon-size": 20,
+      "spacing": 10,
+    },
+}
+

@@ -1,0 +1,95 @@
+
+window#waybar {
+  background-color: @bg_primary;
+  color: @fg_primary;
+  padding-right: 10px;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+#custom-misc_menu {
+  background-color: @bg_secondary;
+  color: @fg_secondary;
+  padding: 0px 5px 0px 5px;
+}
+
+#workspaces button {
+  color: @accent_1;
+  background: transparent;
+  padding: 0px 9px 0px 9px;
+  border-radius: 0;
+  min-width: 1px;
+}
+
+#workspaces button.focused {
+  background-color: @focus_bg;
+  color: @focus_fg;
+  border-radius: 5px;
+}
+
+#workspaces button.urgent {
+  background-color: @alert_bg;
+  color: @alert_fg;
+}
+
+#mode {
+  background-color: @alert_bg;
+  color: @bg_primary;
+  padding: 0px 3px 0px 3px;
+  font-size: 12px;
+}
+
+#disk, #temperature, #cpu, #memory,
+#network, #pulseaudio, #backlight, #battery,
+#idle_inhibitor, #power-profiles-daemon, #clock, #custom-tux-power {
+  margin: 3px 3px;
+  padding: 0 3px;
+  /* color: @accent_1; */
+}
+
+#battery {
+  /* color: @accent_4; */
+}
+
+#battery.charging {
+  color: @accent_5;
+}
+
+#battery.critical:not(.charging) {
+  color: @alert_bg;
+}
+
+#mpris {
+  color: @accent_3;
+}
+
+#mpris.paused {
+  color: @dim_bg;
+}
+
+#pulseaudio {
+}
+
+#pulseaudio.muted {
+  color: @dim_bg;
+}
+
+#idle_inhibitor.activated {
+  color: @alert_bg;
+}
+
+#idle_inhibitor.deactivated {
+  color: @dim_bg;
+}
+
+#tray {
+  color: @dim_bg;
+  /* background-color: @bg_secondary; */
+  padding: 0 9px 0 9px;
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  background-color: @alert_bg;
+  color: @alert_fg;
+}

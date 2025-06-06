@@ -1,0 +1,11 @@
+[Unit]
+Description=Sync password store every 15 minutes
+Requires=pass-sync.service
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

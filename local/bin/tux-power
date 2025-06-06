@@ -1,0 +1,60 @@
+#!/bin/bash
+
+function help() {
+    echo "Usage: $0 list              # List all profiles with IDs"
+    echo "       $0 set <profile>     # Set profile by name or ID"
+}
+
+function listProfiles() {
+    gdbus call --system --dest com.tuxedocomputers.tccd \
+            --object-path /com/tuxedocomputers/tccd \
+            --method com.tuxedocomputers.tccd.GetProfilesJSON |
+            sed "s/^[(]'//g;s/',)$//g"
+}
+
+function setProfileById() {
+    gdbus call --system --dest com.tuxedocomputers.tccd \
+            --object-path /com/tuxedocomputers/tccd \
+            --method com.tuxedocomputers.tccd.SetTempProfileById \
+            "$1"
+}
+
+function setProfile() {
+    local profile="$1"
+    if [ -z "$profile" ]; then
+        help
+        exit 1
+    fi
+    
+    # Try to find profile by ID first
+    local FOUND_ID=$(listProfiles | 
+        jq -r --arg id "$profile" '.[] | select(.id == $id) | .id')
+    
+    # If not found by ID, try by name
+    if [ -z "$FOUND_ID" ]; then
+        FOUND_ID=$(listProfiles | 
+            jq -r --arg name "$profile" '.[] | select(.name == $name) | .id')
+    fi
+    
+    if [ -z "$FOUND_ID" ]; then
+        echo "Error: Profile '$profile' not found"
+        echo "Available profiles:"
+        $0 list
+        exit 1
+    fi
+    
+    setProfileById "$FOUND_ID"
+}
+
+case "$1" in
+    list)
+        listProfiles | jq -r '.[] | select(.id != null) | [.id, .name] | @tsv' |
+            column -t -s $'\t'
+        ;;
+    set)
+        setProfile "$2"
+        ;;
+    *)
+        help
+        ;;
+esac
