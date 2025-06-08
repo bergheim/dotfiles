@@ -1,0 +1,508 @@
+# i3 config file (v4)
+#
+# Please see http://i3wm.org/docs/userguide.html for a complete reference!
+
+set $mod Mod4
+set $alt Mod1
+
+# Vim keys
+set $up k
+set $right l
+set $down j
+set $left h
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+set $ws11 "11"
+set $ws12 "12"
+set $ws13 "13"
+
+# FIXME: why does this not work? they _are_ set
+# set $monitor1 $MONITOR_PRIMARY
+# set $monitor2 $MONITOR_SECONDARY
+set $monitor1 DP-0
+set $monitor2 DP-2
+
+input "1:1:AT_Translated_Set_2_keyboard" {
+    xkb_layout "us,no"
+    xkb_variant ",nodeadkeys"
+    xkb_options "grp:win_space_toggle,caps:escape"
+    repeat_rate 50
+    repeat_delay 180
+}
+
+# input type:keyboard {
+#     xkb_layout us,no
+#     xkb_options grp:win_space_toggle,caps:escape
+#     # xkb_variant ",nodeadkeys"  # optional: removes dead keys from Norwegian
+#     repeat_rate 50
+#     repeat_delay 180
+# }
+
+
+input type:touchpad natural_scroll enabled
+
+workspace $ws1 output $monitor1 # firefox
+workspace $ws2 output $monitor1 # chat
+workspace $ws3 output $monitor1 # music/spotify
+workspace $ws4 output $monitor1 # email
+workspace $ws5 output $monitor1 # emacs
+workspace $ws6 output $monitor1 # emacs
+workspace $ws7 output $monitor1
+workspace $ws8 output $monitor1
+workspace $ws9 output $monitor1
+
+workspace $ws10 output $monitor2
+workspace $ws11 output $monitor2
+workspace $ws12 output $monitor2
+workspace $ws13 output $monitor2
+
+# reload the configuration file
+bindsym $mod+F5 reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+$alt+Escape restart
+
+# Font for window titles. Will also be used by the bar unless a different font
+# is used in the bar {} block below.
+# font pango:monospace 8
+
+# This font is widely installed, provides lots of unicode glyphs, right-to-left
+# text rendering and scalability on retina/hidpi displays (thanks to pango).
+# font pango:DejaVu Sans Mono 11
+# font pango:Inconsolata 14
+font pango:JetBrains Mono 10
+
+# Start XDG autostart .desktop files using dex. See also
+# https://wiki.archlinux.org/index.php/XDG_Autostart
+# exec --no-startup-id dex --autostart --environment i3
+
+# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
+# screen before suspend. Use loginctl lock-session to lock your screen.
+# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# NetworkManager is the most popular way to manage wireless networks on Linux,
+# and nm-applet is a desktop environment-independent system tray GUI for it.
+# exec --no-startup-id nm-applet
+
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# kill focused window
+# TODO: move this maybe?
+bindsym $mod+BackSpace kill
+
+# change focus
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+bindsym $mod+backslash split toggle
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# toggle tiling / floating
+bindsym $mod+$alt+f floating toggle
+
+# make window small and persist across desktops
+bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; move position center; sticky enable
+
+# stick windows between desktops etc
+# bindsym $mod+Shift+s sticky toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+x layout toggle tabbed splitv splith
+bindsym $mod+Shift+x focus parent
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# switch to next/prev workspace
+bindsym $mod+Control+l workspace next
+bindsym $mod+Control+h workspace prev
+bindsym $mod+Tab workspace back_and_forth
+# Hit $mod-X twice, go back
+workspace_auto_back_and_forth no
+
+# jump to urgent window
+bindsym $mod+a [urgent=latest] focus
+
+# toggle between two monitors
+bindsym $mod+n focus output right
+# toggle workspace between two monitors
+bindsym $mod+shift+n move workspace to output right
+
+# focus the child container
+#bindsym $mod+d focus child
+
+exec_always --no-startup-id i3-scratchterm-toggle &
+bindsym $mod+grave [title="i3termscratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; [title="i3termscratchpad"] resize set 3546 1600; [title="i3termscratchpad"] move position center
+
+for_window [title="i3termscratchpad"] border none
+for_window [title="i3termscratchpad"] floating enable sticky disable
+for_window [title="i3termscratchpad"] move scratchpad
+
+# used by sxhkd, and that handled it anyway
+# bindsym $mod+Shift+comma    move scratchpad
+# bindsym $mod+comma          scratchpad show
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+q workspace $ws4
+bindsym $mod+w workspace $ws5
+bindsym $mod+e workspace $ws6
+bindsym $mod+4 workspace $ws7
+bindsym $mod+5 workspace $ws8
+bindsym $mod+6 workspace $ws9
+bindsym $mod+7 workspace $ws10
+bindsym $mod+8 workspace $ws11
+bindsym $mod+9 workspace $ws12
+bindsym $mod+0 workspace $ws13
+
+# move focused container to workspace
+bindsym $mod+$alt+1 move container to workspace $ws1
+bindsym $mod+$alt+2 move container to workspace $ws2
+bindsym $mod+$alt+3 move container to workspace $ws3
+bindsym $mod+$alt+q move container to workspace $ws4
+bindsym $mod+$alt+w move container to workspace $ws5
+bindsym $mod+$alt+e move container to workspace $ws6
+bindsym $mod+$alt+4 move container to workspace $ws7
+bindsym $mod+$alt+5 move container to workspace $ws8
+bindsym $mod+$alt+6 move container to workspace $ws9
+bindsym $mod+$alt+7 move container to workspace $ws10
+bindsym $mod+$alt+8 move container to workspace $ws11
+bindsym $mod+$alt+9 move container to workspace $ws12
+bindsym $mod+$alt+0 move container to workspace $ws13
+
+# resize window (you can also use the mouse for that)
+# direction is grow in that direction
+# shift+direction is shrink in that direction
+mode "resize" {
+        bindsym $up resize grow up 10 px or 10 ppt
+        bindsym Shift+$up resize shrink up 10 px or 10 ppt
+
+        bindsym $right resize grow right 10 px or 10 ppt
+        bindsym Shift+$right resize shrink right 10 px or 10 ppt
+
+        bindsym $down resize grow down 10 px or 10 ppt
+        bindsym Shift+$down resize shrink down 10 px or 10 ppt
+
+        bindsym $left resize grow left 10 px or 10 ppt
+        bindsym Shift+$left resize shrink left 10 px or 10 ppt
+
+        # back to normal: Enter or Escape
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+bindsym $mod+i mode "resize"
+
+bindsym $mod+$alt+l resize grow right 10 px or 10 ppt
+bindsym $mod+$alt+h resize grow left 10 px or 10 ppt
+bindsym $mod+$alt+Shift+l resize shrink right 10 px or 10 ppt
+bindsym $mod+$alt+Shift+h resize shrink left 10 px or 10 ppt
+
+bindsym $mod+$alt+j resize grow down 10 px or 10 ppt
+bindsym $mod+$alt+k resize grow up 10 px or 10 ppt
+bindsym $mod+$alt+Shift+j resize shrink down 10 px or 10 ppt
+bindsym $mod+$alt+Shift+k resize shrink up 10 px or 10 ppt
+
+
+
+
+
+# Terminal emulator
+# TODO: switch to foot
+bindsym $mod+Return exec alacritty
+
+# Emacsclient
+bindsym $mod+Shift+Return exec emacsclient -nc
+
+# File managers
+bindsym $mod+d exec dolphin
+
+# Application launcher (replace rofi with wofi or fuzzel)
+# bindsym $mod+r exec wofi --show drun
+# bindsym $mod+r exec wofi --show drun,run --allow-images --insensitive
+bindsym $mod+r exec rofi -show combi -combi-modi "drun,run" -modi "combi"
+
+# Emacs integrations
+bindsym $mod+z exec emacsclient --eval "(emacs-everywhere)"
+bindsym $mod+c exec emacs-capture --eval '(bergheim/capture)'
+bindsym $mod+t exec emacs-clock-in
+
+# Kill application (replace xkill with sway equivalent)
+bindsym $mod+shift+BackSpace exec swaymsg '[pid=$(swaymsg -t get_tree | jq ".. | select(.focused? == true).pid")] kill'
+
+# Screenshot (replace with grim/slurp)
+bindsym $mod+Shift+1 exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot captured'
+bindsym $mod+F2 exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot area captured'
+
+# Reload Sway config
+bindsym $mod+F6 reload
+
+# Toggle dark mode
+bindsym $mod+F7 exec toggle-darkmode
+# what
+
+# Toggle redshift (or use gammastep for wayland)
+bindsym $mod+F8 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
+
+# Lock screen (replace with swaylock)
+bindsym $mod+F12 exec fancylocksway
+
+# Media keys
+# bindsym XF86AudioPrev exec playerctl previous  
+# bindsym XF86AudioNext exec playerctl next
+# bindsym XF86AudioPlay exec playerctl play-pause
+# bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+# bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+# bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+
+# Brightness controls
+# bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+# bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+
+# set $WOBSOCK $XDG_RUNTIME_DIR/wob.sock
+# exec rm -f $WOBSOCK && mkfifo $WOBSOCK && tail -f $WOBSOCK | wob
+
+# bindsym XF86AudioLowerVolume exec [lower_and_get_volume_command] > $WOBSOCK
+# bindsym XF86AudioMute exec [mute_and_get_volume_command] > $WOBSOCK
+
+# bindsym XF86MonBrightnessUp exec [raise_and_get_brigtness_command] > $WOBSOCK
+# bindsym XF86MonBrightnessDown exec [lower_and_get_brightness_command] > $WOBSOCK
+
+# exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+ && wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
+# exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && (wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q MUTED && echo 0 > $WOBSOCK) || wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
+
+# Password manager (replace rofi-pass with wofi equivalent)
+bindsym $mod+p exec wofi-pass
+
+# Clipboard (replace clipmenu with wl-clipboard)
+bindsym $mod+v exec cliphist list | wofi -dmenu | cliphist decode | wl-copy
+
+# Window switcher (replace rofi)
+bindsym $alt+Tab exec swayr switch-window
+
+# Emoji picker
+bindsym $mod+shift+e exec wofi-emoji
+bindsym $mod+y exec wofi-emoji
+
+# Notifications (mako instead of dunst)
+bindsym $mod+ctrl+grave exec makoctl dismiss
+bindsym $mod+ctrl+1 exec makoctl restore
+bindsym $mod+ctrl+3 exec makoctl dismiss --all
+bindsym $mod+ctrl+2 exec makoctl invoke
+
+bindsym $mod+Shift+c reload
+# bindsym ctrl+$alt+Delete exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
+
+bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | bemenu -sb "#b89000" -i -p "Really exit Sway session?") = "YES" ] && swaymsg exit'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# gaps
+gaps inner 20
+gaps outer 10
+# smart_borders no_gaps
+# smart_gaps on
+set $border_size 1
+for_window [class="^.*"] border pixel $border_size
+
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+bindsym $mod+Shift+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+        bindsym o      mode "$mode_gaps_outer"
+        bindsym i      mode "$mode_gaps_inner"
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_inner" {
+        bindsym plus  gaps inner current plus 5
+        bindsym minus gaps inner current minus 5
+        bindsym 0     gaps inner current set 0
+
+        bindsym Shift+plus  gaps inner all plus 5
+        bindsym Shift+minus gaps inner all minus 5
+        bindsym Shift+0     gaps inner all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+mode "$mode_gaps_outer" {
+        bindsym plus  gaps outer current plus 5
+        bindsym minus gaps outer current minus 5
+        bindsym 0     gaps outer current set 0
+
+        bindsym Shift+plus  gaps outer all plus 5
+        bindsym Shift+minus gaps outer all minus 5
+        bindsym Shift+0     gaps outer all set 0
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+bindsym $mod+minus          gaps inner current set 0; gaps outer current set 0; border none
+bindsym $mod+equal          gaps inner current set 20; gaps outer current set 10; border pixel $border_size
+bindsym $mod+shift+minus    gaps inner current set 40; gaps outer current set 20; border pixel $border_size
+bindsym $mod+shift+equal    gaps inner current set 60; gaps outer current set 30; border pixel $border_size
+
+# Colors
+set $bg #1d2021
+set $fg #ebdbb2
+set $c1 #cc241d
+set $c2 #98971a
+set $c3 #d79921
+set $c4 #458588
+set $c5 #b16286
+set $c6 #689d6a
+set $c9 #fb4934
+# set $c10 #b8bb26
+set $c10 #c0df6f
+set $c15 #fbf1c7
+
+for_window [all] title_window_icon on
+for_window [all] title_window_icon padding 5px
+
+# see https://thomashunter.name/i3-configurator/
+# class                 border  backgr. text indicator child_border
+client.focused          $c10    $c10    $bg  $c4       $c10
+client.focused_inactive $fg     $bg     $fg  $fg       $bg
+client.unfocused        $fg     $bg     $fg  $fg       $bg
+client.urgent           $fg     $c1     $bg  $bg       $c1
+client.placeholder      $fg     $bg     $fg  $bg       $bg
+client.background       $bg
+
+# new_window pixel 0
+# with i3-gaps this looks strange on apps like chromium
+# hide_edge_borders smart
+
+
+# swayfx
+blur enable
+# <integer value 0 - 10>
+blur_passes 5
+# <integer value 0 - 10>
+blur_radius 5
+# <float value 0 - 1>
+blur_noise  0.4
+# <float value 0 - 2>
+blur_brightness 1
+# <float value 0 - 2>
+blur_contrast   1
+# <float value 0 - 2>
+blur_saturation 1
+
+shadows enable
+shadows_on_csd enable                    # Optional: shadows on client-side decorations
+shadow_color #00000080                   # Hex color with alpha
+shadow_offset 0 5                        # x_offset y_offset
+# Nice soft shadows
+shadow_blur_radius 10
+shadow_inactive_color #00000060          # Optional: different color for inactive windows
+
+layer_effects "rofi" blur enable; shadows enable
+
+layer_effects "waybar" {
+    blur enable;
+    blur_xray enable;
+    blur_ignore_transparent enable;
+    shadows enable;
+    # corner_radius 20;
+}
+
+corner_radius 5
+for_window [class=".*"] opacity 0.8
+default_dim_inactive 0.1
+
+bindsym $alt+b border toggle
+
+# {{{ automatically put clients on specific workspaces
+# assign [class="^Firefox$"] $ws1
+assign [class="^TelegramDesktop$"] $ws2
+for_window [class="Spotify"] move to workspace $ws3
+assign [class="^Microsoft Teams - Preview$"] $ws2
+assign [class="^discord$"] $ws2
+assign [class="Slack"] $ws2
+assign [class="^Element"] $ws2
+assign [class="^Chromium$"] $ws4
+assign [class="^steam"] $ws7
+# }}}
+
+# {{{ automatically starting applications on sway startup
+exec wl-paste --watch cliphist store
+exec waybar
+exec mako
+exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec swayidle -w \
+    timeout 300 'fancylocksway' \
+    timeout 600 'swaymsg "output * dpms off"' \
+    timeout 1800 'systemctl suspend-then-hibernate' \
+    resume 'swaymsg "output * dpms on"' \
+    before-sleep 'fancylocksway' \
+    lock 'fancylocksway'
+
+# exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
+# }}}
+
+# for_window [app_id="floating"] floating enable, resize set 800 600, move position center
+
+# Basic floating rules
+for_window [app_id="qalculate-gtk"] floating enable
+for_window [title="Microsoft Teams Notification"] floating enable
+
+# Pattern matching works
+for_window [app_id="^floating"] floating enable, resize set 100ppt 90ppt, move center
+for_window [title="floating"] floating enable, resize set 100ppt 90ppt, move center
+
+# Emacs rules
+for_window [app_id="Emacs" title="emacs-everywhere"] floating enable
+for_window [app_id="gnome-calendar"] floating enable
+
+output * bg ~/Pictures/wallpapers/active/light/primary.jpg fill
