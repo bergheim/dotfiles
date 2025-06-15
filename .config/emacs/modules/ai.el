@@ -206,7 +206,6 @@ Prompts for session name if none provided. Inserts selected region text into cha
                 (consult--read 
                  (cons "*gptel*" gptel-buffers) 
                  :prompt "GPTeL Session Name: " 
-                 :category 'buffer
                  :state (consult--buffer-preview)
                  :default "*gptel*")
               (completing-read "GPTeL Session Name (leave empty for *gptel*): " 
