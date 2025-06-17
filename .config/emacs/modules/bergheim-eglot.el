@@ -65,6 +65,9 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (add-to-list 'eglot-server-programs
                '((elixir-mode elixir-ts-mode) "/usr/lib/elixir-ls/language_server.sh"))
 
+  (add-to-list 'eglot-server-programs
+               '(go-ts-mode . ("gopls")))
+
   ;; ignore debug logging - should speed up LSP
   (fset #'jsonrpc--log-event #'ignore)
   :custom

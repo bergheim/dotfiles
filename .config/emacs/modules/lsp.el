@@ -12,6 +12,7 @@
     tsx-ts-mode
     html-mode
     css-mode
+    go-ts-mode
     web-mode) . lsp-deferred)
   :custom
   (lsp-keymap-prefix bergheim/lsp-keymap-prefix)

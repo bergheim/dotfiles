@@ -159,6 +159,11 @@
 
 (use-package lua-mode)
 
+(use-package go-mode
+  :ensure nil
+  :mode "\\.go\\'"
+  :hook ((go-ts-mode . eglot-ensure)))
+
 (use-package sxhkdrc-mode)
 
 (use-package ob-typescript

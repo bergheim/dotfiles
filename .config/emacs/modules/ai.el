@@ -138,7 +138,7 @@
           :stream t
           :key (auth-source-pick-first-password :host "anthropic" :user "claude")))
 
-  (setq gptel-model 'claude-3-7-sonnet-20250219)
+  (setq gptel-model 'claude-sonnet-4-20250514)
 
   (defun bergheim/gptel-submit ()
     (interactive)
@@ -317,6 +317,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
   :custom
   ;; (gptel-post-stream-hook . gptel-auto-scroll)
   ;; (gptel-post-response-hook . gptel-end-of-response)
+
+  ;; in theory I should like to have this t..
+  (gptel-org-branching-context nil)
   (gptel-default-mode 'org-mode)
   (gptel-directives (bergheim/read-directives (expand-file-name "prompts" bergheim/config-dir)))
   ;; (gptel-temperature 1.0)
