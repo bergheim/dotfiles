@@ -14,8 +14,9 @@
   :type 'string
   :group 'karakeep)
 
-(customize-set-variable karakeep-api-url (password-store-get "homelab/karakeep/url"))
-(customize-set-variable karakeep-api-token (password-store-get "homelab/karakeep/api-emacs"))
+;; hack for now
+(setq karakeep-api-url bergheim/karakeep/url)
+(setq karakeep-api-token bergheim/karakeep/api)
 
 (defun karakeep--get-bookmarks-url ()
   "Get the bookmarks API endpoint."

@@ -385,8 +385,24 @@ Prompts for session name if none provided. Inserts selected region text into cha
   :config
   (ob-chatgpt-shell-setup))
 
-;; (use-package copilot
-;;   :ensure (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
-;;   :ensure t)
+(use-package copilot
+  :demand t
+  :general
+  (bergheim/global-menu-keys
+    "lc" '(:ignore t :wk "copilot")
+    "lcm" 'copilot-mode
+    "lcD" 'copilot-diagnose)
+  (copilot-completion-map
+   "TAB" 'copilot-accept-completion
+   "C-TAB" 'copilot-accept-completion-by-word
+   "C-j" 'copilot-next-completion
+   "C-k" 'copilot-previous-completion)
+  ;; :hook
+  ;; (prog-mode-hook . copilot-mode)
+  ;; (git-commit-mode-hook . copilot-mode)
+  :init
+  (setq copilot-indent-offset-warning-disable t)
+  (setq copilot-max-char 1000000)
+  (setq copilot-max-char-warning-disable t))
 
 ;;; ai.el ends here

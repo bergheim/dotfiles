@@ -195,7 +195,7 @@
         remote-file-name-inhibit-auto-save t
         remote-file-name-inhibit-auto-save-visited t
         vc-handled-backends '(Git)
-        tramp-connection-timeout 10
+        tramp-connection-timeout 3
         ;; `ssh` should be quicker than the default `scp`
         tramp-default-method "ssh"
         tramp-copy-size-limit nil
