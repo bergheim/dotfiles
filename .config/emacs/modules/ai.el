@@ -5,6 +5,11 @@
 ;; Author: Thomas Bergheim
 ;; Maintainer: Thomas Bergheim
 
+(use-package mcp
+  :after gptel
+  :config
+  (require 'mcp-hub))
+
 (use-package gptel
   :after evil
   :commands (gptel gptel-send gptel-menu gptel-system-prompt)
@@ -79,6 +84,7 @@
            (cons filename body))))
      (directory-files dir-path t "\\.md\\'")))
   :config
+  (require 'gptel-integrations)
   (defun bergheim/gptel-select-model ()
     "Select a gptel model using completing-read."
     (interactive)
