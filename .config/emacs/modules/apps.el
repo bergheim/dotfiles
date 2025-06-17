@@ -337,12 +337,21 @@ Open `dired` in the resolved directory of the current command."
 
 (use-package denote
   :ensure t
+  :init
+  (setq denote-directory (expand-file-name "denote" org-directory))
   :custom
   (denote-known-keywords '("emacs" "journal"))
-  (denote-directory (expand-file-name "denote" org-directory))
   (denote-date-prompt-use-org-read-date t)
   (denote-backlinks-show-context t)
+  :hook
+  (dired-mode . denote-dired-mode-in-directories)
   :config
+  (setq denote-dired-directories-include-subdirectories t
+        denote-dired-directories
+        (list denote-directory
+              (expand-file-name "data" denote-directory)
+              (expand-file-name "data" org-directory)))
+
   (defun my-denote-tmr ()
     (tmr "5" "Write focused now.."))
   (add-hook 'denote-journal-hook 'my-denote-tmr)
