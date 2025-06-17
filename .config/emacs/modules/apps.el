@@ -14,10 +14,43 @@
 
 (use-package shell
   :ensure nil
+  :general
+  (:states 'insert
+   :keymaps 'shell-mode-map
+   "C-r" #'consult-history
+   "C-d" 'kill-current-buffer
+   "M-h" (lambda ()
+           (interactive)
+           (evil-normal-state)
+           (evil-window-left 1))
+   "M-l" (lambda ()
+           (interactive)
+           (evil-normal-state)
+           (evil-window-right 1)))
+  (bergheim/global-menu-keys
+    "aS" '(shell :which-key "shell"))
+  :hook ((shell-mode . bergheim/setup-shell))
   :config
+  (setq shell-file-name "/bin/zsh"
+        explicit-shell-file-name "/bin/zsh"
+        explicit-zsh-args '("-i"))
+  (defun bergheim/setup-shell ()
+    "Custom configurations for shell mode."
+    (setq comint-input-ring-file-name "~/.histfile")
+    (comint-read-input-ring 'silent)
+    (compilation-shell-minor-mode 1))
+  (cl-pushnew 'file-uri compilation-error-regexp-alist)
+  (cl-pushnew '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2)
+              compilation-error-regexp-alist-alist :test #'equal)
+  ;; (add-to-list 'compilation-error-regexp-alist
+  ;;              'file-uri)
+  ;; (add-to-list 'compilation-error-regexp-alist-alist
+  ;;              '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2))
   (setq comint-prompt-read-only t
         comint-scroll-to-bottom-on-input 'this
-        tramp-default-remote-shell "/bin/zsh"
+        ;; keep lots of history
+        comint-input-ring-size 50000
+        comint-input-ignoredups t
         shell-command-prompt-show-cwd t
         shell-kill-buffer-on-exit t))
 
