@@ -259,6 +259,8 @@
     "i" '(:ignore t :which-key "Insert")
     "ir" '(consult-register :which-key "Register")
     "ie" '(emoji-search :which-key "Emojiii")
+    "ik" '(karakeep-dwim :which-key "Send to Karakeep")
+    "iK" `(,(bergheim/call-with-universal-arg  #'karakeep-dwim) :which-key "Send to Karakeep list")
     "iu" '(insert-char :which-key "Unicode")
     "ip" '(consult-yank-pop :which-key "kill-ring")
 
