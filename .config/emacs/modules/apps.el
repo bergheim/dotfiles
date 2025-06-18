@@ -760,6 +760,8 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
       (use-package erc-hl-nicks)
     (add-to-list 'erc-modules 'nicks))
 
+  (add-to-list 'erc-modules 'scrolltobottom)
+
   (defun bergheim/erc-buffer-connected-p (buffer)
     "Check if ERC BUFFER is connected."
     (with-current-buffer buffer
@@ -775,7 +777,10 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     "Open ERC in a dedicated frame and show specified channels."
     (interactive)
     (unless (bergheim/erc-connected-p)
-      (erc-tls :server bergheim/irc-server :port 7667 :user bergheim/irc-username))
+      (erc-tls :server bergheim/irc-server
+               :port 7667
+               :user bergheim/irc-username
+               :password (password-store-get "apps/znc/libera")))
     ;; create or switch to erc frame
     (let* ((frame-name "erc")
            (target-frame

@@ -319,7 +319,25 @@
       (goto-char (org-find-exact-headline-in-buffer choice)))))
 
 ;; Drag/drop and paste clipboard images
-(use-package org-download)
+(use-package org-download
+  :after org
+  :commands (org-download-clipboard
+             org-download-screenshot
+             org-download-yank
+             org-download-image)
+  :general
+  (bergheim/localleader-keys
+    :keymaps 'org-mode-map
+    :states '(normal visual insert)
+    "id" '(org-download-clipboard :which-key "paste image")
+    "is" '(org-download-screenshot :which-key "screenshot")
+    "iy" '(org-download-yank :which-key "download from kill-ring")
+    "iu" '(org-download-image :which-key "download from URL")
+    "ii" '(org-download-image :which-key "download from URL"))
+  :config
+  (setq org-download-method 'attach)
+  (setq org-download-screenshot-method "grim -g \"$(slurp)\" %s")
+  (org-download-enable))
 ;; Adding links quickly
 (use-package org-cliplink)
 
