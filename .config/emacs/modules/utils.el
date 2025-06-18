@@ -328,5 +328,7 @@ Lisp function does not specify a special indentation."
     "adn" '(docker-networks :which-key "Networks")
     "adv" '(docker-volumes :which-key "Volumes")))
 
+(use-package plz)
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
