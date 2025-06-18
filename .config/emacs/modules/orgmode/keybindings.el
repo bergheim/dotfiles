@@ -43,6 +43,7 @@
   "ou" '(bergheim/org-copy-url-only :which-key "copy URL only")
 
   "ol" '(:ignore t :which-key "Links")
+  "olc" '(org-cliplink :which-key "cliplink")
   "old" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
   "oli" '(org-insert-link :which-key "insert manually")
   "oll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
