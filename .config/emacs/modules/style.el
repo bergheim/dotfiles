@@ -477,5 +477,26 @@
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (dashboard-setup-startup-hook))
 
+
+(defun bergheim/dired-set-as-wallpaper (darkmode)
+  "Sets FILE to the current wallpaper"
+  (interactive "P")
+
+  (if-let* ((file (dired-file-name-at-point))
+            (swaysock (car (file-expand-wildcards "/run/user/*/sway-ipc.*.sock")))
+            (dest (expand-file-name
+                   (if (bergheim//system-dark-mode-enabled-p) "~/Pictures/wallpapers/active/dark/primary.jpg"
+                     "~/Pictures/wallpapers/active/light/primary.jpg"))))
+      (progn
+        (copy-file file dest t)
+        (when swaysock
+          (let ((process-environment (cons (format "SWAYSOCK=%s" swaysock) 
+                                           process-environment)))
+            (call-process "swaymsg" nil nil nil
+                          (format "exec swaybg -m fill -i %s" dest))
+            (message "Wallpaper set to %s" dest)
+            )))
+    (warn "Unable to find a file")))
+
 (provide 'style)
 ;;; style.el ends here
