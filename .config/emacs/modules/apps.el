@@ -12,13 +12,29 @@
    ;; If nil, use HISTSIZE as the history size.
    eshell-history-size nil))
 
+(use-package multishell
+  :ensure t
+  :general
+  (bergheim/global-menu-keys
+    "as" '(multishell-pop-to-shell :which-key "shell")
+    "aS" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
+  :config
+  (setq multishell-command-key "\C-c!"))
+
 (use-package shell
   :ensure nil
   :general
   (:states 'insert
    :keymaps 'shell-mode-map
+   ;; mwahaha I use evil-mode so I can do this 😎
+   "C-c" (lambda ()
+           (interactive)
+           (comint-kill-input)
+           (comint-send-input))
    "C-r" #'consult-history
    "C-d" 'kill-current-buffer
+   "C-a" #'comint-bol
+   "C-e" #'end-of-line
    "M-h" (lambda ()
            (interactive)
            (evil-normal-state)
@@ -28,12 +44,14 @@
            (evil-normal-state)
            (evil-window-right 1)))
   (bergheim/global-menu-keys
-    "aS" '(shell :which-key "shell"))
+    "as" '(shell :which-key "shell"))
   :hook ((shell-mode . bergheim/setup-shell))
   :config
   (setq shell-file-name "/bin/zsh"
         explicit-shell-file-name "/bin/zsh"
-        explicit-zsh-args '("-i"))
+        explicit-zsh-args '("-i")
+        ansi-osc-directory-tracker t
+        shell-completion-execonly nil)
   (defun bergheim/setup-shell ()
     "Custom configurations for shell mode."
     (setq comint-input-ring-file-name "~/.histfile")
@@ -42,10 +60,6 @@
   (cl-pushnew 'file-uri compilation-error-regexp-alist)
   (cl-pushnew '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2)
               compilation-error-regexp-alist-alist :test #'equal)
-  ;; (add-to-list 'compilation-error-regexp-alist
-  ;;              'file-uri)
-  ;; (add-to-list 'compilation-error-regexp-alist-alist
-  ;;              '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2))
   (setq comint-prompt-read-only t
         comint-scroll-to-bottom-on-input 'this
         ;; keep lots of history
@@ -67,7 +81,7 @@
    "C-j" #'eshell-next-matching-input-from-input)
 
   (bergheim/global-menu-keys
-    "as" '(eshell :which-key "eshell"))
+    "aS" '(eshell :which-key "eshell"))
   :config
   (setq eshell-destroy-buffer-when-process-dies t)
 
@@ -317,7 +331,7 @@ Open `dired` in the resolved directory of the current command."
   (eat-kill-buffer-on-exit t)
   :general
   (bergheim/global-menu-keys
-    "aS" '(eat :which-key "Eat"))
+    "aV" '(eat :which-key "Eat"))
   :hook
   (eshell-first-time-mode . eat-eshell-mode))
 

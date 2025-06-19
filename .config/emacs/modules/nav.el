@@ -115,6 +115,7 @@ With a universal argument, it allows entering the application to use."
   (general-define-key
    :states 'normal
    :keymaps 'dired-mode-map
+   "M-<return>" #'bergheim/dired-leave-for-shell
    "h"   #'dired-up-directory
    "l"   #'dired-find-file))
 
@@ -168,7 +169,7 @@ With a universal argument, it allows entering the application to use."
    "O"   #'dirvish-quicksort
    "TAB" #'dirvish-subtree-toggle
    "C-<return>" #'bergheim/dired-return-path
-   "M-<return>" #'bergheim/dired-leave-for-eshell
+   "M-<return>" #'bergheim/dired-leave-for-shell
    "C-h" #'dirvish-history-go-backward
    "C-l" #'dirvish-history-go-forward
    "C-M-k" #'dirvish-emerge-previous-group
@@ -200,6 +201,16 @@ With a universal argument, it allows entering the application to use."
           :which-key "Copy to org")
     "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
           :which-key "Move to org"))
+
+  (defun bergheim/dired-leave-for-shell ()
+    "Quit dired and open shell in the current directory."
+    (interactive)
+    (let ((current-dir default-directory))
+      (dirvish-quit)
+      (multishell-pop-to-shell)
+      (comint-send-string (current-buffer) (concat "cd " current-dir "\n"))
+      (evil-insert 0)
+      ))
 
   (defun bergheim/dired-leave-for-eshell ()
     "Quit dirvish and open eshell in the current directory."
