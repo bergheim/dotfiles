@@ -103,14 +103,11 @@
 
 (use-package saveplace
   :ensure nil
-  :demand
-  :after tramp
+  :init
+  (save-place-mode 1)
   :config
   (setq save-place-forget-unreadable-files t)
-  (setq save-place-limit 1000)
-  :hook
-  ;; FIXME: migrate this to elpaca. see https://github.com/progfolio/elpaca
-  (after-init . save-place-mode))
+  (setq save-place-limit 1000))
 
 (use-package el-patch)
 
