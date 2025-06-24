@@ -251,9 +251,10 @@
   (mouse-wheel-tilt-scroll t)
   (mouse-wheel-flip-direction t)
 
-  ;; always split vertically
-  (split-width-threshold 140)
-  (split-height-threshold 80)
+  ;; strongly prefer to split side by side
+  ;; these were confusing so:
+  (split-width-threshold 120) ;; Split top/bottom when height > X lines
+  (split-height-threshold 80) ;; Split side by side when width > X chars
 
   :config
   (setq scroll-step 1
