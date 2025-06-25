@@ -205,12 +205,11 @@ With a universal argument, it allows entering the application to use."
   (defun bergheim/dired-leave-for-shell ()
     "Quit dired and open shell in the current directory."
     (interactive)
-    (let ((current-dir default-directory))
+    (let* ((current-dir (expand-file-name default-directory))
+           (shell-name (concat "shell:" (file-name-nondirectory (directory-file-name current-dir)))))
       (dirvish-quit)
-      (multishell-pop-to-shell)
-      (comint-send-string (current-buffer) (concat "cd " current-dir "\n"))
-      (evil-insert 0)
-      ))
+      (multishell-pop-to-shell nil (concat shell-name current-dir))
+      (evil-insert 0)))
 
   (defun bergheim/dired-leave-for-eshell ()
     "Quit dirvish and open eshell in the current directory."
