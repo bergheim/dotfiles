@@ -27,17 +27,23 @@
     ],
 
     "modules-right": [
+      // "systemd-failed-units",
       // "idle_inhibitor",
       // "cpu",
-      "memory",
-      "temperature",
+      // "memory",
+      // "temperature",
       "mpris",
-      "pulseaudio",
-      "backlight",
+      // "pulseaudio",
+      // "backlight",
+      // "sway/language",
+      "custom/gammastep",
+      "network",
       "battery",
       "custom/tux-power",
+      // "power-profiles-daemon",
       "clock",
       // "keyboard-state",
+      "custom/keymap",
       "tray"
     ],
 
@@ -186,6 +192,22 @@
       "format-icons": [" ", " ", " ", " ", " ", " ", " ", " ", " "],
     },
 
+    "battery": {
+      "bat": "BAT0",
+      "states": {
+        "good": 95,
+        "warning": 30,
+        "critical": 15,
+      },
+      "format": "{icon} {capacity}%",
+      "format-charging": "󰃨 {capacity}%",
+      "format-plugged": " {capacity}%",
+      "format-icons": [" ", " ", " ", " ", " "],
+      "tooltip-format": "{timeTo}",
+      "on-click": "tux-power-menu",
+      "interval": 30
+    },
+
     "custom/tux-power": {
         "format": "{}",
         "tooltip": true,
@@ -207,36 +229,62 @@
       }
     },
 
-    "battery": {
-      "bat": "BAT0",
-      "states": {
-        "good": 95,
-        "warning": 30,
-        "critical": 15,
-      },
-      "format": "{icon} {capacity}%",
-      "format-charging": "󰃨 {capacity}%",
-      "format-plugged": " {capacity}%",
-      "format-icons": [" ", " ", " ", " ", " "],
-      "tooltip-format": "{timeTo}",
-      "interval": 30
+    "custom/gammastep": {
+        "format": "{icon}",
+        "format-icons": {
+            "on": "🌙",
+            "off": "☀️"
+        },
+        "exec": "~/.config/waybar/scripts/gammastep.sh",
+        "return-type": "json",
+        "interval": 5,
+        "on-click": "~/.config/waybar/scripts/gammastep.sh toggle",
+        "tooltip": true
     },
 
     "network": {
       "interval": 30,
-      "format-wifi": "{essid} ({bandwidthUpBytes} {bandwidthDownBytes})  ",
+      "format-wifi": "{essid}  ",
       "format-ethernet": "{ipaddr}/{cidr} 󰈁 ",
       "format-linked": "{ifname} (No IP) 󰈁 ",
-      "format-disconnected": "Disconnected ⚠ ",
-      "tooltip-format": "{ifname}, {ipaddr}, {frequency}Mhz"
+      "format-disconnected": "Disconnected  ",
+      "tooltip-format": "   {signalStrength}%, {bandwidthUpBytes} {bandwidthDownBytes}",
+      "on-click": "alacritty --class floating -e impala"
     },
 
-    "clock": {
-      "timezone": "Europe/Oslo",
-      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-      "format-alt": "  {:%Y-%m-%d %R}",
-      "format": "  {:%a %b %e %H:%M}",
+  "systemd-failed-units": {
+	"hide-on-ok": false, // Do not hide if there is zero failed units.
+	"format": "✗ {nr_failed}",
+	"format-ok": "✓",
+	"system": true, // Monitor failed systemwide units.
+	"user": false // Ignore failed user units.
+  },
+
+  "clock": {
+    "calendar": {
+      "mode": "year",
+      "mode-mon-col"  : 3,
+      "weeks-pos": "right",
+      "format": {
+        "months":     "<span color='#ffead3'><b>{}</b></span>",
+        "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+        "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+        "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+      }
     },
+    "timezone": "Europe/Oslo",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "format-alt": "  {:%Y-%m-%d (W%V) %R}",
+    "format": "{:%a %b %e %H:%M}",
+    "actions":  {
+      "on-click-right": "mode",
+      "on-scroll-up": "tz_up",
+      "on-scroll-down": "tz_down",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
 
     "keyboard-state": {
       "numlock": false,
@@ -253,6 +301,18 @@
       // Default [58, 69, 70] for capslock, numlock, scrolllock (/usr/include/linux/input-event-codes.h)
       // Changed since I swapped capslock and left control
       "binding-keys": [29,69,70],
+    },
+
+    // "sway/language": {
+    //     "format": "{flag} {short}",
+    //     "on-click": "swaymsg input type:keyboard xkb_switch_layout next"
+    // },
+
+    "custom/keymap": {
+        "format": "{}",
+        "exec": "bash ~/.config/waybar/scripts/keymap.sh",
+        "interval": 1,
+        "on-click": "swaymsg input type:keyboard xkb_switch_layout next"
     },
 
     "tray": {
