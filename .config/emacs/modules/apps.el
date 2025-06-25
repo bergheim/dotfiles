@@ -19,18 +19,14 @@
     "as" '(multishell-pop-to-shell :which-key "shell")
     "aS" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
   :config
-  (setq multishell-command-key "\C-c!"))
+  ;; don't ask for history confirmation on quit
+  (remove-hook 'kill-buffer-query-functions #'multishell-kill-buffer-query-function))
 
 (use-package shell
   :ensure nil
   :general
   (:states 'insert
    :keymaps 'shell-mode-map
-   ;; mwahaha I use evil-mode so I can do this 😎
-   "C-c" (lambda ()
-           (interactive)
-           (comint-kill-input)
-           (comint-send-input))
    "C-r" #'consult-history
    "C-d" 'kill-current-buffer
    "C-a" #'comint-bol
@@ -330,10 +326,28 @@ Open `dired` in the resolved directory of the current command."
   :custom
   (eat-kill-buffer-on-exit t)
   :general
+  (:states 'insert
+   :keymaps 'eat-mode-map
+   "C-r" #'consult-history)  ; Same as shell-mode
   (bergheim/global-menu-keys
     "aV" '(eat :which-key "Eat"))
+  :config
+  (add-hook 'eat-mode-hook
+            (lambda ()
+              (setq-local comint-input-ring-file-name "~/.histfile")
+              (setq-local comint-input-ring (make-ring 1000))
+              ;; Set up the filter to strip zsh extended history format
+              (setq-local comint-input-ring-separator "\n")
+              (setq-local comint-input-ring-file-prefix ": [0-9]+:[0-9]+;")
+              (comint-read-input-ring 'silent)))
+
+  ;; Add eat-mode to consult's mode histories
+  (with-eval-after-load 'consult
+    (add-to-list 'consult-mode-histories
+                 '(eat-mode comint-input-ring comint-input-ring-index comint-bol)))
   :hook
-  (eshell-first-time-mode . eat-eshell-mode))
+  (eshell-first-time-mode . eat-eshell-mode)
+  (eshell-first-time-mode . eat-eshell-visual-command-mode))
 
 (use-package vterm
   :commands vterm
