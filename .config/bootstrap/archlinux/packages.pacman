@@ -2,17 +2,15 @@ adobe-source-code-pro-fonts
 adobe-source-sans-pro-fonts
 alsa-utils
 arandr
-arc-gtk-theme
-arc-icon-theme
 aws-cli
 bat # cat on steriods, syntax highlighting, git integration etc
 bspwm
 chromium
-community/awesome-terminal-fonts
+awesome-terminal-fonts
 # dnstools
 colordiff
 dunst
-emacs-nativecomp
+emacs
 feh
 ffmpeg
 ffmpegthumbnailer # show thumbnails from movies
@@ -56,7 +54,6 @@ playerctl # for play-pause etc
 postgresql
 # powerline-fonts # needed?
 # powerline # needed?
-pulseaudio
 python-lxml # for weather module
 python-opengl
 python-requests # for weather module
@@ -93,21 +90,18 @@ vdirsyncer
 vim
 vimiv # vim image viewer. a bit slow..
 w3m
-xautolock
 xbindkeys
-zathura
-zathura-pdf-mupdf
+# zathura
+# zathura-pdf-mupdf
 zip
 sshfs
 gnome-screenshot
-youtube-dl
 pass
 gnupg
 python-tldextract # for qute-pass
 etckeeper
 tilda
 python-pip
-texlive-most
 kitty
 alacritty
 pbzip2
@@ -133,7 +127,6 @@ tidy
 isync
 gnuplot
 ncdu
-xorg
 i3-wm
 unclutter # hide the mouse when it is unused
 clipmenu # rofi clipboard history
@@ -167,7 +160,6 @@ xsettingsd
 pandoc-cli
 xorg-xinit
 polybar
-kbdd
 ttf-sourcecodepro-nerd
 ttf-jetbrains-mono-nerd
 ttf-ubuntu-mono-nerd
