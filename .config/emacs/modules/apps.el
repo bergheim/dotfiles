@@ -64,6 +64,11 @@
         shell-command-prompt-show-cwd t
         shell-kill-buffer-on-exit t))
 
+(use-package coterm
+  :after shell
+  :init
+  (coterm-mode 1))
+
 (use-package eshell
   :ensure nil
   :general
