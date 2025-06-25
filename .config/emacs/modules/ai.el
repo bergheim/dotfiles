@@ -137,12 +137,17 @@
 
   (gptel-make-gemini "Gemini"
     :stream t
-    :key (auth-source-pick-first-password :host "google" :user "gemini"))
+    :key (password-store-get "api/llm/google"))
+
+  (gptel-make-openai "OpenAI"
+    :stream t
+    :key (password-store-get "api/llm/openai"))
+  (setq gptel-api-key (password-store-get "api/llm/openai"))
 
   (setq gptel-backend
         (gptel-make-anthropic "Claude"
           :stream t
-          :key (auth-source-pick-first-password :host "anthropic" :user "claude")))
+          :key (password-store-get "api/llm/anthropic")))
 
   (setq gptel-model 'claude-sonnet-4-20250514)
 
@@ -357,7 +362,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
   :demand t
   :config
   (setq chatgpt-shell-openai-key
-        (auth-source-pick-first-password :host "api.openai.com"))
+        (password-store-get "api/llm/openai"))
   :general
   (general-define-key
    :keymaps 'chatgpt-shell-mode-map
