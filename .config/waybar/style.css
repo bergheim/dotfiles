@@ -47,12 +47,26 @@ window#waybar {
   /* color: @accent_1; */
 }
 
+#custom-tux-power.alert {
+  color: @alert_fg;
+  background-color: @alert_bg;
+}
+
+#custom-keymap {
+    margin-right: 10px;
+}
+
+#network.disabled, #network.disconnected {
+  color: @alert_fg;
+  background-color: @alert_bg;
+}
+
 #battery {
   /* color: @accent_4; */
 }
 
 #battery.charging {
-  color: @accent_5;
+  color: @accent_1;
 }
 
 #battery.critical:not(.charging) {
@@ -86,7 +100,7 @@ window#waybar {
   color: @dim_bg;
   /* background-color: @bg_secondary; */
   padding: 0 9px 0 9px;
-    -gtk-icon-effect: dim;
+  -gtk-icon-effect: dim;
 }
 
 #tray > .needs-attention {
