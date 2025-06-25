@@ -237,13 +237,10 @@ bindsym $mod+$alt+k resize grow up 10 px or 10 ppt
 bindsym $mod+$alt+Shift+j resize shrink down 10 px or 10 ppt
 bindsym $mod+$alt+Shift+k resize shrink up 10 px or 10 ppt
 
-
-
-
-
 # Terminal emulator
-# TODO: switch to foot
-bindsym $mod+Return exec alacritty
+# bindsym $mod+Return exec foot
+bindsym $mod+Return exec emacsclient -c -n -F '((menu-bar-lines . 0) (tool-bar-lines . 0) (tab-bar-lines . 0) (vertical-scroll-bars . nil))' -e '(shell (generate-new-buffer-name "*shell*"))'
+
 
 # Emacsclient
 bindsym $mod+Shift+Return exec emacsclient -nc
@@ -252,9 +249,7 @@ bindsym $mod+Shift+Return exec emacsclient -nc
 bindsym $mod+d exec dolphin
 
 # Application launcher (replace rofi with wofi or fuzzel)
-# bindsym $mod+r exec wofi --show drun
-# bindsym $mod+r exec wofi --show drun,run --allow-images --insensitive
-bindsym $mod+r exec rofi -show combi -combi-modi "drun,run" -modi "combi"
+bindsym $mod+r exec fuzzel
 
 # Emacs integrations
 bindsym $mod+z exec emacsclient --eval "(emacs-everywhere)"
@@ -272,14 +267,14 @@ bindsym $mod+F2 exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%
 bindsym $mod+F6 reload
 
 # Toggle dark mode
-bindsym $mod+F7 exec toggle-darkmode
+bindsym $mod+F1 exec toggle-darkmode
 # what
 
 # Toggle redshift (or use gammastep for wayland)
 bindsym $mod+F8 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
 
 # Lock screen (replace with swaylock)
-bindsym $mod+F12 exec fancylocksway
+bindsym $mod+Escape exec fancylocksway
 
 # Media keys
 # bindsym XF86AudioPrev exec playerctl previous  
@@ -305,6 +300,25 @@ bindsym $mod+F12 exec fancylocksway
 # exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+ && wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
 # exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && (wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q MUTED && echo 0 > $WOBSOCK) || wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
 
+bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
+bindsym XF86TouchpadOn input type:touchpad events enabled
+bindsym XF86TouchpadOff input type:touchpad events disabled
+
+# Sink volume raise optionally with --device
+bindsym XF86AudioRaiseVolume exec swayosd-client --output-volume raise
+# Sink volume lower optionally with --device
+bindsym XF86AudioLowerVolume exec  swayosd-client --output-volume lower
+# Sink volume toggle mute
+bindsym XF86AudioMute exec swayosd-client --output-volume mute-toggle
+# Source volume toggle mute
+bindsym XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
+
+# Brightness raise
+bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise
+# Brightness lower
+bindsym XF86MonBrightnessDown exec swayosd-client --brightness lower
+
+
 # Password manager (replace rofi-pass with wofi equivalent)
 bindsym $mod+p exec wofi-pass
 
@@ -329,23 +343,9 @@ bindsym $mod+Shift+c reload
 
 bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | bemenu -sb "#b89000" -i -p "Really exit Sway session?") = "YES" ] && swaymsg exit'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # gaps
-gaps inner 20
-gaps outer 10
+gaps inner 10
+gaps outer 5
 # smart_borders no_gaps
 # smart_gaps on
 set $border_size 1
@@ -480,6 +480,7 @@ exec wl-paste --watch cliphist store
 exec waybar
 exec mako
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec swayosd-server
 exec swayidle -w \
     timeout 300 'fancylocksway' \
     timeout 600 'swaymsg "output * dpms off"' \
