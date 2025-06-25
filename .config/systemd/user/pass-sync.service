@@ -6,4 +6,4 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=%h/.password-store
-ExecStart=/bin/sh -c 'git pull --rebase origin master && git push origin master'
+ExecStart=/usr/bin/pass git pull
