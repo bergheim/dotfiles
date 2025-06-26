@@ -149,6 +149,7 @@
    (calc . t)
    (C . t)
    (typescript . t)
+   (shell . t)
    (js .t)))
 
 ;; TODO: what is this again
