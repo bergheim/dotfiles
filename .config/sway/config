@@ -318,9 +318,8 @@ bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise
 # Brightness lower
 bindsym XF86MonBrightnessDown exec swayosd-client --brightness lower
 
-
 # Password manager (replace rofi-pass with wofi equivalent)
-bindsym $mod+p exec wofi-pass
+bindsym $mod+p exec fuzzel-pass
 
 # Clipboard (replace clipmenu with wl-clipboard)
 bindsym $mod+v exec cliphist list | wofi -dmenu | cliphist decode | wl-copy
