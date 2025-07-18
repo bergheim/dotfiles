@@ -50,6 +50,9 @@
       org-log-done 'time
       org-log-into-drawer t
 
+      org-M-RET-may-split-line '((default . nil))
+      org-insert-heading-respect-content t
+
       org-log-reschedule 'note
       org-log-redeadline 'note
 
