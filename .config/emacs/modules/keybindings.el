@@ -51,9 +51,10 @@
    "]e" 'flymake-goto-next-error
    "[n" 'bergheim/prev-file
    "]n" 'bergheim/next-file
-   "[s" 'jinx-prev
+   "[s" 'jinx-previous
    "]s" 'jinx-next
    "z=" 'jinx-correct-nearest
+   "z\\" 'jinx-correct-nearest
    "[t" 'tab-bar-switch-to-prev-tab
    "]t" 'tab-bar-switch-to-next-tab
    "[T" 'tab-bar-move-tab-backward
