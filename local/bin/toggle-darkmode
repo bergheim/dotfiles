@@ -5,36 +5,60 @@
 THEME_LIGHT="bergheim-light"
 THEME_DARK="bergheim-dark"
 ALACRITTYCONF="${XDG_CONFIG_HOME}/alacritty/alacritty.toml"
+FOOT_CONF="${XDG_CONFIG_HOME}/foot/foot.ini"
 BATCONF="${XDG_CONFIG_HOME}/bat/config"
 TMUXCONF="${HOME}/.tmux.conf"
+WAYBARCONF="${XDG_CONFIG_HOME}/waybar/config"
 XRES="${HOME}/.Xresources"
 XSETTINGS="${HOME}/.config/xsettingsd/xsettingsd.conf"
 QT_THEME="${XDG_CONFIG_HOME}/qt5ct/qt5ct.conf"
 
 CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 
+kill -USR1 $(pgrep foot)
+
 if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
-    feh --bg-fill ~/Pictures/wallpapers/active/light/primary.jpg --bg-fill ~/Pictures/wallpapers/active/light/secondary.jpg &
+    if [[ -n "$WAYLAND_DISPLAY" ]]; then
+        swaymsg "exec swaybg -m fill -i ~/Pictures/wallpapers/active/light/primary.jpg"
+    else
+        feh --bg-fill ~/Pictures/wallpapers/active/light/primary.jpg --bg-fill ~/Pictures/wallpapers/active/light/secondary.jpg &
+    fi
     emacsclient -e '(bergheim/theme-light)' &
     gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
     gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
     # gsettings set org.freedesktop.appearance color-scheme "prefer-light"
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
+    sed -i "s/initial-color-theme=1/initial-color-theme=2/" "$FOOT_CONF"
     sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES" "$BATCONF"
-    sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
-    dunstctl reload ~/.config/dunst/dunstrc &
+    if [ -f "$QT_THEME" ]; then
+        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
+    fi
+    ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
+    if pgrep -x "dunst" >/dev/null; then
+        dunstctl reload ~/.config/dunst/dunstrc &
+    fi
 else
-    feh --bg-fill ~/Pictures/wallpapers/active/dark/primary.jpg --bg-fill ~/Pictures/wallpapers/active/dark/secondary.jpg &
+    if [[ -n "$WAYLAND_DISPLAY" ]]; then
+        swaymsg "exec swaybg -m fill -i ~/Pictures/wallpapers/active/dark/primary.jpg"
+    else
+        feh --bg-fill ~/Pictures/wallpapers/active/dark/primary.jpg --bg-fill ~/Pictures/wallpapers/active/dark/secondary.jpg &
+    fi
     emacsclient -e '(bergheim/theme-dark)' &
     gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
     gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
     # gsettings set org.freedesktop.appearance color-scheme "prefer-dark"
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
+    sed -i "s/initial-color-theme=2/initial-color-theme=1/" "$FOOT_CONF"
     sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES" "$BATCONF"
-    sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
-    dunstctl reload ~/.config/dunst/dunstrc_dark &
+    if [ -f "$QT_THEME" ]; then
+        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
+    fi
+    ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
+    if pgrep -x "dunst" >/dev/null; then
+        dunstctl reload ~/.config/dunst/dunstrc_dark &
+    fi
 fi
 
 # update any running vim instances
