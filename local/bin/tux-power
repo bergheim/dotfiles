@@ -48,7 +48,7 @@ function setProfile() {
 
 case "$1" in
     list)
-        listProfiles | jq -r '.[] | select(.id != null) | [.id, .name] | @tsv' |
+        listProfiles | jq -r '.[] | select(.id != null) | [.name] | @tsv' |
             column -t -s $'\t'
         ;;
     set)
