@@ -238,12 +238,11 @@ bindsym $mod+$alt+Shift+j resize shrink down 10 px or 10 ppt
 bindsym $mod+$alt+Shift+k resize shrink up 10 px or 10 ppt
 
 # Terminal emulator
-# bindsym $mod+Return exec foot
-bindsym $mod+Return exec emacsclient -c -n -F '((menu-bar-lines . 0) (tool-bar-lines . 0) (tab-bar-lines . 0) (vertical-scroll-bars . nil))' -e '(shell (generate-new-buffer-name "*shell*"))'
-
+bindsym $mod+Return exec foot
+# bindsym $mod+Return exec emacsclient -c -n -F '((menu-bar-lines . 0) (tool-bar-lines . 0) (tab-bar-lines . 0) (vertical-scroll-bars . nil))' -e '(shell (generate-new-buffer-name "*shell*"))'
 
 # Emacsclient
-bindsym $mod+Shift+Return exec emacsclient -nc
+bindsym $mod+Shift+Return exec emacsclient -nc -F '((tab-bar-lines . 0))'
 
 # File managers
 bindsym $mod+d exec dolphin
@@ -262,9 +261,6 @@ bindsym $mod+shift+BackSpace exec swaymsg '[pid=$(swaymsg -t get_tree | jq ".. |
 # Screenshot (replace with grim/slurp)
 bindsym $mod+Shift+1 exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot captured'
 bindsym $mod+F2 exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot area captured'
-
-# Reload Sway config
-bindsym $mod+F6 reload
 
 # Toggle dark mode
 bindsym $mod+F1 exec toggle-darkmode
