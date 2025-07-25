@@ -128,25 +128,27 @@
   (load custom-file))
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
-  (load-file (concat module-dir "evil.module.el"))
-  (load-file (concat module-dir "base.el"))
-  (load-file (concat module-dir "style.el"))
-  (load-file (concat module-dir "utils.el"))
-  (load-file (concat module-dir "vcs.el"))
-  (load-file (concat module-dir "workspace.el"))
-  (load-file (concat module-dir "formating.el"))
-  (load-file (concat module-dir "nav.el"))
-  (load-file (concat module-dir "keybindings.el"))
-  (load-file (concat module-dir "programming.el"))
-  (load-file (concat module-dir "completion.el"))
-  (load-file (concat module-dir "orgmode/init.el"))
-  (load-file (concat module-dir "mu4e/init.el"))
-  (load-file (concat module-dir "apps.el"))
-  ;; (load-file (concat module-dir "bergheim-eglot.el"))
-  (load-file (concat module-dir "lsp.el"))
-  ;; I for one welcome our new AI overlords
-  (load-file (concat module-dir "ai.el"))
-  (load-file (concat module-dir "session.el")))
+  (dolist (file
+           '("evil.module.el"
+             "base.el"
+             "style.el"
+             "utils.el"
+             "vcs.el"
+             "workspace.el"
+             "formating.el"
+             "nav.el"
+             "keybindings.el"
+             "programming.el"
+             "completion.el"
+             "orgmode/init.el"
+             "mu4e/init.el"
+             "apps.el"
+             ;; "bergheim-eglot.el"
+             "lsp.el"
+             ;; I for one welcome our new AI overlords
+             "ai.el"
+             "session.el" ))
+    (load-file (expand-file-name file module-dir))))
 
 (add-hook 'after-make-frame-functions #'bergheim/frame-setup)
 (add-hook 'emacs-startup-hook #'bergheim/frame-setup)
