@@ -688,7 +688,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
 ;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
 (use-package erc
-  :ensure nil
+  :ensure t
   :after consult
   :autoload erc-buffer-list
   :init
