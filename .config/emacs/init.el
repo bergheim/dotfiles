@@ -123,7 +123,7 @@
   (when (file-exists-p private-file)
     (load private-file)))
 
-(setq custom-file (expand-file-name "custom.el" bergheim/config-dir))
+(setq custom-file (make-temp-file ""))
 (when (file-exists-p custom-file)
   (load custom-file))
 
