@@ -501,4 +501,7 @@ for_window [title="floating"] floating enable, resize set 100ppt 90ppt, move cen
 for_window [app_id="Emacs" title="emacs-everywhere"] floating enable
 for_window [app_id="gnome-calendar"] floating enable
 
+# firefox pop out videos should always show
+for_window [title="Picture-in-Picture"] floating enable, sticky enable
+
 output * bg ~/Pictures/wallpapers/active/light/primary.jpg fill
