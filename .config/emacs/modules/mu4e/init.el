@@ -11,7 +11,10 @@
 
 (use-package mu4e
   :ensure `(mu4e :host github
-                 :files ("mu4e/*.el" "build/mu4e/mu4e-meta.el" "build/mu4e/mu4e-config.el" "build/mu4e/mu4e.info")
+                 :files ("mu4e/*.el"
+                         "build/mu4e/mu4e-meta.el"
+                         "build/mu4e/mu4e-config.el"
+                         "build/mu4e/mu4e.info")
                  :repo "djcb/mu"
                  :main "mu4e/mu4e.el"
                  :pre-build (("./autogen.sh" "-Dtests=disabled")
@@ -38,7 +41,7 @@
   (bergheim/load-file "modules/mu4e/actions.el")
   (bergheim/load-file "modules/mu4e/search.el")
 
-  (setq mml-secure-openpgp-signers '((auth-source-pick-first-password :host "local" :user "pgp")))
+  (setq mml-secure-openpgp-signers '((password-store-get "email/sign")))
   ;; (setq mm-verify-option 'always)
   ;; (setq mm-decrypt-option 'always)
   ;; (add-hook 'mu4e-compose-mode-hook 'mml-secure-message-sign)
