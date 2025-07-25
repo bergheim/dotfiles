@@ -33,7 +33,7 @@ set $monitor2 DP-2
 
 input "1:1:AT_Translated_Set_2_keyboard" {
     xkb_layout "us,no"
-    xkb_variant ",nodeadkeys"
+    xkb_variant ","
     xkb_options "grp:win_space_toggle,caps:escape"
     repeat_rate 50
     repeat_delay 180
