@@ -16,7 +16,7 @@
   :ensure t
   :general
   (bergheim/global-menu-keys
-    "as" '(multishell-pop-to-shell :which-key "shell")
+    "as" '((lambda () (interactive) (multishell-pop-to-shell nil (expand-file-name default-directory))) :which-key "shell")
     "aS" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
   :config
   ;; don't ask for history confirmation on quit
