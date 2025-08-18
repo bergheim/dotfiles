@@ -179,6 +179,7 @@ alias pacwho='pkgfile'
 alias f='vifmrun'
 alias shakemacs="pkill -USR2 emacs"
 alias tmux='tmux -2'
+alias eh='mosh --ssh="ssh -p 1902" home -- ta me'
 
 # prefer vim to vi if it is installed
 if type vim >/dev/null 2>/dev/null; then
