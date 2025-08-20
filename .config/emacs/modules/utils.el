@@ -328,6 +328,25 @@ Lisp function does not specify a special indentation."
     "adn" '(docker-networks :which-key "Networks")
     "adv" '(docker-volumes :which-key "Volumes")))
 
+(use-package devcontainer
+  :demand
+  :ensure (:host github :repo "johannes-mueller/devcontainer.el")
+  :general
+  (bergheim/global-menu-keys
+    "cc" '(:ignore t :which-key "devcontainers")
+    "ccc" '(devcontainer-up :which-key "Start")
+    "ccd" '(devcontainer-tramp-dired :which-key "dired")
+    "ccr" '(devcontainer-restart :which-key "Restart")
+    "ccR" '(devcontainer-rebuild-and-restart :which-key "rebuild and restart")
+    "cct" '(devcontainer-term :which-key "terminal")
+    "ccx" '(devcontainer-kill-container :which-key "kill"))
+  :config
+  (add-to-list 'devcontainer-execute-outside-container "podman")
+  (setq devcontainer-engine 'podman
+        devcontainer-term-shell "zsh"
+        devcontainer-term-function #'eat)
+  (devcontainer-mode 1))
+
 (use-package plz
   :commands (plz))
 
