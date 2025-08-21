@@ -402,7 +402,8 @@ Open `dired` in the resolved directory of the current command."
    '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
 
 (use-package denote
-  :ensure t
+  :ensure
+  :after org
   :init
   (setq denote-directory (expand-file-name "denote" org-directory))
   :custom
