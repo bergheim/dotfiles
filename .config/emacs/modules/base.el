@@ -124,6 +124,7 @@
   (which-key-mode))
 
 (use-package exec-path-from-shell
+  :demand
   :config
   (when (or (memq window-system '(mac ns x))
             (daemonp))
