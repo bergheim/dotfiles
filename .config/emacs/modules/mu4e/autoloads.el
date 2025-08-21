@@ -1,6 +1,16 @@
 ;;; autoloads.el --- Description -*- lexical-binding: t; -*-
 
 ;;;###autoload
+(defmacro define-mu4e-search-fn (name docstring bookmark-string)
+  "Generate a mu4e search function."
+  `(defun ,name ()
+     ,docstring
+     (interactive)
+     (unless (featurep 'mu4e)
+       (require 'mu4e))
+     (mu4e-search-bookmark ,bookmark-string)))
+
+;;;###autoload
 (define-mu4e-search-fn bergheim/email-today
   "Opens the inbox with unread and today's email."
   "maildir:/Inbox/ AND date:1y..now")

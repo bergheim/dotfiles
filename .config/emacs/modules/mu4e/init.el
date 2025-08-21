@@ -1,14 +1,5 @@
 ;;; ~/.config/neodoom/modules/mu4e/init.el -*- lexical-binding: t; -*-
 
-(defmacro define-mu4e-search-fn (name docstring bookmark-string)
-  "Generate a mu4e search function."
-  `(defun ,name ()
-     ,docstring
-     (interactive)
-     (unless (featurep 'mu4e)
-       (require 'mu4e))
-     (mu4e-search-bookmark ,bookmark-string)))
-
 (use-package mu4e
   :ensure `(mu4e :host github
                  :files ("mu4e/*.el"
