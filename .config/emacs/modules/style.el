@@ -468,10 +468,11 @@
     (setq dashboard-startup-banner (get-random-file dashboard-banner-dir)))
 
   ;; Set the directory containing the pictures
-  (setq dashboard-banner-dir "~/Pictures/emacs-dashboard")
+  (when (file-directory-p "~/Pictures/emacs-dashboard")
+    (setq dashboard-banner-dir "~/Pictures/emacs-dashboard")
+    (set-random-startup-banner))
 
   ;; Set a random picture as the startup banner initially
-  (set-random-startup-banner)
   :config
   ;; Advise dashboard-refresh-buffer to set a random picture each time it's called
   (advice-add 'dashboard-refresh-buffer :after 'set-random-startup-banner)
