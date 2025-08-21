@@ -19,6 +19,16 @@
                       (expand-file-name "~/"))))
     xdg-home))
 
+(defvar bergheim/container-mode-p
+  (getenv "EMACS_CONTAINER")
+  "Non-nil when running in container/development mode")
+
+(defun bergheim/call-with-universal-arg (fn)
+  (lambda ()
+    (interactive)
+    (let ((current-prefix-arg 4))
+      (call-interactively fn))))
+
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca" bergheim/cache-dir))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -128,31 +138,34 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-(let ((module-dir (expand-file-name "modules/" bergheim/config-dir)))
-  (dolist (file
-           '("evil.module.el"
-             "base.el"
-             "style.el"
-             "utils.el"
-             "vcs.el"
-             "workspace.el"
-             "formating.el"
-             "nav.el"
-             "keybindings.el"
-             "programming.el"
-             "completion.el"
-             "orgmode/init.el"
-             "mu4e/init.el"
-             "apps.el"
-             ;; "bergheim-eglot.el"
-             "lsp.el"
-             ;; I for one welcome our new AI overlords
-             "ai.el"
-             "session.el" ))
-    (load-file (expand-file-name file module-dir))))
+(let ((module-dir (expand-file-name "modules/" bergheim/config-dir))
+      (modules
+       '("evil.module"
+         "base"
+         "style"
+         "vcs"
+         "formating"
+         "nav"
+         "keybindings"
+         "programming"
+         "completion"
+         "lsp"
+         ;; "bergheim-eglot"
+         ;; I for one come our new AI overlords
+         "ai"
+         )))
 
-(add-hook 'after-make-frame-functions #'bergheim/frame-setup)
-(add-hook 'emacs-startup-hook #'bergheim/frame-setup)
+  (unless bergheim/container-mode-p
+    (setq modules (append modules
+                          '("utils"
+                            "workspace"
+                            "orgmode/init"
+                            "denote"
+                            "mu4e/init"
+                            "apps"
+                            "session"))))
+  (dolist (file modules)
+    (load-file (expand-file-name (format "%s.el" file) module-dir))))
 
 (use-package site-lisp
   :demand t

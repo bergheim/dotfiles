@@ -95,12 +95,6 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
 
 (use-package transient)
 
-(defun bergheim/call-with-universal-arg (fn)
-  (lambda ()
-    (interactive)
-    (let ((current-prefix-arg 4))
-      (call-interactively fn))))
-
 (use-package emacs-everywhere
   :config
   ;; I always want this to open centered, not where my cursor might happen to be
