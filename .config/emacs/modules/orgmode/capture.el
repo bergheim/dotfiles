@@ -26,7 +26,7 @@
   :config
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
-  (setq org-capture-custom-template-directory (concat org-directory "templates/capture/")
+  (setq org-capture-custom-template-directory (expand-file-name "templates/capture/" user-emacs-directory)
         +org-capture-contacts-file (expand-file-name "contacts.org" org-directory)
         +org-capture-habits-file (expand-file-name "habits.org" org-directory)
         +org-capture-mail-followup-file (expand-file-name "email/followup.org" org-directory)
