@@ -275,4 +275,14 @@ argument is given, otherwise navigate backward."
           (when-let (url (car (cdr (assoc selected candidates))))
             (message "Opening URL: %s" url)
             (browse-url url)))))))
+
+(use-package treemacs
+  :defer t
+  :config
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t))
+
+(use-package treemacs-evil
+  :after (treemacs evil))
+
 ;;; nav.el ends here

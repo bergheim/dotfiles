@@ -374,15 +374,6 @@ Open `dired` in the resolved directory of the current command."
   ;; (toggle-truncate-lines 1)
   (shr-max-width 120))
 
-(use-package treemacs
-  :defer t
-  :config
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t))
-
-(use-package treemacs-evil
-  :after (treemacs evil))
-
 (use-package proced
   :ensure nil
   :commands proced
