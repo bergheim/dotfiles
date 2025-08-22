@@ -124,6 +124,8 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
 
 (use-package iedit
   :demand t
+  :custom
+  (iedit-toggle-key-default nil)
   :general
   (:states '(normal visual)
    "gR" 'iedit-mode))
