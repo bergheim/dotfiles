@@ -477,7 +477,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
          ("<tab>" . tempel-next)
          ("<backtab>" . tempel-previous))
   :custom
-  (tempel-path (concat bergheim/config-dir "templates/*"))
+  (tempel-path (concat bergheim/config-dir "templates/tempel/*"))
   :init
 
   (defun tempel-setup-capf ()
