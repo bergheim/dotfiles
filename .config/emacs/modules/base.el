@@ -39,6 +39,9 @@
   (setq-default abbrev-mode t
                 indent-tabs-mode nil) ;; I have given up on tabs
   ;; (setq confirm-nonexistent-file-or-buffer nil)
+  (setq confirm-kill-emacs nil)
+  (setq shell-kill-buffer-on-exit t)  ; Already in your config
+  (setq comint-kill-buffer-on-exit t) ; Add this too
   (setq use-short-answers t
         ;; don't confirm to kill attached buffer processes
         kill-buffer-query-functions (remq 'process-kill-buffer-query-function
