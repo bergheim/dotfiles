@@ -41,7 +41,10 @@
            (evil-window-right 1)))
   (bergheim/global-menu-keys
     "bt" '(bergheim/switch-to-shell :which-key "shells")
-    "ps" '(project-shell :which-key "shell")
+    "ps" '((lambda ()
+           (interactive)
+           (other-window-prefix)
+           (project-shell)) :which-key "shell")
     "p!" '(project-shell-command :which-key "shell command"))
   :hook
   (shell-mode . bergheim/setup-shell)
