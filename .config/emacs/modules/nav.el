@@ -72,27 +72,25 @@
   :init
   (defun bergheim//executables-in-path ()
     "Retrieve a list of all executable files in `exec-path'."
-    (let ((files_in_path))
-      (dolist (dir exec-path)
-        (when (and dir (file-exists-p dir))
-          (let ((files (directory-files dir t)))
-            (dolist (file files)
-              (when (and (file-executable-p file)
-                         (not (file-directory-p file)))
-                (push (file-name-nondirectory file) files_in_path))))))
-      files_in_path))
+    (let (files-in-path)
+      (dolist (dir exec-path files-in-path)
+        (when-let ((files (and dir (file-exists-p dir)
+                               (directory-files dir t))))
+          (dolist (file files)
+            (when (and (file-executable-p file)
+                       (not (file-directory-p file)))
+              (push (file-name-nondirectory file) files-in-path)))))))
 
   (defun bergheim/open-file (arg)
     "Open the current file in 'dired-mode' with an application.
 With a universal argument, it allows entering the application to use."
     (interactive "P")
-    (let* ((file (dired-get-filename nil t))
+    (if-let* ((file (dired-get-filename nil t))
            (command (if arg
                         (completing-read "Open current file with: " (bergheim//executables-in-path))
                       "xdg-open")))
-      (if file
-          (start-process command nil command file)
-        (message "No file on this line"))))
+        (start-process command nil command file)
+      (message "No file on this line")))
 
   (setq dired-dwim-target t  ; suggest a target for moving/copying intelligently
         ;; don't prompt to revert, just do it
