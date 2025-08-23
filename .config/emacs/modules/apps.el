@@ -40,29 +40,72 @@
            (evil-normal-state)
            (evil-window-right 1)))
   (bergheim/global-menu-keys
-    "as" '(shell :which-key "shell"))
-  :hook ((shell-mode . bergheim/setup-shell))
+    "bt" '(bergheim/switch-to-shell :which-key "shells")
+    "ps" '(project-shell :which-key "shell")
+    "p!" '(project-shell-command :which-key "shell command"))
+  :hook
+  (shell-mode . bergheim/setup-shell)
+  ;; this should improve how current directories are tracked
+  (comint-output-filter-functions . comint-osc-process-output)
   :config
+  (setq comint-check-proc nil)
+  (setq confirm-kill-processes nil)
+  (advice-add 'shell-mode :after
+              (lambda ()
+                (remove-hook 'kill-buffer-query-functions
+                             'comint-kill-buffer-query-function t)))
   (setq shell-file-name "/bin/zsh"
         explicit-shell-file-name "/bin/zsh"
         explicit-zsh-args '("-i")
-        ansi-osc-directory-tracker t
         shell-completion-execonly nil)
   (defun bergheim/setup-shell ()
     "Custom configurations for shell mode."
     (setq comint-input-ring-file-name "~/.histfile")
     (comint-read-input-ring 'silent)
+    ;; stop duplicate input from appearing
+    (setq-local comint-process-echoes t)
     (compilation-shell-minor-mode 1))
   (cl-pushnew 'file-uri compilation-error-regexp-alist)
   (cl-pushnew '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2)
               compilation-error-regexp-alist-alist :test #'equal)
+
+  ;; this matches things like ./foo/bar/src.c and /foo/bar/src.c 
+  (cl-pushnew
+   '(bare-file-col "^\\(\\(?:\\.\\.?/\\|/\\)[^:\n]+\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3)
+   compilation-error-regexp-alist-alist :test #'equal)
+  (cl-pushnew 'bare-file-col compilation-error-regexp-alist)
+
+  ;; this matches things like ╭─[/home/tsb/dev/nextjs-payload-optimized/src/collections/Media.ts:8:1]
+  (cl-pushnew '(bracket-loc "\\[\\([^]\n]+\\):\\([0-9]+\\):\\([0-9]+\\)\\]" 1 2 3)
+              compilation-error-regexp-alist-alist :test #'equal)
+  (cl-pushnew 'bracket-loc compilation-error-regexp-alist)
   (setq comint-prompt-read-only t
         comint-scroll-to-bottom-on-input 'this
         ;; keep lots of history
         comint-input-ring-size 50000
         comint-input-ignoredups t
         shell-command-prompt-show-cwd t
-        shell-kill-buffer-on-exit t))
+        comint-completion-addsuffix '("/" . "")
+        shell-kill-buffer-on-exit t)
+
+  ;; this switches between only active shells, unlike multishell
+  (defun bergheim/switch-to-shell ()
+    "Switch to an active shell buffer using completion with directory info."
+    (interactive)
+    (if-let ((shell-buffers (seq-filter (lambda (buf)
+                                          (with-current-buffer buf
+                                            (derived-mode-p 'shell-mode)))
+                                        (buffer-list))))
+        (let* ((candidates (mapcar (lambda (buf)
+                                     (cons (format "%s (%s)"
+                                                   (buffer-name buf)
+                                                   (with-current-buffer buf
+                                                     (abbreviate-file-name default-directory)))
+                                           buf))
+                                   shell-buffers))
+               (choice (completing-read "Switch to shell: " candidates nil t)))
+          (switch-to-buffer (alist-get choice candidates nil nil #'string=)))
+      (message "No active shell buffers"))))
 
 (use-package coterm
   :after shell
