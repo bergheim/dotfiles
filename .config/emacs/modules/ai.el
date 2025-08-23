@@ -5,6 +5,12 @@
 ;; Author: Thomas Bergheim
 ;; Maintainer: Thomas Bergheim
 
+(defun bergheim/get-api-key (pass-key env-var)
+  "Get API key from password-store first, fallback to environment variable."
+  (or (and (fboundp 'password-store-get)
+           (ignore-errors (password-store-get pass-key)))
+      (getenv env-var)))
+
 (use-package mcp
   :after gptel
   :config
@@ -137,17 +143,16 @@
 
   (gptel-make-gemini "Gemini"
     :stream t
-    :key (password-store-get "api/llm/google"))
+    :key (bergheim/get-api-key "api/llm/google" "GOOGLE_API_KEY"))
 
   (gptel-make-openai "OpenAI"
     :stream t
-    :key (password-store-get "api/llm/openai"))
-  (setq gptel-api-key (password-store-get "api/llm/openai"))
+    :key (bergheim/get-api-key "api/llm/openai" "OPENAI_API_KEY"))
 
   (setq gptel-backend
         (gptel-make-anthropic "Claude"
           :stream t
-          :key (password-store-get "api/llm/anthropic")))
+          :key (bergheim/get-api-key "api/llm/anthropic" "ANTHROPIC_API_KEY")))
 
   (setq gptel-model 'claude-sonnet-4-20250514)
 
