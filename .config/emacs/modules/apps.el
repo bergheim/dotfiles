@@ -40,7 +40,7 @@
            (evil-normal-state)
            (evil-window-right 1)))
   (bergheim/global-menu-keys
-    "bt" '(bergheim/switch-to-shell :which-key "shells")
+    "bs" '(bergheim/switch-to-shell :which-key "shells")
     "ps" '((lambda ()
            (interactive)
            (other-window-prefix)
