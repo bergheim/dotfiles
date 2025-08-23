@@ -45,8 +45,8 @@
     (interactive "sOpen externally: ")
     (unless (string-match-p "\\`[a-z]+://" file)
       (setq file (expand-file-name file)))
-    (let ((command (completing-read "Open current file with: "
-                                    (bergheim//executables-in-path))))
+    (when-let ((command (completing-read "Open current file with: "
+                                         (bergheim//executables-in-path))))
       (start-process command nil command file)))
 
   ;; TODO make buffers optional then bind this to "C-c g" or something to be
