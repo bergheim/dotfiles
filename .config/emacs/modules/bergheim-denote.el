@@ -1,8 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
 (use-package denote
-  :ensure
-  :after org
   :init
   (setq denote-directory (expand-file-name "denote" org-directory))
   :custom
@@ -34,32 +32,6 @@
                              "\n"
                              "* About\n"
                              "* Notes and Quotes\n"))))
-
-  (defun bergheim/denote-new-journal-entry ()
-    "Create a new journal entry and enter writer mode"
-    (interactive)
-    (siren-tab-bar-switch-to-or-create-tab "journal")
-    (let ((entry-today (denote-journal--entry-today)))
-      (if entry-today
-          (denote-open-or-create (car entry-today))
-        (denote-journal-new-entry)))
-    (bergheim/write-mode t)
-    (goto-char (point-max))
-    (delete-trailing-whitespace)
-    (insert "\n* [" (format-time-string "%H:%M") "] ")
-    (evil-insert 0))
-
-  (defun bergheim/denote-last-journal-entry ()
-    "Open the newest entry"
-    (interactive)
-    (let* ((all-entries (directory-files denote-journal-directory t "^[^.]"))
-           (files (seq-filter #'file-regular-p all-entries)))
-      (when files
-        (siren-tab-bar-switch-to-or-create-tab "journal")
-        (find-file (expand-file-name
-                    (car (last (sort files 'string<))) denote-journal-directory))
-        (bergheim/write-mode t))))
-
   :general
   (bergheim/global-menu-keys
     "n" '(:ignore t :which-key "Denote")
@@ -76,9 +48,6 @@
     "nif" '(denote-org-dblock-insert-files :which-key "files")
     "nil" '(denote-org-dblock-insert-links :which-key "links")
     "nj" '(:ignore t :which-key "Journal")
-    "njj" '(bergheim/denote-new-journal-entry :which-key "New journal")
-    "njl" '(bergheim/denote-last-journal-entry :which-key "Last journal entry")
-    "njb" '((lambda () (interactive) (find-file denote-journal-directory)) :which-key "Browse journals")
     "nL" '(denote-find-link :which-key "Show links")
     "nl" '(denote-link-or-create :which-key "Link")
     "nn" '(denote-open-or-create :which-key "Open/create")
@@ -89,16 +58,40 @@
     "nS" '(denote-grep :which-key "Grep")))
 
 (use-package denote-journal
-  :after denote
-  :demand)
+  :general
+  (bergheim/global-menu-keys
+    "njl" '(bergheim/denote-last-journal-entry :which-key "Last journal entry")
+    "njb" '((lambda () (interactive) (find-file denote-journal-directory)) :which-key "Browse journals")
+    "njj" '(bergheim/denote-new-journal-entry :which-key "New journal"))
+
+  :config
+  (defun bergheim/denote-new-journal-entry ()
+    "Create a new journal entry and enter writer mode"
+    (interactive)
+    (siren-tab-bar-switch-to-or-create-tab "journal")
+    (denote-journal-new-or-existing-entry)
+    (bergheim/write-mode t)
+    (goto-char (point-max))
+    (delete-trailing-whitespace)
+    (insert "\n* [" (format-time-string "%H:%M") "] ")
+    (evil-insert 0))
+
+  (defun bergheim/denote-last-journal-entry ()
+    "Open the newest entry"
+    (interactive)
+    (let* ((all-entries (directory-files denote-journal-directory t "^[^.]"))
+           (files (seq-filter #'file-regular-p all-entries)))
+      (when files
+        (siren-tab-bar-switch-to-or-create-tab "journal")
+        (find-file (expand-file-name
+                    (car (last (sort files 'string<))) denote-journal-directory))
+        (bergheim/write-mode t)))))
 
 (use-package denote-org
-  :after denote
-  :demand)
+  :after denote)
 
 (use-package denote-journal-capture
-  :after denote-journal
-  :demand)
+  :after denote-journal)
 
 (use-package denote-menu
   :after denote)
