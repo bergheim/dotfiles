@@ -154,6 +154,7 @@
          ;; "bergheim-eglot"
          ;; I for one come our new AI overlords
          "ai"
+         "session"
          )))
 
   (unless bergheim/container-mode-p
@@ -161,10 +162,9 @@
                           '("utils"
                             "workspace"
                             "orgmode/init"
-                            "denote"
+                            "bergheim-denote"
                             "mu4e/init"
-                            "apps"
-                            "session"))))
+                            "apps"))))
   (dolist (file modules)
     (load-file (expand-file-name (format "%s.el" file) module-dir))))
 
