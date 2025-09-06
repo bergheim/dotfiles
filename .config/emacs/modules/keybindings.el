@@ -339,6 +339,7 @@
     "w" '(:ignore t :which-key "Workspace and windows")
     "w=" '(balance-windows :which-key "Balance")
     "ws" '(evil-window-split :which-key "split horizontally")
+    "wS" '(bergheim/swap-window-with :which-key "swap windows")
     "wv" '(evil-window-vsplit :which-key "split vertically")
     "wd" '(evil-window-delete :which-key "delete window")
 

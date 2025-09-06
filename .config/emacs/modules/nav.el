@@ -27,6 +27,66 @@
   ;;  "S" 'evil-avy-goto-char-2-above)
   )
 
+(defun bergheim/swap-window-with ()
+  "Interactively choose which window to swap with current window."
+  (interactive)
+  (let* ((windows (window-list))
+         (current (selected-window))
+         (other-windows (delq current windows)))
+    (if (= (length other-windows) 1)
+        (window-swap-states current (car other-windows))
+      (let ((target (completing-read "Swap with window: "
+                                     (mapcar (lambda (w)
+                                               (buffer-name (window-buffer w)))
+                                             other-windows)
+                                     nil t)))
+        (window-swap-states current
+                            (seq-find (lambda (w)
+                                        (string= target
+                                                 (buffer-name (window-buffer w))))
+                                      other-windows))))))
+
+(defun bergheim/consult-browse-links ()
+  "Find and open URLs in the current buffer.
+
+Search through lines in the current buffer containing URLs.
+Prompt the user to select a line, then open the chosen URL in the
+default web browser. Navigate forward through the buffer if a prefix
+argument is given, otherwise navigate backward."
+  (interactive)
+  (let ((vertico-sort-function nil)
+        candidates
+        (search-fn (if current-prefix-arg 're-search-forward 're-search-backward))
+        (url-regex "\\(https?://[^][:space:]\n]+\\)"))
+    (save-excursion
+      (goto-char (if current-prefix-arg (point-min) (point-max)))
+      (while (funcall search-fn url-regex nil t)
+        (let ((url (match-string-no-properties 0))
+              (line (string-trim (thing-at-point 'line t)))
+              (pos (point)))
+          (push (cons line (cons url pos)) candidates)))
+
+      (unless candidates ; Abort if no candidates found
+        (user-error "No URLs found"))
+
+      (let ((selected nil))
+        (consult--read
+         (mapcar #'car candidates)
+         :prompt "Lines with URLs: "
+         :lookup (lambda (user-query cands narrow input)
+                   (when-let ((entry (assoc user-query candidates)))
+                     (goto-char (cdr (cdr entry)))
+                     (cons user-query t)))
+         :require-match t
+         :state (lambda (action cand)
+                  (when (eq action 'return)
+                    (setq selected (car cand)))))
+
+        (when selected
+          (when-let (url (car (cdr (assoc selected candidates))))
+            (message "Opening URL: %s" url)
+            (browse-url url)))))))
+
 (use-package link-hint
   :ensure t
   :defer t
@@ -232,47 +292,6 @@ With a universal argument, it allows entering the application to use."
   :ensure t
   :config
   (setq affe-find-command "fd --color=never --hidden --follow --exclude .git --exclude node_modules --regex"))
-
-(defun bergheim/consult-browse-links ()
-  "Find and open URLs in the current buffer.
-
-Search through lines in the current buffer containing URLs.
-Prompt the user to select a line, then open the chosen URL in the
-default web browser. Navigate forward through the buffer if a prefix
-argument is given, otherwise navigate backward."
-  (interactive)
-  (let ((vertico-sort-function nil)
-        candidates
-        (search-fn (if current-prefix-arg 're-search-forward 're-search-backward))
-        (url-regex "\\(https?://[^][:space:]\n]+\\)"))
-    (save-excursion
-      (goto-char (if current-prefix-arg (point-min) (point-max)))
-      (while (funcall search-fn url-regex nil t)
-        (let ((url (match-string-no-properties 0))
-              (line (string-trim (thing-at-point 'line t)))
-              (pos (point)))
-          (push (cons line (cons url pos)) candidates)))
-
-      (unless candidates ; Abort if no candidates found
-        (user-error "No URLs found"))
-
-      (let ((selected nil))
-        (consult--read
-         (mapcar #'car candidates)
-         :prompt "Lines with URLs: "
-         :lookup (lambda (user-query cands narrow input)
-                   (when-let ((entry (assoc user-query candidates)))
-                     (goto-char (cdr (cdr entry)))
-                     (cons user-query t)))
-         :require-match t
-         :state (lambda (action cand)
-                  (when (eq action 'return)
-                    (setq selected (car cand)))))
-
-        (when selected
-          (when-let (url (car (cdr (assoc selected candidates))))
-            (message "Opening URL: %s" url)
-            (browse-url url)))))))
 
 (use-package treemacs
   :defer t
