@@ -129,7 +129,7 @@ argument is given, otherwise navigate backward."
 (use-package dired
   :ensure nil
   :after general
-  :init
+  :config
   (defun bergheim//executables-in-path ()
     "Retrieve a list of all executable files in `exec-path'."
     (let (files-in-path)
@@ -146,9 +146,9 @@ argument is given, otherwise navigate backward."
 With a universal argument, it allows entering the application to use."
     (interactive "P")
     (if-let* ((file (dired-get-filename nil t))
-           (command (if arg
-                        (completing-read "Open current file with: " (bergheim//executables-in-path))
-                      "xdg-open")))
+              (command (if arg
+                           (completing-read "Open current file with: " (bergheim//executables-in-path))
+                         "xdg-open")))
         (start-process command nil command file)
       (message "No file on this line")))
 
