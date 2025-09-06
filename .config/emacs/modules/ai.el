@@ -349,6 +349,17 @@ Prompts for session name if none provided. Inserts selected region text into cha
      (org-mode . "* ")
      (text-mode . "# "))))
 
+(use-package ob-gptel
+  :ensure (:host github :repo "jwiegley/ob-gptel")
+  :hook ((org-mode . ob-gptel-install-completions))
+  :defines ob-gptel-install-completions
+  :config
+  (add-to-list 'org-babel-load-languages '(gptel . t))
+  ;; Optional, for better completion-at-point
+  (defun ob-gptel-install-completions ()
+    (add-hook 'completion-at-point-functions
+              'ob-gptel-capf nil t)))
+
 (use-package org-ai
   :ensure t
   :commands (org-ai-mode
