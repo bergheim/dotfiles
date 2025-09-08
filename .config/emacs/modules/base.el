@@ -42,6 +42,7 @@
   (setq confirm-kill-emacs nil)
   (setq shell-kill-buffer-on-exit t)  ; Already in your config
   (setq comint-kill-buffer-on-exit t) ; Add this too
+  (setq compilation-always-kill t) ; never ask "a compilation process is running, ...."
   (setq use-short-answers t
         ;; don't confirm to kill attached buffer processes
         kill-buffer-query-functions (remq 'process-kill-buffer-query-function
