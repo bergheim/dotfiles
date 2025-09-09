@@ -33,6 +33,32 @@
   :hook
   (kill-emacs . savehist-save))
 
+(setq project-compilation-buffer-name-function
+      (lambda (dir)
+        (format "*compilation-%s*" (project-name (project-current)))))
+
+(defun bergheim/project-compile-dwim (arg)
+  "Smart project compilation. Recompile if the buffer exists and do not change window focus."
+  (interactive "P")
+  (let ((curwin (selected-window)))
+    (save-buffer)
+    (if (or arg (not (get-buffer (funcall project-compilation-buffer-name-function default-directory))))
+        ;; New compilation with comint mode
+        (let ((current-prefix-arg '(4)))
+          (call-interactively #'project-compile))
+      (let ((buffer-name (funcall project-compilation-buffer-name-function default-directory)))
+        (pop-to-buffer buffer-name)
+        (project-recompile)))
+    (select-window curwin)))
+
+(defun bergheim/open-project-compilation-buffer ()
+  "Open the project compilation buffer if it exists."
+  (interactive)
+  (if-let ((buffer-name (funcall project-compilation-buffer-name-function default-directory))
+           (buffer (get-buffer buffer-name)))
+      (pop-to-buffer buffer)
+    (message "No compilation buffer exists for this project.")))
+
 (use-package emacs
   :ensure nil
   :config

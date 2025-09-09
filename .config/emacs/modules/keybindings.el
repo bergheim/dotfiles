@@ -269,6 +269,9 @@
     "m" `(,bergheim/localleader-map :which-key "Local leader")
 
     "p" '(:ignore t :which-key "Project")
+    "pc" '(bergheim/project-compile-dwim :which-key "compile")
+    "pC" '(bergheim/open-project-compilation-buffer
+           :which-key "open compile buffer")
     "pb" '(consult-project-buffer :which-key "buffers")
     "pd" '(project-find-dir :which-key "Find dir")
     "pe" '(project-or-external-find-file :which-key "External Find file")
