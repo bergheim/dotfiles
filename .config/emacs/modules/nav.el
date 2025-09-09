@@ -207,7 +207,7 @@ With a universal argument, it allows entering the application to use."
    "q"   #'dirvish-quit
    "a"   #'dirvish-quick-access
    "C"   #'dired-create-directory
-   "s"   #'bergheim/dirvish-fd-prompt
+   "s"   #'bergheim/dirvish-fd
    "S"   #'dirvish-fd
    "v"   #'dirvish-vc-menu
    "f"   #'dirvish-narrow ;; "filter"
@@ -252,13 +252,15 @@ With a universal argument, it allows entering the application to use."
     "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
           :which-key "Move to org"))
 
-  (defun bergheim/dirvish-fd-prompt (directory pattern)
-    "Prompt for a DIRECTORY and a PATTERN, then run `dirvish-fd`."
-    (interactive
-     (let ((directory  (read-directory-name "FD on directory: "))
-           (pattern  (read-string          "Pattern (comma-separated): ")))
-       (list directory (unless (string-empty-p pattern) pattern))))
-    (dirvish-fd directory pattern))
+(defun bergheim/dirvish-fd (directory)
+  "Run `dirvish-fd` on DIRECTORY with prompted pattern.
+With universal prefix argument, prompt for directory.
+Otherwise, use current directory."
+  (interactive (list (or (when current-prefix-arg
+                           (read-directory-name "FD on directory: "))
+                         default-directory)))
+  (let ((pattern (read-string "Pattern (comma-separated): ")))
+    (dirvish-fd directory pattern)))
 
   (defun bergheim/dired-leave-for-shell ()
     "Quit dired and open shell in the current directory."
