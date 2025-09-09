@@ -55,6 +55,8 @@
         evil-want-C-u-scroll t
         evil-want-Y-yank-to-eol t)
   :config
+  (evil-set-initial-state 'compilation-mode 'normal)
+  (evil-set-initial-state 'comint-mode 'normal)
   (defun bergheim/evil-search-symbol-forward ()
     "Search forward for the entire symbol under cursor, or fall back to word search."
     (interactive)
