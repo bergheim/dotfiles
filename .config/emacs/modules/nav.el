@@ -161,15 +161,7 @@ With a universal argument, it allows entering the application to use."
         dired-use-ls-dired t ;; parse names reliably
         dired-clean-confirm-killing-deleted-buffers nil
         ;; Ask whether destination dirs should get created when copying/removing files.
-        dired-create-destination-dirs 'ask
-        ;; Where to store image caches
-        image-dired-dir (concat bergheim/cache-dir "image-dired/")
-        image-dired-db-file (concat image-dired-dir "db.el")
-        image-dired-gallery-dir (concat image-dired-dir "gallery/")
-        image-dired-temp-image-file (concat image-dired-dir "temp-image")
-        image-dired-temp-rotate-image-file (concat image-dired-dir "temp-rotate-image")
-        ;; Screens are larger nowadays, we can afford slightly larger thumbnails
-        image-dired-thumb-size 150)
+        dired-create-destination-dirs 'ask)
   (general-define-key
    :states 'normal
    :keymaps 'dired-mode-map
