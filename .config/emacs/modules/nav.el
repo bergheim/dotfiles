@@ -207,9 +207,9 @@ With a universal argument, it allows entering the application to use."
    "q"   #'dirvish-quit
    "a"   #'dirvish-quick-access
    "C"   #'dired-create-directory
-   "s"   #'dirvish-fd-ask
+   "s"   #'bergheim/dirvish-fd-prompt
    "S"   #'dirvish-fd
-   "v"   'dirvish-vc-menu
+   "v"   #'dirvish-vc-menu
    "f"   #'dirvish-narrow ;; "filter"
    ;; this is hilarious. yes, I do in fact want to copy it as kill
    "y"   #'dired-copy-filename-as-kill
@@ -251,6 +251,14 @@ With a universal argument, it allows entering the application to use."
           :which-key "Copy to org")
     "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
           :which-key "Move to org"))
+
+  (defun bergheim/dirvish-fd-prompt (directory pattern)
+    "Prompt for a DIRECTORY and a PATTERN, then run `dirvish-fd`."
+    (interactive
+     (let ((directory  (read-directory-name "FD on directory: "))
+           (pattern  (read-string          "Pattern (comma-separated): ")))
+       (list directory (unless (string-empty-p pattern) pattern))))
+    (dirvish-fd directory pattern))
 
   (defun bergheim/dired-leave-for-shell ()
     "Quit dired and open shell in the current directory."
