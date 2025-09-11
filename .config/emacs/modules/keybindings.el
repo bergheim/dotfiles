@@ -123,7 +123,8 @@
     "amm" '(smudge-my-playlists :which-key "Search my lists")
     "amp" '(smudge-playlist-search :which-key "Search playlists")
     "amt" '(smudge-track-search :which-key "Search track")
-    "at" '(treemacs :which-key "Treemacs")
+    "at" '(:ignore t :which-key "Shells & terms")
+    "aw" '(treemacs :which-key "Treemacs workspace")
 
     "b" '(:ignore t :which-key "Buffers")
     "ba" '(consult-buffer :which-key "All buffers")
@@ -279,9 +280,11 @@
     "pF" '(bergheim/project-find-file-other-window :which-key "Find file other window")
     ;; "pF" '(affe-find :which-key "Async find file")
     "ps" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
-    "pt" '(treemacs :which-key "Treemacs")
+    "pt" '(project-shell :which-key "Shell")
+    "pT" '(project-eshell :which-key "Eshell")
     "pp" '(bergheim/open-or-switch-to-project-tab :which-key "Switch project")
     "pP" '((lambda () (interactive) (bergheim/open-or-switch-to-project-tab t)) :which-key "Switch project")
+    "pw" '(treemacs :which-key "Treemacs workspace")
 
     ;; TODO: add lots more consult stuff like kill-ring etc
     "s" '(:ignore t :which-key "Search")
