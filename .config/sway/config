@@ -238,11 +238,11 @@ bindsym $mod+$alt+Shift+j resize shrink down 10 px or 10 ppt
 bindsym $mod+$alt+Shift+k resize shrink up 10 px or 10 ppt
 
 # Terminal emulator
-bindsym $mod+Return exec foot
+bindsym $mod+Shift+Return exec foot
 # bindsym $mod+Return exec emacsclient -c -n -F '((menu-bar-lines . 0) (tool-bar-lines . 0) (tab-bar-lines . 0) (vertical-scroll-bars . nil))' -e '(shell (generate-new-buffer-name "*shell*"))'
 
 # Emacsclient
-bindsym $mod+Shift+Return exec emacsclient -nc -F '((tab-bar-lines . 0))'
+bindsym $mod+Return exec emacsclient -nc -F '((tab-bar-lines . 0))'
 
 # File managers
 bindsym $mod+d exec dolphin
