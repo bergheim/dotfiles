@@ -67,7 +67,16 @@
     (comint-read-input-ring 'silent)
     ;; stop duplicate input from appearing
     (setq-local comint-process-echoes t)
-    (compilation-shell-minor-mode 1))
+    (compilation-shell-minor-mode 1)
+    (completion-preview-mode 1)
+
+    (setq-local completion-at-point-functions
+                (list (cape-capf-super
+                       #'comint-completion-at-point
+                       #'cape-history
+                       #'cape-file
+                       #'cape-dabbrev))))
+
   (cl-pushnew 'file-uri compilation-error-regexp-alist)
   (cl-pushnew '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2)
               compilation-error-regexp-alist-alist :test #'equal)
