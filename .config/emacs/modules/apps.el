@@ -25,6 +25,13 @@
 (use-package shell
   :ensure nil
   :general
+  (:states 'normal
+   :keymaps 'shell-mode-map
+   "C-d" (lambda ()
+         (interactive)
+         (if (comint-after-pmark-p)
+             (kill-current-buffer)
+           (evil-scroll-down nil))))
   (:states 'insert
    :keymaps 'shell-mode-map
    "C-r" #'consult-history
@@ -42,9 +49,9 @@
   (bergheim/global-menu-keys
     "bs" '(bergheim/switch-to-shell :which-key "shells")
     "ps" '((lambda ()
-           (interactive)
-           (other-window-prefix)
-           (project-shell)) :which-key "shell")
+             (interactive)
+             (other-window-prefix)
+             (project-shell)) :which-key "shell")
     "p!" '(project-shell-command :which-key "shell command"))
   :hook
   (shell-mode . bergheim/setup-shell)
