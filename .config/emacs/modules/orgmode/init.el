@@ -24,7 +24,6 @@
   (general-define-key
    :states '(normal insert visual)
    :keymaps 'org-mode-map
-   "C-M-<return>" #'bergheim/org-insert-indented-todo-subheading
 
    "H-a" #'org-archive-subtree
    "H-r" #'org-refile
