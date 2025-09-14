@@ -68,21 +68,36 @@
         explicit-shell-file-name "/bin/zsh"
         explicit-zsh-args '("-i")
         shell-completion-execonly nil)
+
   (defun bergheim/setup-shell ()
     "Custom configurations for shell mode."
     (setq comint-input-ring-file-name "~/.histfile")
     (comint-read-input-ring 'silent)
+
     ;; stop duplicate input from appearing
     (setq-local comint-process-echoes t)
     (compilation-shell-minor-mode 1)
     (completion-preview-mode 1)
 
+    ;; Don't add space after file completions (helps with directory traversal)
+    (setq comint-completion-addsuffix nil)
+
+    ;; Better file completion settings
+    (setq comint-completion-autolist t)
+    (setq comint-completion-fignore nil)
+    (setq comint-use-prompt-regexp t)
+
+    ;; Improve history handling
+    (setq comint-input-autoexpand t)
+    (setq comint-completion-recexact nil)
+
+    ;; Ensure we can complete from history
     (setq-local completion-at-point-functions
-                (list (cape-capf-super
-                       #'comint-completion-at-point
-                       #'cape-history
-                       #'cape-file
-                       #'cape-dabbrev))))
+                (list #'comint-completion-at-point
+                      #'comint-filename-completion
+                      ;; #'cape-file
+                      ;; #'cape-history
+                      #'cape-dabbrev)))
 
   (cl-pushnew 'file-uri compilation-error-regexp-alist)
   (cl-pushnew '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2)
