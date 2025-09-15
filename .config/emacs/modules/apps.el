@@ -32,6 +32,11 @@
          (if (comint-after-pmark-p)
              (kill-current-buffer)
            (evil-scroll-down nil))))
+   "C-r" (lambda ()
+           (interactive)
+           (goto-char (point-max))
+           (comint-kill-input)
+           (consult-history)))
   (:states 'insert
    :keymaps 'shell-mode-map
    "C-r" #'consult-history
