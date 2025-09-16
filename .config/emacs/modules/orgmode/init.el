@@ -75,7 +75,7 @@
     "p" 'org-priority
     "q" 'org-set-tags-command
     "u" '(bergheim/org-copy-url-only :which-key "copy URL")
-    "s" (cons "Subtree" (make-sparse-keymap))
+    "s" '(:ignore t :which-key "Subtree")
     ;; "sa" 'bergheim/org-archive-subtree
     "sa" 'org-archive-subtree
     "sA" 'org-toggle-archive-tag
