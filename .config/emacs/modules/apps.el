@@ -39,7 +39,10 @@
            (consult-history)))
   (:states 'insert
    :keymaps 'shell-mode-map
-   "C-r" #'consult-history
+   "C-r" (lambda ()
+           (interactive)
+           (goto-char (point-max))
+           (consult-history))
    "C-d" 'kill-current-buffer
    "C-a" #'comint-bol
    "C-e" #'end-of-line
@@ -90,7 +93,6 @@
     ;; Better file completion settings
     (setq comint-completion-autolist t)
     (setq comint-completion-fignore nil)
-    (setq comint-use-prompt-regexp t)
 
     ;; Improve history handling
     (setq comint-input-autoexpand t)
