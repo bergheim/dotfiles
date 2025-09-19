@@ -135,7 +135,7 @@
     (interactive)
     (if-let ((shell-buffers (seq-filter (lambda (buf)
                                           (with-current-buffer buf
-                                            (derived-mode-p 'shell-mode)))
+                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'vterm-mode)))
                                         (buffer-list))))
         (let* ((candidates (mapcar (lambda (buf)
                                      (cons (format "%s (%s)"
