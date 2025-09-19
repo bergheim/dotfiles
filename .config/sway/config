@@ -65,8 +65,6 @@ workspace $ws11 output $monitor2
 workspace $ws12 output $monitor2
 workspace $ws13 output $monitor2
 
-# reload the configuration file
-bindsym $mod+F5 reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+$alt+Escape restart
 
@@ -258,19 +256,24 @@ bindsym $mod+t exec emacs-clock-in
 # Kill application (replace xkill with sway equivalent)
 bindsym $mod+shift+BackSpace exec swaymsg '[pid=$(swaymsg -t get_tree | jq ".. | select(.focused? == true).pid")] kill'
 
-# Screenshot (replace with grim/slurp)
-bindsym $mod+Shift+1 exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot captured'
-bindsym $mod+F2 exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot area captured'
+# Lock screen (replace with swaylock)
+bindsym $mod+Escape exec fancylocksway
 
 # Toggle dark mode
 bindsym $mod+F1 exec toggle-darkmode
-# what
 
 # Toggle redshift (or use gammastep for wayland)
-bindsym $mod+F8 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
+bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
 
-# Lock screen (replace with swaylock)
-bindsym $mod+Escape exec fancylocksway
+# Screenshot (replace with grim/slurp)
+bindsym $mod+F3 exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot captured'
+bindsym $mod+F4 exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot area captured'
+
+# WIFI
+bindsym $mod+F5 exec alacritty --class floating -e impala
+
+# reload the configuration file
+bindsym $mod+F6 reload
 
 # Media keys
 # bindsym XF86AudioPrev exec playerctl previous  
