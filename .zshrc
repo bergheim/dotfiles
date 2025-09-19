@@ -1,11 +1,12 @@
 ## tramp gets hung up on precmd(), unset some features
 ## (but let shell through)
-if [[ -z "$INSIDE_EMACS" && "$TERM" == "dumb" ]]; then
+if [[ "$TERM" == "dumb" && -z "$INSIDE_EMACS" ]]; then
+    # This is TRAMP - minimal setup
     unsetopt zle
     unsetopt prompt_cr
     unsetopt prompt_subst
-    unfunction precmd
-    unfunction preexec
+    unfunction precmd 2>/dev/null
+    unfunction preexec 2>/dev/null
     PS1='$ '
     return
 fi
@@ -176,14 +177,13 @@ alias pacwhat='pacman -Si'
 alias pacfiles='pacman -Ql'
 alias pacwho='pkgfile'
 
-alias f='vifmrun'
 alias shakemacs="pkill -USR2 emacs"
 alias tmux='tmux -2'
 alias eh='mosh --ssh="ssh -p 1902" home -- ta me'
 
-# prefer vim to vi if it is installed
-if type vim >/dev/null 2>/dev/null; then
-  alias vi=vim
+# prefer nvim to vim if it is installed
+if type nvim >/dev/null 2>/dev/null; then
+  alias vim=nvim
 fi
 
 # enable zsh help. run with alt+h or esc+h FIXME does not work
