@@ -41,7 +41,12 @@
   (general-define-key
    :states '(normal visual emacs)
 
-   "C-M-<return>" '((lambda () (interactive) (multishell-pop-to-shell nil (expand-file-name default-directory))) :which-key "shell")
+   "C-M-<return>" '((lambda ()
+                      (interactive)
+                      (if (equal (buffer-name) "*dashboard*")
+                        (shell)
+                      (multishell-pop-to-shell nil (expand-file-name default-directory))))
+                    :which-key "shell")
    "C-=" 'global-text-scale-adjust
    "C--" '(lambda () (interactive) (global-text-scale-adjust -1))
 
