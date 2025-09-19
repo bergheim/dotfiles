@@ -31,7 +31,7 @@
          (interactive)
          (if (comint-after-pmark-p)
              (kill-current-buffer)
-           (evil-scroll-down nil))))
+           (evil-scroll-down nil)))
    "C-r" (lambda ()
            (interactive)
            (goto-char (point-max))
@@ -86,6 +86,9 @@
     (setq-local comint-process-echoes t)
     (compilation-shell-minor-mode 1)
     (completion-preview-mode 1)
+
+    ;; match the prompt so history works
+    (setq-local comint-prompt-regexp "^[^λ]+λ ")
 
     ;; Don't add space after file completions (helps with directory traversal)
     (setq comint-completion-addsuffix nil)
