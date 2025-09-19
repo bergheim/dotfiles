@@ -170,6 +170,9 @@ alias lt='eza --tree --long'
 alias ll='eza -l'
 alias llh='ls -lh'
 
+alias ff='zi'
+alias f='z'
+
 alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
 alias pacs='pacman -Ss'
