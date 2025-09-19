@@ -155,12 +155,13 @@
          ;; I for one come our new AI overlords
          "ai"
          "session"
+         ;; TODO split this up
+         "utils"
          )))
 
   (unless bergheim/container-mode-p
     (setq modules (append modules
-                          '("utils"
-                            "workspace"
+                          '("workspace"
                             "orgmode/init"
                             "bergheim-denote"
                             "mu4e/init"
