@@ -442,3 +442,22 @@ fi
 
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
 alias docker=podman
+
+git_prompt_info() {
+    # Make sure we're actually in a git working directory
+    if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        local branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+        if [ -n "$branch" ]; then
+            local git_status=""
+            if ! git diff --quiet 2>/dev/null; then
+                git_status=" ✎"
+            elif ! git diff --cached --quiet 2>/dev/null; then
+                git_status=" ●"
+            fi
+            echo " ⎇ %F{yellow}$branch%f%F{red}$git_status%f"
+        fi
+    fi
+}
+
+setopt PROMPT_SUBST
+PROMPT='%F{cyan}%~%f$(git_prompt_info) %F{green}λ%f '
