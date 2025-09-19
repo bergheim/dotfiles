@@ -186,6 +186,14 @@ if type nvim >/dev/null 2>/dev/null; then
   alias vim=nvim
 fi
 
+vi() {
+    if [[ -n "$INSIDE_EMACS" ]]; then
+        emacsclient -e "(find-file-other-window \"$PWD/$1\")"
+    else
+        command vim "$@"
+    fi
+}
+
 # enable zsh help. run with alt+h or esc+h FIXME does not work
 autoload -Uz run-help
 alias help=run-help
