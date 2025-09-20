@@ -163,6 +163,7 @@
     (setq modules (append modules
                           '("workspace"
                             "orgmode/init"
+                            "karakeep"
                             "bergheim-denote"
                             "mu4e/init"
                             "apps"))))
