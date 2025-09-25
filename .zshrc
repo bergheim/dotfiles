@@ -462,5 +462,11 @@ git_prompt_info() {
     fi
 }
 
+remote_host_info() {
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        echo "%F{yellow}%n@%m%f "
+    fi
+}
+
 setopt PROMPT_SUBST
-PROMPT='%F{cyan}%~%f$(git_prompt_info) %F{green}λ%f '
+PROMPT='$(remote_host_info)%F{cyan}%~%f$(git_prompt_info) %F{green}λ%f '
