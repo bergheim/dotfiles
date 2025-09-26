@@ -28,10 +28,10 @@
   (:states 'normal
    :keymaps 'shell-mode-map
    "C-d" (lambda ()
-         (interactive)
-         (if (comint-after-pmark-p)
-             (kill-current-buffer)
-           (evil-scroll-down nil)))
+           (interactive)
+           (if (comint-after-pmark-p)
+               (kill-current-buffer)
+             (evil-scroll-down nil)))
    "C-r" (lambda ()
            (interactive)
            (goto-char (point-max))
@@ -42,6 +42,7 @@
    "C-r" (lambda ()
            (interactive)
            (goto-char (point-max))
+           (comint-kill-input)
            (consult-history))
    "C-d" 'kill-current-buffer
    "C-a" #'comint-bol
