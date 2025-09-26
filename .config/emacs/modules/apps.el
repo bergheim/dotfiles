@@ -57,12 +57,19 @@
            (evil-normal-state)
            (evil-window-right 1)))
   (bergheim/global-menu-keys
+    "atx" 'bergheim/tmux-shell-attach-flat
+    "atX" 'bergheim/tmux-shell-attach
     "bs" '(bergheim/switch-to-shell :which-key "shells")
     "ps" '((lambda ()
              (interactive)
              (other-window-prefix)
              (project-shell)) :which-key "shell")
     "p!" '(project-shell-command :which-key "shell command"))
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'shell-mode-map
+    "t" 'bergheim/tmux-shell-attach-flat
+    "T" 'bergheim/tmux-shell-attach)
   :hook
   (shell-mode . bergheim/setup-shell)
   ;; this should improve how current directories are tracked
@@ -151,7 +158,88 @@
                                    shell-buffers))
                (choice (completing-read "Switch to shell: " candidates nil t)))
           (switch-to-buffer (alist-get choice candidates nil nil #'string=)))
-      (message "No active shell buffers"))))
+      (message "No active shell buffers")))
+
+  (defun bergheim/tmux-shell-attach ()
+    "Choose tmux session → window → pane, then attach via shell."
+    (interactive)
+    ;; get all sessions
+    (let* ((sessions-output (shell-command-to-string "tmux list-sessions -F '#{session_name}'"))
+           (sessions (split-string sessions-output "\n" t)))
+
+      (if (null sessions)
+          (message "No tmux sessions found")
+
+        ;; choose session and skip of only one
+        (let* ((session (if (= (length sessions) 1)
+                            (car sessions)
+                          (completing-read "Choose session: " sessions)))
+
+               ;; get the windows
+               (windows-output (shell-command-to-string
+                                (format "tmux list-windows -t %s -F '#{window_index} #{window_name} [#{window_panes} panes]'" 
+                                        session)))
+               (windows (split-string windows-output "\n" t)))
+
+          (if (null windows)
+              (message "No windows found in session %s" session)
+
+            ;; choose one and skip if only one
+            (let* ((window-choice (if (= (length windows) 1)
+                                      (car windows)
+                                    (completing-read (format "Choose window from %s: " session) windows)))
+
+                   (window-index (car (split-string window-choice " ")))
+
+                   ;; get the panes
+                   (panes-output (shell-command-to-string
+                                  (format "tmux list-panes -t %s:%s -F '#{pane_index} [#{pane_current_command}] #{pane_current_path}'" 
+                                          session window-index)))
+                   (panes (split-string panes-output "\n" t)))
+
+              (if (null panes)
+                  (message "No panes found in window %s:%s" session window-index)
+
+                ;; choose a pane and skip if only one
+                (let* ((pane-choice (if (= (length panes) 1)
+                                        (car panes)
+                                      (completing-read (format "Choose pane from %s:%s: " session window-index) panes)))
+
+                       (pane-index (car (split-string pane-choice " ")))
+                       (full-target (format "%s:%s.%s" session window-index pane-index))
+                       (buffer-name (format "*tmux-%s*" full-target)))
+
+                  ;; create a shell, name it like tmux
+                  (shell buffer-name)
+                  (with-current-buffer buffer-name
+                    (goto-char (point-max))
+                    ;; attach!
+                    (insert (format "tmux attach-session -t %s" full-target))
+                    (comint-send-input))
+                  (switch-to-buffer buffer-name)
+                  (message "Attaching to tmux pane %s" full-target)))))))))
+
+  (defun bergheim/tmux-shell-attach-flat ()
+    "Choose any pane from any session/window and attach."
+    (interactive)
+    (let* ((panes-output (shell-command-to-string
+                          "tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index} #{window_name} [#{pane_current_command}] #{pane_current_path}'"))
+           (panes (split-string panes-output "\n" t)))
+
+      (if (null panes)
+          (message "No tmux panes found")
+
+        (let* ((choice (completing-read "Choose pane: " panes))
+               (pane-target (car (split-string choice " ")))
+               (buffer-name (format "*tmux-%s*" pane-target)))
+
+          (shell buffer-name)
+          (with-current-buffer buffer-name
+            (goto-char (point-max))
+            (insert (format "tmux attach-session -t %s" pane-target))
+            (comint-send-input))
+          (switch-to-buffer buffer-name)
+          (message "Attaching to tmux pane %s" pane-target))))))
 
 (use-package coterm
   :after shell
