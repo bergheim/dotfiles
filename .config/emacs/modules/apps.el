@@ -41,9 +41,10 @@
    :keymaps 'shell-mode-map
    "C-r" (lambda ()
            (interactive)
-           (goto-char (point-max))
-           (comint-kill-input)
-           (consult-history))
+           (let ((input (comint-get-old-input-default)))
+             (comint-kill-input)
+             (insert (completing-read "History: " (ring-elements comint-input-ring) 
+                                      nil nil input))))
    "C-d" 'kill-current-buffer
    "C-a" #'comint-bol
    "C-e" #'end-of-line
