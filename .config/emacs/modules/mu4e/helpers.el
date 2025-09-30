@@ -119,11 +119,12 @@ With \\[universal-argument], search all emails where I am a recipient"
                            (url-encode-url to))))
       (_ (display-warning :warning (format "Account \"%s\" based on dir \"%s\"not found!" account maildir))))))
 
+;;;###autoload
 (defun bergheim/org-subtree-to-mu4e ()
   "Send the current subtree to mu4e and promote it to level 1"
   (interactive)
   (org-copy-subtree)
-  (+mu4e/compose)
+  (mu4e-compose-new)
   (unless (derived-mode-p 'org-msg-edit-mode)
     (org-msg-edit-mode))
   (org-msg-goto-body)
