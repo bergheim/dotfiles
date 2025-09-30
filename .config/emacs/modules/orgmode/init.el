@@ -56,12 +56,12 @@
     "b" '(bergheim/org-open-attachments :which-key "open attachments")
     "c" '(bergheim/org-block :which-key "block")
     "C" '(bergheim/org-src-block :which-key "source block")
-    "d" '(nil :which-key "Dates")
+    "d" '(:ignore t :which-key "Dates")
     "ds" 'org-schedule
     "dd" 'org-deadline
     "di" 'org-time-stamp-inactive
     "e" 'org-edit-special
-    "l" '(nil :which-key "Links")
+    "l" '(:ignore t :which-key "Links")
     "ld" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
     "li" '(org-insert-link :which-key "insert manually")
     "ll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
