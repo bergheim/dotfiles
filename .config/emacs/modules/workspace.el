@@ -81,9 +81,8 @@
           (project-find-dir "Find directory")
           (bergheim/open-dirvish-current-project "Browse" "b")
           (consult-ripgrep "Grep" "g")
-          (consult-fd "Search" "s")
           (magit-project-status "Magit" "m")
-          (project-eshell "Eshell"))))
+          (project-shell "Shell"))))
 
 (defun bergheim/project-find-file-other-window (&optional include-all)
   "Run `project-find-file' but open the selected file in another window.
