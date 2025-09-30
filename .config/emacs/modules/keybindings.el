@@ -15,6 +15,7 @@
 ;; death to C-g
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 (global-set-key [escape] 'keyboard-quit)
+
 (with-eval-after-load 'mu4e
   (define-key mu4e-minibuffer-search-query-map [escape] 'abort-recursive-edit))
 
@@ -35,8 +36,8 @@
 
   (general-define-key
    :states 'visual
-   "u" 'evil-undo
-   "C-r" 'evil-redo)
+    "u" 'evil-undo
+    "C-r" 'evil-redo)
 
   (general-define-key
    :states '(normal visual emacs)
@@ -384,13 +385,6 @@
     "M-K" #'evil-window-move-very-top
     "M-L" #'evil-window-move-far-right
 
-    "M-\\" #'evil-window-vsplit
-    "M-]" #'evil-window-split
-
-    "M-DEL" #'evil-window-delete
-    ;; "M-<backspace>" #'+workspace/close-window-or-workspace
-    "M-S-<backspace>" #'kill-current-buffer
-
     "M-o" #'evil-window-next
     "M-f" #'maximize-window
     "M-F" #'winner-undo
@@ -403,6 +397,13 @@
     "M-6" '(lambda () (interactive) (tab-bar-select-tab 6))
     "M-t" 'siren-tab-bar-switch-to-or-create-tab
     "M-w" 'tab-close)
+
+  (general-define-key
+   :states '(insert normal visual motion operator emacs)
+    "M-\\" #'evil-window-vsplit
+    "M-]" #'evil-window-split
+    "M-DEL" #'evil-window-delete
+    "C-M-<backspace>" #'kill-current-buffer)
 
   ;; (general-define-key
   ;;  :states '(normal visual)
