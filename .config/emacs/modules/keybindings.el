@@ -333,6 +333,7 @@
     "t o" '(org-toggle-link-display :which-key "Org links")
     "t v" '(bergheim/toggle-visual-fluff :which-key "Toggle visual helpers")
     "t s" '(window-toggle-side-windows :which-key "Sidewindows")
+    "t t" '(toggle-frame-tab-bar the :which-key "Tab bar")
     "t w" '(bergheim/write-mode :which-key "Writer room")
     "t z" '(bergheim/present-mode :which-key "Present")
 
