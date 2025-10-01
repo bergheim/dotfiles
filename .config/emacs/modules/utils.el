@@ -260,11 +260,11 @@ Lisp function does not specify a special indentation."
     "se" '(:keymap engine-mode-prefixed-map :which-key "Search Engine"))
   :config
   (engine-mode t)
-  (defengine duckduckgo "https://duckduckgo.com/?q=%s"
-             :keybinding "e")
-  (defengine duckduckgo "https://duckduckgo.com/?q=\"%s\""
-             :keybinding "E"
+  (defengine duckduckgo "https://html.duckduckgo.com/html?q=\"%s\""
+             :keybinding "e"
              :browser 'eww)
+  (defengine duckduckgo-external "https://html.duckduckgo.com/html?q=%s"
+             :keybinding "E")
   (defengine github "https://github.com/search?ref=simplesearch&q=%s"
              :keybinding "h")
   (defengine google "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
