@@ -94,6 +94,9 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
 (use-package pcsv)
 
 (use-package transient)
+(use-package cond-let
+  :ensure (:host github :repo "tarsius/cond-let")
+  :demand)
 
 (use-package emacs-everywhere
   :config
