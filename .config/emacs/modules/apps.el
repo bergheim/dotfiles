@@ -46,7 +46,12 @@
            (interactive)
            (goto-char (point-max))
            (comint-kill-input)
-           (consult-history)))
+           (consult-history))
+   "RET" (lambda ()
+           (interactive)
+           (if (comint-after-pmark-p)
+               (comint-send-input)
+             (evil-ret))))
   (:states 'insert
    :keymaps 'shell-mode-map
    "C-r" (lambda ()
