@@ -180,6 +180,8 @@ alias pacwhat='pacman -Si'
 alias pacfiles='pacman -Ql'
 alias pacwho='pkgfile'
 
+alias diff='diff --color=always'
+
 alias shakemacs="pkill -USR2 emacs"
 alias tmux='tmux -2'
 alias eh='mosh --ssh="ssh -p 1902" home -- ta me'
@@ -438,9 +440,18 @@ source <(gopass completion zsh)
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
   source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
-if [[ $INSIDE_EMACS == *eat* ]]; then
-  alias vi='emacsclient -n'
-  # alias vi='emacsclient -e "(find-file-other-window \"$1\")"'
+man() {
+    if [[ -n "$INSIDE_EMACS" ]]; then
+        emacsclient -e "(man \"$1\")"
+    else
+        command man "$@"
+    fi
+}
+
+if [[ "$INSIDE_EMACS" == *"comint"* ]]; then
+  export YAY_PAGER=""
+  export PAGER=""
+  export GIT_PAGER=""
 fi
 
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
