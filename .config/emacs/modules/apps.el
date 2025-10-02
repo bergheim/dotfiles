@@ -25,6 +25,16 @@
 (use-package shell
   :ensure nil
   :general
+  (:states '(normal insert)
+   :keymaps 'shell-mode-map
+   "M-p" (lambda ()
+           (interactive)
+           (goto-char (point-max))
+           (call-interactively #'comint-previous-input))
+   "M-n" (lambda ()
+           (interactive)
+           (goto-char (point-max))
+           (call-interactively #'comint-next-input)))
   (:states 'normal
    :keymaps 'shell-mode-map
    "C-d" (lambda ()
