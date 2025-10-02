@@ -16,8 +16,8 @@
   :ensure t
   :general
   (bergheim/global-menu-keys
-    "att" '((lambda () (interactive) (multishell-pop-to-shell nil (expand-file-name default-directory))) :which-key "shell")
-    "atT" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
+    "ass" '((lambda () (interactive) (multishell-pop-to-shell nil (expand-file-name default-directory))) :which-key "shell")
+    "asS" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
   :config
   ;; don't ask for history confirmation on quit
   (remove-hook 'kill-buffer-query-functions #'multishell-kill-buffer-query-function))
@@ -57,8 +57,8 @@
            (evil-normal-state)
            (evil-window-right 1)))
   (bergheim/global-menu-keys
-    "atx" 'bergheim/tmux-shell-attach-flat
-    "atX" 'bergheim/tmux-shell-attach
+    "asx" 'bergheim/tmux-shell-attach-flat
+    "asX" 'bergheim/tmux-shell-attach
     "bs" '(bergheim/switch-to-shell :which-key "shells")
     "ps" '((lambda ()
              (interactive)
@@ -259,7 +259,7 @@
    "C-j" #'eshell-next-matching-input-from-input)
 
   (bergheim/global-menu-keys
-    "ate" '(eshell :which-key "eshell"))
+    "ase" '(eshell :which-key "eshell"))
   :config
   (setq eshell-destroy-buffer-when-process-dies t)
 
@@ -512,7 +512,7 @@ Open `dired` in the resolved directory of the current command."
    :keymaps 'eat-mode-map
    "C-r" #'consult-history)  ; Same as shell-mode
   (bergheim/global-menu-keys
-    "atE" '(eat :which-key "Eat"))
+    "asE" '(eat :which-key "Eat"))
   :config
   (add-hook 'eat-mode-hook
             (lambda ()
@@ -535,7 +535,7 @@ Open `dired` in the resolved directory of the current command."
   :commands vterm
   :general
   (bergheim/global-menu-keys
-    "atv" '(vterm :which-key "vterm"))
+    "asv" '(vterm :which-key "vterm"))
   :config
   (setq vterm-shell "/usr/bin/zsh")
   (setq vterm-max-scrollback 10000)
