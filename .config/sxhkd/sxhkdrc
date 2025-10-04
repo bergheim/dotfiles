@@ -10,13 +10,13 @@ super + shift + r
 super + shift + BackSpace
   exec xkill
 
-# terminal emulator
-super + Return
-  ldpi alacritty
-
 # emacsclient
-super + shift + Return
+super + Return
   emacsclient -nc
+
+# terminal emulator
+super + shift + Return
+  ldpi alacritty
 
 # vifm file manager
 super + ctrl + Return
