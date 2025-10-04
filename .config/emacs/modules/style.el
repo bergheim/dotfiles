@@ -357,24 +357,17 @@
 
 (use-package writeroom-mode
   :init
-  (defun bergheim/write-mode (&optional write)
+  (defun bergheim/write-mode (&optional disable)
     "Toggle zoom in on the current buffer."
     (interactive)
-    (if (and (not write) (function-get 'bergheim/write-mode 'toggled))
+    (if (or disable writeroom-mode)
         (progn
           (writeroom-mode -1)
-          (focus-mode 0)
-          ;; FIXME: is this a bug with activities.el? seems to bug
-          ;; (tab-bar-mode 1)
-          ;; (toggle-tab-bar-mode-from-frame)
-          ;; (toggle-frame-fullscreen)
-          (function-put 'bergheim/write-mode 'toggled nil))
+          (focus-mode -1)
+          (display-line-numbers-mode 1))
       (writeroom-mode 1)
       (focus-mode 1)
-      (display-line-numbers-mode -1)
-      ;; (tab-bar-mode -1)
-      ;; (toggle-frame-fullscreen)
-      (function-put 'bergheim/write-mode 'toggled t)))
+      (display-line-numbers-mode -1)))
   :config
   (setq writeroom-width 80)
   (setq writeroom-fullscreen-effect 'maximized)
