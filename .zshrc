@@ -458,6 +458,8 @@ if [[ "$INSIDE_EMACS" == *"comint"* ]]; then
   export YAY_PAGER=""
   export PAGER=""
   export GIT_PAGER=""
+  # don't pop up a menu after a second request for completion - use emacs for it
+  unsetopt AUTO_MENU
 fi
 
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
