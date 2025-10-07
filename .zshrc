@@ -24,8 +24,19 @@ fi
 # History
 #
 
-# Remove older command from the history if a duplicate is to be added.
-setopt HIST_IGNORE_ALL_DUPS
+HISTFILE=~/.histfile
+HISTSIZE=200000
+SAVEHIST=200000
+setopt extendedglob           # supports lots of globbing things
+setopt hist_ignore_dups       # ignore duplication command history list
+setopt hist_verify            # expand history onto the current line instead of executing it
+setopt hist_expire_dups_first # when trimming history, lose oldest duplicates first
+setopt hist_ignore_space      # don't save commands beginning with spaces to history
+setopt extended_history       # save beginning time and elapsed time before commands in history
+setopt append_history         # append to the end of the history file
+setopt inc_append_history     # don't just save at termend
+setopt share_history          # reloads the history whenever you use it
+setopt hist_ignore_all_dups   # delete old recorded entry if new entry is a duplicate
 
 #
 # Input/output
@@ -122,6 +133,7 @@ fi
 if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
   source ${ZIM_HOME}/zimfw.zsh init -q
 fi
+
 # Initialize modules.
 source ${ZIM_HOME}/init.zsh
 
@@ -204,20 +216,6 @@ autoload -Uz run-help
 alias help=run-help
 
 setopt no_beep
-
-HISTFILE=~/.histfile
-HISTSIZE=200000
-SAVEHIST=200000
-setopt extendedglob           # supports lots of globbing things
-setopt hist_ignore_dups       # ignore duplication command history list
-setopt hist_verify            # expand history onto the current line instead of executing it
-setopt hist_expire_dups_first # when trimming history, lose oldest duplicates first
-setopt hist_ignore_space      # don't save commands beginning with spaces to history
-setopt extended_history       # save beginning time and elapsed time before commands in history
-setopt append_history         # append to the end of the history file
-setopt inc_append_history     # don't just save at termend
-setopt share_history          # reloads the history whenever you use it
-setopt hist_ignore_all_dups   # delete old recorded entry if new entry is a duplicate
 
 # vim settings
 bindkey -v
@@ -430,6 +428,9 @@ if command -v gopass >/dev/null 2>&1; then
     source <(gopass completion zsh)
 fi
 
+if command -v atuin >/dev/null 2>&1; then
+    eval "$(atuin init zsh --disable-up-arrow)"
+fi
 
 # Import colorscheme from 'wal' asynchronously
 # &   # Run the process in the background.
