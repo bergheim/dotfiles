@@ -423,8 +423,13 @@ bindkey '^X' killfzf
 
 
 eval "$(zoxide init zsh)"
-eval "$(mise activate zsh)"
-source <(gopass completion zsh)
+if command -v mise >/dev/null 2>&1; then
+    eval "$(mise activate zsh)"
+fi
+if command -v gopass >/dev/null 2>&1; then
+    source <(gopass completion zsh)
+fi
+
 
 # Import colorscheme from 'wal' asynchronously
 # &   # Run the process in the background.
