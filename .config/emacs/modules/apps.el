@@ -13,11 +13,12 @@
    eshell-history-size nil))
 
 (use-package multishell
+  :unless bergheim/container-mode-p
   :ensure t
   :general
   (bergheim/global-menu-keys
-    "ass" '((lambda () (interactive) (multishell-pop-to-shell nil (expand-file-name default-directory))) :which-key "shell")
-    "asS" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
+    "att" '((lambda () (interactive) (multishell-pop-to-shell nil (expand-file-name default-directory))) :which-key "shell")
+    "atT" '((lambda () (interactive) (multishell-pop-to-shell '(4))) :which-key "new shell"))
   :config
   ;; don't ask for history confirmation on quit
   (remove-hook 'kill-buffer-query-functions #'multishell-kill-buffer-query-function))
@@ -82,8 +83,8 @@
    "C-M-j" #'compilation-next-error
    "C-M-k" #'compilation-previous-error)
   (bergheim/global-menu-keys
-    "asx" 'bergheim/tmux-shell-attach-flat
-    "asX" 'bergheim/tmux-shell-attach
+    "atx" 'bergheim/tmux-shell-attach-flat
+    "atX" 'bergheim/tmux-shell-attach
     "bs" '(bergheim/switch-to-shell :which-key "shells")
     "ps" '((lambda ()
              (interactive)

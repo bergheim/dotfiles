@@ -130,7 +130,7 @@
     "amm" '(smudge-my-playlists :which-key "Search my lists")
     "amp" '(smudge-playlist-search :which-key "Search playlists")
     "amt" '(smudge-track-search :which-key "Search track")
-    "as" '(:ignore t :which-key "Shells & terms")
+    "at" '(:ignore t :which-key "Terminals")
     "aw" '(treemacs :which-key "Treemacs workspace")
 
     "b" '(:ignore t :which-key "Buffers")
