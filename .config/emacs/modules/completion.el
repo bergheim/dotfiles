@@ -1,15 +1,15 @@
 ;;; completion.el --- Description -*- lexical-binding: t; -*-
 
-(defun bergheim/disable-pgtk-im ()
+(defun bergheim/disable-pgtk-im (&rest _args)
   ;; this enables S-SPC again, at the expense of input methods
   ;; see https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html
   (when (fboundp 'pgtk-use-im-context)
     (pgtk-use-im-context nil)))
 
 (use-package emacs
-  :hook (emacs-startup . bergheim/disable-pgtk-im)
   :ensure nil
   :config
+  (add-hook 'after-make-frame-functions #'bergheim/disable-pgtk-im)
   (setq enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
   (setq completion-cycle-threshold 1)                  ; TAB cycles candidates
   (setq completions-detailed t)                        ; Show annotations
