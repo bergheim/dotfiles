@@ -91,13 +91,15 @@
 
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
-    (scroll-bar-mode -1)
-    (with-eval-after-load 'ef-themes
-      (if (bergheim//system-dark-mode-enabled-p)
-          (ef-themes-select bergheim/theme-dark)
-        (ef-themes-select bergheim/theme-light)))))
+    (scroll-bar-mode 1)
+    (if (bergheim//system-dark-mode-enabled-p)
+        (load-theme bergheim/theme-dark t)
+      (load-theme bergheim/theme-light t))))
+
+(add-hook 'after-init-hook #'bergheim/frame-setup)
 
 (use-package ef-themes
+  :ensure (:wait t)
   :demand t
   :config
   (setq ef-themes-to-toggle '(ef-cyprus ef-deuteranopia-dark))
@@ -105,8 +107,8 @@
   ;; (setq ef-themes-variable-pitch-ui t
   ;;       ef-themes-mixed-fonts t
   ;;       ef-themes-headings ; read the manual's entry of the doc string
-  ;;       '((0 . (variable-pitch Book 1.9))
-  ;;         (1 . (variable-pitch Book 1.6))
+  ;;       '((0 . (variable-pitch Book 1.5))
+  ;;         (1 . (variable-pitch Book 1.25))
   ;;         (2 . (variable-pitch Book 1.1))
   ;;         (3 . (variable-pitch Book 1.0))
   ;;         (4 . (variable-pitch Light 1.0))
@@ -115,7 +117,7 @@
   ;;         (7 . (variable-pitch Light 1.0))
   ;;         (agenda-date . (semilight 1.1))
   ;;         (agenda-structure . (variable-pitch Book 1.2))
-  ;;         (t . (variable-pitch 1.1))))
+  ;;         (t . (variable-pitch 1.0))))
   )
 
 (defvar bergheim/dark-mode-p nil
