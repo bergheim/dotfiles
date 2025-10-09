@@ -151,10 +151,8 @@
  '((emacs-lisp . t)
    (C . t)
    (calc . t)
-   (C . t)
-   (typescript . t)
    (shell . t)
-   (js .t)))
+   (js . t)))
 
 ;; TODO: what is this again
 (org-add-link-type

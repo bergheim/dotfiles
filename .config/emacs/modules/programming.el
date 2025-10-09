@@ -97,7 +97,7 @@
     :states 'normal
     :keymaps 'emacs-lisp-mode-map
 
-    "d" '(nil :which-key "debug")
+    "d" '(:ignore t :which-key "debug")
     "de" '(edebug-defun             :which-key "edebug defun")
     "da" '(edebug-all-defs          :which-key "edebug all defs (buffer)")
     "di" '(edebug-on-entry          :which-key "edebug on entry")
@@ -111,10 +111,10 @@
     "dw" '(debug-watch              :which-key "native debug watch variable")
     "dW" '(cancel-debug-watch       :which-key "Cancel native debug watch")
 
-    "e" '(nil :which-key "eval")
+    "e" '(:ignore t :which-key "eval")
     "eb" '(eval-buffer              :which-key "buffer")
     "ed" '(eval-defun               :which-key "defun")
-    "ee" '(eval-last-sexp           :which-key "defun")
+    "ee" '(eval-last-sexp           :which-key "last sexp")
     "es" '(eval-last-sexp           :which-key "last sexp")
     "er" '(eval-region              :which-key "region")
     "el" '(eval-print-last-sexp     :which-key "print last sexp")
@@ -165,15 +165,6 @@
   :hook ((go-ts-mode . eglot-ensure)))
 
 (use-package sxhkdrc-mode)
-
-(use-package ob-typescript
-  :after org
-  :demand t
-  :config
-  ;; Assuming ob-typescript expects typescript-mode, we might need to
-  ;; temporarily alias typescript-ts-mode to typescript-mode.
-  (unless (fboundp 'typescript-mode)
-    (defalias 'typescript-mode 'typescript-ts-mode)))
 
 ;; see https://github.com/abicky/nodejs-repl.el for options
 (use-package nodejs-repl
