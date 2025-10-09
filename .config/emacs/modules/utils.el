@@ -327,6 +327,8 @@ Lisp function does not specify a special indentation."
     "adn" '(docker-networks :which-key "Networks")
     "adv" '(docker-volumes :which-key "Volumes")))
 
+(use-package docker-compose-mode)
+
 (use-package devcontainer
   :demand
   :ensure (:host github :repo "johannes-mueller/devcontainer.el")

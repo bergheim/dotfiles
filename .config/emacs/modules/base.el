@@ -294,8 +294,6 @@
          ("\\.slice\\'" . systemd-mode)
          ("\\.path\\'" . systemd-mode)))
 
-(use-package docker-compose-mode)
-
 (use-package info
   :ensure nil
   :general
