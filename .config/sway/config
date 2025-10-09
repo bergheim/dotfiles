@@ -240,7 +240,7 @@ bindsym $mod+Shift+Return exec foot
 # bindsym $mod+Return exec emacsclient -c -n -F '((menu-bar-lines . 0) (tool-bar-lines . 0) (tab-bar-lines . 0) (vertical-scroll-bars . nil))' -e '(shell (generate-new-buffer-name "*shell*"))'
 
 # Emacsclient
-bindsym $mod+Return exec emacsclient -nc -F '((tab-bar-lines . 0))'
+bindsym $mod+Return exec emacsclient -nc
 
 # File managers
 bindsym $mod+d exec dolphin
@@ -265,9 +265,13 @@ bindsym $mod+F1 exec toggle-darkmode
 # Toggle redshift (or use gammastep for wayland)
 bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
 
-# Screenshot (replace with grim/slurp)
-bindsym $mod+F3 exec grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot captured'
-bindsym $mod+F4 exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png && notify-send 'Screenshot area captured'
+# Screenshots
+bindsym Print exec grimshot save active ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.png
+bindsym Shift+Print exec grimshot save anything - | tee ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-shared__.png | vips thumbnail_source '[descriptor=0]' '.webp[Q=80,strip]' 1920 --height 1200 --size down | curl --form 'file=@-' -Fsecret= -Fexpires=24 http://0x0.st | wl-copy && notify-send "Screenshot uploaded, URL copied" || notify-send "Upload failed"
+# bindsym Mod4+p       exec grimshot save active
+# bindsym Mod4+Shift+p exec grimshot save area
+# bindsym Mod4+Mod1+p  exec grimshot save output
+# bindsym Mod4+Ctrl+p  exec grimshot save window
 
 # WIFI
 bindsym $mod+F5 exec alacritty --class floating -e impala
