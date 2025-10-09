@@ -40,8 +40,12 @@
    "C-d" (lambda ()
            (interactive)
            (if (comint-after-pmark-p)
-               (kill-current-buffer)
+               (comint-send-eof)
              (evil-scroll-down nil)))
+   "RET" (lambda ()
+           (interactive)
+           (when (comint-after-pmark-p)
+             (comint-send-input)))
    "C-r" (lambda ()
            (interactive)
            (goto-char (point-max))
@@ -60,7 +64,7 @@
              (comint-kill-input)
              (insert (completing-read "History: " (ring-elements comint-input-ring) 
                                       nil nil input))))
-   "C-d" 'kill-current-buffer
+   "C-d" 'comint-send-eof
    "C-a" #'comint-bol
    "C-e" #'end-of-line
    "M-h" (lambda ()
@@ -71,6 +75,9 @@
            (interactive)
            (evil-normal-state)
            (evil-window-right 1)))
+  (:keymaps 'shell-mode-map
+   "C-M-j" #'compilation-next-error
+   "C-M-k" #'compilation-previous-error)
   (bergheim/global-menu-keys
     "asx" 'bergheim/tmux-shell-attach-flat
     "asX" 'bergheim/tmux-shell-attach
@@ -137,7 +144,7 @@
   (cl-pushnew '(file-uri "^file://\\([^:]+\\):\\([0-9]+\\)" 1 2)
               compilation-error-regexp-alist-alist :test #'equal)
 
-  ;; this matches things like ./foo/bar/src.c and /foo/bar/src.c 
+  ;; this matches things like ./foo/bar/src.c and /foo/bar/src.c
   (cl-pushnew
    '(bare-file-col "^\\(\\(?:\\.\\.?/\\|/\\)[^:\n]+\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3)
    compilation-error-regexp-alist-alist :test #'equal)
