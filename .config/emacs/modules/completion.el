@@ -82,7 +82,8 @@
   ;; force C-' in org-mode as well
   (with-eval-after-load 'org
     (define-key org-mode-map (kbd "C-'") #'embark-act))
-  (evil-collection-embark-setup)
+  (when (featurep 'evil)
+    (evil-collection-embark-setup))
   (setq embark-confirm-act-all nil)
   (add-to-list 'embark-multitarget-actions #'bergheim/grep-selected-buffers)
   (define-key embark-buffer-map (kbd "g") #'bergheim/grep-selected-buffers)
