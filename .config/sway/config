@@ -267,7 +267,7 @@ bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperatur
 
 # Screenshots
 bindsym Print exec grimshot save active ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.png
-bindsym Shift+Print exec grimshot save anything - | tee ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-shared__.png | vips thumbnail_source '[descriptor=0]' '.webp[Q=80,strip]' 1920 --height 1200 --size down | curl --form 'file=@-' -Fsecret= -Fexpires=24 http://0x0.st | wl-copy && notify-send "Screenshot uploaded, URL copied" || notify-send "Upload failed"
+bindsym Shift+Print exec FILE=~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-shared__.png && grimshot save anything "$FILE" && notify-send "Screenshot saved, uploading..." && vips thumbnail "$FILE" '.webp[Q=80,strip]' 1920 --height 1200 --size down | curl --form 'file=@-' -Fsecret= -Fexpires=24 http://0x0.st | wl-copy && notify-send "URL copied" || notify-send "Upload failed"
 # bindsym Mod4+p       exec grimshot save active
 # bindsym Mod4+Shift+p exec grimshot save area
 # bindsym Mod4+Mod1+p  exec grimshot save output
