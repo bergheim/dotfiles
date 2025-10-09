@@ -27,6 +27,9 @@
   :general
   (:states '(normal insert)
    :keymaps 'shell-mode-map
+   "C-b" (lambda ()
+           (interactive)
+           (comint-send-string (current-buffer) "\C-r"))
    "M-p" (lambda ()
            (interactive)
            (goto-char (point-max))
