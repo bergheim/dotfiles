@@ -1,7 +1,14 @@
 #!/usr/bin/env sh
 
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_TTY" ]; then
-    TERM=xterm-direct emacsclient -a "" -t --eval '(bergheim/ssh-connect)' "$@"
+    # SSH session - use terminal
+    # TODO: add this back once the function is merged
+    # emacsclient -a "" -t --eval '(bergheim/ssh-connect)' "$@"
+    emacsclient -a "" -t "$@"
+elif [ -n "$WAYLAND_DISPLAY" ] || [ -n "$DISPLAY" ]; then
+    # GUI available (Sway, i3, or other)
+    emacsclient -a "" -nc "$@"
 else
-    emacsclient -a "" -c "$@"
+    # Fallback to terminal (local tty)
+    emacsclient -a "" -t "$@"
 fi
