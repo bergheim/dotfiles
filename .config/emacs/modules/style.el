@@ -91,7 +91,7 @@
 
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
-    (scroll-bar-mode 1)
+    (scroll-bar-mode -1)
     (if (bergheim//system-dark-mode-enabled-p)
         (load-theme bergheim/theme-dark t)
       (load-theme bergheim/theme-light t))))
