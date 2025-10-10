@@ -83,31 +83,8 @@
 
 (use-package smartparens
   :ensure t
-(use-package paredit
-  :after general
-  :hook (emacs-lisp-mode . paredit-mode)
   :config
   (smartparens-global-mode t))
-  :hook (emacs-lisp-mode . (lambda () (setq-local evil-move-beyond-eol t))))
-
-;; this is pretty active
-(use-package enhanced-evil-paredit
-  :after paredit
-  :config
-  (general-define-key
-   :states 'normal
-   :keymaps 'paredit-mode-map
-   "H" 'paredit-backward
-   "J" 'paredit-forward-down
-   ;; "M-J" 'paredit-forward-up
-   "K" 'paredit-backward-up
-   ;; "K" 'paredit-backward-up
-   "L" 'paredit-forward
-   "C-M-l" 'paredit-forward-slurp-sexp
-   "C-M-h" 'paredit-forward-barf-sexp
-   "C-M-j" 'paredit-backward-barf-sexp
-   "C-M-k" 'paredit-backward-slurp-sexp)
-  :hook (paredit-mode . #'enhanced-evil-paredit))
 
 (use-package paredit
   :after general
