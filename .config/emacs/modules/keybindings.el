@@ -41,12 +41,11 @@
 
   (general-define-key
    :states '(normal visual emacs)
-
    "C-M-<return>" '((lambda ()
                       (interactive)
                       (if (equal (buffer-name) "*dashboard*")
-                        (shell)
-                      (multishell-pop-to-shell nil (expand-file-name default-directory))))
+                          (shell)
+                        (multishell-pop-to-shell nil (expand-file-name default-directory))))
                     :which-key "shell")
    "C-=" 'global-text-scale-adjust
    "C--" '(lambda () (interactive) (global-text-scale-adjust -1))
@@ -147,6 +146,7 @@
     "be" '(bookmark-bmenu-list :which-key "Bookmark edit")
     "bj" '(bookmark-jump :which-key "Bookmark jump")
     "bf" '(consult-bookmark :which-key "Bookmark find")
+    "bl" '(ibuffer :which-key "ibuffer")
 
     "c" '(:ignore t :which-key "Code")
     "cb" '(eldoc-doc-buffer :which-key "Eldoc other buffer")
@@ -267,10 +267,11 @@
     "i" '(:ignore t :which-key "Insert")
     "ir" '(consult-register :which-key "Register")
     "ie" '(emoji-search :which-key "Emojiii")
+    "iE" '(emoji-insert :which-key "Emojiii")
     "ik" '(karakeep-dwim :which-key "Send to Karakeep")
     "iK" `(,(bergheim/call-with-universal-arg  #'karakeep-dwim) :which-key "Send to Karakeep list")
     "iu" '(insert-char :which-key "Unicode")
-    "ip" '(consult-yank-pop :which-key "kill-ring")
+    "iy" '(consult-yank-pop :which-key "kill-ring")
 
     "j" '(:ignore t :which-key "AI")
 
@@ -315,7 +316,6 @@
     "sn" '(consult-focus-lines :which-key "narrow view")
     "so" '(consult-outline :which-key "outline")
     ;; todo remember consult-kmacro
-    "sp" '(bergheim/consult-ripgrep-with-selection :which-key "Current directory")
     "ss" '(consult-line :which-key "buffer")
     "sS" '(consult-line-multi :which-key "open buffers")
 

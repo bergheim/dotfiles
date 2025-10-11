@@ -49,6 +49,8 @@
   :config
   (bufler-mode)
   :general
+  (bergheim/global-menu-keys
+    "bL" '(bufler :which-key "bufler"))
   (:keymaps 'bufler-list-mode-map
    :states '(normal visual)
    "C-j" (lambda ()
