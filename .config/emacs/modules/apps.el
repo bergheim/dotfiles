@@ -1,6 +1,13 @@
 ;; -*- lexical-binding: t; -*-
 
-(use-package password-store)
+(use-package password-store
+  :general
+  (bergheim/global-menu-keys
+    "yp" 'password-store-copy
+    "ip" 'password-store-generate
+    "iP" 'password-store-generate-no-symbols))
+
+(use-package pass)
 
 (use-package em-hist
   :ensure nil
