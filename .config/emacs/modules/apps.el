@@ -7,7 +7,8 @@
     "ip" 'password-store-generate
     "iP" 'password-store-generate-no-symbols))
 
-(use-package pass)
+(use-package pass
+  :unless bergheim/container-mode-p)
 
 (use-package em-hist
   :ensure nil
@@ -604,6 +605,7 @@ Open `dired` in the resolved directory of the current command."
 
 ;; pastebin stuff
 (use-package 0x0
+  :unless bergheim/container-mode-p
   :after general
 
   :general
@@ -614,6 +616,7 @@ Open `dired` in the resolved directory of the current command."
     "ysf" '(0x0-upload-file :which-key "File")))
 
 (use-package elfeed
+  :unless bergheim/container-mode-p
   :after general
   :commands elfeed
   :init
@@ -742,6 +745,7 @@ Open `dired` in the resolved directory of the current command."
 ;;   (elfeed-goodies/setup))
 
 (use-package smudge
+  :unless bergheim/container-mode-p
   :custom
   (smudge-oauth2-client-secret bergheim/spotify/client-secret)
   (smudge-oauth2-client-id bergheim/spotify/client-id)
