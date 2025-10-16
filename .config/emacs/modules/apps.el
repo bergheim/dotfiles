@@ -591,9 +591,11 @@ Open `dired` in the resolved directory of the current command."
   :general
   (bergheim/global-menu-keys
     "ap" '(proced :which-key "Proced"))
+  :hook
+  (proced-post-display . hl-line-mode)
   :custom
   (proced-auto-update-flag t)
-  (proced-auto-update-interval 1)
+  (proced-auto-update-interval 2)
   (proced-goal-attribute nil) ;; don't move cursor to args when navigating
   (proced-show-remote-processes t) ;; enable TRAMP support
   (proced-enable-color-flag t)
@@ -601,7 +603,7 @@ Open `dired` in the resolved directory of the current command."
   :config
   (add-to-list
    'proced-format-alist
-   '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm))))
+   '(custom user pid tree pcpu rss start state (args comm))))
 
 ;; pastebin stuff
 (use-package 0x0
