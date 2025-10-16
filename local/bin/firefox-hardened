@@ -1,0 +1,10 @@
+#!/bin/sh
+
+PROFILE="hardened"
+
+if [ "$1" = "--float" ]; then
+    shift
+    exec firefox --class floating -P "$PROFILE" -no-remote -new-instance "$@"
+else
+    exec firefox -P "$PROFILE" -no-remote -new-instance "$@"
+fi

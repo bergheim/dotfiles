@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Firefox Hardened
+Comment=Minimal, extension-free browser for secure tasks
+Exec=firefox-hardened
+Icon=firefox
+Terminal=false
+Categories=Network;WebBrowser;
