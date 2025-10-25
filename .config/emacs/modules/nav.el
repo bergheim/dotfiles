@@ -163,7 +163,7 @@ With a universal argument, it allows entering the application to use."
         ;; Ask whether destination dirs should get created when copying/removing files.
         dired-create-destination-dirs 'ask
 
-        dired-kill-when-opening-new-dired-buffer t
+        dired-kill-when-opening-new-dired-buffer nil
         dired-vc-rename-file t
 
         ;; dired-omit-files
