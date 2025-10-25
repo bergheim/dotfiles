@@ -279,6 +279,13 @@ bindsym $mod+F5 exec alacritty --class floating -e impala
 # reload the configuration file
 bindsym $mod+F6 reload
 
+# Start screencast
+# region
+bindsym $mod+Shift+r exec "record-sway"
+# window
+bindsym $mod+Shift+w exec "record-sway window"
+bindsym $mod+Shift+s exec "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"
+
 # Media keys
 # bindsym XF86AudioPrev exec playerctl previous  
 # bindsym XF86AudioNext exec playerctl next

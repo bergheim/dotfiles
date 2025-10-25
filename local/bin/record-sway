@@ -1,0 +1,33 @@
+#!/bin/sh
+
+VIDDIR="$HOME/Videos/screencasts"
+mkdir -p "$VIDDIR"
+STAMP=$(date +%F_%H%M%S)
+TMPVID="$VIDDIR/screencast_$STAMP.mkv"
+OUTWEBP="$VIDDIR/screencast_$STAMP.webp"
+
+# disable notifications while recording
+makoctl set-mode do-not-disturb
+
+# Get recording area: either use argument "window" or prompt with slurp
+if [ "$1" = "window" ]; then
+    RECT=$(swaymsg -t get_tree | \
+        jq -r '.. | select(.focused? == true) | .rect | "\(.x),\(.y) \(.width)x\(.height)"')
+
+    if [ -z "$RECT" ]; then
+        notify-send "Wayland WebP Record" "Could not find focused window. Falling back to region select."
+        RECT=$(slurp)
+    fi
+else
+    RECT=$(slurp)
+fi
+
+# notify-send "Wayland WebP Record" "Recording area: $RECT"
+wf-recorder -g "$RECT" -f "$TMPVID"
+
+makoctl set-mode default
+
+notify-send "Wayland WebP Record" "Converting to webp..."
+ffmpeg -i "$TMPVID" -vf "fps=10,scale=1280:-1:flags=lanczos" -loop 0 "$OUTWEBP"
+
+notify-send "Wayland WebP Record" "Done! Output: $OUTWEBP"
