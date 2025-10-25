@@ -161,7 +161,17 @@ With a universal argument, it allows entering the application to use."
         dired-use-ls-dired t ;; parse names reliably
         dired-clean-confirm-killing-deleted-buffers nil
         ;; Ask whether destination dirs should get created when copying/removing files.
-        dired-create-destination-dirs 'ask)
+        dired-create-destination-dirs 'ask
+
+        dired-kill-when-opening-new-dired-buffer t
+        dired-vc-rename-file t
+
+        ;; dired-omit-files
+        ;; (rx (or (seq bol (? ".") "#")         ;; emacs autosave files
+        ;;         (seq bol "." (not (any "."))) ;; dot-files
+        ;;         (seq "~" eol)))               ;; backup-files
+        dired-listing-switches "-alGh --group-directories-first")
+
   (general-define-key
    :states 'normal
    :keymaps 'dired-mode-map
