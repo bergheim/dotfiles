@@ -14,7 +14,7 @@
 (use-package mcp
   :after gptel
   :config
-  (require 'mcp-hub))
+  (load "gptel/tools/mcp"))
 
 (use-package gptel
   :after evil
@@ -91,6 +91,8 @@
      (directory-files dir-path t "\\.md\\'")))
   :config
   (require 'gptel-integrations)
+  (load "gptel/tools/init")
+
   (defun bergheim/gptel-select-model ()
     "Select a gptel model using completing-read."
     (interactive)
@@ -149,12 +151,19 @@
     :stream t
     :key (bergheim/get-api-key "api/llm/openai" "OPENAI_API_KEY"))
 
-  (setq gptel-backend
+  (setq gptel-cache '(message system tool))
+  (setq gptel-api-key (bergheim/get-api-key "api/llm/openai" "OPENAI_API_KEY"))
+
+  (setq gptel-model 'claude-sonnet-4-20250514
+        gptel-backend
         (gptel-make-anthropic "Claude"
           :stream t
           :key (bergheim/get-api-key "api/llm/anthropic" "ANTHROPIC_API_KEY")))
-
-  (setq gptel-model 'claude-sonnet-4-20250514)
+  ;; :models '((claude-sonnet-4-20250514
+  ;;            :capabilities (media    json                 tool-use) 
+  ;;            ;;                ▲     ▲ supports           ▲ 
+  ;;            ;; supports media╶╯     ╰─structured outputs ╰─can use tools
+  ;;            :mimetypes ("application/pdf" "image/png" "image/jpeg")))))
 
   (defun bergheim/gptel-submit ()
     (interactive)
