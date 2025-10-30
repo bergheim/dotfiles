@@ -419,11 +419,13 @@ set $c15 #fbf1c7
 for_window [all] title_window_icon on
 for_window [all] title_window_icon padding 5px
 
+include ~/.config/sway/colors
+
 # see https://thomashunter.name/i3-configurator/
 # class                 border  backgr. text indicator child_border
-client.focused          $c10    $c10    $bg  $c4       $c10
-client.focused_inactive $fg     $bg     $fg  $fg       $bg
-client.unfocused        $fg     $bg     $fg  $fg       $bg
+client.focused          $c10           $c10           $focused_text  $c4            $c10
+client.focused_inactive $subtle_border $bg            $fg            $fg            $subtle_border  
+client.unfocused        $subtle_border $bg            $fg            $fg            $subtle_border
 client.urgent           $fg     $c1     $bg  $bg       $c1
 client.placeholder      $fg     $bg     $fg  $bg       $bg
 client.background       $bg

@@ -35,6 +35,8 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
     fi
     ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
+    ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
+    swaymsg reload
     if pgrep -x "dunst" >/dev/null; then
         dunstctl reload ~/.config/dunst/dunstrc &
     fi
@@ -56,6 +58,8 @@ else
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
     fi
     ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
+    ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
+    swaymsg reload
     if pgrep -x "dunst" >/dev/null; then
         dunstctl reload ~/.config/dunst/dunstrc_dark &
     fi

@@ -1,0 +1,10 @@
+set $bg #ebebdb
+set $fg #2c3e50
+set $c1 #950f0f
+set $c4 #195465
+set $c9 #950f0f
+set $c10 #c0df6f
+set $c15 #98d1ce
+
+set $focused_text #000000
+set $subtle_border #d0d0d0
