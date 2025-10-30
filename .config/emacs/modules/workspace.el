@@ -38,13 +38,6 @@
   :init
   (winner-mode 1))
 
-(defun bergheim/zoom-window ()
-  "Maximize the window or restore the previous layout."
-  (interactive)
-  (if (one-window-p)
-      (winner-undo)
-    (delete-other-windows)))
-
 (use-package bufler
   :config
   (bufler-mode)

@@ -98,6 +98,13 @@
 
 (add-hook 'after-init-hook #'bergheim/frame-setup)
 
+(defun bergheim/zoom-window ()
+  "Maximize the window or restore the previous layout."
+  (interactive)
+  (if (one-window-p)
+      (winner-undo)
+    (delete-other-windows)))
+
 (use-package ef-themes
   :ensure (:wait t)
   :demand t
