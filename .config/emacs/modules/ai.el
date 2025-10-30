@@ -380,41 +380,6 @@ Prompts for session name if none provided. Inserts selected region text into cha
   ;; (org-ai-install-yasnippets))
   (setq org-ai-default-chat-model "gpt-4"))
 
-;; TODO see shell-maker-set-prompt
-(use-package chatgpt-shell
-  :disabled
-  :after general
-  :demand t
-  :config
-  (setq chatgpt-shell-openai-key
-        (password-store-get "api/llm/openai"))
-  :general
-  (general-define-key
-   :keymaps 'chatgpt-shell-mode-map
-   ;; :states '(normal insert visual emacs)
-   "C-c RET" '(shell-maker-submit t :which-key "Send prompt")
-   "RET" '(newline t :which-key "Newline"))
-  (bergheim/localleader-keys
-    :keymaps 'chatgpt-shell-mode-map
-    "m" '(chatgpt-shell-mark-at-point-dwim t :which-key "Mark at point")
-    "c" '(chatgpt-shell-prompt-compose t :which-key "Compose prompt"))
-
-  (bergheim/global-menu-keys
-    "jc" '(chatgpt-shell :which-key "Shell")
-    "je" '(chatgpt-shell-explain-code :which-key "Explain")
-    "jg" '(chatgpt-shell-write-git-commit :which-key "Git commit")
-    "jG" '(chatgpt-shell-prompt-header-write-git-commit :which-key "Prompt git commit")
-    "ju" '(chatgpt-shell-generate-unit-test :which-key "Generate unit tests")
-    "jr" '(chatgpt-shell-refactor-code :which-key "Refactor")
-    ;; "jJ" '(chatgpt-shell-prompt-compose :which-key "Compose prompt")
-    ))
-
-(use-package ob-chatgpt-shell
-  :commands (ob-chatgpt-shell-setup)
-  :demand t
-  :config
-  (ob-chatgpt-shell-setup))
-
 (use-package copilot
   :demand t
   :general
