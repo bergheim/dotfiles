@@ -1,0 +1,16 @@
+#!/bin/env sh
+
+notify-send -u critical "System Restart" "Restarting system..."
+
+# save buffers etc
+systemctl --user stop emacs
+
+# this is so we reboot after we are logged out
+# systemd-run --on-active=3s systemctl reboot
+systemctl reboot &
+sleep 1
+swaymsg exit
+
+# if all else fails 🤷
+sleep 2
+/usr/bin/reboot
