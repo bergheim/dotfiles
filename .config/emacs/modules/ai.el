@@ -5,6 +5,8 @@
 ;; Author: Thomas Bergheim
 ;; Maintainer: Thomas Bergheim
 
+(setq bergheim/ollama-endpoint "berghome:11434")
+
 (defun bergheim/get-api-key (pass-key env-var)
   "Get API key from password-store first, fallback to environment variable."
   (or (and (fboundp 'password-store-get)
@@ -12,6 +14,7 @@
       (getenv env-var)))
 
 (use-package mcp
+  :ensure t
   :after gptel
   :config
   (load "gptel/tools/mcp"))
@@ -285,6 +288,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (defun bergheim/gptel-select-system-prompt (&optional directive-key)
     "Set system message in local gptel buffer to directive/prompt indicated by DIRECTIVE-KEY."
     (interactive)
+    (setq gptel-directives (bergheim/read-directives (expand-file-name "prompts" bergheim/config-dir)))
     (let* ((completion-extra-properties '(:annotation-function bergheim/gptel--annotate-directives))
            (current-name (or gptel--system-message-name "default"))
            (directive-key (or directive-key
@@ -350,13 +354,13 @@ Prompts for session name if none provided. Inserts selected region text into cha
   ;; (gptel-temperature 1.0)
   ;; (gptel-max-tokens 400)
   (gptel-response-prefix-alist
-   '((markdown-mode . "HAL: ")
-     (org-mode . "HAL: ")
-     (text-mode . "HAL: ")))
+   '((markdown-mode . "# HAL")
+     (org-mode . "* HAL:\n")
+     (text-mode . "@HAL:")))
   (gptel-prompt-prefix-alist
    '((markdown-mode . "# ")
      (org-mode . "* ")
-     (text-mode . "# "))))
+     (text-mode . "@user "))))
 
 (use-package ob-gptel
   :ensure (:host github :repo "jwiegley/ob-gptel")
