@@ -13,39 +13,6 @@ CopyArrivalDate yes
 
 Sync All # already global default
 
-# glvortex account
-# ----------------
-IMAPAccount glvortex
-    Host 127.0.0.1
-    Port 1143
-    UserCmd "pass show email/glvortex/address"
-    PassCmd "pass show email/glvortex/bridge"
-    TLSType STARTTLS
-    CertificateFile /etc/ssl/certs/protonbridge.pem
-
-IMAPStore glvortex-remote
-    Account glvortex
-
-MaildirStore glvortex-local
-    SubFolders Verbatim
-    Path ~/.mail/glvortex/
-    Inbox ~/.mail/glvortex/Inbox
-    # Trash Trash
-    # TODO trash?
-
-Channel glvortex
-    Far :glvortex-remote:
-    Near :glvortex-local:
-    Patterns * !"Labels/*" !"Folders/*" !"All Mail"
-    Expunge Both
-
-Channel glvortex-inbox
-    Far :glvortex-remote:
-    Near :glvortex-local:
-    # this setup ignores all mail because I do not want all the email lists etc..
-    Patterns "INBOX" "Archive" "Sent" "Trash" "Folders/git" "Folders/bergtech" "Folders/opportunities" "Drafts"
-    Expunge Both # sync changes like delete to server
-
 # NTNU account
 # ----------------
 IMAPAccount ntnu
@@ -77,6 +44,42 @@ Channel ntnu-inbox
     Patterns "INBOX" "Sent" "Trash" "Drafts"
     Expunge Both
 
+# mailbox.org account
+# ----------------
+IMAPAccount mailbox
+    Host imap.mailbox.org
+    UserCmd "pass show email/mailbox/address"
+    PassCmd "pass show email/mailbox/pass"
+    TLSType IMAPS
+
+IMAPStore mailbox-remote
+    Account mailbox
+
+MaildirStore mailbox-local
+    SubFolders Verbatim
+    Path ~/.mail/mailbox/
+    Inbox ~/.mail/mailbox/Inbox
+
+Channel mailbox-spam
+    Far :mailbox-remote:"Junk"
+    Near :mailbox-local:"Spam"
+    Expunge Both
+
+Channel mailbox
+    Far :mailbox-remote:
+    Near :mailbox-local:
+    Patterns * !"Junk" !"Spam"
+    Expunge Both
+
+Channel mailbox-inbox
+    Far :mailbox-remote:
+    Near :mailbox-local:
+    Patterns "INBOX" "Sent" "Trash" "Drafts"
+    Expunge Both
+
+Group mailbox
+    Channel mailbox
+    Channel mailbox-spam
 
 # gmail account
 # --------------
@@ -135,12 +138,6 @@ Channel gmail-spam
     Far :gmail-remote:"[Gmail]/Spam"
     Near :gmail-local:"Spam"
     Expunge Both
-
-Group glvortex
-    Channel glvortex
-
-Group glvortex-inbox
-    Channel glvortex-inbox
 
 Group gmail
     Channel gmail-inbox

@@ -6,9 +6,9 @@ MAIL_SYNC_FILE="$MAIL_DIR/.lastsync"
 # todo < /dev/null this
 if [ -z "$1" ]; then
     # xoauth2 generates these annoying debug outputs
-    parallel "mbsync {}" ::: "glvortex-inbox" "gmail-inbox" "ntnu" "mailbox" 2>&1 >/dev/null
+    parallel "mbsync {}" ::: "gmail-inbox" "ntnu" "mailbox" 2>&1 >/dev/null
 else
-    parallel "mbsync {}" ::: "glvortex" "gmail" "ntnu" "mailbox" 2>&1 >/dev/null
+    parallel "mbsync {}" ::: "gmail" "ntnu" "mailbox" 2>&1 >/dev/null
 fi
 
 # something like this would work if we could index mu behind the scenes. but if
@@ -23,7 +23,8 @@ NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
 echo "Num new mails ${NEW_MAILS_COUNT}"
 
 if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
-    /usr/bin/emacsclient -e '(mu4e-update-index)' 2> /dev/null
+    /usr/bin/emacsclient -e '(mu4e-update-index)'
+    /usr/bin/emacsclient -e '(mu4e~headers-maybe-auto-update)'
     if [ "$NEW_MAILS_COUNT" -gt "1" ]; then
         notify-send --icon=emblem-documents --category email --app-name=mbsync "You've got mail" "You have $NEW_MAILS_COUNT new emails" &
     fi
