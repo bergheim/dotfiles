@@ -23,6 +23,7 @@
 (defvar bergheim/theme-dark 'ef-night)
 
 (use-package fontaine
+  :if (display-graphic-p)
   :hook
   ;; Persist the latest font preset when closing/starting Emacs.
   ((after-init . fontaine-mode)
