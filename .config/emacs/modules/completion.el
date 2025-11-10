@@ -416,16 +416,17 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
   (defun bergheim/org-mode-setup-corfu ()
     "Configure CAPFs for Org buffers."
-    (when (and (derived-mode-p 'org-mode)
-               buffer-file-name)
-      (dolist (capf (list #'cape-tex       ;; expands \
-                          #'org-block-capf ;; expands <
-                          #'cape-elisp-block
-                          (cape-capf-super #'cape-dabbrev
-                                           #'cape-dict
-                                           #'cape-keyword)
-                          #'cape-emoji))   ;; expands :
-        (add-hook 'completion-at-point-functions capf nil 'local))))
+    (when buffer-file-name
+      (setq-local completion-at-point-functions
+                  (list #'tempel-complete
+                        #'cape-tex       ;; expands \
+                        #'org-block-capf ;; expands <
+                        #'cape-elisp-block
+                        (cape-capf-super #'cape-dabbrev
+                                         #'cape-dict
+                                         #'cape-keyword)
+                        #'cape-emoji)   ;; expands :
+      )))
 
   (add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu))
 
@@ -504,17 +505,21 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :init
 
   (defun tempel-setup-capf ()
-    ;; Add the Tempel Capf to `completion-at-point-functions'.
-    ;; `tempel-expand' only triggers on exact matches. Alternatively use
-    ;; `tempel-complete' if you want to see all matches, but then you
-    ;; should also configure `tempel-trigger-prefix', such that Tempel
-    ;; does not trigger too often when you don't expect it. NOTE: We add
-    ;; `tempel-expand' *before* the main programming mode Capf, such
-    ;; that it will be tried first.
+    ;; Add the Tempel Capf to `completion-at-point-functions'.  `tempel-expand'
+    ;; only triggers on exact matches. We add `tempel-expand' *before* the main
+    ;; programming mode Capf, such that it will be tried first.
     (setq-local completion-at-point-functions
                 (cons #'tempel-complete
-                      completion-at-point-functions)))
+                      (remove #'tempel-complete completion-at-point-functions)))
 
+    ;; Alternatively use `tempel-complete' if you want to see all matches.  Use
+    ;; a trigger prefix character in order to prevent Tempel from triggering
+    ;; unexpectly.
+    ;; (setq-local corfu-auto-trigger "/"
+    ;;             completion-at-point-functions
+    ;;             (cons (cape-capf-trigger #'tempel-complete ?/)
+    ;;                   completion-at-point-functions))
+  )
   (add-hook 'conf-mode-hook 'tempel-setup-capf)
   (add-hook 'prog-mode-hook 'tempel-setup-capf)
   (add-hook 'text-mode-hook 'tempel-setup-capf))
