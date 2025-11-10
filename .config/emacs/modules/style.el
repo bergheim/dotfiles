@@ -106,8 +106,6 @@
     (delete-other-windows)))
 
 (use-package ef-themes
-  :ensure (:wait t)
-  :demand t
   :config
   (setq ef-themes-to-toggle '(ef-cyprus ef-deuteranopia-dark))
   ;; crazy Summer settings
@@ -126,6 +124,8 @@
   ;;         (agenda-structure . (variable-pitch Book 1.2))
   ;;         (t . (variable-pitch 1.0))))
   )
+
+(use-package doric-themes)
 
 (defvar bergheim/dark-mode-p nil
   "Is dark mode enabled?")
