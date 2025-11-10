@@ -7,6 +7,7 @@
                          "build/mu4e/mu4e-config.el"
                          "build/mu4e/mu4e.info")
                  :repo "djcb/mu"
+                 :tag "v1.12.13"
                  :main "mu4e/mu4e.el"
                  :pre-build (("./autogen.sh" "-Dtests=disabled")
                              ("ninja" "-C" "build")
