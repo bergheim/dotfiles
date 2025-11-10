@@ -33,9 +33,6 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                      #'eglot-completion-at-point
                      ))))
 
-;; (use-package track-changes
-;; :ensure (:host "https://elpa.gnu.org/packages/track-changes"))
-
 (use-package eglot
   ;; FIXME: if we use the one on ELPA we need track-changes
   :ensure nil
