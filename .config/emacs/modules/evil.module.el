@@ -167,21 +167,6 @@
       (switch-to-buffer targetBuf)
       (goto-char targetPos))))
 
-;; (use-package lispyville
-;;   :ensure t
-;;   :after evil
-;;   ;; :defer t
-;;   :init
-;;   (general-add-hook '(emacs-lisp-mode-hook lisp-mode-hook) #'lispyville-mode)
-;;   :config
-;;   (setq lispyville-key-theme '(operators c-w additional
-;;                                          additional-movement slurp/barf-cp
-;;                                          text-objects)))
-;; (use-package iedit
-;;   :after lispyville
-;;   :config
-;;   (define-key iedit-mode-keymap (kbd "C-;") nil))  ; this is used by embark
-
 ;; posframe is.. kinda cool I guess? but it does not contain all the text..
 ;; (use-package posframe
 ;;   :ensure t

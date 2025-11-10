@@ -4,11 +4,24 @@
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
+  :general
+  (bergheim/global-menu-keys
+    "c" '(:ignore t :which-key "code")
+    "ca" '(lsp-execute-code-action :which-key "action")
+    "cR" '(lsp-rename :which-key "rename")
+    "cf" '(lsp-format-buffer :which-key "format buffer")
+    "cF" '(lsp-format-region :which-key "format region")
+    "ci" '(lsp-find-implementation :which-key "find implementation")
+    ;; "ci" '(lsp-goto-implementation :which-key "Find implementation")
+    ;; "ci" '(lsp-goto-type-definition :which-key "Find implementation")
+    "co" '(lsp-organize-imports :which-key "organize imports"))
   :init
   (setq bergheim/lsp-keymap-prefix "C-c l")
   :hook
   ((js-mode
+    js-ts-mode
     typescript-mode
+    typescript-ts-mode
     tsx-ts-mode
     html-mode
     css-mode
@@ -22,6 +35,9 @@
 
 (use-package lsp-treemacs
   :after (lsp-mode treemacs)
+  :config
+  (setq lsp-treemacs-type-hierarchy-expand-depth 5)
+  (setq lsp-treemacs-error-list-expand-depth 5)
   :commands lsp-treemacs-errors-list)
 
 ;; (use-package dap-mode
@@ -42,14 +58,15 @@
   :config
   (setq dap-auto-configure-features '(sessions locals breakpoints expressions controls)) ; https://github.com/emacs-lsp/dap-mode/issues/314
 
-  (require 'dap-js)        ; ships with the latest dap-mode
-  (dap-js-setup)
+  ;; (require 'dap-js)        ; ships with the latest dap-mode
+  (require 'dap-node)
+  (dap-node-setup)
 
   (dap-register-debug-template "Node::Run"
                                (list :type "pwa-node"
                                      :request "launch"
                                      :name "Node :: Run"
-                                     :skipFiles: '("<node_internals>/**")
+                                     :skipFiles '("<node_internals>/**")
                                      :cwd (expand-file-name (project-root (project-current)))
                                      :program (expand-file-name
                                                "src/index.js" (project-root (project-current)))))
