@@ -14,18 +14,18 @@ shape = "Block"
 # TERM = "tmux-direct"
 
 [font]
-size = 14.0
+size = 20.0
 
 [font.bold]
-family = "JetBrains Mono Nerd Font"
+family = "Monofur Nerd Font Mono"
 style = "SemiBold"
 
 [font.italic]
-family = "JetBrains Mono Nerd Font"
+family = "Monofur Nerd Font Mono"
 style = "Italic"
 
 [font.normal]
-family = "JetBrains Mono Nerd Font"
+family = "Monofur Nerd Font Mono"
 style = "Regular"
 
 [[keyboard.bindings]]
