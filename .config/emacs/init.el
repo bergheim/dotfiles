@@ -157,12 +157,12 @@
          "session"
          ;; TODO split this up
          "utils"
+         "workspace"
          )))
 
   (unless bergheim/container-mode-p
     (setq modules (append modules
-                          '("workspace"
-                            "orgmode/init"
+                          '("orgmode/init"
                             "karakeep"
                             "bergheim-denote"
                             "mu4e/init"
