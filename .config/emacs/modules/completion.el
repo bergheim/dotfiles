@@ -84,6 +84,21 @@
     (define-key org-mode-map (kbd "C-'") #'embark-act))
   (when (featurep 'evil)
     (evil-collection-embark-setup))
+
+  ;; there are so many commands in embark one might as well have just added all of M-x..
+  (defvar my-embark-file-map
+    (let ((map (make-sparse-keymap)))
+      (set-keymap-parent map embark-file-map)
+      (define-key map "b" nil)  ; remove byte-compile file
+      (define-key map "R" nil)  ; remove byte-compile dir
+      (define-key map "m" nil)  ; chmod
+      (define-key map "\\" nil)  ; remove recent removal
+      (define-key map "\+" nil)  ; remove make dir
+      (define-key map "s" nil)  ; make symlink
+      map))
+  ;; I give up..
+  (add-to-list 'embark-keymap-alist '(file . my-embark-file-map))
+
   (setq embark-confirm-act-all nil)
   (add-to-list 'embark-multitarget-actions #'bergheim/grep-selected-buffers)
   (define-key embark-buffer-map (kbd "g") #'bergheim/grep-selected-buffers)
