@@ -47,8 +47,12 @@ input "1:1:AT_Translated_Set_2_keyboard" {
 #     repeat_delay 180
 # }
 
-
-input type:touchpad natural_scroll enabled
+input "type:touchpad" {
+    dwt enabled # disable while typing
+    tap enabled # tap to click
+    middle_emulation enabled # two finger right click
+    natural_scroll enabled # same direction as phones
+}
 
 workspace $ws1 output $monitor1 # firefox
 workspace $ws2 output $monitor1 # chat
