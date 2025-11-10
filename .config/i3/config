@@ -48,6 +48,7 @@ workspace $ws13 output $monitor2
 
 # reload the configuration file
 bindsym $mod+F5 reload
+
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+$alt+Escape restart
 
@@ -120,6 +121,8 @@ bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; 
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+x layout toggle tabbed splitv splith
+
+# focus on parent
 bindsym $mod+Shift+x focus parent
 
 # change focus between tiling / floating windows
@@ -138,7 +141,7 @@ bindsym $mod+a [urgent=latest] focus
 # toggle between two monitors
 bindsym $mod+n focus output right
 # toggle workspace between two monitors
-bindsym $mod+shift+n move workspace to output right
+bindsym $mod+shift+n move workspace to output next; focus output next
 
 # focus the child container
 #bindsym $mod+d focus child
