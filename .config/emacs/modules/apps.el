@@ -908,10 +908,11 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     "Open ERC in a dedicated frame and show specified channels."
     (interactive)
     (unless (bergheim/erc-connected-p)
-      (erc-tls :server bergheim/irc-server
-               :port 7667
-               :user bergheim/irc-username
-               :password (password-store-get "apps/znc/libera")))
+      (erc :server bergheim/irc-server
+           :port 6667
+           :nick bergheim/irc-nick
+           :user bergheim/irc-username
+           :password (password-store-get "apps/soju")))
     ;; create or switch to erc frame
     (let* ((frame-name "erc")
            (target-frame
@@ -933,12 +934,6 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
          (other-window 1)
          (when (get-buffer bergheim/irc-channel-b)
            (switch-to-buffer bergheim/irc-channel-b))))))
-
-
-  (defun bergheim/erc-setup-completions ()
-    "Set up completions for ERC"
-    (setq-local completion-at-point-functions (list #'cape-emoji))
-    (corfu-mode 1))
 
   (autoload 'erc-buffer-list "erc")
   (defvar erc-buffer-source
