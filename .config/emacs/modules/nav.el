@@ -166,10 +166,10 @@ With a universal argument, it allows entering the application to use."
         dired-kill-when-opening-new-dired-buffer nil
         dired-vc-rename-file t
 
-        ;; dired-omit-files
-        ;; (rx (or (seq bol (? ".") "#")         ;; emacs autosave files
-        ;;         (seq bol "." (not (any "."))) ;; dot-files
-        ;;         (seq "~" eol)))               ;; backup-files
+        dired-omit-files
+        (rx (or (seq bol (? ".") "#")         ;; emacs autosave files
+                (seq bol "." (not (any "."))) ;; dot-files
+                (seq "~" eol)))               ;; backup-files
         dired-listing-switches "-alGh --group-directories-first")
 
   (general-define-key
@@ -184,16 +184,14 @@ With a universal argument, it allows entering the application to use."
   :config
   ;; (add-hook 'dirvish-setup-hook  #'dirvish-emerge-mode)
   (setq dirvish-emerge-mode nil
-        dired-listing-switches "-alGh --group-directories-first"
-        dired-omit-files
-        (rx (or (seq bol (? ".") "#")         ;; emacs autosave files
-                (seq bol "." (not (any "."))) ;; dot-files
-                (seq "~" eol)))               ;; backup-files
         dirvish-cache-dir (expand-file-name "dirvish/" bergheim/cache-dir)
         dirvish-attributes
         '(vc-state subtree-state nerd-icons collapse git-msg file-time file-size)
         dirvish-subtree-state-style 'nerd
         dirvish-epub-thumbnailer-program "gnome-epub-thumbnailer"
+
+        dirvish-mode-line-format
+        '(:left (sort omit symlink file-size) :right (index yank vc-info))
 
         dirvish-emerge-groups '(("Recent files" (predicate . recent-files-today))
                                 ("Documents" (extensions "pdf" "tex" "bib" "epub" "doc"))
@@ -262,15 +260,15 @@ With a universal argument, it allows entering the application to use."
     "O" `(,(bergheim/call-with-universal-arg #'bergheim/org-attach-dired-to-subtree)
           :which-key "Move to org"))
 
-(defun bergheim/dirvish-fd (directory)
-  "Run `dirvish-fd` on DIRECTORY with prompted pattern.
+  (defun bergheim/dirvish-fd (directory)
+    "Run `dirvish-fd` on DIRECTORY with prompted pattern.
 With universal prefix argument, prompt for directory.
 Otherwise, use current directory."
-  (interactive (list (or (when current-prefix-arg
-                           (read-directory-name "FD on directory: "))
-                         default-directory)))
-  (let ((pattern (read-string "Pattern (comma-separated): ")))
-    (dirvish-fd directory pattern)))
+    (interactive (list (or (when current-prefix-arg
+                             (read-directory-name "FD on directory: "))
+                           default-directory)))
+    (let ((pattern (read-string "Pattern (comma-separated): ")))
+      (dirvish-fd directory pattern)))
 
   (defun bergheim/dired-leave-for-shell ()
     "Quit dired and open shell in the current directory."
