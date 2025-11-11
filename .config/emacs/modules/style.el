@@ -207,7 +207,6 @@
 ;; (with-eval-after-load 'mood-line
 ;;   (setq mood-line-glyph-alist mood-line-glyphs-fira-code))
 
-
 (use-package uniquify
   :ensure nil
   :config
