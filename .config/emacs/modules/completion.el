@@ -135,6 +135,7 @@
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<")
   (setq consult-preview-key 'any)
+  (setq consult-buffer-list-function #'consult--frame-buffer-list)
   (with-eval-after-load 'consult-xref
     ;; nicked from https://github.com/minad/consult/issues/1015#issuecomment-2107283203
     ;; TODO remove after move to emacs 30
