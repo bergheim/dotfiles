@@ -156,7 +156,6 @@
 ;;   ;; Corrects (and improves) org-mode's native fontification.
 ;;   (doom-themes-org-config))
 
-
 (use-package doom-modeline
   :init
   (setq doom-modeline-support-imenu t)
@@ -196,12 +195,11 @@
   (setq doom-modeline-buffer-encoding nil))
 
 ;; (use-package mood-line
-;;   :ensure t
-;;   :init
-;;   (mood-line-mode))
-
-;; (with-eval-after-load 'mood-line
-;;   (setq mood-line-glyph-alist mood-line-glyphs-fira-code))
+;;   :demand
+;;   :config
+;;   (mood-line-mode)
+;;   :custom
+;;   (mood-line-glyph-alist mood-line-glyphs-fira-code))
 
 (use-package uniquify
   :ensure nil
@@ -261,6 +259,15 @@
   (split-height-threshold 80) ;; Split side by side when width > X chars
 
   :config
+  ;; show rsync status in the modeline
+  (defun bergheim/dired-rsync-modeline ()
+    "Show dired-rsync status in modeline."
+    (when (and (boundp 'dired-rsync-job-count)
+               (> dired-rsync-job-count 0))
+      (format " [rsync:%d]" dired-rsync-job-count)))
+  (setq-default mode-line-format
+                (append mode-line-format
+                        '((:eval (bergheim/dired-rsync-modeline)))))
 
   (when (member "Noto Color Emoji" (font-family-list))
     (set-fontset-font t 'emoji
