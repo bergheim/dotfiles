@@ -10,7 +10,7 @@ fi
 xsettingsd &
 
 # fancylocki3 &
-# ~/.config/screenlayout/default.sh
+~/.config/screenlayout/default.sh
 
 numlockx &  # turn numlock on
 unclutter & # hide the mouse when it is unused
