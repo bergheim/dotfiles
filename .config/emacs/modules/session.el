@@ -87,7 +87,15 @@ If FRAME is nil or not provided, use the selected frame."
     ;; (desktop-save (bergheim/get-and-ensure-data-dir "desktops/restart"))
     (restart-emacs)))
 
-(use-package beframe)
+(use-package beframe
+  :general
+  (bergheim/global-menu-keys
+    "wn" 'make-frame-command
+    "wd" 'delete-frame
+    ;; "wo" 'other-frame
+    )
+  :config
+  (beframed-mode 1))
 
 ;; WIP. lol
 (defun bergheim/load ()
