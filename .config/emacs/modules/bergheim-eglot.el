@@ -147,9 +147,9 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                                "*/json-schema-to-typescript/*"
                                "*/react-server-dom-webpack/*"
                                "*/.pnpm/*"]
-                    )
+                   )
                  ))
-;; (setq dape-configs (assq-delete-all 'nextjs-debug dape-configs))
+  ;; (setq dape-configs (assq-delete-all 'nextjs-debug dape-configs))
 
   ;; Info buffers to the right
   (setq dape-buffer-window-arrangement 'right)

@@ -70,6 +70,10 @@
   (evil-mode 1)
 
   :bind (:map evil-normal-state-map
+         ("j" . evil-next-visual-line)
+         ("k" . evil-previous-visual-line)
+         ("gj" . evil-next-line)
+         ("gk" . evil-previous-line)
          ("*" . bergheim/evil-search-symbol-forward)))
 
 (use-package general

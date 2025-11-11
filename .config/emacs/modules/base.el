@@ -175,6 +175,7 @@
    "C-w" 'backward-kill-word
    "C-u" 'backward-kill-sentence))
 
+;; TODO replace with verb
 (use-package restclient
   :ensure t
   :defer t)
