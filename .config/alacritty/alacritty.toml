@@ -403,4 +403,7 @@ y = 10
 
 [general]
 live_config_reload = true
-import = ["/home/tsb/.config/alacritty/colors/bergheim-theme.toml"]
+import = [
+  "/home/tsb/.config/alacritty/colors/bergheim-theme.toml",
+  "/home/tsb/.config/alacritty/emacs-ssh-term.toml"
+]
