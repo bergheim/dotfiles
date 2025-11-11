@@ -304,10 +304,8 @@
     "sd" '(bergheim/consult-ripgrep-with-selection-current-dir :which-key "Current directory")
     "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
     "sA" '(affe-grep :which-key "Async grep")
-    ;; TODO make this like rg (see also sd/sD sf/sF)
-    ;; "sf" '(consult-fd :which-key "Search File")
-    ;; TODO pick dir
-    ;; "sF" '(consult-fd :which-key "Search all files")
+    "sf" '(consult-fd :which-key "Search files")
+    "sF" '(bergheim/consult-fd-other-dir :which-key "Search files in dir")
     
     "sh" '(consult-isearch-history :which-key "Search history")
     "sr" '(consult-recent-file :which-key "recent files")

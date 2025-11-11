@@ -207,6 +207,12 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (let ((dir (read-directory-name "Search Directory: ")))
     (bergheim/consult-ripgrep-with-selection dir)))
 
+(defun bergheim/consult-fd-other-dir ()
+  "Invoke `bergheim/consult-ripgrep-with-selection` with a chosen directory."
+  (interactive)
+  (let ((dir (read-directory-name "Search Directory: ")))
+    (consult-fd dir)))
+
 (defun bergheim/switch-to-relevant-buffer ()
   "Generate a buffer list that you can switch to based on the context."
 
