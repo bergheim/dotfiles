@@ -45,7 +45,9 @@
   ;;   "A" 'org-agenda-goto)
 
   (bergheim/global-menu-keys
-    "ja" '(gptel-abort :which-key "abort")
+    "ja" '(gptel-add :which-key "add")
+    "jc" '((lambda () (interactive) (gptel-context-remove-all nil)) :which-key "remove all")
+    "jx" '(gptel-abort :which-key "abort")
     "jj" '(bergheim/gptel :which-key "gptel")
     "jJ" '(lambda () (interactive)
             ;; jump straight to model selection
@@ -56,7 +58,7 @@
     "js" '(gptel-send :which-key "Send bufffer"))
 
   :hook
-  ;; (find-file . bergheim/gptel-ready-archived-files)
+  (find-file . bergheim/gptel-ready-archived-files)
   (gptel-mode . (lambda ()
                   (add-hook 'kill-buffer-hook #'bergheim/gptel--maybe-save-buffer nil t)
                   (add-hook 'kill-emacs-hook
