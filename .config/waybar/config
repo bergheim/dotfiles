@@ -32,18 +32,19 @@
       // "cpu",
       // "memory",
       // "temperature",
+      "custom/weather",
       "mpris",
       // "pulseaudio",
       // "backlight",
       // "sway/language",
       "custom/gammastep",
-      "network",
       "battery",
       "custom/tux-power",
       // "power-profiles-daemon",
       "clock",
       // "keyboard-state",
       "custom/keymap",
+      "network",
       "tray"
     ],
 
@@ -139,6 +140,14 @@
     },
 
     /* Modules-Right */
+
+    "custom/weather": {
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/weather.sh",
+        "interval": 1800,
+        "return-type": "json",
+        "on-click": "open-weather"
+    },
 
     "mpris": {
       "format": "{player_icon} {dynamic}",
@@ -244,11 +253,11 @@
 
     "network": {
       "interval": 30,
-      "format-wifi": "{essid}  ",
+      "format-wifi": " ",
       "format-ethernet": "{ipaddr}/{cidr} 󰈁 ",
       "format-linked": "{ifname} (No IP) 󰈁 ",
       "format-disconnected": "Disconnected  ",
-      "tooltip-format": "   {signalStrength}%, {bandwidthUpBytes} {bandwidthDownBytes}",
+      "tooltip-format": "{essid}      {signalStrength}%, {bandwidthUpBytes} {bandwidthDownBytes}",
       "on-click": "alacritty --class floating -e impala"
     },
 
