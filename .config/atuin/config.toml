@@ -38,7 +38,7 @@ sync_address = "http://burial:9888"
 
 ## which search mode to use
 ## possible values: prefix, fulltext, fuzzy, skim
-search_mode = "skim"
+search_mode = "fuzzy"
 
 ## which filter mode to use by default
 ## possible values: "global", "host", "session", "directory", "workspace"
