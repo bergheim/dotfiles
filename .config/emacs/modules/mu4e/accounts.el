@@ -8,9 +8,9 @@
         :name "glvortex"
         :enter-func (lambda () (mu4e-message "Switch to Personal Context"))
         :match-func
-         (lambda (msg)
-           (when msg
-             (mu4e-message-contact-field-matches msg :to "@glvortex.net$")))
+        (lambda (msg)
+          (when msg
+            (mu4e-message-contact-field-matches msg :to bergheim/glvortex/domain)))
 
         :vars `((user-full-name         . ,bergheim/glvortex/name)
                 (user-mail-address      . ,bergheim/glvortex/email)
@@ -35,9 +35,9 @@
        (make-mu4e-context
         :name "personal"
         :match-func
-         (lambda (msg)
-           (when msg
-             (mu4e-message-contact-field-matches msg :to "@thomasbergheim.com")))
+        (lambda (msg)
+          (when msg
+            (mu4e-message-contact-field-matches msg :to bergheim/personal/domain)))
 
         :vars `((user-full-name         . ,bergheim/personal/name)
                 (user-mail-address      . ,bergheim/personal/email)
@@ -61,11 +61,11 @@
        (make-mu4e-context
         :name "gmail"
         :match-func
-         (lambda (msg)
-           (when msg
-             (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
+        (lambda (msg)
+          (when msg
+            (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
 
-         :vars `(
+        :vars `(
                 (user-full-name         . ,bergheim/gmail/name)
                 (user-mail-address      . ,bergheim/gmail/email)
                 ;; (message-signature      . ,bergheim/gmail/signature)
@@ -88,9 +88,9 @@
        (make-mu4e-context
         :name "ntnu"
         :match-func
-         (lambda (msg)
-           (when msg
-             (mu4e-message-contact-field-matches msg :to bergheim/ntnu/email)))
+        (lambda (msg)
+          (when msg
+            (mu4e-message-contact-field-matches msg :to bergheim/ntnu/email)))
 
         :vars `((user-full-name         . ,bergheim/ntnu/name)
                 (user-mail-address      . ,bergheim/ntnu/email)
