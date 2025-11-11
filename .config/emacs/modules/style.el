@@ -156,7 +156,6 @@
 ;;   ;; Corrects (and improves) org-mode's native fontification.
 ;;   (doom-themes-org-config))
 
-;; (load-theme 'modus-vivendi t)
 
 (use-package doom-modeline
   :init
@@ -218,18 +217,17 @@
 
 (use-package spacious-padding
   :ensure
-  :init
-  (spacious-padding-mode)
   :config
   (setq spacious-padding-widths
-        '( :internal-border-width 15
-           :header-line-width 4
-           :mode-line-width 6
-           :tab-width 4
-           :right-divider-width 30
-           :scroll-bar-width 8
-           :fringe-width 8)
-        spacious-padding-subtle-mode-line nil))
+        '(:internal-border-width 15
+          :header-line-width 4
+          :mode-line-width 6
+          :tab-width 4
+          :right-divider-width 30
+          :scroll-bar-width 8
+          :fringe-width 8)
+        spacious-padding-subtle-mode-line nil)
+  (spacious-padding-mode))
 
 (defun bergheim/toggle-visual-fluff ()
   "Toggle the menu bar and scroll bar on and off."
