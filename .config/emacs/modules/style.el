@@ -267,6 +267,14 @@
   (split-height-threshold 80) ;; Split side by side when width > X chars
 
   :config
+
+  (when (member "Noto Color Emoji" (font-family-list))
+    (set-fontset-font t 'emoji
+                      (font-spec :family "Noto Color Emoji") nil 'prepend)
+    ;; additional unicode ranges (needed for trev)
+    (set-fontset-font t '(#x1F000 . #x1FAFF)
+                      (font-spec :family "Noto Color Emoji") nil 'prepend))
+
   (setq scroll-step 1
         scroll-conservatively 10
         scroll-margin 3)
