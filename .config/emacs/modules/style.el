@@ -36,9 +36,6 @@
   ;; This is defined in Emacs C code: it belongs to font settings.
   (setq x-underline-at-descent-line nil)
 
-  ;; And this is for Emacs28.
-  (setq-default text-scale-remap-header-line t)
-
   (setq fontaine-presets
         '((small
            :default-height 90

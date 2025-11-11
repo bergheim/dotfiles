@@ -43,6 +43,7 @@
            (interactive)
            (goto-char (point-max))
            (call-interactively #'comint-previous-input))
+   "M-k" #'bergheim/woman-shell-command-other-window
    "M-n" (lambda ()
            (interactive)
            (goto-char (point-max))
@@ -252,6 +253,23 @@
                     (comint-send-input))
                   (switch-to-buffer buffer-name)
                   (message "Attaching to tmux pane %s" full-target)))))))))
+
+  (defun bergheim/woman-shell-command-other-window ()
+    "Open the WoMan manpage for the current shell command in another window."
+    (interactive)
+    (let* ((input
+            (save-excursion
+              (comint-bol)
+              (when (looking-at (format "[^%s]*" comint-prompt-regexp))
+                (goto-char (match-end 0)))
+              (buffer-substring-no-properties (point) (line-end-position))))
+           (cmd (car (split-string input))))
+      (if (and cmd (not (string= cmd "")))
+          (let ((buf (save-window-excursion
+                       (woman cmd)
+                       (current-buffer))))
+            (pop-to-buffer buf))
+        (message "No command found on this line."))))
 
   (defun bergheim/tmux-shell-attach-flat ()
     "Choose any pane from any session/window and attach."
