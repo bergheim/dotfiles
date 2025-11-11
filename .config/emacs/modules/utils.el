@@ -399,5 +399,11 @@ Lisp function does not specify a special indentation."
 		      (thanos/wtype-text (buffer-string)))
 		     (delete-frame)))))
 
+(use-package term-keys
+  :ensure (:host github :repo "CyberShadow/term-keys")
+  :demand
+  :config
+  (term-keys-mode t))
+
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
