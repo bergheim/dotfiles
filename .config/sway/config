@@ -502,6 +502,7 @@ exec swayidle -w \
     timeout 1800 'systemctl suspend-then-hibernate' \
     resume 'swaymsg "output * dpms on"' \
     before-sleep 'fancylocksway' \
+    after-resume 'swaymsg "output * dpms on"' \
     lock 'fancylocksway'
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
