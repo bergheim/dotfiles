@@ -3,6 +3,8 @@
 (use-package apheleia
   :init
   (apheleia-global-mode 1)
+  :custom
+  (apheleia-remote-algorithm 'local)
   :config
   (dolist (mode '(css-mode
                   css-ts-mode
