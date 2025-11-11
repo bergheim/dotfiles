@@ -20,15 +20,17 @@
     "Directory of saved desktops.")
 
   (defun bergheim/load-desktop ()
-    "Load a desktop from '`user-emacs-directory'/desktops/"
+    "Prompt for a desktop subdirectory under `bergheim/desktops-dir' and load it."
     (interactive)
-    (let* ((desktops-dir bergheim/desktops-dir)
-           (desktops (directory-files desktops-dir nil "^[^.].*" t))
-           (name (completing-read "Load Desktop: " desktops nil t)))
-      (unless (string= name "")
-        (let ((desktop-dirname (expand-file-name name desktops-dir)))
-          (desktop-read desktop-dirname)
-          (set-frame-parameter nil 'desktop-dir desktop-dirname)))))
+    (let* ((names (directory-files bergheim/desktops-dir nil "^[^.].*"))
+           (name  (completing-read "Load Desktop: " names nil t)))
+      (unless (string-empty-p name)
+        (let ((dir (expand-file-name name bergheim/desktops-dir)))
+          (unless (file-directory-p dir)
+            (user-error "No such desktop: %s" name))
+          ;; Force‐reload:
+          (desktop-change-dir dir)
+          (message "Loaded desktop: %s" name)))))
 
   (defun bergheim/save-desktop (&optional name)
     "Save current desktop with NAME at '`user-emacs-directory'/desktops/'"
