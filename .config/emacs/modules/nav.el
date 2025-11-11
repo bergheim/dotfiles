@@ -25,6 +25,8 @@
   ;;  "x" 'evil-avy-goto-char-2
   ;;  "s" 'evil-avy-goto-char-2-below
   ;;  "S" 'evil-avy-goto-char-2-above)
+  ;; (evil-global-set-key 'normal "s" 'evil-avy-goto-char-2-below)
+  ;; (evil-global-set-key 'normal "S" 'evil-avy-goto-char-2-above)
   )
 
 (defun bergheim/swap-window-with ()

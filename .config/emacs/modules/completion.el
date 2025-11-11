@@ -433,8 +433,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
                         (cape-capf-super #'cape-dabbrev
                                          #'cape-dict
                                          #'cape-keyword)
-                        #'cape-emoji)   ;; expands :
-      )))
+                        #'cape-emoji))))   ;; expands :
 
   (add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu))
 
@@ -527,7 +526,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     ;;             completion-at-point-functions
     ;;             (cons (cape-capf-trigger #'tempel-complete ?/)
     ;;                   completion-at-point-functions))
-  )
+    )
   (add-hook 'conf-mode-hook 'tempel-setup-capf)
   (add-hook 'prog-mode-hook 'tempel-setup-capf)
   (add-hook 'text-mode-hook 'tempel-setup-capf))

@@ -36,8 +36,8 @@
 
   (general-define-key
    :states 'visual
-    "u" 'evil-undo
-    "C-r" 'evil-redo)
+   "u" 'evil-undo
+   "C-r" 'evil-redo)
 
   (general-define-key
    :states '(normal visual emacs)
@@ -301,6 +301,7 @@
     "s" '(:ignore t :which-key "Search")
     "sa" '(consult-org-agenda :which-key "org agenda")
     "sb" '(consult-line-multi :which-key "open buffers")
+    "sB" `(,(bergheim/call-with-universal-arg  #'consult-line-multi) :which-key "all buffers")
     "sd" '(bergheim/consult-ripgrep-with-selection-current-dir :which-key "Current directory")
     "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
     "sA" '(affe-grep :which-key "Async grep")
@@ -404,10 +405,10 @@
 
   (general-define-key
    :states '(insert normal visual motion operator emacs)
-    "M-\\" #'evil-window-vsplit
-    "M-]" #'evil-window-split
-    "M-DEL" #'evil-window-delete
-    "C-M-<backspace>" #'kill-current-buffer)
+   "M-\\" #'evil-window-vsplit
+   "M-]" #'evil-window-split
+   "M-DEL" #'evil-window-delete
+   "C-M-<backspace>" #'kill-current-buffer)
 
   ;; (general-define-key
   ;;  :states '(normal visual)

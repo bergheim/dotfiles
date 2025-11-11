@@ -151,6 +151,24 @@
     "m" '(macroexpand-last-sexp     :which-key "Macroexpand last sexp")
     "M" '(macroexpand-all           :which-key "Macroexpand all")))
 
+(use-package edebug
+  :ensure nil
+  :hook (edebug-mode . bergheim/setup-edebug-keys)
+  :config
+  (defun bergheim/setup-edebug-keys ()
+    "Setup edebug keybindings that work better with evil."
+    (general-define-key
+     :keymaps 'edebug-mode-map
+     ;; TODO make sure these are the same
+     ;; "n" 'edebug-next-mode
+     ;; "s" 'edebug-step-mode
+     ;; "g" 'edebug-go-mode
+     ;; "q" 'top-level
+     ;; "c" 'edebug-continue-mode
+     "v" 'evil-visual-char
+     "w" 'edebug-where
+     "V" 'edebug-view-outside
+     "E" 'edebug-eval-last-sexp)))
 
 (use-package elixir-ts-mode
   :config
