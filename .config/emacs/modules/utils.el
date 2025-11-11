@@ -286,7 +286,7 @@ Lisp function does not specify a special indentation."
 (defun bergheim/search-in-dotfiles ()
   "Open a file somewhere in ~/.config via a fuzzy filename search."
   (interactive)
-  (consult-find (expand-file-name "~/.config/")))
+  (consult-fd (expand-file-name "~/.config/")))
 
 ;;;###autoload
 (defun bergheim/browse-from-dir (dir)

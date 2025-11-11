@@ -129,7 +129,7 @@
                (recentf-expand-file-name no-littering-var-directory))
   (add-to-list 'recentf-exclude
                (recentf-expand-file-name no-littering-etc-directory))
-  (recentf-mode t))
+  (recentf-mode 1))
 
 (use-package saveplace
   :ensure nil

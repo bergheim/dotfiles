@@ -195,8 +195,11 @@
     "fc" '(bergheim/copy-current-buffer-file :which-key "Copy file")
     "fd" '(dirvish :which-key "Dirvish")
     "fD" '(bergheim/delete-current-file :which-key "Delete file")
+    ;; TODO: make like rg fd/fD = fd, sd/sD = rg
     "ff" '(find-file :which-key "Find file")
-    "fF" '(consult-find :which-key "Find file")
+    "fF" '(consult-fd :which-key "Fd file")
+    ;; "fd" '(consult-fd :which-key "Find file (fast)")
+
     "fh" '(dirvish-history-jump :which-key "Dirvish history")
     "fr" '(consult-recent-file :which-key "Recent files")
     "fR" '(rename-visited-file :which-key "Rename file")
@@ -301,9 +304,11 @@
     "sd" '(bergheim/consult-ripgrep-with-selection-current-dir :which-key "Current directory")
     "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
     "sA" '(affe-grep :which-key "Async grep")
+    ;; TODO make this like rg (see also sd/sD sf/sF)
+    ;; "sf" '(consult-fd :which-key "Search File")
+    ;; TODO pick dir
+    ;; "sF" '(consult-fd :which-key "Search all files")
     
-    "sf" '(consult-fd :which-key "Search File")
-    "sF" '(consult-find :which-key "Search all files")
     "sh" '(consult-isearch-history :which-key "Search history")
     "sr" '(consult-recent-file :which-key "recent files")
     "si" '(consult-imenu :which-key "imenu items")
