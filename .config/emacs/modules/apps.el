@@ -274,6 +274,48 @@
             (comint-send-input))
           (switch-to-buffer buffer-name)
           (message "Attaching to tmux pane %s" pane-target))))))
+(use-package compile
+  :ensure nil
+  :hook
+  (compilation-filter . ansi-osc-compilation-filter)
+  (compilation-filter . ansi-color-compilation-filter)
+  :general
+  (bergheim/global-menu-keys
+    "pc" '(bergheim/project-compile-dwim :which-key "compile")
+    "pC" '(bergheim/open-project-compilation-buffer
+           :which-key "open compile buffer"))
+  :custom
+  (compilation-max-output-line-length nil)
+  (compilation-ask-about-save nil)
+  (compilation-scroll-output t)
+
+  :config
+  (setq project-compilation-buffer-name-function
+        (lambda (dir)
+          (format "*compilation-%s*" (project-name (project-current)))))
+
+  (defun bergheim/project-compile-dwim (arg)
+    "Smart project compilation. Recompile if the buffer exists and do not change window focus."
+    (interactive "P")
+    (let ((curwin (selected-window)))
+      (save-buffer)
+      (if (or arg (not (get-buffer (funcall project-compilation-buffer-name-function default-directory))))
+          ;; New compilation with comint mode
+          (let ((current-prefix-arg '(4)))
+            (call-interactively #'project-compile))
+        (let ((buffer-name (funcall project-compilation-buffer-name-function default-directory)))
+          (pop-to-buffer buffer-name)
+          (project-recompile)))
+      (select-window curwin)))
+
+  (defun bergheim/open-project-compilation-buffer ()
+    "Open the project compilation buffer if it exists."
+    (interactive)
+    (if-let ((buffer-name (funcall project-compilation-buffer-name-function default-directory))
+             (buffer (get-buffer buffer-name)))
+        (pop-to-buffer buffer)
+      (message "No compilation buffer exists for this project."))))
+
 
 (use-package coterm
   :after shell
