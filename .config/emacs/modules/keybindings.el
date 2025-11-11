@@ -13,7 +13,8 @@
 ;;
 
 ;; death to C-g
-(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+;; well actually no, as this messes up remote ssh setups
+;; (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 (global-set-key [escape] 'keyboard-quit)
 
 (with-eval-after-load 'mu4e
@@ -281,9 +282,6 @@
     "m" `(,bergheim/localleader-map :which-key "Local leader")
 
     "p" '(:ignore t :which-key "Project")
-    "pc" '(bergheim/project-compile-dwim :which-key "compile")
-    "pC" '(bergheim/open-project-compilation-buffer
-           :which-key "open compile buffer")
     "pb" '(consult-project-buffer :which-key "buffers")
     "pd" '(project-find-dir :which-key "Find dir")
     "pe" '(project-or-external-find-file :which-key "External Find file")

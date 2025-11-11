@@ -90,8 +90,8 @@ argument is given, otherwise navigate backward."
             (browse-url url)))))))
 
 (use-package link-hint
-  :ensure t
-  :defer t
+  :demand
+  :after (evil-collection evil-commentary)
   :general
   (:states 'normal
    "gl" #'link-hint-open-link

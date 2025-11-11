@@ -82,7 +82,7 @@
                                (file-expand-wildcards (concat org-directory "areas/*.org"))
                                (list bergheim/calendar/nextcloud/local)
                                (when (file-directory-p (expand-file-name "projects" org-directory))
-                           (directory-files-recursively (expand-file-name "projects" org-directory) "\\.org$")))
+                                 (directory-files-recursively (expand-file-name "projects" org-directory) "\\.org$")))
 
       ;; org-agenda-clockreport-parameter-plist
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))
