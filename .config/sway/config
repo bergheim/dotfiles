@@ -33,7 +33,8 @@ set $monitor2 DP-2
 
 input "1:1:AT_Translated_Set_2_keyboard" {
     xkb_layout "us,no"
-    xkb_variant ","
+    # xkb_variant ","
+    xkb_variant "altgr-intl"
     xkb_options "grp:win_space_toggle,caps:escape"
     repeat_rate 50
     repeat_delay 180
@@ -150,7 +151,7 @@ bindsym $mod+space focus mode_toggle
 # switch to next/prev workspace
 bindsym $mod+Control+l workspace next
 bindsym $mod+Control+h workspace prev
-bindsym $mod+Tab workspace back_and_forth
+# bindsym $mod+Tab workspace back_and_forth
 # Hit $mod-X twice, go back
 workspace_auto_back_and_forth no
 
@@ -270,7 +271,7 @@ bindsym $mod+F1 exec toggle-darkmode
 bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
 
 # Screenshots
-bindsym Print exec grimshot save active ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.png
+bindsym Print exec FILE=~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.png && grimshot save active "$FILE" && notify-send "Screenshot saved" "$(basename "$FILE")" && vips thumbnail "$FILE" '.webp[Q=80,strip]' 1920 --height 1200 --size down > ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.webp && rm "$FILE"
 bindsym Shift+Print exec FILE=~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-shared__.png && grimshot save anything "$FILE" && notify-send "Screenshot saved, uploading..." && vips thumbnail "$FILE" '.webp[Q=80,strip]' 1920 --height 1200 --size down | curl --form 'file=@-' -Fsecret= -Fexpires=24 http://0x0.st | wl-copy && notify-send "URL copied" || notify-send "Upload failed"
 # bindsym Mod4+p       exec grimshot save active
 # bindsym Mod4+Shift+p exec grimshot save area
@@ -342,8 +343,10 @@ bindsym $mod+v exec cliphist list | wofi -dmenu | cliphist decode | wl-copy
 bindsym $alt+Tab exec swayr switch-window
 
 # Emoji picker
-bindsym $mod+shift+e exec wofi-emoji
-bindsym $mod+y exec wofi-emoji
+bindsym $mod+shift+e exec BEMOJI_PICKER_CMD="fuzzel -d" bemoji
+
+# edit in emacs
+bindsym $mod+o exec emacsclient --eval '(thanos/type)' -F '((name . "floating"))'
 
 # Notifications (mako instead of dunst)
 bindsym $mod+ctrl+grave exec makoctl dismiss
@@ -351,10 +354,31 @@ bindsym $mod+ctrl+1 exec makoctl restore
 bindsym $mod+ctrl+3 exec makoctl dismiss --all
 bindsym $mod+ctrl+2 exec makoctl invoke
 
+# application switcher
+bindsym $mod+Tab exec swaymsg -t get_tree | jq -r '.. | select(.type? == "con" and .app_id?) | "\(.id):\(.app_id) - \(.name)"' | fuzzel --dmenu | cut -d: -f1 | xargs -I{} swaymsg '[con_id={}] focus'
+
 bindsym $mod+Shift+c reload
 # bindsym ctrl+$alt+Delete exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
 
-bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | bemenu -sb "#b89000" -i -p "Really exit Sway session?") = "YES" ] && swaymsg exit'
+# bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | bemenu -sb "#b89000" -i -p "Really exit Sway session?") = "YES" ] && reboot'
+bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | fuzzel -d -p "Really restart system? ") = "YES" ] && restart-system'
+
+# quit like a pro
+set $mode_system System: (l) lock, (e) logout, (s) suspend, (r) reboot, (S) shutdown, (R) UEFI
+mode "$mode_system" {
+	bindsym l exec "swaylock -c 000000 ", mode "default"
+	bindsym e exit
+	bindsym s exec --no-startup-id systemctl suspend, mode "default"
+	bindsym r exec --no-startup-id systemctl reboot, mode "default"
+	bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
+	bindsym Shift+r exec --no-startup-id systemctl reboot --firmware-setup, mode "default"
+
+	# return to default mode
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+}
+
+bindsym $mod+Shift+q mode "$mode_system"
 
 # gaps
 gaps inner 10
@@ -469,7 +493,7 @@ layer_effects "waybar" {
     blur_xray enable;
     blur_ignore_transparent enable;
     shadows enable;
-    # corner_radius 20;
+    corner_radius 0;
 }
 
 corner_radius 5
@@ -521,6 +545,7 @@ for_window [title="floating"] floating enable, resize set 100ppt 90ppt, move cen
 # Emacs rules
 for_window [app_id="Emacs" title="emacs-everywhere"] floating enable
 for_window [app_id="gnome-calendar"] floating enable
+for_window [title="emacs-float"] floating enable, resize set 800 600, move position center
 
 # firefox pop out videos should always show
 for_window [title="Picture-in-Picture"] floating enable, sticky enable

@@ -4,6 +4,8 @@ set $c1 #cc241d
 set $c4 #458588
 set $c9 #fb4934
 set $c10 #086608
+# set $c10 #0c8c0c
+# set $c10 #0e9e0e
 set $c15 #fbf1c7
 
 set $focused_text #000000
