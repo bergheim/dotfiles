@@ -38,6 +38,12 @@ super + c
 super + t
   emacs-clock-in
 
+# hyper + t
+#   emacs-clock-in
+
+# hyper + {a-z}
+#         notify-send "hyper {a-z}"
+
 # make sxhkd reload its configuration files:
 super + F6
   pkill -USR1 -x sxhkd
@@ -54,13 +60,13 @@ super + @F2
 super + F7
   toggle-darkmode
 
-# toggle redshift
-super + F8
-  (pkill redshift && dunstify "Disabling redhsift" --icon=to-the-moon) || (dunstify "Enabling redshift" --icon=to-the-moon && redshift)
-
 # toggle picom / hardware acceleration
-super + F9
+super + F8
   (pkill picom && dunstify "Disabling picom" --icon=to-the-moon) || (dunstify "Enabling picom" --icon=to-the-moon && picom)
+
+# toggle redshift
+super + F9
+  (pkill redshift && dunstify "Disabling redhsift" --icon=to-the-moon) || (dunstify "Enabling redshift" --icon=to-the-moon && redshift)
 
 # toggle output
 super + F11

@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
 # quit/restart bspwm
-super + alt + {q,r}
-  bspc {quit,wm -r}
+# super + alt + {q,r}
+#  bspc {quit,wm -r}
 
 # close and kill
 super + {_,shift + }d
@@ -145,3 +145,20 @@ super + shift + m
 # Rotate tree
 super + shift + {u,i}
     bspc node @/ -C {forward,backward}
+
+
+
+# add to tabbed container
+ctrl + alt + {Left,Down,Up,Right}
+    tabc attach $(bspc query -N -n) {$(bspc query -N -n west),$(bspc query -N -n south),$(bspc query -N -n north),$(bspc query -N -n east)}
+
+# create/remove from tabbed container
+super + z
+    id=$(bspc query -N -n); \
+    [[ "$(tabc printclass $id)" == "tabbed" ]] \
+    && tabc detach $id \
+    || tabc create $id
+
+# toggle autoattach in tabbed container
+super + shift + z
+    TABc autoattach $(bspc query -N -n)
