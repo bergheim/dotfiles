@@ -221,7 +221,7 @@ With a universal argument, it allows entering the application to use."
    "f"   #'dirvish-narrow ;; "filter"
    ;; this is hilarious. yes, I do in fact want to copy it as kill
    "y"   #'dired-copy-filename-as-kill
-   "Y"   #'dirvish-copy-file-name
+   "Y" (lambda () (interactive) (dired-copy-filename-as-kill 0))
    "p"   #'dirvish-yank-menu
    "o"   #'dired-sort-toggle-or-edit
    "O"   #'dirvish-quicksort
