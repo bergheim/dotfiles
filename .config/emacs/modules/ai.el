@@ -365,6 +365,17 @@ Prompts for session name if none provided. Inserts selected region text into cha
      (org-mode . "* ")
      (text-mode . "@user "))))
 
+(use-package gptel-quick
+  :ensure (gptel-quick :host github :repo "karthink/gptel-quick")
+  :after gptel
+  :config
+  (setq gptel-quick-backend (gptel-get-backend "Ollama")
+        gptel-quick-model "mistral-small")
+  :general
+  (bergheim/global-menu-keys
+    "sq" 'gptel-quick)
+  :bind ("C-c q" . gptel-quick))
+
 (use-package ob-gptel
   :ensure (:host github :repo "jwiegley/ob-gptel")
   :hook ((org-mode . ob-gptel-install-completions))
