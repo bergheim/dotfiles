@@ -39,6 +39,7 @@
   (winner-mode 1))
 
 (use-package bufler
+  :unless bergheim/container-mode-p
   :config
   (bufler-mode)
   :general
@@ -56,6 +57,7 @@
            (bufler-list-buffer-peek))))
 
 (use-package burly
+  :unless bergheim/container-mode-p
   :config
   (burly-tabs-mode 1))
 
