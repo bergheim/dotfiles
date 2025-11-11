@@ -384,6 +384,10 @@ Prompts for session name if none provided. Inserts selected region text into cha
   ;; (org-ai-install-yasnippets))
   (setq org-ai-default-chat-model "gpt-4"))
 
+;; used for copilot and elpa eglot
+(use-package track-changes
+  :ensure t)
+
 (use-package copilot
   :demand t
   :general
