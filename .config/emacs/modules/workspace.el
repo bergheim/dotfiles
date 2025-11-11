@@ -67,7 +67,10 @@
   :config
   ;; Automatically save activities' states when Emacs is idle and upon exit.
   (activities-mode)
-  (activities-tabs-mode))
+  (setopt activities-resume-into-frame 'new)
+  ;; (activities-tabs-mode)
+  )
+
 (use-package project
   :ensure nil
   :demand t

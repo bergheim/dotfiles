@@ -304,7 +304,7 @@
         x-underline-at-descent-line nil          ; Prettier underlines
         switch-to-buffer-obey-display-actions t) ; Make switching buffers more consistent
 
-  (tab-bar-mode 1)
+  ;; (tab-bar-mode 1)
   (tab-bar-history-mode 1)
   (blink-cursor-mode -1)           ; Steady cursor
   (pixel-scroll-precision-mode)    ; Smooth scrolling
