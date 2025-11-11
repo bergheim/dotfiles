@@ -1,11 +1,15 @@
+[Added Associations]
+application/pdf=okular.desktop;
+
 [Default Applications]
 application/octet-stream=emacsclient.desktop;
-application/pdf=zathura.desktop;
+application/pdf=okular.desktop;zathura.desktop;
 application/x-extension-htm=firefox.desktop;
 application/x-extension-html=firefox.desktop;
 application/x-extension-shtml=firefox.desktop;
 application/x-extension-xht=firefox.desktop;
 application/x-extension-xhtml=firefox.desktop;
+application/x-matroska=mpv.desktop;
 application/xhtml+xml=firefox.desktop;
 image/bmp=oculante.desktop;
 image/gif=oculante.desktop;
@@ -16,7 +20,17 @@ image/tiff=oculante.desktop;
 inode/directory=org.kde.dolphin.desktop;
 text/html=firefox.desktop;emacsclient.desktop;nvim.desktop;
 text/plain=emacsclient.desktop;nvim.desktop;
-video/webm=mpv-2.desktop;
+video/3gpp=mpv.desktop;
+video/avi=mpv.desktop;
+video/mp4=mpv.desktop;
+video/ogg=mpv.desktop;
+video/quicktime=mpv.desktop;
+video/webm=mpv.desktop;
+video/x-flv=mpv.desktop;
+video/x-matroska=mpv.desktop;
+video/x-ms-wmv=mpv.desktop;
+video/x-msvideo=mpv.desktop;
+video/x-ogm=mpv.desktop;
 x-scheme-handler/chrome=firefox.desktop;
 x-scheme-handler/ftp=firefox.desktop;
 x-scheme-handler/http=firefox.desktop;
