@@ -403,4 +403,4 @@ y = 10
 
 [general]
 live_config_reload = true
-import = ["/home/tsb/.config/alacritty/colors/bergheim-dark.toml"]
+import = ["/home/tsb/.config/alacritty/colors/bergheim-theme.toml"]

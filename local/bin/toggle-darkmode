@@ -30,10 +30,14 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
     sed -i "s/initial-color-theme=1/initial-color-theme=2/" "$FOOT_CONF"
-    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES" "$BATCONF"
+    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
     fi
+
+    ln -sf ~/.config/bat/themes/bergheim-light.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
+    ln -sf ~/.config/alacritty/colors/bergheim-light.toml ~/.config/alacritty/colors/bergheim-theme.toml
+    ln -sf ~/.config/tmux/bergheim-light.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
     swaymsg reload
@@ -53,10 +57,14 @@ else
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
     sed -i "s/initial-color-theme=2/initial-color-theme=1/" "$FOOT_CONF"
-    sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$ALACRITTYCONF" "$TMUXCONF" "$XRES" "$BATCONF"
+    sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$XRES" "$BATCONF"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
     fi
+
+    ln -sf ~/.config/bat/themes/bergheim-dark.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
+    ln -sf ~/.config/alacritty/colors/bergheim-dark.toml ~/.config/alacritty/colors/bergheim-theme.toml
+    ln -sf ~/.config/tmux/bergheim-dark.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
     swaymsg reload
