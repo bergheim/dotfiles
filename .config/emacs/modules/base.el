@@ -296,3 +296,133 @@
     "h" '(Info-history :which-key "history")
     "m" '(Info-menu :which-key "menu items")
     "s" '(consult-info :which-key "search")))
+
+(use-package eww
+  :ensure nil
+  :general
+  (bergheim/global-menu-keys
+    "bw" '(bergheim/consult-browser-buffer :which-key "browser buffers")
+    "sw" '(eww :which-key "web search"))
+  :hook
+  (eww-after-render . bergheim/eww-rename-buffer)
+  ;; for some reason we must do this after to get the keys set up
+  (eww-mode . (lambda ()
+                (setq line-spacing 0) ;; this makes images not have gaps
+                (bergheim/localleader-keys
+                  :states '(normal visual)
+                  :keymaps 'local
+                  "b" '(bergheim/consult-browser-buffer :which-key "browser buffers")
+                  "f" '(link-hint-open-link :which-key "follow link")
+                  "F" '(bergheim/link-hint-open-background :which-key "open link background")
+                  "x" '(eww-browse-with-external-browser :which-key "open external browser")
+                  "w" '(bergheim/eww-open-link-w3m :which-key "open in w3m")
+                  "r" '(bergheim/eww-select-link :which-key "grep links")
+                  "y" '(eww-copy-page-url :which-key "copy link")
+                  "r" '(eww-reload :which-key "reload")
+                  "s" '(eww-view-source :which-key "view source")
+                  "h" '(eww-list-histories :which-key "tab history")
+                  "i" '(eww-toggle-images :which-key "toggle images")
+                  "o" '(bergheim/eww-open-link-w3m :which-key "open in w3m")
+                  "d" '(eww-download :which-key "download"))
+
+                (evil-define-key 'normal eww-mode-map
+                  (kbd "gs") 'eww-view-source
+                  (kbd "gy") 'link-hint-copy-link
+                  (kbd "gf") 'link-hint-open-link
+                  (kbd "gF") 'bergheim/link-hint-open-background
+                  (kbd "M-RET") 'bergheim/open-link-background
+                  (kbd "]t") 'eww-buffer-show-next
+                  (kbd "[t") 'eww-buffer-show-previous)))
+  :config
+  (advice-add 'eww-back-url :after (lambda (&rest _) (bergheim/eww-rename-buffer)))
+  (advice-add 'eww-forward-url :after (lambda (&rest _) (bergheim/eww-rename-buffer)))
+  (setq eww-search-prefix "https://search.ts.glvortex.net/search?q="
+        eww-display-inline-images t
+        ;; eww-blocked-urls '("*.js" "*.css" "*.png" "*.jpg" "*.gif")
+        )
+
+  (defun bergheim/open-link-background (&optional url)
+    "Open link in background buffer (context-aware).
+If URL is provided, use that. Otherwise get link at point."
+    (interactive)
+    (let ((target-url (or url
+                          (cond
+                           ((eq major-mode 'eww-mode)
+                            (or (get-text-property (point) 'shr-url)
+                                (eww-suggested-uris)))
+                           ((eq major-mode 'w3m-mode)
+                            (w3m-anchor))
+                           (t (user-error "Not in a supported browser mode"))))))
+      (when target-url
+        ;; Handle case where target-url is a link-hint plist
+        (when (and (listp target-url) (plist-get target-url :args))
+          (setq target-url (plist-get target-url :args)))
+
+        (cond
+         ((eq major-mode 'eww-mode)
+          (save-window-excursion (eww target-url 4))
+          (message "Opened in background (EWW): %s" target-url))
+         ((eq major-mode 'w3m-mode)
+          (save-window-excursion (w3m target-url t))
+          (message "Opened in background (W3M): %s" target-url))
+         (t (user-error "Not in a supported browser mode"))))))
+
+  (defun bergheim/link-hint-open-background ()
+    "Use avy to select and open a link in background for current browser."
+    (interactive)
+    (let* ((link-hint-types (link-hint--valid-types :open))
+           (links (link-hint--get-links))
+           link)
+      (when links
+        (setq link (link-hint--process links))
+        (when link
+          (bergheim/open-link-background link)))))
+
+  (defun bergheim/eww-open-link-w3m ()
+    "Open current eww page in w3m."
+    (interactive)
+    (let ((url (plist-get eww-data :url)))
+      (message "EWW URL: %s" url)  ; debug
+      (when url
+        (w3m url)
+        (message "Opened current page in w3m: %s" url))))
+
+  (defun bergheim/eww-rename-buffer ()
+    "Rename EWW buffer to include page title."
+    (let ((title (plist-get eww-data :title)))
+      (when title
+        (rename-buffer (format "*eww - %s*" title) t))))
+
+  (defun bergheim/consult-browser-buffer ()
+    "Switch between browser buffers using `consult'."
+    (interactive)
+    (let ((candidates
+           (seq-filter
+            (lambda (buf)
+              (with-current-buffer buf
+                (memq major-mode '(eww-mode w3m-mode))))
+            (buffer-list))))
+      (if candidates
+          (switch-to-buffer
+           (consult--read (mapcar #'buffer-name candidates)
+                          :prompt "Browser buffers: "))
+        (user-error "No browser buffers found"))))
+
+  (defun bergheim/eww-select-link ()
+    "Select and open a link from all links in the current eww buffer."
+    (interactive)
+    (let ((links '()))
+      (save-excursion
+        (goto-char (point-min))
+        (while (not (eobp))
+          (when-let ((url (get-text-property (point) 'shr-url)))
+            (let ((text (buffer-substring-no-properties
+                         (point)
+                         (next-single-property-change (point) 'shr-url nil (point-max)))))
+              (push (cons (format "%s → %s" (string-trim text) url) url) links)))
+          (goto-char (next-single-property-change (point) 'shr-url nil (point-max)))))
+      (if links
+          (let* ((choice (completing-read "Open link: " links))
+                 (url (cdr (assoc choice links))))
+            (eww url))
+        (message "No links found in buffer")))))
