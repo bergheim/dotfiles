@@ -426,3 +426,84 @@ If URL is provided, use that. Otherwise get link at point."
                  (url (cdr (assoc choice links))))
             (eww url))
         (message "No links found in buffer")))))
+
+(use-package w3m
+  :defer t
+  :commands (w3m w3m-search bergheim/w3m-browse-or-search)
+  :general
+  (bergheim/global-menu-keys
+    "sW" '(bergheim/w3m-browse-or-search :which-key "w3m history/search"))
+  :hook
+  (w3m-display . bergheim/w3m-rename-buffer)
+  (w3m-mode . (lambda ()
+                (setq line-spacing 0) ;; this makes images not have gaps
+                (evil-define-key 'normal w3m-mode-map
+                  (kbd "gs") 'w3m-view-source
+                  (kbd "gy") 'link-hint-copy-link
+                  (kbd "gf") 'link-hint-open-link
+                  (kbd "gF") 'bergheim/link-hint-open-background
+                  (kbd "M-RET") 'bergheim/open-link-background
+                  (kbd "]t") 'w3m-next-buffer
+                  (kbd "[t") 'w3m-previous-buffer)))
+  :config
+  (require 'w3m-hist)
+  (require 'w3m-search)
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'w3m-mode-map
+    "b" '(bergheim/consult-browser-buffer :which-key "browser buffers")
+    "f" '(link-hint-open-link :which-key "follow link")
+    "F" '(bergheim/link-hint-open-background :which-key "open link background")
+    "x" '((lambda () (interactive) (browse-url-default-browser w3m-current-url)) :which-key "open external browser")
+    "e" '(bergheim/w3m-open-link-eww :which-key "open in eww")
+    "y" '(link-hint-copy-link :which-key "copy link")
+    "r" '(w3m-reload-this-page :which-key "reload")
+    "s" '(w3m-view-source :which-key "view source")
+    "H" '(w3m-db-history :which-key "search history")
+    "h" '(w3m-history :which-key "tab history")
+    "i" '(w3m-toggle-inline-images :which-key "toggle images")
+    "d" '(w3m-download :which-key "download")
+    "t" '(w3m-copy-buffer :which-key "new tab")
+    "T" '(w3m-delete-buffer :which-key "close tab")
+    "o" '(bergheim/w3m-open-link-eww :which-key "open in eww"))
+
+  (add-to-list 'w3m-search-engine-alist
+               '("searxng" "https://search.ts.glvortex.net/search?q=%s" utf-8))
+  (setq w3m-search-default-engine "searxng"
+        w3m-use-cookies nil
+        w3m-confirm-leaving-secure-page nil
+        w3m-default-display-inline-images t
+        w3m-toggle-inline-images-permanently t)
+
+  (defun bergheim/w3m-open-link-eww ()
+    "Open current w3m page in eww."
+    (interactive)
+    (let ((url (format "%s" w3m-current-url)))
+      (when (and url (not (string-empty-p url)))
+        (eww url)
+        (message "Opened current page in eww: %s" url))))
+
+  (defun bergheim/w3m-browse-or-search ()
+    "Browse to URL from history or search for input."
+    (interactive)
+    (let* ((history-entries (bergheim/w3m-get-history-urls))
+           (choice (completing-read "Open URL: " history-entries nil nil)))
+      (if (member choice history-entries)
+          (w3m choice)
+        (w3m-search w3m-search-default-engine choice))))
+
+  (defun bergheim/w3m-get-history-urls ()
+    "Extract URLs from w3m arrived database."
+    (unless (and (boundp 'w3m-arrived-db) w3m-arrived-db)
+      (w3m-arrived-setup))  ; Initialize the database
+    (let ((urls '()))
+      (when (boundp 'w3m-arrived-db)
+        (maphash (lambda (url _) (push url urls)) w3m-arrived-db))
+      (delete-dups (reverse urls))))
+
+  ;; FIXME this does not need a function
+  (defun bergheim/w3m-rename-buffer (&optional _url)
+    "Rename w3m buffer to include page title."
+    (let ((title (w3m-current-title)))
+      (when title
+        (rename-buffer (format "*w3m - %s*" title) t)))))
