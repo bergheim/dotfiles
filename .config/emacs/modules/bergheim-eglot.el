@@ -90,6 +90,12 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
     "c q" '(eglot-code-action-quickfix :which-key "Quickfix")
     "c o" '(eglot-code-action-organize-imports :which-key "Organize imports")))
 
+(use-package eldoc-box
+  :after eglot
+  :config
+  (add-hook 'eldoc-box-buffer-setup-hook #'eldoc-box-prettify-ts-errors 0 t)
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+
 (use-package consult-eglot
   :ensure t
   :after eglot
