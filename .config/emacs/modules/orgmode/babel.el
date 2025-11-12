@@ -4,6 +4,7 @@
    (C . t)
    (calc . t)
    (shell . t)
+   (sql . t)
    (js . t)))
 
 (use-package ob-go
@@ -35,15 +36,6 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    (append org-babel-load-languages '((python . t)))))
-
-(use-package ob-sql
-  :ensure nil
-  :demand
-  :after org
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   (append org-babel-load-languages '((sql . t)))))
 
 (use-package ob-ruby
   :ensure nil

@@ -169,7 +169,10 @@
                              :keys "r"
                              :file ,(expand-file-name "review/daily.org" org-directory)
                              :default-tags "daily:review"
-                             :hook org-caldav-sync
+                             :hook (lambda ()
+                                     ;; sync but hide the results
+                                     (let ((org-caldav-show-sync-results nil))
+                                       (org-caldav-sync)))
                              :template-file ,(expand-file-name "review-daily.org" org-capture-custom-template-directory))
                             ("Weekly review"
                              :icon ("nf-md-calendar_weekend" :set "mdicon" :color "green")
