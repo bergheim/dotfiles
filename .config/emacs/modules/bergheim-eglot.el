@@ -65,6 +65,9 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (add-to-list 'eglot-server-programs
                '(go-ts-mode . ("gopls")))
 
+  (add-to-list 'eglot-server-programs
+               '(org-mode . ("harper-ls" "--stdio")))
+
   ;; ignore debug logging - should speed up LSP
   (fset #'jsonrpc--log-event #'ignore)
   :custom
