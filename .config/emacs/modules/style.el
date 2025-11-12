@@ -24,16 +24,42 @@
 
 (use-package fontaine
   :if (or (display-graphic-p) (daemonp))
+  :general
+  (bergheim/global-menu-keys
+    "hg" '(fontaine-set-preset :which-key "glyphs")
+    "hG" '(fontaine-toggle-preset :which-key "toggle glyphs"))
   :hook
   ;; Persist the latest font preset when closing/starting Emacs.
   ((after-init . fontaine-mode)
    (after-init . (lambda ()
+                   (bergheim/check-available-fonts fontaine-presets)))
+   (after-init . (lambda ()
                    ;; Set last preset or fall back to desired style from `fontaine-presets'.
                    (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular)))))
-  :bind (("C-c f" . fontaine-set-preset)
-         ("C-c F" . fontaine-toggle-preset))
   :config
-  ;; This is defined in Emacs C code: it belongs to font settings.
+  ;; TODO regular should depend on resolution
+  ;; TODO this should be part of fontaine
+  (defun bergheim/check-available-fonts (presets)
+    "Check font availability in PRESETS and warn about missing fonts."
+    (let ((font-fields '(:default-family :fixed-pitch-family :variable-pitch-family))
+          (fonts '()))
+
+      ;; Collect all font names
+      (dolist (preset presets)
+        (let ((plist (cdr preset)))
+          (dolist (field font-fields)
+            (when-let ((font (and (plist-member plist field)
+                                  (stringp (plist-get plist field))
+                                  (plist-get plist field))))
+              (push font fonts)))))
+
+      ;; Remove duplicates and check availability
+      (dolist (font (delete-dups fonts))
+        (unless (find-font (font-spec :name font))
+          ;; (message "Warning: Font '%s' not found on your system" font)))))
+          (display-warning 'fonts (format "Font '%s' not found on your system" font))))))
+
+  ;; This is defined in Emacs C code (it belongs to font settings)
   (setq x-underline-at-descent-line nil)
 
   (setq fontaine-presets

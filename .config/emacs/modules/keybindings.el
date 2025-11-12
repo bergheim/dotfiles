@@ -259,7 +259,6 @@
 
     "hr" '(bergheim/reload-init-file :which-key "Reload")
     "ht" '(consult-theme :which-key "theme")
-    "hg" '(fontaine-set-preset :which-key "glyphs")
     "hv" '(helpful-variable :which-key "Variable")
     "hs" '(helpful-symbol :which-key "Symbol")
     "hx" '(helpful-command :which-key "Command")
