@@ -49,6 +49,11 @@
    "gh" 'bergheim/org-move-up-header
    "gl" 'bergheim/org-move-down-header)
 
+  ;; also support C-c C-c for src edits
+  (general-define-key
+   :keymaps 'org-src-mode-map
+   "C-c C-c" 'org-edit-src-exit)
+
   (bergheim/localleader-keys
     :keymaps 'org-mode-map
     "," 'org-insert-structure-template
@@ -264,9 +269,8 @@ With universal arg ARG, search all .org files under `org-directory`."
 
 (use-package org-contacts
   :after org
-  :demand
   :commands (org-contacts-anniversaries)
-  :init
+  :config
   (setq org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
 
 (use-package org-journal

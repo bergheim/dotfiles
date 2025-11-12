@@ -502,14 +502,6 @@
         (kill-region (point-at-bol) (point-at-eol))
         (insert (concat command " " directory filename)))))
 
-  (defun bergheim/dired-return-path ()
-    "Exit Dired and return the path of the file or directory at point."
-    (interactive)
-    (let* ((path (dired-get-file-for-visit))
-           (relative-path (file-relative-name path bergheim/eshell-complete-from-dir)))
-      (dirvish-quit)
-      (insert relative-path)))
-
   (defun bergheim/point-is-directory-p ()
     "Check if the word at point is a directory path, or default-directory if not."
     (let ((word (thing-at-point 'filename t)))

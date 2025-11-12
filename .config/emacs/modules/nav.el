@@ -228,7 +228,6 @@ With a universal argument, it allows entering the application to use."
    "o"   #'dired-sort-toggle-or-edit
    "O"   #'dirvish-quicksort
    "TAB" #'dirvish-subtree-toggle
-   "C-<return>" #'bergheim/dired-return-path
    "M-<return>" #'bergheim/dired-leave-for-shell
    "C-h" #'dirvish-history-go-backward
    "C-l" #'dirvish-history-go-forward
