@@ -661,13 +661,6 @@
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))
 
-;; dim the other windows
-(use-package dimmer
-  :custom
-  (dimmer-adjustment-mode :foreground)
-  :config
-  (dimmer-mode))
-
 (use-package dashboard
   :after nerd-icons
   :demand
