@@ -353,7 +353,7 @@
    "C-j" #'eshell-next-matching-input-from-input)
 
   (bergheim/global-menu-keys
-    "ase" '(eshell :which-key "eshell"))
+    "ate" '(eshell :which-key "eshell"))
   :config
   (setq eshell-destroy-buffer-when-process-dies t)
 
@@ -598,7 +598,7 @@ Open `dired` in the resolved directory of the current command."
    :keymaps 'eat-mode-map
    "C-r" #'consult-history)  ; Same as shell-mode
   (bergheim/global-menu-keys
-    "asE" '(eat :which-key "Eat"))
+    "atE" '(eat :which-key "Eat"))
   :config
   (add-hook 'eat-mode-hook
             (lambda ()
@@ -621,7 +621,7 @@ Open `dired` in the resolved directory of the current command."
   :commands vterm
   :general
   (bergheim/global-menu-keys
-    "asv" '(vterm :which-key "vterm"))
+    "atv" '(vterm :which-key "vterm"))
   :config
   (setq vterm-shell "/usr/bin/zsh")
   (setq vterm-max-scrollback 10000)
