@@ -174,12 +174,17 @@ With a universal argument, it allows entering the application to use."
                 (seq "~" eol)))               ;; backup-files
         dired-listing-switches "-alGh --group-directories-first")
 
+  :general
   (general-define-key
    :states 'normal
    :keymaps 'dired-mode-map
    "M-<return>" #'bergheim/dired-leave-for-shell
+   "."   #'dired-omit-mode
    "h"   #'dired-up-directory
-   "l"   #'dired-find-file))
+   "l"   #'dired-find-file)
+  (bergheim/localleader-keys
+    :keymaps 'dired-mode-map
+    "."   #'dired-omit-mode))
 
 (use-package dirvish
   :after dired
