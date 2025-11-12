@@ -146,14 +146,6 @@
 (unless (file-exists-p org-directory)
   (make-directory org-directory))
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (C . t)
-   (calc . t)
-   (shell . t)
-   (js . t)))
-
 ;; TODO: what is this again
 (org-add-link-type
  "org-agenda"

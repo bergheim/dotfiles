@@ -8,6 +8,7 @@
 
   ;; LOL @this loading
   :config
+  (bergheim/load-file "modules/orgmode/babel.el")
   (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
   (bergheim/load-file "modules/orgmode/commands.el")
@@ -390,34 +391,5 @@ With universal arg ARG, search all .org files under `org-directory`."
    "M-n" 'org-noter-sync-next-note
    "M-." 'org-noter-sync-current-note
    "q" 'org-noter-kill-session))
-
-(use-package ob-typescript
-  :after org
-  :demand t
-  :config
-  ;; Assuming ob-typescript expects typescript-mode, we might need to
-  ;; temporarily alias typescript-ts-mode to typescript-mode.
-  (unless (fboundp 'typescript-mode)
-    (defalias 'typescript-mode 'typescript-ts-mode))
-
-  ;; support tsx as well
-  (add-to-list 'org-src-lang-modes '("tsx" . typescript))
-  (defalias 'org-babel-execute:tsx 'org-babel-execute:typescript)
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   (append org-babel-load-languages '((typescript . t)))))
-
-;; (use-package ob-go
-;;   :ensure
-;;   :after org)
-
-;; (use-package ob-elixir
-;;   :ensure
-;;   :after org)
-
-(use-package ob-restclient
-  :ensure
-  :after org)
 
 ;;; org.el ends here
