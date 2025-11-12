@@ -184,7 +184,8 @@
   (setq doom-modeline-lsp t)
 
   ;; Set a fixed width for the modeline for consistency and performance
-  (setq doom-modeline-width 40)
+  (setq doom-modeline-width 20)
+  (setq doom-modeline-height 15)
 
   ;; Set the cache directory for doom-modeline
   (setq doom-modeline-cache-directory (expand-file-name "doom-modeline/" bergheim/cache-dir))
@@ -192,7 +193,12 @@
   ;; apparently `file-name' is faster than `auto'
   ;; see https://github.com/seagle0128/doom-modeline#customize
   (setq doom-modeline-buffer-file-name-style 'file-name)
-  (setq doom-modeline-buffer-encoding nil))
+  (setq doom-modeline-buffer-encoding nil)
+
+  (setq doom-modeline-irc nil)
+  (setq doom-modeline-mu4e nil)
+  (setq doom-modeline-gnus nil)
+  (setq doom-modeline-notifications nil))
 
 ;; (use-package mood-line
 ;;   :demand
@@ -445,10 +451,11 @@
   :after nerd-icons
   :demand
   :init
-  (setq dashboard-items '((recents  . 5)
+  (setq dashboard-items '(
                           ;; this will FUBAR your session if something is TRAMPed
                           ;; see https://github.com/emacs-dashboard/emacs-dashboard/issues/408
-                          ;; (bookmarks . 5)
+                          (recents  . 5)
+                          (bookmarks . 5)
                           (projects . 5)))
   (setq dashboard-banner-logo-title "NeoDOOM")
   (setq dashboard-startup-banner 'logo)
