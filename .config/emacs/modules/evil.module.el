@@ -41,16 +41,15 @@
   :config
   (global-evil-matchit-mode 1))
 
-;; gl/gL text-object char
 (use-package evil-lion
   :after (evil general)
-  :demand 10
+  :defer
   :config
   (general-define-key
    :states '(normal visual)
    :keymaps 'prog-mode-map
-   "gl" 'evil-lion-left
-   "gL" 'evil-lion-right))
+   "gb" 'evil-lion-left
+   "gB" 'evil-lion-right))
 
 ;; FIXME this doesn't work anymore atm..
 (use-package evil-textobj-tree-sitter
