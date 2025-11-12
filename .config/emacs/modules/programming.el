@@ -147,6 +147,7 @@
     "eP" '(pp-eval-defun            :which-key "pprint defun")
 
     "c" '(check-parens              :which-key "Check parens")
+    "p" '(paredit-mode              :which-key "Toggle paredit")
 
     "m" '(macroexpand-last-sexp     :which-key "Macroexpand last sexp")
     "M" '(macroexpand-all           :which-key "Macroexpand all")))
