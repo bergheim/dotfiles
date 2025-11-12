@@ -183,6 +183,11 @@
    "]" #'calfw-navi-next-view
    "A" #'calfw-org-open-agenda-day
    "C" #'calfw-org-capture
+   "U" #'(lambda ()
+           (interactive)
+           (org-caldav-sync)
+           (calfw-refresh-calendar-buffer))
+   "gr" #'calfw-refresh-calendar-buffer
    "T" #'calfw-navi-goto-today-command
    "gt" #'calfw-navi-goto-today-command
    "d" #'calfw-change-view-day
