@@ -19,8 +19,31 @@
 ;;
 ;;; Code:
 
-(defvar bergheim/theme-light 'ef-cyprus)
-(defvar bergheim/theme-dark 'ef-night)
+(defvar bergheim/theme-light 'ef-eagle)
+(defvar bergheim/theme-dark 'doric-fire)
+
+(defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
+(defvar bergheim/display 'big)
+(defvar bergheim/font-base 1.0)
+
+(defun bergheim/set-font-based-on-frame-resolution ()
+  "Set font size based on the resolution of the frame's display."
+  (let ((height (- (display-pixel-height) bergheim/screen-margin)))
+    (cond
+     ((< height 1440)
+      (message "SMALL")
+      (setq bergheim/display 'small
+            bergheim/font-base 1.1))
+     ((< height 2160)
+      (message "MED")
+      (setq bergheim/display 'medium
+            bergheim/font-base 1.3))
+     (t
+      (message "BIG")
+      (setq bergheim/display 'big
+            bergheim/font-base 1.5)))))
+
+(bergheim/set-font-based-on-frame-resolution)
 
 (defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
 (defvar bergheim/display 'big "Size of display")
@@ -76,15 +99,24 @@
   (setq x-underline-at-descent-line nil)
 
   (setq fontaine-presets
-        '(;; base sizes
-          (small
-           :default-height 90
+        `((small
+           :default-height ,(round (* 100 bergheim/font-base))
+           ;; :mode-line-active-height 0.75
+           ;; :mode-line-inactive-height 0.75
            :line-spacing 0.2)
           (medium
-           :default-height 110
-           :line-spacing 0.4)
+           :default-height ,(round (* 100 bergheim/font-base))
+           ;; :mode-line-active-height 0.75
+           ;; :mode-line-active-family nil ; falls back to :default-family
+           ;; :mode-line-active-weight nil ; falls back to :default-weight
+           ;; :mode-line-inactive-height 0.75
+           ;; :mode-line-inactive-family nil ; falls back to :default-family
+           ;; :mode-line-inactive-weight nil ; falls back to :default-weight
+           :line-spacing 0.3)
           (large
-           :default-height 170
+           :default-height ,(round (* 100 bergheim/font-base))
+           ;; :mode-line-active-height 0.75
+           ;; :mode-line-inactive-height 0.75
            :line-spacing 0.4)
 
           ;; special use cases
@@ -94,10 +126,10 @@
            :inherit regular
            :line-spacing 0)
           (presentation
-           :inherit medium
+           :inherit large
            :default-height 240)
           (jumbo
-           :inherit medium
+           :inherit large
            :default-height 280)
 
           ;; programming
