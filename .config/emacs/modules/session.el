@@ -97,7 +97,7 @@ If FRAME is nil or not provided, use the selected frame."
     ;; "wo" 'other-frame
     )
   :config
-  (beframed-mode 1))
+  (beframe-mode 1))
 
 ;; WIP. lol
 (defun bergheim/load ()
