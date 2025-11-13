@@ -2,6 +2,23 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defun bergheim/enable-variable-pitch-mode ()
+  "Enable variable-pitch-mode for relevant org-mode text."
+  (variable-pitch-mode 1)
+
+  ;; keep code related stuff clean
+  (dolist (face '(org-block
+                  org-table
+                  org-verbatim
+                  org-code
+                  org-block-begin-line
+                  org-block-end-line
+                  org-meta-line
+                  org-document-info-keyword))
+    (set-face-attribute face nil :inherit 'fixed-pitch)))
+
+(add-hook 'org-mode-hook #'bergheim/enable-variable-pitch-mode)
+
 (defun org-capture-select-template-prettier (&optional keys)
   "Select a capture template, in a prettier way than default
 Lisp programs can force the template by setting KEYS to a string."
