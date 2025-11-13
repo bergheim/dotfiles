@@ -19,8 +19,8 @@
 ;;
 ;;; Code:
 
-(defvar bergheim/theme-light 'ef-eagle)
-(defvar bergheim/theme-dark 'doric-fire)
+(defvar bergheim/theme-light 'modus-operandi)
+(defvar bergheim/theme-dark 'modus-vivendi)
 
 (defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
 (defvar bergheim/display 'big)
@@ -60,6 +60,7 @@
 
 (use-package fontaine
   :if (or (display-graphic-p) (daemonp))
+  :demand
   :general
   (bergheim/global-menu-keys
     "hg" '(fontaine-set-preset :which-key "glyphs")
@@ -68,11 +69,15 @@
   ;; Persist the latest font preset when closing/starting Emacs.
   ((after-init . fontaine-mode)
    (after-init . (lambda ()
-                   (bergheim/check-available-fonts fontaine-presets)))
-   (after-init . (lambda ()
                    ;; Set last preset or fall back to desired style from `fontaine-presets'.
                    (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular)))))
   :config
+  ;; we need a GUI frame to check the fonts - a new daemon will not have one
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook
+                (lambda () (bergheim/check-available-fonts fontaine-presets)))
+    (add-hook 'after-init-hook
+              (lambda () (bergheim/check-available-fonts fontaine-presets))))
   ;; TODO regular should depend on resolution
   ;; TODO this should be part of fontaine
   (defun bergheim/check-available-fonts (presets)
@@ -679,7 +684,7 @@
 
   ;; (setq dashboard-show-shortcuts nil)
   (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-icon-type 'nerd-icons) 
+  (setq dashboard-icon-type 'nerd-icons)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
 
@@ -726,7 +731,7 @@
       (progn
         (copy-file file dest t)
         (when swaysock
-          (let ((process-environment (cons (format "SWAYSOCK=%s" swaysock) 
+          (let ((process-environment (cons (format "SWAYSOCK=%s" swaysock)
                                            process-environment)))
             (call-process "swaymsg" nil nil nil
                           (format "exec swaybg -m fill -i %s" dest))

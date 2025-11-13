@@ -188,6 +188,7 @@
            (interactive)
            (org-caldav-sync)
            (calfw-refresh-calendar-buffer))
+   "q" #'calfw-org-clean-exit
    "gr" #'calfw-refresh-calendar-buffer
    "T" #'calfw-navi-goto-today-command
    "gt" #'calfw-navi-goto-today-command
@@ -260,9 +261,6 @@ With universal arg ARG, search all .org files under `org-directory`."
   :defer t
   :config
   (org-recent-headings-mode))
-
-(use-package frecency
-  :after org)
 
 (use-package org-sticky-header
   :ensure t
