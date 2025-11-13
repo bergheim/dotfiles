@@ -26,45 +26,19 @@
   :config
   (setq treesit-font-lock-level 4))
 
-(use-package treesit-auto
-  :defer 10
-  :config
-  (setq treesit-auto-install 'prompt)
-  (treesit-auto-add-to-auto-mode-alist)
-  (global-treesit-auto-mode))
-
-;; (use-package tree-sitter
-;;   :ensure t
-;;   :demand t
-;;   :config
-;;   (global-tree-sitter-mode)
-;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
-;; (use-package tree-sitter-langs
-;;   :ensure t
-;;   :demand t
-;;   :after tree-sitter)
-
 (use-package aggressive-indent
   :config
   (aggressive-indent-global-mode t))
 
 (use-package emacs
   :ensure nil
-  :after treesit
   :config
   (electric-pair-mode t)
   :custom
+  (treesit-enabled-modes t)
   (xref-search-program 'ripgrep)
   (grep-command "rg -nS --no-heading "
-                grep-use-null-device nil)
-  :custom-face
-  (typescript-ts-jsx-tag-face
-   ((t ( :inherit font-lock-type-face))))
-  :mode
-  ("\\.js$" . js-ts-mode)
-  ("\\.ts$" . typescript-ts-mode)
-  ("\\.tsx$" . tsx-ts-mode))
+                grep-use-null-device nil))
 
 (use-package dumb-jump
   :ensure t

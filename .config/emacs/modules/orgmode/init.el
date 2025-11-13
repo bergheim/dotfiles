@@ -3,6 +3,7 @@
 ;; Copyright (C) 2023 Thomas Bergheim
 
 (use-package org
+  :ensure nil
   :defer t
   :after general
 
