@@ -1,3 +1,7 @@
+;;; babel.el --- Description -*- lexical-binding: t; -*-
+;;
+;; Copyright (C) 2025 Thomas Bergheim
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)

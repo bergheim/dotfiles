@@ -197,10 +197,6 @@
   :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
 
-(use-package python-ts-mode
-  :ensure nil
-  :hook (python-mode . poetry-tracking-mode))
-
 (use-package lua-mode)
 
 (use-package go-mode
@@ -230,9 +226,6 @@
     ;; Otherwise, for TypeScript, use the regular style
     (setq-local comment-start "// ")
     (setq-local comment-end "")))
-
-(use-package poetry
-  :disabled)
 
 ;; ;; Enable repeat mode for more ergonomic `dape' use
 ;; (use-package repeat
