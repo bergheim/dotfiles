@@ -14,7 +14,7 @@
 
 ;; Startup speed (ignore gc at startup), annoyance suppression
 (defvar last-file-name-handler-alist file-name-handler-alist)
-(setq gc-cons-threshold most-positive-fixnum
+(setq gc-cons-threshold (* 1000 1024 1024)  ; 1000MB. a lot but won't trigget any oom busters on new installs
       gc-cons-percentage 0.6
       file-name-handler-alist nil)
 
