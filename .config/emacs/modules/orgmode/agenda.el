@@ -93,9 +93,9 @@
            ((agenda "" ((org-agenda-overriding-header "Dashboard")
                         (org-agenda-span 'week)
                         ;; (org-agenda-current-span 'day)
-                        (org-agenda-start-day "-1w")
+                        (org-agenda-start-day "-Mon")
                         ;; (org-agenda-clockreport-mode nil)
-                        (org-agenda-log-mode-items '(closed))
+                        (org-agenda-log-mode-items '(state))
                         (org-super-agenda-groups
                          '((:time-grid t
                             :order 1)
