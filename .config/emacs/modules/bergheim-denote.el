@@ -68,9 +68,9 @@
   (defun bergheim/denote-new-journal-entry ()
     "Create a new journal entry and enter writer mode"
     (interactive)
-    (siren-tab-bar-switch-to-or-create-tab "journal")
+    ;; (siren-tab-bar-switch-to-or-create-tab "journal")
     (denote-journal-new-or-existing-entry)
-    (bergheim/write-mode t)
+    (bergheim/write-mode)
     (goto-char (point-max))
     (delete-trailing-whitespace)
     (insert "\n* [" (format-time-string "%H:%M") "] ")
