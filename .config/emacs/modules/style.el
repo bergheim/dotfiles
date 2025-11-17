@@ -299,7 +299,7 @@
            :default-family "MonaspiceNe Nerd Font"
            :fixed-pitch-family "MonaspiceNe Nerd Font"
            ;; :variable-pitch-family "Inter"
-           :variable-pitch-family "Segoe UI Variable")
+           :variable-pitch-family "Segoe UI Variable Static Text")
 
           (t
            :default-family "MonaspiceNe Nerd Font"
