@@ -248,13 +248,6 @@
   :config
   (setq flymake-temporary-file-directory (bergheim/get-and-ensure-data-dir "flymake")))
 
-(use-package persistent-scratch
-  :unless bergheim/container-mode-p
-  :ensure t
-  :demand t
-  :config
-  (persistent-scratch-setup-default))
-
 (use-package pdf-tools
   :unless bergheim/container-mode-p
   :defer t
