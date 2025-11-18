@@ -352,7 +352,7 @@ bindsym $mod+o exec emacsclient --eval '(thanos/type)' -F '((name . "floating"))
 bindsym $mod+ctrl+grave exec makoctl dismiss
 bindsym $mod+ctrl+1 exec makoctl restore
 bindsym $mod+ctrl+3 exec makoctl dismiss --all
-bindsym $mod+ctrl+2 exec makoctl invoke
+bindsym $mod+ctrl+2 exec makoctl menu -- fuzzel -d -p 'Select action:'
 
 # application switcher
 bindsym $mod+Tab exec swaymsg -t get_tree | jq -r '.. | select(.type? == "con" and .app_id?) | "\(.id):\(.app_id) - \(.name)"' | fuzzel --dmenu | cut -d: -f1 | xargs -I{} swaymsg '[con_id={}] focus'
