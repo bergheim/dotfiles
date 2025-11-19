@@ -23,40 +23,22 @@
 (defvar bergheim/theme-dark 'modus-vivendi)
 
 (defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
-(defvar bergheim/display 'big)
+(defvar bergheim/display 'medium)
 (defvar bergheim/font-base 1.0)
 
-(defun bergheim/set-font-based-on-frame-resolution ()
+(defun bergheim/set-font-size-based-on-frame-resolution ()
   "Set font size based on the resolution of the frame's display."
   (let ((height (- (display-pixel-height) bergheim/screen-margin)))
     (cond
      ((< height 1440)
-      (message "SMALL")
       (setq bergheim/display 'small
-            bergheim/font-base 1.1))
+            bergheim/font-base 0.8))
      ((< height 2160)
-      (message "MED")
       (setq bergheim/display 'medium
             bergheim/font-base 1.3))
      (t
-      (message "BIG")
       (setq bergheim/display 'big
             bergheim/font-base 1.5)))))
-
-(bergheim/set-font-based-on-frame-resolution)
-
-(defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
-(defvar bergheim/display 'big "Size of display")
-(defun bergheim/set-font-based-on-frame-resolution ()
-  "Set font size based on the resolution of the frame's display."
-  (let ((height (- (display-pixel-height) bergheim/screen-margin)))
-    (cond
-     ((< height 1440)
-      (setq bergheim/display 'small))
-     ((< height 2160)
-      (setq bergheim/display 'medium))
-     (t
-      (setq bergheim/display 'big)))))
 
 (use-package fontaine
   :if (or (display-graphic-p) (daemonp))
@@ -70,15 +52,8 @@
   ((after-init . fontaine-mode)
    (after-init . (lambda ()
                    ;; Set last preset or fall back to desired style from `fontaine-presets'.
-                   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular)))))
+                   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium)))))
   :config
-  ;; we need a GUI frame to check the fonts - a new daemon will not have one
-  (if (daemonp)
-      (add-hook 'server-after-make-frame-hook
-                (lambda () (bergheim/check-available-fonts fontaine-presets)))
-    (add-hook 'after-init-hook
-              (lambda () (bergheim/check-available-fonts fontaine-presets))))
-  ;; TODO regular should depend on resolution
   ;; TODO this should be part of fontaine
   (defun bergheim/check-available-fonts (presets)
     "Check font availability in PRESETS and warn about missing fonts."
@@ -103,211 +78,230 @@
   ;; This is defined in Emacs C code (it belongs to font settings)
   (setq x-underline-at-descent-line nil)
 
-  (setq fontaine-presets
-        `((small
-           :default-height ,(round (* 100 bergheim/font-base))
-           ;; :mode-line-active-height 0.75
-           ;; :mode-line-inactive-height 0.75
-           :line-spacing 0.2)
-          (medium
-           :default-height ,(round (* 100 bergheim/font-base))
-           ;; :mode-line-active-height 0.75
-           ;; :mode-line-active-family nil ; falls back to :default-family
-           ;; :mode-line-active-weight nil ; falls back to :default-weight
-           ;; :mode-line-inactive-height 0.75
-           ;; :mode-line-inactive-family nil ; falls back to :default-family
-           ;; :mode-line-inactive-weight nil ; falls back to :default-weight
-           :line-spacing 0.3)
-          (large
-           :default-height ,(round (* 100 bergheim/font-base))
-           ;; :mode-line-active-height 0.75
-           ;; :mode-line-inactive-height 0.75
-           :line-spacing 0.4)
+  
+  (defun bergheim/generate-fontaine-presets ()
+    (setq fontaine-presets
+          `((small
+             :default-height ,(round (* 100 bergheim/font-base))
+             ;; :mode-line-active-height 0.75
+             ;; :mode-line-inactive-height 0.75
+             :line-spacing 0.2)
+            (medium
+             :default-height ,(round (* 100 bergheim/font-base))
+             ;; :mode-line-active-height 0.75
+             ;; :mode-line-active-family nil ; falls back to :default-family
+             ;; :mode-line-active-weight nil ; falls back to :default-weight
+             ;; :mode-line-inactive-height 0.75
+             ;; :mode-line-inactive-family nil ; falls back to :default-family
+             ;; :mode-line-inactive-weight nil ; falls back to :default-weight
+             :line-spacing 0.4)
+            (large
+             :default-height ,(round (* 100 bergheim/font-base))
+             ;; :mode-line-active-height 0.75
+             ;; :mode-line-inactive-height 0.75
+             :line-spacing 0.4)
 
-          ;; special use cases
-          (regular
-           :inherit large)
-          (condense
-           :inherit regular
-           :line-spacing 0)
-          (presentation
-           :inherit large
-           :default-height 240)
-          (jumbo
-           :inherit large
-           :default-height 280)
+            ;; special use cases
+            (condense
+             :default-height ,(round (* 100 bergheim/font-base))
+             :line-spacing 0)
+            (presentation
+             :default-height ,(round (* 1.5 (* 100 bergheim/font-base))))
+            (jumbo
+             :default-height ,(round (* 2.0 (* 100 bergheim/font-base))))
 
-          ;; programming
-          (prog/base
-           ;; apparently Fontaine does not support multiple generations :p
-           :inherit large
-           :default-height 200
-           :line-spacing 0.2)
+            ;; programming
+            (prog/base
+             ;; apparently Fontaine does not support multiple generations :p
+             ;; :inherit large
+             :default-height ,(round (* 100 bergheim/font-base))
+             :default-height 200
+             :line-spacing 0.2)
 
-          (prog/commit
-           :inherit prog/base
-           :default-family "Commit Mono Nerd Font"
-           :fixed-pitch-family "Commit Mono Nerd Font"
-           :variable-pitch-family "Inter")
-          (prog/hack
-           :inherit prog/base
-           :default-family "Hack Nerd Font"
-           :fixed-pitch-family "Hack Nerd Font"
-           :variable-pitch-family "Hack Nerd Font Propo")
-          (prog/ubuntu
-           :inherit prog/base
-           :default-family "Ubuntu Mono Nerd Font"
-           :fixed-pitch-family "Ubuntu Mono Nerd Font"
-           :variable-pitch-family "Ubuntu Nerd Font")
-          (prog/jetbrains
-           :inherit prog/base
-           :default-family "JetBrains Mono Nerd Font" ;; NL for non ligatures
-           :fixed-pitch-family "JetBrains Mono Nerd Font"
-           :variable-pitch-family "JetBrains Mono Nerd Font Propo")
-          (prog/noto
-           :inherit prog/base
-           :default-family "NotoSansM Nerd Font Mono"
-           :fixed-pitch-family "NotoSansM Nerd Font Mono"
-           :variable-pitch-family "NotoSans Nerd Font Propo")
-          (prog/fira-code
-           :inherit prog/base
-           :default-family "Fira Code Nerd Font"
-           :fixed-pitch-family "Fira Code Nerd Font"
-           :variable-pitch-family "Fira Sans")
-          (prog/caskaydia
-           :inherit prog/base
-           :default-family "CaskaydiaCove Nerd Font"
-           :fixed-pitch-family "CaskaydiaCove Nerd Font"
-           :variable-pitch-family "CaskaydiaCove Nerd Font Propo"
-           :line-spacing 0.3)
-          ;; (prog/cascadia
-          ;;  :inherit prog/base
-          ;;  :default-family "Cascadia Code"
-          ;;  :fixed-pitch-family "Cascadia Code"
-          ;;  :variable-pitch-family "Segoe UI Variable")
-          (prog/ibm-plex
-           :inherit prog/base
-           :default-family "IBM Plex Mono"
-           :fixed-pitch-family "IBM Plex Mono"
-           :variable-pitch-family "IBM Plex Sans"
-           :line-spacing 0.25)
-          (prog/liberation
-           :inherit prog/base
-           :default-family "Liberation Mono"
-           :fixed-pitch-family "Liberation Mono"
-           :variable-pitch-family "Liberation Sans")
-          (prog/iosevka
-           :inherit prog/base
-           :default-height 160
-           :default-family "Iosevka Nerd Font"
-           :fixed-pitch-family "Iosevka Nerd Font"
-           :variable-pitch-family "Iosevka Nerd Font Propo"
-           :line-spacing 0.3)
-          (prog/iosevka-term
-           :inherit prog/base
-           :default-height 160
-           :default-family "IosevkaTerm Nerd Font"
-           :fixed-pitch-family "IosevkaTerm Nerd Font"
-           :variable-pitch-family "IosevkaTerm Nerd Font Propo"
-           :line-spacing 0.25)
-          (prog/iosevka-slab
-           :inherit prog/base
-           :default-height 160
-           :default-family "IosevkaTermSlab Nerd Font"
-           :fixed-pitch-family "IosevkaTermSlab Nerd Font"
-           :variable-pitch-family "IosevkaTermSlab Nerd Font Propo"
-           :line-spacing 0.3)
-          (prog/aporetic
-           :inherit prog/base
-           :default-height 160
-           :default-family "Aporetic Sans Mono"
-           :fixed-pitch-family "Aporetic Sans Mono"
-           :variable-pitch-family "Aporetic Sans"
-           :line-spacing 0.3)
-          (prog/aporetic-serif
-           :inherit prog/aporetic
-           :variable-pitch-family "Aporetic Serif")
-          (prog/inconsolata
-           :inherit prog/base
-           :default-family "Inconsolata Nerd Font"
-           :fixed-pitch-family "Inconsolata Nerd Font"
-           :variable-pitch-family "Inconsolata Nerd Font Propo")
-          (prog/intel-one
-           :inherit prog/base
-           :default-family "IntoneMono Nerd Font" ;; Intel One
-           :fixed-pitch-family "IntoneMono Nerd Font"
-           :variable-pitch-family "IntoneMono Nerd Font Propo")
-          (prog/victor
-           :inherit prog/base
-           :default-family "VictorMono Nerd Font"
-           :fixed-pitch-family "VictorMono Nerd Font"
-           :variable-pitch-family "VictorMono Nerd Font Propo")
-          (prog/recursive
-           :inherit prog/base
-           :default-family "RecMonoLinear Nerd Font" ;; Recursive Mono
-           :fixed-pitch-family "RecMonoLinear Nerd Font"
-           :variable-pitch-family "Inter")
-          (prog/monaspace-neon
-           :inherit prog/base
-           :default-family "MonaspiceNe Nerd Font"
-           :fixed-pitch-family "MonaspiceNe Nerd Font"
-           ;; :variable-pitch-family "Atkinson Hyperlegible")
-           :variable-pitch-family "MonaspiceNe Nerd Font Propo")
-          (prog/monaspace-argon
-           :inherit prog/base
-           :default-family "MonaspiceAr Nerd Font"
-           :fixed-pitch-family "MonaspiceAr Nerd Font"
-           :variable-pitch-family "MonaspiceAr Nerd Font Propo")
-          (prog/monaspace-radon
-           :inherit prog/base
-           :default-family "MonaspiceRn Nerd Font"
-           :fixed-pitch-family "MonaspiceRn Nerd Font"
-           :variable-pitch-family "MonaspiceRn Nerd Font Propo")
-          (prog/monaspace-xenon
-           :inherit prog/base
-           :default-family "MonaspiceXe Nerd Font"
-           :fixed-pitch-family "MonaspiceXe Nerd Font"
-           :variable-pitch-family "MonaspiceXe Nerd Font Propo")
-          (prog/monaspace-krypton
-           :inherit prog/base
-           :default-family "MonaspiceKr Nerd Font"
-           :fixed-pitch-family "MonaspiceKr Nerd Font"
-           :variable-pitch-family "MonaspiceKr Nerd Font Propo")
-          (prog/source
-           :inherit prog/base
-           :default-family "Source Code Pro"
-           :fixed-pitch-family "Source Code Pro"
-           :variable-pitch-family "Source Sans Pro")
+            (prog/commit
+             :inherit prog/base
+             :default-family "Commit Mono Nerd Font"
+             :fixed-pitch-family "Commit Mono Nerd Font"
+             :variable-pitch-family "Inter")
+            (prog/hack
+             :inherit prog/base
+             :default-family "Hack Nerd Font"
+             :fixed-pitch-family "Hack Nerd Font"
+             :variable-pitch-family "Hack Nerd Font Propo")
+            (prog/ubuntu
+             :inherit prog/base
+             :default-family "Ubuntu Mono Nerd Font"
+             :fixed-pitch-family "Ubuntu Mono Nerd Font"
+             :variable-pitch-family "Ubuntu Nerd Font")
+            (prog/jetbrains
+             :inherit prog/base
+             :default-family "JetBrains Mono Nerd Font" ;; NL for non ligatures
+             :fixed-pitch-family "JetBrains Mono Nerd Font"
+             :variable-pitch-family "JetBrains Mono Nerd Font Propo")
+            (prog/noto
+             :inherit prog/base
+             :default-family "NotoSansM Nerd Font Mono"
+             :fixed-pitch-family "NotoSansM Nerd Font Mono"
+             :variable-pitch-family "NotoSans Nerd Font Propo")
+            (prog/fira-code
+             :inherit prog/base
+             :default-family "Fira Code Nerd Font"
+             :fixed-pitch-family "Fira Code Nerd Font"
+             :variable-pitch-family "Fira Sans")
+            (prog/caskaydia
+             :inherit prog/base
+             :default-family "CaskaydiaCove Nerd Font"
+             :fixed-pitch-family "CaskaydiaCove Nerd Font"
+             :variable-pitch-family "CaskaydiaCove Nerd Font Propo"
+             :line-spacing 0.3)
+            ;; (prog/cascadia
+            ;;  :inherit prog/base
+            ;;  :default-family "Cascadia Code"
+            ;;  :fixed-pitch-family "Cascadia Code"
+            ;;  :variable-pitch-family "Segoe UI Variable")
+            (prog/ibm-plex
+             :inherit prog/base
+             :default-family "IBM Plex Mono"
+             :fixed-pitch-family "IBM Plex Mono"
+             :variable-pitch-family "IBM Plex Sans"
+             :line-spacing 0.25)
+            (prog/liberation
+             :inherit prog/base
+             :default-family "Liberation Mono"
+             :fixed-pitch-family "Liberation Mono"
+             :variable-pitch-family "Liberation Sans")
+            (prog/iosevka
+             :inherit prog/base
+             ;; :default-height 160
+             :default-family "Iosevka Nerd Font"
+             :fixed-pitch-family "Iosevka Nerd Font"
+             :variable-pitch-family "Iosevka Nerd Font Propo"
+             :line-spacing 0.3)
+            (prog/iosevka-term
+             :inherit prog/base
+             ;; :default-height 160
+             :default-family "IosevkaTerm Nerd Font"
+             :fixed-pitch-family "IosevkaTerm Nerd Font"
+             :variable-pitch-family "IosevkaTerm Nerd Font Propo"
+             :line-spacing 0.25)
+            (prog/iosevka-slab
+             :inherit prog/base
+             ;; :default-height 160
+             :default-family "IosevkaTermSlab Nerd Font"
+             :fixed-pitch-family "IosevkaTermSlab Nerd Font"
+             :variable-pitch-family "IosevkaTermSlab Nerd Font Propo"
+             :line-spacing 0.3)
+            (prog/aporetic
+             :inherit prog/base
+             ;; :default-height 160
+             :default-family "Aporetic Sans Mono"
+             :fixed-pitch-family "Aporetic Sans Mono"
+             :variable-pitch-family "Aporetic Sans"
+             :line-spacing 0.3)
+            (prog/aporetic-serif
+             ;; :inherit prog/aporetic
+             :inherit prog/base
+             :default-family "Aporetic Sans Mono"
+             :fixed-pitch-family "Aporetic Sans Mono"
+             :variable-pitch-family "Aporetic Sans"
+             :variable-pitch-family "Aporetic Serif")
+            (prog/inconsolata
+             :inherit prog/base
+             :default-family "Inconsolata Nerd Font"
+             :fixed-pitch-family "Inconsolata Nerd Font"
+             :variable-pitch-family "Inconsolata Nerd Font Propo")
+            (prog/intel-one
+             :inherit prog/base
+             :default-family "IntoneMono Nerd Font" ;; Intel One
+             :fixed-pitch-family "IntoneMono Nerd Font"
+             :variable-pitch-family "IntoneMono Nerd Font Propo")
+            (prog/victor
+             :inherit prog/base
+             :default-family "VictorMono Nerd Font"
+             :fixed-pitch-family "VictorMono Nerd Font"
+             :variable-pitch-family "VictorMono Nerd Font Propo")
+            (prog/recursive
+             :inherit prog/base
+             :default-family "RecMonoLinear Nerd Font" ;; Recursive Mono
+             :fixed-pitch-family "RecMonoLinear Nerd Font"
+             :variable-pitch-family "Inter")
+            (prog/monaspace-neon
+             :inherit prog/base
+             :default-family "MonaspiceNe Nerd Font"
+             :fixed-pitch-family "MonaspiceNe Nerd Font"
+             ;; :variable-pitch-family "Atkinson Hyperlegible")
+             :variable-pitch-family "MonaspiceNe Nerd Font Propo")
+            (prog/monaspace-argon
+             :inherit prog/base
+             :default-family "MonaspiceAr Nerd Font"
+             :fixed-pitch-family "MonaspiceAr Nerd Font"
+             :variable-pitch-family "MonaspiceAr Nerd Font Propo")
+            (prog/monaspace-radon
+             :inherit prog/base
+             :default-family "MonaspiceRn Nerd Font"
+             :fixed-pitch-family "MonaspiceRn Nerd Font"
+             :variable-pitch-family "MonaspiceRn Nerd Font Propo")
+            (prog/monaspace-xenon
+             :inherit prog/base
+             :default-family "MonaspiceXe Nerd Font"
+             :fixed-pitch-family "MonaspiceXe Nerd Font"
+             :variable-pitch-family "MonaspiceXe Nerd Font Propo")
+            (prog/monaspace-krypton
+             :inherit prog/base
+             :default-family "MonaspiceKr Nerd Font"
+             :fixed-pitch-family "MonaspiceKr Nerd Font"
+             :variable-pitch-family "MonaspiceKr Nerd Font Propo")
+            (prog/source
+             :inherit prog/base
+             :default-family "Source Code Pro"
+             :fixed-pitch-family "Source Code Pro"
+             :variable-pitch-family "Source Sans Pro")
 
-          ;; org
-          (org/base
-           :inherit large
-           :default-height 150
-           :line-spacing 0.4)
-          (org/atkinson
-           :inherit org/base
-           :default-family "MonaspiceNe Nerd Font"
-           :fixed-pitch-family "MonaspiceNe Nerd Font"
-           :variable-pitch-family "Atkinson Hyperlegible")
-          (org/inter
-           :inherit org/base
-           :default-family "Iosevka Nerd Font"
-           :fixed-pitch-family "Iosevka Nerd Font"
-           :variable-pitch-family "Inter")
-          (org/modern
-           :inherit org/base
-           :default-family "MonaspiceNe Nerd Font"
-           :fixed-pitch-family "MonaspiceNe Nerd Font"
-           ;; :variable-pitch-family "Inter"
-           :variable-pitch-family "Segoe UI Variable Static Text")
+            ;; org
+            (org/base
+             ;; :inherit large
+             :default-height ,(round (* 100 bergheim/font-base))
+             ;; :default-height 150
+             :line-spacing 0.4)
+            (org/atkinson
+             :inherit org/base
+             :default-family "MonaspiceNe Nerd Font"
+             :fixed-pitch-family "MonaspiceNe Nerd Font"
+             :variable-pitch-family "Atkinson Hyperlegible")
+            (org/inter
+             :inherit org/base
+             :default-family "Iosevka Nerd Font"
+             :fixed-pitch-family "Iosevka Nerd Font"
+             :variable-pitch-family "Inter")
+            (org/modern
+             :inherit org/base
+             :default-family "MonaspiceNe Nerd Font"
+             :fixed-pitch-family "MonaspiceNe Nerd Font"
+             ;; :variable-pitch-family "Inter"
+             :variable-pitch-family "Segoe UI Variable Static Text")
 
-          (t
-           :default-family "MonaspiceNe Nerd Font"
-           :fixed-pitch-family "MonaspiceNe Nerd Font"
-           :variable-pitch-family "Inter"
-           :default-height 150
-           :line-spacing 0.2
-           :tab-bar-height .9))))
+            (t
+             :default-family "MonaspiceNe Nerd Font"
+             :fixed-pitch-family "MonaspiceNe Nerd Font"
+             :variable-pitch-family "Inter"
+             :default-height 150
+             :line-spacing 0.2
+             :tab-bar-height .9))))
+
+
+  ;; we need a GUI frame to check the fonts - a new daemon will not have one
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook
+                (lambda ()
+                  (bergheim/check-available-fonts fontaine-presets)
+
+                  (bergheim/set-font-size-based-on-frame-resolution)
+                  (bergheim/generate-fontaine-presets)
+
+                  ))
+    (bergheim/check-available-fonts fontaine-presets)
+    (bergheim/set-font-size-based-on-frame-resolution)
+    (bergheim/generate-fontaine-presets)))
 
 (defun bergheim//system-dark-mode-enabled-p ()
   "Check if system dark mode is enabled."
