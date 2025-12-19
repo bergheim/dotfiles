@@ -225,7 +225,7 @@ Includes BCC emails, but does not include CC, because that point just use from:a
 
 With \\[universal-argument], include emails from this address as well"
 
-  (let* ((email (plist-get (car (mu4e-message-field-at-point :from)) :email))
+  (let* ((email (plist-get (car (mu4e-message-field-at-point :to)) :email))
          (msgid (mu4e-message-field msg :message-id))
          (query-string (format "to:%s" email)))
 
