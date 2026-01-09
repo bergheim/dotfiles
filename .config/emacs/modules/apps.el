@@ -646,7 +646,7 @@ Open `dired` in the resolved directory of the current command."
   :hook
   (proced-post-display . hl-line-mode)
   :custom
-  (proced-auto-update-flag t)
+  (proced-auto-update-flag 'visible)
   (proced-auto-update-interval 2)
   (proced-goal-attribute nil) ;; don't move cursor to args when navigating
   (proced-show-remote-processes t) ;; enable TRAMP support

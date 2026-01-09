@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec emacsclient --alternate-editor= --eval "(message-mailto (pop server-eval-args-left))" $1
