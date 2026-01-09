@@ -314,7 +314,8 @@
         (load-theme bergheim/theme-dark t)
       (load-theme bergheim/theme-light t))))
 
-(add-hook 'after-init-hook #'bergheim/frame-setup)
+(with-eval-after-load 'elpaca
+  (add-hook 'elpaca-after-init-hook #'bergheim/frame-setup))
 
 (defun bergheim/zoom-window ()
   "Maximize the window or restore the previous layout."
