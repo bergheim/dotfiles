@@ -196,7 +196,8 @@ alias diff='diff --color=always'
 
 alias shakemacs="pkill -USR2 emacs"
 alias tmux='tmux -2'
-alias eh='mosh --ssh="ssh -p 1902" home -- ta me'
+alias ht='mosh --ssh="ssh -p 1902" home -- ta me'
+alias h='mosh --ssh="ssh -p 1902" home'
 
 # prefer nvim to vim if it is installed
 if type nvim >/dev/null 2>/dev/null; then
@@ -506,3 +507,13 @@ vterm_printf() {
 }
 
 PROMPT=$PROMPT'%{$(vterm_printf)%}'
+
+# bun completions
+[ -s "/home/tsb/.bun/_bun" ] && source "/home/tsb/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# resurrect C-^!
+export MOSH_ESCAPE_KEY=''
