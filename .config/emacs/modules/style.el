@@ -662,6 +662,7 @@
   (evil-goggles-use-diff-faces))
 
 (use-package dashboard
+  :unless bergheim/container-mode-p
   :after nerd-icons
   :demand
   :init
