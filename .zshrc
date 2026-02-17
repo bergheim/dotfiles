@@ -199,6 +199,8 @@ alias tmux='tmux -2'
 alias ht='mosh --ssh="ssh -p 1902" home -- ta me'
 alias h='mosh --ssh="ssh -p 1902" home'
 
+alias icat='chafa'
+
 # prefer nvim to vim if it is installed
 if type nvim >/dev/null 2>/dev/null; then
   alias vim=nvim
