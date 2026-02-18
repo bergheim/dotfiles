@@ -68,11 +68,6 @@ fi
 
 export N_PREFIX=~/local
 
-# this usually means TRAMP, but also avoid overriding when in emacs shell modes
-if [[ "$TERM" != "dumb" && "$TERM" != "eterm-color" ]]; then
-    export TERM=tmux-direct
-fi
-
 # fix Ubuntu
 skip_global_compinit=1
 
