@@ -422,4 +422,35 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (setq copilot-max-char 1000000)
   (setq copilot-max-char-warning-disable t))
 
+(use-package agent-shell
+  :ensure t
+  :general
+  (bergheim/global-menu-keys
+    "o"  '(:ignore t :wk "agent-shell")
+    "oo" '(agent-shell :wk "shell")
+    "on" '(agent-shell-new-shell :wk "new shell")
+    "ot" '(agent-shell-toggle :wk "toggle")
+
+    ;; context
+    "of" '(agent-shell-send-current-file :wk "send file")
+    "oF" '(agent-shell-insert-file :wk "insert file")
+    "or" '(agent-shell-send-region :wk "send region")
+    "od" '(agent-shell-send-dwim :wk "send dwim")
+    "os" '(agent-shell-send-screenshot :wk "send screenshot")
+    "o!" '(agent-shell-insert-shell-command-output :wk "shell output")
+
+    ;; compose & history
+    "oc" '(agent-shell-prompt-compose :wk "compose")
+    "oh" '(agent-shell-search-history :wk "history")
+
+    ;; session
+    "om" '(agent-shell-set-session-model :wk "model")
+    "oM" '(agent-shell-set-session-mode :wk "mode")
+    "ob" '(agent-shell-other-buffer :wk "other buffer")
+    "oR" '(agent-shell-rename-buffer :wk "rename"))
+  :config
+  (setq agent-shell-permission-responder-function #'agent-shell-permission-allow-always)
+  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input))
 ;;; ai.el ends here
