@@ -36,6 +36,7 @@
 (use-package emacs
   :ensure nil
   :config
+  (xterm-mouse-mode 1)
   (setq-default abbrev-mode t
                 indent-tabs-mode nil) ;; I have given up on tabs
   ;; (setq confirm-nonexistent-file-or-buffer nil)
