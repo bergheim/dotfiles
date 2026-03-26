@@ -65,6 +65,15 @@
 
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
+
+  ;; Send kills to host clipboard via OSC 52
+  (setq interprogram-cut-function
+        (lambda (text)
+          (let ((inhibit-message t))
+            (send-string-to-terminal
+             (format "\e]52;c;%s\a"
+                     (base64-encode-string (encode-coding-string text 'utf-8) t))))))
+
   ;; Reload files that are changed outside of Emacs
   (global-auto-revert-mode 1))
 
