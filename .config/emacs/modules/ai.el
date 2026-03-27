@@ -425,17 +425,41 @@ Prompts for session name if none provided. Inserts selected region text into cha
 (use-package agent-shell
   :ensure t
   :general
+  (general-define-key
+   :keymaps 'agent-shell-mode-map
+   :states 'insert
+   "RET" 'newline
+   "M-RET" 'comint-send-input)
+  (general-define-key
+   :keymaps 'agent-shell-mode-map
+   :states 'normal
+   "RET" 'comint-send-input)
+  (bergheim/localleader-keys
+    :keymaps 'agent-shell-mode-map
+    :states '(normal motion)
+    "d" '(shell-maker-delete-interaction-at-point :wk "delete interaction")
+    "b" '(bergheim/agent-shell-switch-buffer :wk "switch buffers")
+    "B" '(agent-shell-other-buffer :wk "other buffer")
+    "f" '(agent-shell-fork :wk "fork session")
+    "m" '(agent-shell-set-session-model :wk "model")
+    "M" '(agent-shell-set-session-mode :wk "mode")
+    "r" '(agent-shell-rename-buffer :wk "rename")
+    "h" '(agent-shell-search-history :wk "history")
+    "c" '(agent-shell-prompt-compose :wk "compose"))
   (bergheim/global-menu-keys
     "o"  '(:ignore t :wk "agent-shell")
     "oo" '(agent-shell :wk "shell")
     "on" '(agent-shell-new-shell :wk "new shell")
     "ot" '(agent-shell-toggle :wk "toggle")
+    "ow" '(agent-shell-new-worktree-shell :wk "new worktree")
 
     ;; context
     "of" '(agent-shell-send-current-file :wk "send file")
-    "oF" '(agent-shell-insert-file :wk "insert file")
+    "oi" '(agent-shell-insert-file :wk "insert file")
+    "oF" '(agent-shell-fork :wk "fork session")
+
     "or" '(agent-shell-send-region :wk "send region")
-    "od" '(agent-shell-send-dwim :wk "send dwim")
+    "oa" '(agent-shell-send-dwim :wk "send dwim")
     "os" '(agent-shell-send-screenshot :wk "send screenshot")
     "o!" '(agent-shell-insert-shell-command-output :wk "shell output")
 
