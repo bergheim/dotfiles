@@ -33,6 +33,29 @@
   :hook
   (kill-emacs . savehist-save))
 
+(use-package kkp
+  :demand
+  :config
+  (global-kkp-mode +1)
+
+  ;; hack to make shift-space etc work through tmux on csi-u
+  ;; see https://github.com/benotn/kkp/issues/12
+  (defun kkp-force-enable-on-tty (&rest _)
+    (let ((terminal (kkp--selected-terminal)))
+      (when (and (terminal-live-p terminal)
+                 (not (display-graphic-p terminal))
+                 (not (member terminal kkp--active-terminal-list)))
+        (push terminal kkp--active-terminal-list)
+        (kkp-setup-function-keys terminal)
+        (set-terminal-parameter terminal 'kkp--previous-normal-erase-is-backspace-val
+                                (terminal-parameter terminal 'normal-erase-is-backspace))
+        (normal-erase-is-backspace-mode 1)
+        (dolist (prefix kkp--key-prefixes)
+          (define-key input-decode-map (kkp--csi-escape (string prefix))
+            (lambda (_prompt) (kkp--process-keys prefix)))))))
+
+  (add-hook 'tty-setup-hook #'kkp-force-enable-on-tty))
+
 (use-package emacs
   :ensure nil
   :config
