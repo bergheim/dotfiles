@@ -160,7 +160,7 @@
   (setq gptel-cache '(message system tool))
   (setq gptel-api-key (bergheim/get-api-key "api/llm/openai" "OPENAI_API_KEY"))
 
-  (setq gptel-model 'claude-sonnet-4-20250514
+  (setq gptel-model 'claude-sonnet-4-5-20250929
         gptel-backend
         (gptel-make-anthropic "Claude"
           :stream t
@@ -428,12 +428,15 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (general-define-key
    :keymaps 'agent-shell-mode-map
    :states 'insert
-   "RET" 'newline
-   "M-RET" 'comint-send-input)
+   "RET" 'newline)
   (general-define-key
    :keymaps 'agent-shell-mode-map
    :states 'normal
    "RET" 'comint-send-input)
+  (general-define-key
+   :keymaps 'agent-shell-mode-map
+   :states '(normal insert visual motion emacs)
+   "M-RET" 'comint-send-input)
   (bergheim/localleader-keys
     :keymaps 'agent-shell-mode-map
     :states '(normal motion)
@@ -445,7 +448,10 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "M" '(agent-shell-set-session-mode :wk "mode")
     "r" '(agent-shell-rename-buffer :wk "rename")
     "h" '(agent-shell-search-history :wk "history")
-    "c" '(agent-shell-prompt-compose :wk "compose"))
+    "c" '(agent-shell-prompt-compose :wk "compose")
+    "x" '(agent-shell-restart :wk "restart")
+    "l" '(agent-shell-view-acp-logs :wk "view logs")
+    "t" '(agent-shell-open-transcript :wk "transcript"))
   (bergheim/global-menu-keys
     "o"  '(:ignore t :wk "agent-shell")
     "oo" '(agent-shell :wk "shell")
@@ -457,7 +463,6 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "of" '(agent-shell-send-current-file :wk "send file")
     "oi" '(agent-shell-insert-file :wk "insert file")
     "oF" '(agent-shell-fork :wk "fork session")
-
     "or" '(agent-shell-send-region :wk "send region")
     "oa" '(agent-shell-send-dwim :wk "send dwim")
     "os" '(agent-shell-send-screenshot :wk "send screenshot")
@@ -471,10 +476,30 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "om" '(agent-shell-set-session-model :wk "model")
     "oM" '(agent-shell-set-session-mode :wk "mode")
     "ob" '(agent-shell-other-buffer :wk "other buffer")
-    "oR" '(agent-shell-rename-buffer :wk "rename"))
+    "oR" '(agent-shell-rename-buffer :wk "rename")
+    "oX" '(agent-shell-restart :wk "restart")
+    "oL" '(agent-shell-view-acp-logs :wk "view logs")
+    "oT" '(agent-shell-open-transcript :wk "transcript"))
   :config
+  (defun bergheim/agent-shell-switch-buffer ()
+    "Switch between agent-shell buffers, or create a new one.
+Type an existing name to switch, or a new suffix to start a fresh shell."
+    (interactive)
+    (let* ((buffers (agent-shell-buffers))
+           (names (mapcar #'buffer-name buffers))
+           (choice (completing-read "Agent shell: " names)))
+      (if (member choice names)
+          (switch-to-buffer choice)
+        (let* ((base (when-let ((cur (car buffers)))
+                       (string-trim-right
+                        (string-trim (buffer-name cur) "\\*" "\\*"))))
+               (new-name (if base
+                             (format "%s %s" base choice)
+                           (format "%s" choice))))
+          (agent-shell-new-shell)
+          (rename-buffer new-name t)))))
+
+  (add-hook 'agent-shell-mode-hook #'agent-shell-toggle-logging)
   (setq agent-shell-permission-responder-function #'agent-shell-permission-allow-always)
-  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
-  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
-  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input))
+  (setq agent-shell-anthropic-claude-acp-command '("claude-agent-acp")))
 ;;; ai.el ends here
