@@ -327,9 +327,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
       (gptel-mode)
       ;; (setq-local gptel--system-message (cdr (assoc 'git gptel-directives)))))
       (gptel-request
-          diff
-        :system "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Start with the 80 char summary and then provide relevant details, if any. Keep it short and use bullet-points where it makes sense. Don't add anything else to the response. THE ONLY THING THAT MATTERS IS WHAT THE CHANGE ENABLES, NOT HOW - THAT IS IN THE CODE!"
-        :stream t)))
+       diff
+       :system "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Start with the 80 char summary and then provide relevant details, if any. Keep it short and use bullet-points where it makes sense. Don't add anything else to the response. THE ONLY THING THAT MATTERS IS WHAT THE CHANGE ENABLES, NOT HOW - THAT IS IN THE CODE!"
+       :stream t)))
 
   (defun bergheim/gptel-email-response ()
     (interactive)
@@ -341,9 +341,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
             (gptel-mode)
             ;; (setq-local gptel--system-message (cdr (assoc 'git gptel-directives)))))
             (gptel-request
-                diff
-              :system "The user provides an email that he wants to respond to. You suggest a brief and professional email response. Do not add anything else to the response."
-              :stream t))
+             diff
+             :system "The user provides an email that he wants to respond to. You suggest a brief and professional email response. Do not add anything else to the response."
+             :stream t))
         (funcall curr-mode))))
 
   :custom
