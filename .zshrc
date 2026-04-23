@@ -210,7 +210,7 @@ vi() {
     if [[ -n "$INSIDE_EMACS" ]]; then
         emacsclient -e "(find-file-other-window \"$PWD/$1\")"
     else
-        command vim "$@"
+        command nvim "$@"
     fi
 }
 
