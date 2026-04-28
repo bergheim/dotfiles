@@ -59,7 +59,11 @@
 (use-package emacs
   :ensure nil
   :config
-  (xterm-mouse-mode 1)
+  (unless (display-graphic-p)
+    (xterm-mouse-mode 1))
+  ;; (setq xterm-mouse-mode t) ;; allow mouse events in terminal
+
+
   (setq-default abbrev-mode t
                 indent-tabs-mode nil) ;; I have given up on tabs
   ;; (setq confirm-nonexistent-file-or-buffer nil)
@@ -84,18 +88,18 @@
         ;; TODO I am seeing `#FILE#' in folders - see if this removes them
         auto-save-file-name-transforms `((".*" ,(concat bergheim/cache-dir "auto-save-list/") t))
         lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat bergheim/cache-dir "lock/" "\\1") t))
-        custom-file (expand-file-name "custom.el" bergheim/config-dir)
-
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
 
-  ;; Send kills to host clipboard via OSC 52
-  (setq interprogram-cut-function
-        (lambda (text)
-          (let ((inhibit-message t))
-            (send-string-to-terminal
-             (format "\e]52;c;%s\a"
-                     (base64-encode-string (encode-coding-string text 'utf-8) t))))))
+  ;; Send kills to host clipboard via OSC 52 (terminal/container only)
+  (when (getenv "EMACS_CONTAINER")
+    (setq interprogram-cut-function
+          (lambda (text)
+            (let ((inhibit-message t))
+              (send-string-to-terminal
+               (format "\e]52;c;%s\a"
+                       (base64-encode-string (encode-coding-string text 'utf-8) t)))))))
+
 
   ;; Reload files that are changed outside of Emacs
   (global-auto-revert-mode 1))
