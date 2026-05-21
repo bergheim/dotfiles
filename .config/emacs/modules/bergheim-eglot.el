@@ -66,6 +66,9 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                '(go-ts-mode . ("gopls")))
 
   (add-to-list 'eglot-server-programs
+               '(python-base-mode . ("pyright-langserver" "--stdio")))
+
+  (add-to-list 'eglot-server-programs
                '(org-mode . ("harper-ls" "--stdio")))
 
   ;; ignore debug logging - should speed up LSP

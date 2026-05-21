@@ -133,8 +133,8 @@
          "keybindings"
          "programming"
          "completion"
-         "lsp"
-         ;; "bergheim-eglot"
+         ;; "lsp"
+         "bergheim-eglot"
          ;; I for one come our new AI overlords
          "ai"
          "session"

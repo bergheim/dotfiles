@@ -182,10 +182,10 @@
 
 (use-package lua-mode)
 
-(use-package go-mode
+(use-package go-ts-mode
   :ensure nil
   :mode "\\.go\\'"
-  :hook ((go-ts-mode . eglot-ensure)))
+  :hook (go-ts-mode . eglot-ensure))
 
 (use-package sxhkdrc-mode)
 

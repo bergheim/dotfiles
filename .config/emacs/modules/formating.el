@@ -6,6 +6,9 @@
   :custom
   (apheleia-remote-algorithm 'local)
   :config
+  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'heex-ts-mode apheleia-mode-alist) 'mix-format)
   (dolist (mode '(css-mode
                   css-ts-mode
                   js-json-mode
