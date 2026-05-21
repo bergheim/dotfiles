@@ -800,6 +800,11 @@ Open `dired` in the resolved directory of the current command."
 
 (use-package smudge
   :unless bergheim/container-mode-p
+  :init
+  (setq smudge-api-oauth2-token-directory
+        (file-name-as-directory (bergheim/get-and-ensure-data-dir "smudge"))
+        smudge-api-oauth2-token-file
+        (expand-file-name "token" smudge-api-oauth2-token-directory))
   :custom
   (smudge-oauth2-client-secret bergheim/spotify/client-secret)
   (smudge-oauth2-client-id bergheim/spotify/client-id)

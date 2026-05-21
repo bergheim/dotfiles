@@ -27,6 +27,11 @@
       (make-directory cache-dir t))
     cache-dir))
 
+;; Keep package.el state out of `user-emacs-directory' before package.el or
+;; elpaca have a chance to initialize anything.
+(setq package-user-dir (expand-file-name "elpa" bergheim/cache-dir)
+      package-gnupghome-dir (expand-file-name "gnupg" package-user-dir))
+
 (defvar bergheim/config-dir
   (let ((xdg-config (or (getenv "XDG_CONFIG_HOME")
                         (expand-file-name "~/.config/"))))
