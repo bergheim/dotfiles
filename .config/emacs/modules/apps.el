@@ -137,7 +137,7 @@
     (cl-loop for entry in (elfeed-search-selected)
              do (elfeed-untag-1 entry 'unread))
     (elfeed-search-update--force)
-    (elfeed-protocol-fever-reinit "https://tsb@thomasbergheim.com/rss"))
+    (elfeed-protocol-fever-reinit bergheim/elfeed-fever-url))
   :config
   (setq elfeed-use-curl t)
   ;; nextcloud
@@ -149,9 +149,10 @@
   ;; miniflux / fever
   (setq elfeed-protocol-fever-update-unread-only nil)
   (setq elfeed-protocol-fever-fetch-category-as-tag nil)
-  (setq elfeed-protocol-feeds '(("fever+https://tsb@thomasbergheim.com/rss"
-                                 :api-url "https://thomasbergheim.com/rss/fever/"
-                                 :password (password-store-get "mycloud/miniflux/fever"))))
+  (setq elfeed-protocol-feeds
+        `((,(concat "fever+" bergheim/elfeed-fever-url)
+           :api-url ,bergheim/elfeed-fever-api-url
+           :password ,(password-store-get bergheim/elfeed-fever-password-store-key))))
   (setq elfeed-protocol-enabled-protocols '(fever))
 
   ;; (defvar elfeed-protocol-orig-feeds nil
