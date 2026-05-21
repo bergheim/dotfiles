@@ -14,7 +14,6 @@
                               (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
 (mu4e~headers-defun-mark-for spam)
-(mu4e--view-defun-mark-for spam)
 ;; based on https://github.com/djcb/mu/issues/1136#issuecomment-486177435
 (setf (alist-get 'trash mu4e-marks)
       (list :char '("d" . "▼")
@@ -27,10 +26,8 @@
                       ;; IMAP-deleted:
                       (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
-(defun bergheim/mu4e-refile-as-spam (msg)
-  (if (eq major-mode 'mu4e-headers-mode)
-      (mu4e-headers-mark-for-spam)
-    (mu4e-view-mark-for-spam)))
+(defun bergheim/mu4e-refile-as-spam (_msg)
+    (mu4e--in-headers-context (mu4e-headers-mark-for-spam)))
 
 (defun bergheim/mu4e-refile-mail (msg)
   (let* ((maildir (mu4e-message-field msg :maildir))

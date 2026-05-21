@@ -1,28 +1,44 @@
 ;;; ~/.config/neodoom/modules/mu4e/init.el -*- lexical-binding: t; -*-
 
+(elpaca-defscript mu4e-build-mu (:type system :dir source)
+  ("meson" "setup" "build" "-Dtests=disabled")
+  ("ninja" "-C" "build")
+  ("sh" "-c"
+   "mkdir -p \"$HOME/.local/bin\" && ln -sf \"$PWD/build/mu/mu\" \"$HOME/.local/bin/mu\""))
+
+(defun mu4e-init-and-index (e)
+  "Ensure mu DB exists and refresh the index. Idempotent on rebuild.
+Relies on the symlink dropped by `mu4e-build-mu' putting mu on PATH."
+  (let ((maildir (expand-file-name "~/.mail"))
+        (xapian  (expand-file-name "mu/xapian"
+                                   (or (getenv "XDG_CACHE_HOME")
+                                       (expand-file-name "~/.cache"))))
+        (addresses (list bergheim/gmail/email
+                         bergheim/ntnu/email
+                         bergheim/personal/email
+                         bergheim/mailbox/email
+                         bergheim/glvortex/email
+                         bergheim/glvortex/email-spam
+                         bergheim/glvortex/email-me)))
+    (make-directory maildir t)
+    (unless (file-directory-p xapian)
+      (apply #'call-process "mu" nil "*mu init*" nil
+             "init" "--quiet" "--maildir" maildir
+             (mapcar (lambda (a) (concat "--my-address=" a)) addresses)))
+    (call-process "mu" nil "*mu index*" nil "index" "--quiet"))
+  (elpaca--continue-build e))
+
 (use-package mu4e
   :ensure `(mu4e :host github
+                 :repo "djcb/mu"
+                 :depth nil
                  :files ("mu4e/*.el"
-                         "build/mu4e/mu4e-meta.el"
                          "build/mu4e/mu4e-config.el"
                          "build/mu4e/mu4e.info")
-                 :repo "djcb/mu"
-                 :tag "v1.12.13"
                  :main "mu4e/mu4e.el"
-                 :pre-build (("./autogen.sh" "-Dtests=disabled")
-                             ("ninja" "-C" "build")
-                             (make-symbolic-link (expand-file-name "./build/mu/mu")
-                                                 (expand-file-name "~/local/bin/mu") 'ok-if-exists))
-                 :build (:not elpaca--compile-info)
-                 :post-build (("mu" "init" "--quiet" "--maildir" ,(concat (getenv "HOME") "/.mail")
-                               "--my-address=" ,bergheim/gmail/email
-                               "--my-address=" ,bergheim/ntnu/email
-                               "--my-address=" ,bergheim/personal/email
-                               "--my-address=" ,bergheim/mailbox/email
-                               "--my-address=" ,bergheim/glvortex/email
-                               "--my-address=" ,bergheim/glvortex/email-spam
-                               "--my-address=" ,bergheim/glvortex/email-me)
-                              ("mu" "index" "--quiet")))
+                 :build ((:not elpaca-build-docs)
+                         (:before elpaca-build-link mu4e-build-mu)
+                         (:after  elpaca-activate   mu4e-init-and-index)))
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
@@ -42,11 +58,12 @@
   ;; `evil-collection` is so aggressive here. I couldn't find a proper way to
   ;; bind them. I give up - just add this to the end
   (add-hook 'mu4e-headers-mode-hook #'bergheim//mu4e-headers-setup)
-  (add-hook 'mu4e-view-mode-hook #'bergheim//mu4e-view-setup))
-
-(use-package mu4e-org
-  :ensure nil
-  :after mu4e)
+  (add-hook 'mu4e-view-mode-hook #'bergheim//mu4e-view-setup)
+  (add-hook 'mu4e-compose-mode-hook
+            (lambda ()
+              (add-hook 'completion-at-point-functions #'mu4e-complete-contact nil t))
+            90)
+  )
 
 (use-package org-msg
   ;; TODO temp fix while waiting on https://github.com/jeremy-compostella/org-msg/issues/182 to close
