@@ -53,7 +53,7 @@
 (elpaca elpaca-use-package
   (elpaca-use-package-mode)
   (setq use-package-always-ensure t)
-  (setq elpaca-queue-limit 20))
+  (setq elpaca-queue-limit 4))
 
 ;; ;; Block until current queue processed.
 (elpaca-wait)
