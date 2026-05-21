@@ -141,6 +141,7 @@
          ;; TODO split this up
          "utils"
          "workspace"
+         "shells"
          )))
 
   (unless bergheim/container-mode-p
