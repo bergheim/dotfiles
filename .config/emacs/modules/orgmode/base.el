@@ -124,13 +124,26 @@
 
       org-todo-keywords
       '((sequence "TODO(t)"
+                  "PROJ(p)"
                   "INPROGRESS(i!)"
-                  "NEXT(n)"
+                  "NEXT(n!)"
                   "WAITING(w@/!)"
                   "SOMEDAY(s!)"
-                  "|" "DONE(d@)" "CANCELLED(c@/!)")
+                  "|" "DONE(d@)" "CANCELLED(c@/!)" "OBSOLETE(o@/!)")
         (sequence "BUG(b)" "|" "FIXED(f!)" "IGNORED(x@/!)")
-        (sequence "DRAFT(D)" "POST(p)" "|" "PUBLISH(b)")))
+        ;; thanks https://www.armindarvish.com/post/building_an_efficient_blogging_workflow_in_emacs/
+        (sequence "DRAFT(D)" "POST(P)" "|" "PUBLISH(b)"))
+
+      ;; TODO colors
+      org-todo-keyword-faces '(("TODO"       . (:foreground "GoldenRod" :weight bold))
+                               ("PROJ"       . (:foreground "DeepPink" :weight bold))
+                               ("INPROGRESS" . (:foreground "Cyan" :weight bold))
+                               ("NEXT"       . (:foreground "DarkOrange" :weight bold))
+                               ("WAITING"    . (:foreground "Red" :weight bold))
+                               ("SOMEDAY"    . (:foreground "Orange" :weight bold))
+                               ("DONE"       . (:foreground "LimeGreen" :weight bold))
+                               ("CANCELLED"  . (:foreground "LimeGreen" :weight bold))
+                               ("OBSOLETE"   . (:foreground "LimeGreen" :weight bold))))
 
 (org-clock-persistence-insinuate)
 
