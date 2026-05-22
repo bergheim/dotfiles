@@ -58,6 +58,11 @@
 ;; ;; Block until current queue processed.
 (elpaca-wait)
 
+(when (< emacs-major-version 31)
+  (elpaca compat
+    (require 'compat))
+  (elpaca-wait))
+
 ;; 'always-defer' means that for a package to load we need a ':hook' or using a ':general' keybinding
 ;; if there is none, we need to explicitly add ':demand' to load the package
 ;; can also load with ':defer time'
