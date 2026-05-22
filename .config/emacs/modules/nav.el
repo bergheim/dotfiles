@@ -192,7 +192,8 @@ With a universal argument, it allows entering the application to use."
   (general-define-key
    :states 'normal
    :keymaps 'dired-mode-map
-   "M-<return>" #'bergheim/dired-leave-for-shell
+   "M-<return>" #'dired-find-file-other-window
+   "C-M-<return>" #'bergheim/dired-leave-for-shell
    "."   #'dired-omit-mode
    "h"   #'dired-up-directory
    "l"   #'dired-find-file)
@@ -247,7 +248,6 @@ With a universal argument, it allows entering the application to use."
    "o"   #'dired-sort-toggle-or-edit
    "O"   #'dirvish-quicksort
    "TAB" #'dirvish-subtree-toggle
-   "M-<return>" #'bergheim/dired-leave-for-shell
    "C-h" #'dirvish-history-go-backward
    "C-l" #'dirvish-history-go-forward
    "C-M-k" #'dirvish-emerge-previous-group
