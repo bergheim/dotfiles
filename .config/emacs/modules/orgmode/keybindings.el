@@ -68,6 +68,13 @@
   "ocr" '(bergheim/org-mru-clock-in :which-key "mru clock in")
   "ocR" '(org-resolve-clocks :which-key "resolve")
 
+  "op" '(:ignore t :which-key "people (contacts)")
+  "opg" '(bergheim/goto-contact :which-key "goto")
+  "opb" '(bergheim/goto-contact-backlink :which-key "backlinks")
+  "opm" '(bergheim/contact-compose-mail :which-key "mail")
+  "opl" '(bergheim/insert-contact-link :which-key "link")
+  "opt" '(bergheim/contact-capture-todo :which-key "todo")
+
   "oq" '(:ignore t :which-key "org-ql")
   "oqv" #'org-ql-view
   "oqr" #'org-ql-view-recent-items

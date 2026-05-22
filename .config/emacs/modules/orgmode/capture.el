@@ -83,6 +83,18 @@
                              :template-file ,(expand-file-name "appointment.org" org-capture-custom-template-directory)
                              :after-finalize org-caldav-sync)
 
+                            ("Contact TODO"
+                             :icon ("nf-oct-person" :set "octicon" :color "blue")
+                             :keys "c"
+                             ;; :type entry
+                             :prepend nil
+                             :clock-keep t
+                             :function bergheim/contact-find-for-capture
+                             :template ("** TODO %?"
+                                        "SCHEDULED: %^t"
+                                        "")
+                             :empty-lines-before 1)
+
                             ("Meeting minutes"
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"

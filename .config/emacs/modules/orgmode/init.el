@@ -20,6 +20,7 @@
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/style.el")
+  (bergheim/load-file "modules/orgmode/contactor.el")
 
   :general
   (general-define-key
