@@ -2,6 +2,88 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defcustom bergheim/mu4e-search-focus-neighbor-radius 5
+  "Number of neighboring headers to remember on each side of point."
+  :type 'integer
+  :group 'mu4e-search)
+
+(defvar bergheim/mu4e-search--focus-by-query nil
+  "Alist mapping mu4e query strings to preferred restore message IDs.")
+
+(defun bergheim/mu4e-search--neighbor-msgids (msgids current-msgid &optional radius)
+  "Return CURRENT-MSGID and nearby MSGIDS, alternating outward.
+RADIUS controls how many messages to include on each side."
+  (when-let* ((index (seq-position msgids current-msgid #'string=)))
+    (let ((radius (or radius bergheim/mu4e-search-focus-neighbor-radius))
+          (msgids-length (length msgids))
+          (candidates (list current-msgid)))
+      (dotimes (i radius)
+        (let* ((offset (1+ i))
+               (prev-index (- index offset))
+               (next-index (+ index offset)))
+          (when (>= prev-index 0)
+            (push (nth prev-index msgids) candidates))
+          (when (< next-index msgids-length)
+            (push (nth next-index msgids) candidates))))
+      (nreverse candidates))))
+
+(defun bergheim/mu4e-search--restore-target-msgid (candidates available-msgids)
+  "Return the first message ID from CANDIDATES still in AVAILABLE-MSGIDS."
+  (seq-find (lambda (msgid)
+              (seq-contains-p available-msgids msgid #'string=))
+            candidates))
+
+(defun bergheim/mu4e-search--message-id-at-point ()
+  "Return the message ID at point in a mu4e headers buffer."
+  (when-let* ((msg (mu4e-message-at-point t)))
+    (mu4e-message-field msg :message-id)))
+
+(defun bergheim/mu4e-search--headers-message-ids ()
+  "Return message IDs in the current mu4e headers buffer order."
+  (let (msgids)
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (eobp))
+        (when-let* ((msg (get-text-property (line-beginning-position) 'msg))
+                    (msgid (mu4e-message-field msg :message-id)))
+          (push msgid msgids))
+        (forward-line 1)))
+    (nreverse msgids)))
+
+(defun bergheim/mu4e-search--remember-current-focus (_next-query)
+  "Remember current headers focus before mu4e replaces the result buffer."
+  (when-let* ((query (and (derived-mode-p 'mu4e-headers-mode)
+                          (mu4e-last-query))))
+    (when-let* ((current-msgid (bergheim/mu4e-search--message-id-at-point))
+                (msgids (bergheim/mu4e-search--headers-message-ids))
+                (candidates (bergheim/mu4e-search--neighbor-msgids
+                             msgids current-msgid)))
+      (setf (alist-get query
+                       bergheim/mu4e-search--focus-by-query
+                       nil nil #'string=)
+            candidates))))
+
+(defun bergheim/mu4e-search--restore-focus ()
+  "Restore point for the current mu4e query using remembered message IDs."
+  (when-let* ((query (mu4e-last-query))
+              (candidates (alist-get query
+                                     bergheim/mu4e-search--focus-by-query
+                                     nil nil #'string=))
+              (buf (mu4e-get-headers-buffer)))
+    (with-current-buffer buf
+      (when-let* ((target-msgid
+                   (bergheim/mu4e-search--restore-target-msgid
+                    candidates
+                    (bergheim/mu4e-search--headers-message-ids))))
+        (mu4e-headers-goto-message-id target-msgid)
+        (when-let* ((win (get-buffer-window (current-buffer) t)))
+          (set-window-point win (point)))
+        (when-let* ((docid (mu4e~headers-docid-at-point)))
+          (mu4e~headers-highlight docid))))))
+
+(add-hook 'mu4e-search-hook #'bergheim/mu4e-search--remember-current-focus)
+(add-hook 'mu4e-headers-found-hook #'bergheim/mu4e-search--restore-focus)
+
 (defun bergheim/mu4e-search-from-mail-list (msg)
   "Open the whole email list, if any"
 
