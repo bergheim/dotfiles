@@ -174,4 +174,12 @@
 With prefix argument, also display headlines without a TODO keyword."
    (org-tags-view (null current-prefix-arg) tag)))
 
-;;; settings.el ends here
+;; NEVER write a literal list of agenda files to custom!
+(defun bergheim/org-agenda-files-no-custom ()
+  "Prevent customize from writing org-agenda-files."
+  (when (listp org-agenda-files)
+    (put 'org-agenda-files 'saved-value (list (custom-quote org-agenda-files)))))
+
+(add-hook 'kill-emacs-hook #'bergheim/org-agenda-files-no-custom)
+
+;;; base.el ends here
