@@ -2,45 +2,45 @@
 ;;
 ;; Copyright (C) 2025 Thomas Bergheim
 
-(defcustom bergheim/vcard-sync-directory
+(defcustom bergheim/contactor-sync-directory
   (expand-file-name "~/.local/share/vdirsyncer-testing/contacts/contacts/")
   "Directory where vCard files are stored for syncing."
   :type 'directory
   :group 'bergheim)
 
-(defcustom bergheim/contacts-file 
+(defcustom bergheim/contactor-file
   (expand-file-name "~/org/contacts.org")
   "Full path to the contacts org file."
   :type 'file
   :group 'bergheim)
 
-(defcustom bergheim/vcard-auto-commit t
+(defcustom bergheim/contactor-auto-commit t
   "Automatically commit vCard changes to git after export."
   :type 'boolean
   :group 'bergheim)
 
-(defconst bergheim/timestamp-format-org "[%Y-%m-%d %a %H:%M:%S]"
+(defconst bergheim/contactor--timestamp-format-org "[%Y-%m-%d %a %H:%M:%S]"
   "Org-mode timestamp format for metadata (LAST_MODIFIED, LAST_SYNCED, etc).")
 
-(defconst bergheim/timestamp-format-vcard "%Y-%m-%dT%H:%M:%SZ"
+(defconst bergheim/contactor--timestamp-format-vcard "%Y-%m-%dT%H:%M:%SZ"
   "vCard REV timestamp format (ISO 8601 extended with UTC).")
 
-(defun bergheim/timestamp-now-org ()
+(defun bergheim/contactor--timestamp-now-org ()
   "Return current timestamp in org format."
-  (format-time-string bergheim/timestamp-format-org))
+  (format-time-string bergheim/contactor--timestamp-format-org))
 
-(defun bergheim/timestamp-now-vcard ()
+(defun bergheim/contactor--timestamp-now-vcard ()
   "Return current timestamp in vCard REV format (UTC)."
-  (format-time-string bergheim/timestamp-format-vcard nil t))
+  (format-time-string bergheim/contactor--timestamp-format-vcard nil t))
 
-(defun bergheim/run-vcard-tests ()
+(defun bergheim/contactor-run-tests ()
   "Run all vCard conversion tests."
   (interactive)
   (require 'contactor-test)
   (ert "bergheim/test-\\(vcard\\|org\\|merge\\|export\\|import\\|neo\\).*"))
 ;; (ert "bergheim/test-\\(neo\\).*"))
 
-(defun bergheim/import-vcards-to-org (vcard-dir contacts-file)
+(defun bergheim/contactor-import (vcard-dir contacts-file)
   "Import all vCards from VCARD-DIR to CONTACTS-FILE."
   (let ((contacts '())
         (updated 0)
@@ -50,7 +50,7 @@
     (dolist (vcard-file (directory-files vcard-dir t "\\.vcf$"))
       (with-temp-buffer
         (insert-file-contents vcard-file)
-        (let ((contact (bergheim/vcard-string-to-contact (buffer-string))))
+        (let ((contact (bergheim/contactor--vcard-to-contact (buffer-string))))
           (when (assoc-default "UID" contact)
             (push contact contacts)))))
     
@@ -64,8 +64,8 @@
     (with-current-buffer (find-file-noselect contacts-file)
       (dolist (contact contacts)
         (let* ((uid (assoc-default "UID" contact))
-               (marker (when uid (bergheim/find-contact-by-uid uid))))
-          (when (and marker (bergheim/import-has-conflict-p marker contact))
+               (marker (when uid (bergheim/contactor--find-by-uid uid))))
+          (when (and marker (bergheim/contactor--has-conflict-p marker contact))
             (push (list :uid uid :name (assoc-default "FN" contact)) conflicts))))
       
       (when conflicts
@@ -81,20 +81,20 @@
 
       (dolist (contact contacts)
         (let* ((uid (assoc-default "UID" contact))
-               (marker (when uid (bergheim/find-contact-by-uid uid))))
+               (marker (when uid (bergheim/contactor--find-by-uid uid))))
           (if marker
               (progn
                 (goto-char marker)
-                (bergheim/contact-update-org-heading contact)
-                (org-set-property "LAST_MODIFIED" (bergheim/timestamp-now-org))
+                (bergheim/contactor--update-org-heading contact)
+                (org-set-property "LAST_MODIFIED" (bergheim/contactor--timestamp-now-org))
                 (setq updated (1+ updated)))
             (goto-char (point-max))
             (unless (bolp) (insert "\n"))
-            (insert (string-trim-right (bergheim/contact-to-org-heading contact)))
+            (insert (string-trim-right (bergheim/contactor--contact-to-org contact)))
             (insert "\n")
             (goto-char (point-max))
             (re-search-backward "^\\* ")
-            (org-set-property "LAST_MODIFIED" (bergheim/timestamp-now-org))
+            (org-set-property "LAST_MODIFIED" (bergheim/contactor--timestamp-now-org))
             (setq added (1+ added)))))
       
       (save-buffer)
@@ -116,7 +116,7 @@
                            (match-string-no-properties 4))))))
         (save-buffer))
       
-      (let ((timestamp (bergheim/timestamp-now-org))
+      (let ((timestamp (bergheim/contactor--timestamp-now-org))
             ;; Count the contacts actually present in the file, not just the
             ;; ones touched this run — this is the baseline export-precheck
             ;; uses to detect a suspicious drop, so it must reflect reality.
@@ -125,21 +125,21 @@
                                (lambda () (when (org-entry-get nil "UID") (setq n (1+ n))))
                                nil nil)
                               n)))
-        (bergheim/update-sync-metadata
+        (bergheim/contactor--update-metadata
          :last-synced timestamp
          :contact-count total-contacts)
-        (bergheim/update-top-level-modified)
+        (bergheim/contactor--update-top-modified)
         (save-buffer)))
     
     (message "Synced contacts: %d added, %d updated" added updated)))
 
-;; (defun bergheim/sync-contacts ()
+;; (defun bergheim/contactor-sync ()
 ;;   "Sync vdirsyncer then import to org-contacts."
 ;;   (interactive)
 ;;   (message "NOT Syncing with Nextcloud...")
 ;;   ;; (shell-command "vdirsyncer sync nextcloud_contacts")
-;;   (bergheim/import-vcards-to-org 
-;;    bergheim/vcard-sync-directory
+;;   (bergheim/contactor-import
+;;    bergheim/contactor-sync-directory
 ;;    (expand-file-name "contacts.org" org-directory))
 ;;   (when (get-file-buffer (expand-file-name "contacts.org" org-directory))
 ;;     (with-current-buffer (get-file-buffer (expand-file-name "contacts.org" org-directory))
@@ -147,18 +147,18 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun bergheim/export-dirty-contacts ()
+(defun bergheim/contactor-export-dirty ()
   "Export all contacts modified since last export/sync."
   (interactive)
   ;; Safety net: refuse a bulk export if the file looks wrong (never synced,
   ;; stale sync, or a suspicious drop in contact count). Can be overridden
   ;; interactively, but defaults to aborting so we never silently nuke vCards.
-  (let ((check (bergheim/export-precheck)))
+  (let ((check (bergheim/contactor--export-precheck)))
     (unless (or (plist-get check :safe)
                 (yes-or-no-p (format "Export safety check failed: %s  Export anyway? "
                                      (plist-get check :reason))))
       (user-error "Export aborted: %s" (plist-get check :reason))))
-  (let ((dirty (bergheim/find-dirty-contacts))
+  (let ((dirty (bergheim/contactor--find-dirty))
         (exported 0)
         (skipped 0))
     (dolist (contact-info dirty)
@@ -166,7 +166,7 @@
       (goto-char (plist-get contact-info :marker))
       (condition-case err
           (progn
-            (bergheim/export-contact-to-vcard)
+            (bergheim/contactor-export-at-point)
             (setq exported (1+ exported)))
         (error 
          (message "Failed to export %s: %s" 
@@ -174,13 +174,13 @@
          (setq skipped (1+ skipped)))))
     (message "Exported %d contacts, skipped %d" exported skipped)))
 
-(defun bergheim/sync-contacts ()
+(defun bergheim/contactor-sync ()
   "Bidirectional sync: import from vCards, then export dirty org contacts."
   (interactive)
   (message "Importing from vCards...")
   (condition-case err
-      (bergheim/import-vcards-to-org 
-       bergheim/vcard-sync-directory
+      (bergheim/contactor-impo
+       bergheim/contactor-sync-directory
        (expand-file-name "contacts.org" org-directory))
     (user-error 
      (message "Import cancelled: %s" (error-message-string err))))
@@ -188,12 +188,12 @@
   (message "Exporting modified contacts...")
   (with-current-buffer (find-file-noselect 
                         (expand-file-name "contacts.org" org-directory))
-    (bergheim/export-dirty-contacts)
+    (bergheim/contactor-export-dirty)
     (save-buffer))
   (message "Sync complete"))
 
 
-(defun bergheim/find-contact-by-uid (uid)
+(defun bergheim/contactor--find-by-uid (uid)
   "Find org heading with matching UID property. Returns marker or nil."
   (save-excursion
     (goto-char (point-min))
@@ -202,24 +202,24 @@
         (goto-char pos)
         (point-marker)))))
 
-(defun bergheim/vcard-encode-value (value)
+(defun bergheim/contactor--vcard-encode-value (value)
   "Encode value for vCard output - reverse of decode."
   (setq value (replace-regexp-in-string "\\\\" "\\\\\\\\" value nil t))
   (setq value (replace-regexp-in-string "," "\\\\," value))
   (setq value (replace-regexp-in-string ";" "\\\\;" value))
   value)
 
-(defun bergheim/export-contact-to-vcard ()
+(defun bergheim/contactor-export-at-point ()
   "Export contact at point to vCard file in vdirsyncer directory.
 Only writes if content has changed."
   (interactive)
-  (let* ((contact (bergheim/org-heading-to-contact))
+  (let* ((contact (bergheim/contactor--org-to-contact))
          (uid (assoc-default "UID" contact))
          (name (assoc-default "FN" contact)))
     (unless uid
       (user-error "Contact has no UID"))
-    (let* ((vcard-dir (expand-file-name bergheim/vcard-sync-directory))
-           (vcard-file (bergheim/find-vcard-file-by-uid vcard-dir uid)))
+    (let* ((vcard-dir (expand-file-name bergheim/contactor-sync-directory))
+           (vcard-file (bergheim/contactor--find-vcard-by-uid vcard-dir uid)))
       
       (unless vcard-file
         (user-error "No vCard file found for UID: %s" uid))
@@ -227,7 +227,7 @@ Only writes if content has changed."
       ;; Parse existing vCard file
       (let ((vcard-contact (with-temp-buffer
                              (insert-file-contents vcard-file)
-                             (bergheim/vcard-string-to-contact (buffer-string)))))
+                             (bergheim/contactor--vcard-to-contact (buffer-string)))))
         
         ;; Check for external changes (REV mismatch)
         (let ((org-rev (assoc-default "REV" contact))
@@ -238,22 +238,22 @@ Only writes if content has changed."
 
         ;; we don't care if it updates remote - we still tried to export
         (org-back-to-heading t)
-        (org-set-property "LAST_EXPORTED" (bergheim/timestamp-now-org))
+        (org-set-property "LAST_EXPORTED" (bergheim/contactor--timestamp-now-org))
         ;; Check if content actually changed
-        (if (bergheim/contact-changed-p contact vcard-contact)
+        (if (bergheim/contactor--changed-p contact vcard-contact)
             (progn
               ;; Update REV timestamp
-              (let* ((new-rev (bergheim/timestamp-now-vcard))
-                     (updated-contact (bergheim/contact-set-field contact "REV" new-rev)))
+              (let* ((new-rev (bergheim/contactor--timestamp-now-vcard))
+                     (updated-contact (bergheim/contactor--set-field contact "REV" new-rev)))
                 ;; Write to vCard file
-                (let ((vcard-string (bergheim/contact-to-vcard-string updated-contact)))
+                (let ((vcard-string (bergheim/contactor--contact-to-vcard updated-contact)))
                   (with-temp-file vcard-file
                     (insert vcard-string)))
                 ;; Update org entry completely (PROPERTIES + VCARD with new REV)
-                (bergheim/contact-update-org-heading updated-contact)
+                (bergheim/contactor--update-org-heading updated-contact)
 
-                (when bergheim/vcard-auto-commit
-                  (bergheim/git-commit-vcard-changes name vcard-file))
+                (when bergheim/contactor-auto-commit
+                  (bergheim/contactor--git-commit name vcard-file))
                 (message "Exported %s to %s (updated)" name vcard-file))))))))
 
 
@@ -265,7 +265,7 @@ Only writes if content has changed."
 ;;; Export: org → vCard implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun bergheim/update-sync-metadata (&rest args)
+(defun bergheim/contactor--update-metadata (&rest args)
   "Update top-level sync metadata in current org buffer.
 ARGS is a plist with keys :last-synced, :last-export, :last-modified, :contact-count."
   (save-excursion
@@ -291,12 +291,12 @@ ARGS is a plist with keys :last-synced, :last-export, :last-modified, :contact-c
                 (goto-char insert-point)
                 (insert (format "#+%s: %s\n" keyword value))))))))))
 
-(defun bergheim/mark-contact-modified ()
+(defun bergheim/contactor--mark-modified ()
   "Mark current contact as modified with timestamp."
   (org-back-to-heading t)
-  (org-set-property "LAST_MODIFIED" (bergheim/timestamp-now-org)))
+  (org-set-property "LAST_MODIFIED" (bergheim/contactor--timestamp-now-org)))
 
-(defun bergheim/find-dirty-contacts ()
+(defun bergheim/contactor--find-dirty ()
   "Find all contacts that need export (modified since last export).
 Returns list of plists with :uid, :name, :marker."
   (let ((dirty '()))
@@ -318,7 +318,7 @@ Returns list of plists with :uid, :name, :marker."
     (message "Dirty %s" dirty)
     (nreverse dirty)))
 
-(defun bergheim/export-precheck ()
+(defun bergheim/contactor--export-precheck ()
   "Run safety checks before export. Returns plist with :safe and :reason."
   (save-excursion
     (goto-char (point-min))
@@ -343,7 +343,7 @@ Returns list of plists with :uid, :name, :marker."
        
        ;; Sync too old (>7 days)
        ((org-time< last-synced 
-                   (format-time-string bergheim/timestamp-format-org
+                   (format-time-string bergheim/contactor--timestamp-format-org
                                        (time-subtract (current-time) (days-to-time 7))))
         (list :safe nil :reason (format "LAST_SYNCED is old (%s) - sync first?" last-synced)))
        
@@ -357,7 +357,7 @@ Returns list of plists with :uid, :name, :marker."
        ;; All good
        (t (list :safe t :current-count current-count))))))
 
-(defun bergheim/update-top-level-modified ()
+(defun bergheim/contactor--update-top-modified ()
   "Update top-level LAST_MODIFIED to most recent contact modification."
   (let ((max-modified nil))
     (org-map-entries
@@ -370,9 +370,9 @@ Returns list of plists with :uid, :name, :marker."
      nil nil)
     
     (when max-modified
-      (bergheim/update-sync-metadata :last-modified max-modified))))
+      (bergheim/contactor--update-metadata :last-modified max-modified))))
 
-(defun bergheim/find-vcard-file-by-uid (vcard-dir uid)
+(defun bergheim/contactor--find-vcard-by-uid (vcard-dir uid)
   "Find vCard file in VCARD-DIR containing UID.
 Searches directly in vcard-dir, not subdirectories."
   (let ((result nil))
@@ -385,7 +385,7 @@ Searches directly in vcard-dir, not subdirectories."
         (setq result vcard-file)))
     result))
 
-(defun bergheim/contact-changed-p (contact1 contact2)
+(defun bergheim/contactor--changed-p (contact1 contact2)
   "Compare two contacts, ignoring REV timestamp and field order.
 Returns t if they differ."
   (let* ((c1-no-rev (seq-remove (lambda (f) (equal (car f) "REV")) contact1))
@@ -397,13 +397,13 @@ Returns t if they differ."
                           (lambda (a b) (string< (car a) (car b))))))
     (not (equal c1-sorted c2-sorted))))
 
-(defun bergheim/import-has-conflict-p (marker new-contact)
+(defun bergheim/contactor--has-conflict-p (marker new-contact)
   "Check if importing NEW-CONTACT would conflict with org contact at MARKER.
 Returns t if contacts differ (prompting user before overwrite)."
   (save-excursion
     (goto-char marker)
-    (let ((org-contact (bergheim/org-heading-to-contact)))
-      (bergheim/contact-changed-p org-contact new-contact))))
+    (let ((org-contact (bergheim/contactor--org-to-contact)))
+      (bergheim/contactor--changed-p org-contact new-contact))))
 
 
 
@@ -421,7 +421,7 @@ Returns t if contacts differ (prompting user before overwrite)."
 
 
 
-(defun bergheim/vcard-string-to-contact (vcard-string)
+(defun bergheim/contactor--vcard-to-contact (vcard-string)
   "Parse VCARD-STRING to ordered alist of (FIELD . VALUE) pairs.
 Values stored raw (with any escaping intact)."
   (with-temp-buffer
@@ -443,7 +443,7 @@ Values stored raw (with any escaping intact)."
       (nreverse fields))))
 
 
-(defun bergheim/contact-to-vcard-string (contact)
+(defun bergheim/contactor--contact-to-vcard (contact)
   "Convert CONTACT alist to vCard string.
 Values written raw (no encoding)."
   (let ((lines '()))
@@ -454,7 +454,7 @@ Values written raw (no encoding)."
         (push (concat key ":" value) lines)))
     (concat (string-join (nreverse lines) "\n") "\n")))
 
-(defun bergheim/get-vcard-drawer ()
+(defun bergheim/contactor--vcard-drawer ()
   "Get contents of VCARD drawer at current heading.
 Returns the full multi-line content as string."
   (save-excursion
@@ -467,7 +467,7 @@ Returns the full multi-line content as string."
             (beginning-of-line)
             (string-trim (buffer-substring-no-properties drawer-start (point)))))))))
 
-(defun bergheim/org-heading-to-contact ()
+(defun bergheim/contactor--org-to-contact ()
   "Extract vCard contact representation from org heading at point.
 Returns ordered alist of (FIELD . VALUE) pairs.
 VCARD drawer is authoritative, properties override specific fields."
@@ -478,10 +478,10 @@ VCARD drawer is authoritative, properties override specific fields."
            (email (org-entry-get nil "EMAIL"))
            (birthday (org-entry-get nil "BIRTHDAY"))
            (note (org-entry-get nil "NOTE"))
-           (vcard-drawer (bergheim/get-vcard-drawer))
+           (vcard-drawer (bergheim/contactor--vcard-drawer))
            ;; Parse VCARD - keep ALL fields
            (contact (if vcard-drawer
-                        (bergheim/vcard-string-to-contact 
+                        (bergheim/contactor--vcard-to-contact
                          (concat "BEGIN:VCARD\n" vcard-drawer "\nEND:VCARD"))
                       '(("BEGIN" . "VCARD")
                         ("VERSION" . "3.0")
@@ -489,25 +489,25 @@ VCARD drawer is authoritative, properties override specific fields."
       
       ;; Override specific fields from properties (in place, preserving position)
       (when heading
-        (setq contact (bergheim/contact-set-field contact "FN" heading)))
+        (setq contact (bergheim/contactor--set-field contact "FN" heading)))
       
       (when uid
-        (setq contact (bergheim/contact-set-field contact "UID" uid)))
+        (setq contact (bergheim/contactor--set-field contact "UID" uid)))
       
       (when email
-        (setq contact (bergheim/contact-set-field contact "EMAIL" email)))
+        (setq contact (bergheim/contactor--set-field contact "EMAIL" email)))
       
       (when birthday
-        (let ((bday (bergheim/org-timestamp-to-vcard-bday birthday)))
+        (let ((bday (bergheim/contactor--org-bday-to-vcard birthday)))
           (when bday
-            (setq contact (bergheim/contact-set-field contact "BDAY" bday)))))
+            (setq contact (bergheim/contactor--set-field contact "BDAY" bday)))))
       
       (when note
-        (setq contact (bergheim/contact-set-field contact "NOTE" note)))
+        (setq contact (bergheim/contactor--set-field contact "NOTE" note)))
       
       contact)))
 
-(defun bergheim/contact-set-field (contact field value)
+(defun bergheim/contactor--set-field (contact field value)
   "Set FIELD to VALUE in CONTACT alist.
 If field exists, replace it. Otherwise add after VERSION, before END."
   (let* ((without-end (seq-remove (lambda (f) (equal (car f) "END")) contact))
@@ -531,7 +531,7 @@ If field exists, replace it. Otherwise add after VERSION, before END."
             (setq added t)))
         (append (nreverse result) (list end-pair))))))
 
-(defun bergheim/org-timestamp-to-vcard-bday (timestamp)
+(defun bergheim/contactor--org-bday-to-vcard (timestamp)
   "Convert org TIMESTAMP to vCard BDAY format.
 <1980-12-25 +1y> → 19801225
 <12-25 +1y> → --1225"
@@ -543,7 +543,7 @@ If field exists, replace it. Otherwise add after VERSION, before END."
           (concat year month day)
         (concat "--" month day)))))
 
-(defun bergheim/contact-generate-id (contact)
+(defun bergheim/contactor--generate-id (contact)
   "Generate stable ID for contact from name.
 Format: contact-firstname-lastname
 Appends -2, -3, etc. if collision detected."
@@ -553,7 +553,7 @@ Appends -2, -3, etc. if collision detected."
       (let ((id base-id)
             (counter 2))
         ;; Check for collisions in org file
-        (while (with-current-buffer (find-file-noselect bergheim/contacts-file)
+        (while (with-current-buffer (find-file-noselect bergheim/contactor-file)
                  (org-find-property "ID" id))
           (setq id (format "%s-%d" base-id counter)
                 counter (1+ counter)))
@@ -561,12 +561,12 @@ Appends -2, -3, etc. if collision detected."
     ;; Fallback to UID if name is missing/weird
     (concat "contact-" (assoc-default "UID" contact))))
 
-(defun bergheim/contact-to-org-heading (contact)
+(defun bergheim/contactor--contact-to-org (contact)
   "Format CONTACT alist as org heading string.
 Decides what goes to PROPERTIES vs VCARD."
   (let* ((fn (assoc-default "FN" contact))
          (uid (assoc-default "UID" contact))
-         (id (bergheim/contact-generate-id contact))
+         (id (bergheim/contactor--generate-id contact))
          (email (assoc-default "EMAIL" contact))
          (bday (assoc-default "BDAY" contact))
          (note (assoc-default "NOTE" contact))
@@ -594,14 +594,14 @@ Decides what goes to PROPERTIES vs VCARD."
        (when email (format ":EMAIL: %s\n" email))
        (when bday 
          (format ":BIRTHDAY: <%s +1y>\n" 
-                 (bergheim/vcard-bday-to-org-timestamp bday)))
+                 (bergheim/contactor--vcard-bday-to-org bday)))
        (when note (format ":NOTE: %s\n" note))
        ":END:\n"
        ":VCARD:\n"
        vcard-content "\n"
        ":END:\n\n"))))
 
-(defun bergheim/vcard-bday-to-org-timestamp (bday)
+(defun bergheim/contactor--vcard-bday-to-org (bday)
   "Convert vCard BDAY to org timestamp format.
 19801225 → 1980-12-25
 --1225 → 12-25"
@@ -620,7 +620,7 @@ Decides what goes to PROPERTIES vs VCARD."
    ;; Already in right format
    (t bday)))
 
-(defun bergheim/contact-update-org-heading (contact)
+(defun bergheim/contactor--update-org-heading (contact)
   "Update org heading at point from CONTACT, preserve
  body content and extra VCARD fields."
   (save-excursion
@@ -633,9 +633,9 @@ Decides what goes to PROPERTIES vs VCARD."
            (rev (assoc-default "REV" contact))
            (heading-start (point))
            ;; Read existing VCARD to preserve extra fields
-           (existing-vcard (bergheim/get-vcard-drawer))
+           (existing-vcard (bergheim/contactor--vcard-drawer))
            (existing-contact (when existing-vcard
-                               (bergheim/vcard-string-to-contact
+                               (bergheim/contactor--vcard-to-contact
                                 (concat "BEGIN:VCARD\n" existing-vcard "\nEND:VCARD"))))
            ;; Merge: keep fields from existing that aren't in new contact
            (merged-contact (if existing-contact
@@ -665,7 +665,7 @@ Decides what goes to PROPERTIES vs VCARD."
       (if bday
           (org-set-property "BIRTHDAY" 
                             (format "<%s +1y>" 
-                                    (bergheim/vcard-bday-to-org-timestamp bday)))
+                                    (bergheim/contactor--vcard-bday-to-org bday)))
         (org-delete-property "BIRTHDAY"))
       (goto-char heading-start)
       (if note
@@ -714,34 +714,34 @@ Decides what goes to PROPERTIES vs VCARD."
       (delete-region (point) (save-excursion (outline-end-of-subtree) (point)))
       (insert "\n"))))
 
-(defun bergheim/contact-property-changed (property value)
+(defun bergheim/contactor--on-property-changed (property value)
   "Hook to update LAST_MODIFIED when contact properties change."
   (when (and (derived-mode-p 'org-mode)
              (org-entry-get nil "UID")
              (not (member property '("LAST_MODIFIED" "LAST_EXPORTED"))))
-    (org-set-property "LAST_MODIFIED" (bergheim/timestamp-now-org))))
+    (org-set-property "LAST_MODIFIED" (bergheim/contactor--timestamp-now-org))))
 
 (add-hook 'org-property-changed-functions 
-          'bergheim/contact-property-changed)
+          'bergheim/contactor--on-property-changed)
 
-(defun bergheim/maybe-export-contact-on-save ()
+(defun bergheim/contactor--maybe-export-on-save ()
   "Export contact at point if in contacts file and on a contact heading."
   (when (and (buffer-file-name)
-             (string= (buffer-file-name) bergheim/contacts-file)
+             (string= (buffer-file-name) bergheim/contactor-file)
              (org-entry-get nil "UID"))
     (save-excursion
-      (bergheim/export-contact-to-vcard))))
+      (bergheim/contactor-export-at-point))))
 
-(defun bergheim/contacts-setup-auto-export ()
+(defun bergheim/contactor--setup-auto-export ()
   (when (and buffer-file-name
-             (string= buffer-file-name bergheim/contacts-file))
-    (add-hook 'after-save-hook #'bergheim/maybe-export-contact-on-save nil t)))
+             (string= buffer-file-name bergheim/contactor-file))
+    (add-hook 'after-save-hook #'bergheim/contactor--maybe-export-on-save nil t)))
 
-(add-hook 'org-mode-hook #'bergheim/contacts-setup-auto-export)
+(add-hook 'org-mode-hook #'bergheim/contactor--setup-auto-export)
 
-(defun bergheim/git-commit-vcard-changes (name vcard-file)
+(defun bergheim/contactor--git-commit (name vcard-file)
   "Commit changes to VCARD-FILE if in a git repo and auto-commit is enabled."
-  (when bergheim/vcard-auto-commit
+  (when bergheim/contactor-auto-commit
     (let* ((default-directory (file-name-directory vcard-file))
            (relative-path (file-name-nondirectory vcard-file)))
       (when (file-directory-p (expand-file-name ".git" default-directory))
@@ -749,12 +749,12 @@ Decides what goes to PROPERTIES vs VCARD."
                                (shell-quote-argument relative-path)
                                name))))))
 
-(defun bergheim/contact-completion-at-point ()
+(defun bergheim/contactor-completion-at-point ()
   "Completion-at-point function for contacts."
   (when (and (derived-mode-p 'org-mode)
              (looking-back "@\\([a-zA-Z0-9-]*\\)" (line-beginning-position)))
     (let* ((bounds (cons (match-beginning 1) (match-end 1)))
-           (contacts (with-current-buffer (find-file-noselect bergheim/contacts-file)
+           (contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
                        (org-map-entries 
                         (lambda () 
                           (when-let* ((name (org-get-heading t t t t))
@@ -767,17 +767,24 @@ Decides what goes to PROPERTIES vs VCARD."
             contacts
             :exit-function
             (lambda (name _status)
-              (let ((end (point))
-                    (start (- (point) (length name))))
-                (delete-region (1- start) end)  ; Delete @name
-                (insert (format " [[id:%s][%s]]" 
+              ;; The just-inserted candidate occupies [start,end]. cape-capf-trigger
+              ;; usually consumes the leading "@" itself, but if it's still there,
+              ;; pull it in too — and ONLY if it's literally an "@", so we can never
+              ;; delete a preceding newline (the old (1- start) bug).
+              (let* ((end (point))
+                     (start (- end (length name))))
+                (when (and (> start (point-min))
+                           (eq (char-before start) ?@))
+                  (setq start (1- start)))
+                (delete-region start end)
+                (insert (format "[[id:%s][%s]]"
                                 (get-text-property 0 'contact-id name)
                                 name))))))))
 
-(defun bergheim/insert-contact-link ()
+(defun bergheim/contactor-insert-link ()
   "Insert org-id link to contact with completion."
   (interactive)
-  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contacts-file)
+  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
                      (org-map-entries 
                       (lambda () 
                         (when-let* ((name (org-get-heading t t t t))
@@ -790,10 +797,10 @@ Decides what goes to PROPERTIES vs VCARD."
     (insert (format " [[id:%s][%s]] " id choice))))
 
 ;; use vertico for all
-;; (defun bergheim/goto-contact-backlink ()
+;; (defun bergheim/contactor-goto-backlink ()
 ;;   "Jump to a backlink of any contact with completion."
 ;;   (interactive)
-;;   (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contacts-file)
+;;   (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
 ;;                      (org-map-entries 
 ;;                       (lambda () 
 ;;                         (when-let* ((name (org-get-heading t t t t))
@@ -811,10 +818,10 @@ Decides what goes to PROPERTIES vs VCARD."
 ;;           (org-goto-marker-or-bmk marker))
 ;;       (message "No backlinks found for %s" contact-choice))))
 
-(defun bergheim/goto-contact-backlink ()
+(defun bergheim/contactor-goto-backlink ()
   "Show backlinks for a contact with org-ql presentation."
   (interactive)
-  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contacts-file)
+  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
                      (org-map-entries 
                       (lambda () 
                         (when-let* ((name (org-get-heading t t t t))
@@ -829,10 +836,10 @@ Decides what goes to PROPERTIES vs VCARD."
       :sort 'date
       :super-groups '((:auto-parent t)))))
 
-(defun bergheim/contact-compose-mail ()
+(defun bergheim/contactor-compose-mail ()
   "Compose email to contact."
   (interactive)
-  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contacts-file)
+  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
                      (org-map-entries 
                       (lambda () 
                         (when-let* ((name (org-get-heading t t t t))
@@ -847,37 +854,37 @@ Decides what goes to PROPERTIES vs VCARD."
     (insert choice)
     (message-goto-subject)))
 
-(defun bergheim/contact-find-for-capture ()
+(defun bergheim/contactor-find-for-capture ()
   "Prompt for contact and position point for capture."
-  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contacts-file)
+  (let* ((contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
                      (org-map-entries 
                       (lambda () 
-                        (when-let ((name (org-get-heading t t t t))
-                                   (id (org-entry-get nil "ID")))
+                        (when-let* ((name (org-get-heading t t t t))
+                                    (id (org-entry-get nil "ID")))
                           (cons name id)))
                       nil nil)))
          (choice (completing-read "Contact: " contacts nil t))
          (id (alist-get choice contacts nil nil #'equal)))
-    (find-file bergheim/contacts-file)
+    (find-file bergheim/contactor-file)
     (widen)
     (goto-char (org-find-property "ID" id))))
 
-(defun bergheim/contact-capture-todo ()
+(defun bergheim/contactor-capture-todo ()
   "Capture TODO for a contact."
   (interactive)
   (org-capture nil "pc"))  ;; "pc" = personal contact
 ;; (let ((org-capture-clock-keep t))  ;; Don't mess with current clock
 ;;   (org-capture nil "pc")))  ;; "pc" = personal contact
 
-(defun bergheim/contacts-mode-keybindings ()
+(defun bergheim/contactor--setup-keybindings ()
   "Set up keybindings for contacts.org."
   (when (and buffer-file-name
-             (string= buffer-file-name bergheim/contacts-file))
+             (string= buffer-file-name bergheim/contactor-file))
     (general-define-key
      :states '(normal)
      :keymaps 'local
-     "g b" 'bergheim/contact-show-backlinks)))
+     "g b" 'bergheim/contactor-goto-backlink)))
 
-(add-hook 'org-mode-hook 'bergheim/contacts-mode-keybindings)
+(add-hook 'org-mode-hook 'bergheim/contactor--setup-keybindings)
 
 (provide 'contactor)

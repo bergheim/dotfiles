@@ -13,7 +13,7 @@ FN:Test Person
 UID:test-uid
 %s
 END:VCARD" (car test))))
-      (let ((contact (bergheim/vcard-string-to-contact vcard)))
+      (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
         (should (equal (assoc-default "BDAY" contact) (cadr test)))))))
 
 (ert-deftest bergheim/test-vcard-multiple-phones ()
@@ -26,13 +26,13 @@ TEL;TYPE=CELL:+1584073
 TEL;TYPE=CELL:1584073
 TEL;TYPE=HOME:555-1234
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       ;; First TEL;TYPE=CELL should be returned by assoc-default
       (should (equal (assoc-default "TEL;TYPE=CELL" contact) "+1584073"))
       ;; But both should exist in the alist
       (should (= 2 (length (seq-filter (lambda (f) (equal (car f) "TEL;TYPE=CELL")) contact))))
       (should (string-match-p "TEL;TYPE=HOME:555-1234" 
-                              (bergheim/contact-to-vcard-string contact))))))
+                              (bergheim/contactor--contact-to-vcard contact))))))
 
 (ert-deftest bergheim/test-vcard-structured-name ()
   "Test N field is preserved."
@@ -43,7 +43,7 @@ N:Helsøm;Øyvind;;;
 UID:test-uid
 EMAIL:test@example.com
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "FN" contact) "Øyvind Helsøm"))
       (should (equal (assoc-default "N" contact) "Helsøm;Øyvind;;;"))
       (should (equal (assoc-default "EMAIL" contact) "test@example.com")))))
@@ -61,7 +61,7 @@ ITEM1.EMAIL:jane.smith@example.com
 TEL;TYPE=CELL:+1234567890
 REV:2025-07-25T20:02:28Z
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "FN" contact) "Jane Smith"))
       (should (equal (assoc-default "ITEM1.EMAIL" contact) "jane.smith@example.com"))
       (should (equal (assoc-default "UID" contact) "0673b677-7130-4a27-bc54-67e239041874"))
@@ -79,7 +79,7 @@ FN:Test Person
 UID:test-uid
 NOTE:Line one\\nLine two\\nLine three
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "NOTE" contact) "Line one\\nLine two\\nLine three")))))
 
 (ert-deftest bergheim/test-find-contact-by-uid ()
@@ -89,11 +89,11 @@ END:VCARD"))
     (insert "* Alice\n:PROPERTIES:\n:UID: uid-alice\n:END:\n\n")
     (insert "* Bob\n:PROPERTIES:\n:UID: uid-bob\n:END:\n\n")
     (goto-char (point-min))
-    (let ((marker (bergheim/find-contact-by-uid "uid-bob")))
+    (let ((marker (bergheim/contactor--find-by-uid "uid-bob")))
       (should marker)
       (goto-char marker)
       (should (string= "Bob" (org-get-heading t t t t))))
-    (should-not (bergheim/find-contact-by-uid "uid-nonexistent"))))
+    (should-not (bergheim/contactor--find-by-uid "uid-nonexistent"))))
 
 (ert-deftest bergheim/test-update-removes-missing-properties ()
   "Test that nil properties get removed."
@@ -114,7 +114,7 @@ END:VCARD"))
                      ("FN" . "Test Person")
                      ("EMAIL" . "test@example.com")
                      ("END" . "VCARD"))))
-      (bergheim/contact-update-org-heading contact))
+      (bergheim/contactor--update-org-heading contact))
     
     (goto-char (point-min))
     (should (string= "test@example.com" (org-entry-get nil "EMAIL")))
@@ -140,7 +140,7 @@ END:VCARD"))
                      ("FN" . "Simple Contact Updated")
                      ("EMAIL" . "updated@example.com")
                      ("END" . "VCARD"))))
-      (bergheim/contact-update-org-heading contact))
+      (bergheim/contactor--update-org-heading contact))
     
     (goto-char (point-min))
     (should (re-search-forward "^\\* Simple Contact Updated" nil t))
@@ -195,14 +195,14 @@ END:VCARD"))
                                ("END" . "VCARD")))))
               (dolist (contact contacts)
                 (let* ((uid (assoc-default "UID" contact))
-                       (marker (when uid (bergheim/find-contact-by-uid uid))))
+                       (marker (when uid (bergheim/contactor--find-by-uid uid))))
                   (if marker
                       (progn
                         (goto-char marker)
-                        (bergheim/contact-update-org-heading contact))
+                        (bergheim/contactor--update-org-heading contact))
                     (goto-char (point-max))
                     (unless (bolp) (insert "\n"))
-                    (insert (string-trim-right (bergheim/contact-to-org-heading contact)))
+                    (insert (string-trim-right (bergheim/contactor--contact-to-org contact)))
                     (insert "\n"))))
               (save-buffer))
             
@@ -248,8 +248,8 @@ END:VCARD"))
       (org-mode)
       
       ;; Step 1-2: Parse first vCard and insert
-      (let ((contact-v1 (bergheim/vcard-string-to-contact vcard-v1)))
-        (insert (bergheim/contact-to-org-heading contact-v1)))
+      (let ((contact-v1 (bergheim/contactor--vcard-to-contact vcard-v1)))
+        (insert (bergheim/contactor--contact-to-org contact-v1)))
       
       ;; Step 3: Add body text
       (goto-char (point-min))
@@ -267,11 +267,11 @@ END:VCARD"))
       
       ;; Step 4-5: Update with second vCard
       (goto-char (point-min))
-      (let* ((contact-v2 (bergheim/vcard-string-to-contact vcard-v2))
-             (marker (bergheim/find-contact-by-uid "test-uid-12345")))
+      (let* ((contact-v2 (bergheim/contactor--vcard-to-contact vcard-v2))
+             (marker (bergheim/contactor--find-by-uid "test-uid-12345")))
         (should marker)
         (goto-char marker)
-        (bergheim/contact-update-org-heading contact-v2))
+        (bergheim/contactor--update-org-heading contact-v2))
       
       ;; Verify updates
       (goto-char (point-min))
@@ -326,19 +326,19 @@ END:VCARD"))
               (dolist (contact contacts)
                 (goto-char (point-max))
                 (unless (bolp) (insert "\n"))
-                (insert (string-trim-right (bergheim/contact-to-org-heading contact)))
+                (insert (string-trim-right (bergheim/contactor--contact-to-org contact)))
                 (insert "\n")))
             (save-buffer))
           
           ;; First update - establishes proper formatting
           (with-current-buffer (find-file-noselect temp-file)
             (dolist (uid '("uid-alice" "uid-bob"))
-              (let* ((marker (bergheim/find-contact-by-uid uid))
+              (let* ((marker (bergheim/contactor--find-by-uid uid))
                      (contact (save-excursion
                                 (goto-char marker)
-                                (bergheim/org-heading-to-contact))))
+                                (bergheim/contactor--org-to-contact))))
                 (goto-char marker)
-                (bergheim/contact-update-org-heading contact)))
+                (bergheim/contactor--update-org-heading contact)))
             (save-buffer))
           
           (let ((after-first-update (with-temp-buffer
@@ -348,12 +348,12 @@ END:VCARD"))
             ;; Second update - should be idempotent
             (with-current-buffer (find-file-noselect temp-file)
               (dolist (uid '("uid-alice" "uid-bob"))
-                (let* ((marker (bergheim/find-contact-by-uid uid))
+                (let* ((marker (bergheim/contactor--find-by-uid uid))
                        (contact (save-excursion
                                   (goto-char marker)
-                                  (bergheim/org-heading-to-contact))))
+                                  (bergheim/contactor--org-to-contact))))
                   (goto-char marker)
-                  (bergheim/contact-update-org-heading contact)))
+                  (bergheim/contactor--update-org-heading contact)))
               (save-buffer))
             
             (let ((after-second-update (with-temp-buffer
@@ -397,7 +397,7 @@ END:VCARD"))
               (dolist (contact contacts)
                 (goto-char (point-max))
                 (unless (bolp) (insert "\n"))
-                (insert (string-trim-right (bergheim/contact-to-org-heading contact)))
+                (insert (string-trim-right (bergheim/contactor--contact-to-org contact)))
                 (insert "\n")))
             
             ;; Sort - skip to first heading
@@ -421,7 +421,7 @@ END:VCARD"))
             
             ;; Update middle contact
             (goto-char (point-min))
-            (let ((marker (bergheim/find-contact-by-uid "uid-mike")))
+            (let ((marker (bergheim/contactor--find-by-uid "uid-mike")))
               (goto-char marker)
               (let ((contact '(("BEGIN" . "VCARD")
                                ("VERSION" . "3.0")
@@ -430,7 +430,7 @@ END:VCARD"))
                                ("EMAIL" . "mike.new
 @example.com")
                                ("END" . "VCARD"))))
-                (bergheim/contact-update-org-heading contact)))
+                (bergheim/contactor--update-org-heading contact)))
             (save-buffer))
           
           ;; Verify order still correct after update
@@ -455,7 +455,7 @@ EMAIL;TYPE=WORK:work@example.com
 EMAIL;TYPE=HOME:home@example.com
 EMAIL;TYPE=OTHER:other@example.com
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       ;; First email should be in first position
       (should (equal (assoc-default "EMAIL;TYPE=WORK" contact) "work@example.com"))
       ;; Other emails should also exist
@@ -471,7 +471,7 @@ FN:Test Person
 ITEM1.EMAIL;TYPE=INTERNET:test1@example.com
 ITEM2.EMAIL;TYPE=INTERNET:test2@example.com
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       ;; Both emails with full metadata should exist
       (should (equal (assoc-default "ITEM1.EMAIL;TYPE=INTERNET" contact) "test1@example.com"))
       (should (equal (assoc-default "ITEM2.EMAIL;TYPE=INTERNET" contact) "test2@example.com")))))
@@ -484,22 +484,22 @@ FN:Test Person
 PHOTO:https//lh3googleusercontent.com/AG6tpzE
  tngNQm7L5n8DGNOnlcx8FZ
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "PHOTO" contact)
                      "https//lh3googleusercontent.com/AG6tpzEtngNQm7L5n8DGNOnlcx8FZ")))))
 
 (ert-deftest bergheim/test-export-special-chars ()
   "Test encoding of special characters."
-  (should (equal (bergheim/vcard-encode-value "Müller, Thomas") "Müller\\, Thomas"))
-  (should (equal (bergheim/vcard-encode-value "test;user") "test\\;user")))
+  (should (equal (bergheim/contactor--vcard-encode-value "Müller, Thomas") "Müller\\, Thomas"))
+  (should (equal (bergheim/contactor--vcard-encode-value "test;user") "test\\;user")))
 
 (ert-deftest bergheim/test-export-metadata-initialization ()
   "Test that metadata is added to new org file on first import."
   (with-temp-buffer
     (org-mode)
     (insert "#+TITLE: Contacts\n\n")
-    (let ((timestamp (bergheim/timestamp-now-org)))
-      (bergheim/update-sync-metadata 
+    (let ((timestamp (bergheim/contactor--timestamp-now-org)))
+      (bergheim/contactor--update-metadata 
        :last-synced timestamp
        :contact-count 2)
       
@@ -520,7 +520,7 @@ END:VCARD"))
     
     ;; Simulate contact modification
     (goto-char (point-min))
-    (bergheim/mark-contact-modified)
+    (bergheim/contactor--mark-modified)
     
     (should (org-entry-get nil "LAST_MODIFIED"))))
 
@@ -554,7 +554,7 @@ END:VCARD"))
       (insert (format ":LAST_MODIFIED: %s\n" new-time))
       (insert ":END:\n\n")
       
-      (let ((dirty (bergheim/find-dirty-contacts)))
+      (let ((dirty (bergheim/contactor--find-dirty)))
         (should (= (length dirty) 2))
         (should (member "uid-bob" (mapcar (lambda (c) (plist-get c :uid)) dirty)))
         (should (member "uid-charlie" (mapcar (lambda (c) (plist-get c :uid)) dirty)))))))
@@ -564,14 +564,14 @@ END:VCARD"))
   (with-temp-buffer
     (org-mode)
     (insert "#+TITLE: Contacts\n")
-    (insert (format "#+LAST_SYNCED: %s\n" (bergheim/timestamp-now-org)))  ; FIX: use recent date
+    (insert (format "#+LAST_SYNCED: %s\n" (bergheim/contactor--timestamp-now-org)))  ; FIX: use recent date
     (insert "#+CONTACT_COUNT: 100\n\n")
     
     ;; Only 2 contacts now (was 100)
     (insert "* Alice\n:PROPERTIES:\n:UID: uid-1\n:END:\n\n")
     (insert "* Bob\n:PROPERTIES:\n:UID: uid-2\n:END:\n\n")
     
-    (let ((result (bergheim/export-precheck)))
+    (let ((result (bergheim/contactor--export-precheck)))
       (should-not (plist-get result :safe))
       (should (string-match-p "count" (plist-get result :reason))))))
 
@@ -582,7 +582,7 @@ END:VCARD"))
     (insert "#+TITLE: Contacts\n\n")
     (insert "* Alice\n:PROPERTIES:\n:UID: uid-1\n:END:\n\n")
     
-    (let ((result (bergheim/export-precheck)))
+    (let ((result (bergheim/contactor--export-precheck)))
       (should-not (plist-get result :safe))
       (should (string-match-p "LAST_SYNCED" (plist-get result :reason))))))
 
@@ -590,7 +590,7 @@ END:VCARD"))
   "Test warning when sync is old."
   (with-temp-buffer
     (org-mode)
-    (let ((old-date (format-time-string bergheim/timestamp-format-org
+    (let ((old-date (format-time-string bergheim/contactor--timestamp-format-org
                                         (time-subtract (current-time) 
                                                        (days-to-time 30)))))
       (insert "#+TITLE: Contacts\n")
@@ -600,7 +600,7 @@ END:VCARD"))
       (dotimes (i 10)
         (insert (format "* Contact %d\n:PROPERTIES:\n:UID: uid-%d\n:END:\n\n" i i)))
       
-      (let ((result (bergheim/export-precheck)))
+      (let ((result (bergheim/contactor--export-precheck)))
         (should-not (plist-get result :safe))
         (should (string-match-p "old" (plist-get result :reason)))))))
 
@@ -621,8 +621,8 @@ END:VCARD"))
     (insert ":END:\n")
     
     (goto-char (point-min))
-    (let* ((contact (bergheim/org-heading-to-contact))
-           (vcard (bergheim/contact-to-vcard-string contact)))
+    (let* ((contact (bergheim/contactor--org-to-contact))
+           (vcard (bergheim/contactor--contact-to-vcard contact)))
       (should (string-match-p "BEGIN:VCARD" vcard))
       (should (string-match-p "UID:uid-123" vcard))
       (should (string-match-p "FN:John Doe" vcard))
@@ -641,7 +641,7 @@ END:VCARD"))
     (insert "* Bob\n:PROPERTIES:\n:LAST_MODIFIED: [2025-01-15 Wed 15:30]\n:END:\n\n")
     (insert "* Charlie\n:PROPERTIES:\n:LAST_MODIFIED: [2025-01-15 Wed 11:00]\n:END:\n\n")
     
-    (bergheim/update-top-level-modified)
+    (bergheim/contactor--update-top-modified)
     
     (goto-char (point-min))
     (should (re-search-forward "^#\\+LAST_MODIFIED: \\[2025-01-15 Wed 15:30\\]" nil t))))
@@ -662,8 +662,8 @@ END:VCARD"))
     
     (goto-char (point-min))
     (let* ((contact
-            (bergheim/org-heading-to-contact))
-           (vcard (bergheim/contact-to-vcard-string contact)))
+            (bergheim/contactor--org-to-contact))
+           (vcard (bergheim/contactor--contact-to-vcard contact)))
       (should (string-match-p "BDAY:19850615" vcard))
       (should-not (string-match-p "19801225" vcard)))))
 
@@ -709,9 +709,9 @@ END:VCARD")
             (insert ":END:\n")
             
             (goto-char (point-min))
-            (let ((org-contact (bergheim/org-heading-to-contact))
-                  (vcard-contact (bergheim/vcard-string-to-contact vcard)))
-              (should-not (bergheim/contact-changed-p org-contact vcard-contact)))))
+            (let ((org-contact (bergheim/contactor--org-to-contact))
+                  (vcard-contact (bergheim/contactor--vcard-to-contact vcard)))
+              (should-not (bergheim/contactor--changed-p org-contact vcard-contact)))))
       (when (file-exists-p temp-file)
         (delete-file temp-file)))))
 
@@ -751,9 +751,9 @@ END:VCARD")
             (insert ":END:\n")
             
             (goto-char (point-min))
-            (let ((org-contact (bergheim/org-heading-to-contact))
-                  (vcard-contact (bergheim/vcard-string-to-contact vcard)))
-              (should (bergheim/contact-changed-p org-contact vcard-contact)))))
+            (let ((org-contact (bergheim/contactor--org-to-contact))
+                  (vcard-contact (bergheim/contactor--vcard-to-contact vcard)))
+              (should (bergheim/contactor--changed-p org-contact vcard-contact)))))
       (when (file-exists-p temp-file)
         (delete-file temp-file)))))
 
@@ -788,9 +788,9 @@ VCARD")
             (insert ":END:\n")
             
             (goto-char (point-min))
-            (let ((org-contact (bergheim/org-heading-to-contact))
-                  (vcard-contact (bergheim/vcard-string-to-contact vcard)))
-              (should (bergheim/contact-changed-p org-contact vcard-contact)))))
+            (let ((org-contact (bergheim/contactor--org-to-contact))
+                  (vcard-contact (bergheim/contactor--vcard-to-contact vcard)))
+              (should (bergheim/contactor--changed-p org-contact vcard-contact)))))
       (when (file-exists-p temp-file)
         (delete-file temp-file)))))
 
@@ -821,8 +821,8 @@ END:VCARD")
 
                 (vcard-contact (with-temp-buffer
                                  (insert-file-contents temp-file)
-                                 (bergheim/vcard-string-to-contact (buffer-string)))))
-            (should-not (bergheim/contact-changed-p org-contact vcard-contact))))
+                                 (bergheim/contactor--vcard-to-contact (buffer-string)))))
+            (should-not (bergheim/contactor--changed-p org-contact vcard-contact))))
       (when (file-exists-p temp-file)
         (delete-file temp-file)))))
 
@@ -864,11 +864,11 @@ END:VCARD")
             (insert ":END:\n")
             
             (goto-char (point-min))
-            (let ((org-contact (bergheim/org-heading-to-contact))
+            (let ((org-contact (bergheim/contactor--org-to-contact))
                   (vcard-contact (with-temp-buffer
                                    (insert-file-contents temp-file)
-                                   (bergheim/vcard-string-to-contact (buffer-string)))))
-              (should-not (bergheim/contact-changed-p org-contact vcard-contact)))))
+                                   (bergheim/contactor--vcard-to-contact (buffer-string)))))
+              (should-not (bergheim/contactor--changed-p org-contact vcard-contact)))))
       (when (file-exists-p temp-file)
         (delete-file temp-file)))))
 
@@ -910,12 +910,12 @@ END:VCARD")
             (insert ":END:\n")
             
             (goto-char (point-min))
-            (let* ((org-contact (bergheim/org-heading-to-contact))
+            (let* ((org-contact (bergheim/contactor--org-to-contact))
                    (vcard-contact (with-temp-buffer
                                     (insert-file-contents temp-file)
-                                    (bergheim/vcard-string-to-contact (buffer-string)))))
+                                    (bergheim/contactor--vcard-to-contact (buffer-string)))))
               ;; Contact unchanged check should pass
-              (should-not (bergheim/contact-changed-p org-contact vcard-contact))
+              (should-not (bergheim/contactor--changed-p org-contact vcard-contact))
               ;; But REV mismatch should be detected
               (should-not (equal (assoc-default "REV" org-contact)
                                  (assoc-default "REV" vcard-contact))))))
@@ -930,7 +930,7 @@ UID:uid-123
 FN:John Doe
 EMAIL:john@example.com
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "BEGIN" contact) "VCARD"))
       (should (equal (assoc-default "VERSION" contact) "3.0"))
       (should (equal (assoc-default "UID" contact) "uid-123"))
@@ -950,7 +950,7 @@ END:VCARD"))
                    ("FN" . "John Doe")
                    ("EMAIL" . "john@example.com")
                    ("END" . "VCARD"))))
-    (let ((vcard (bergheim/contact-to-vcard-string contact)))
+    (let ((vcard (bergheim/contactor--contact-to-vcard contact)))
       (should (string-match-p "BEGIN:VCARD" vcard))
       (should (string-match-p "UID:uid-123" vcard))
       (should (string-match-p "FN:John Doe" vcard))
@@ -969,9 +969,9 @@ TEL;TYPE=CELL:555-1234
 CATEGORIES:Someones’s iBlob,Imported on 7/25,myContacts
 BDAY:19801225
 END:VCARD"))
-    (let* ((contact (bergheim/vcard-string-to-contact original))
-           (reconstructed (bergheim/contact-to-vcard-string contact))
-           (reparsed (bergheim/vcard-string-to-contact reconstructed)))
+    (let* ((contact (bergheim/contactor--vcard-to-contact original))
+           (reconstructed (bergheim/contactor--contact-to-vcard contact))
+           (reparsed (bergheim/contactor--vcard-to-contact reconstructed)))
       ;; Contact should equal itself after roundtrip
       (should (equal contact reparsed)))))
 
@@ -991,8 +991,8 @@ END:VCARD"))
     (with-temp-buffer
       (org-mode)
       ;; Import: vCard → org
-      (let ((contact (bergheim/vcard-string-to-contact original)))
-        (insert (bergheim/contact-to-org-heading contact)))
+      (let ((contact (bergheim/contactor--vcard-to-contact original)))
+        (insert (bergheim/contactor--contact-to-org contact)))
       
       ;; Modify heading (simulate user edit)
       (goto-char (point-min))
@@ -1001,8 +1001,8 @@ END:VCARD"))
       
       ;; Export: org → vCard
       (goto-char (point-min))
-      (let* ((contact (bergheim/org-heading-to-contact))
-             (exported (bergheim/contact-to-vcard-string contact)))
+      (let* ((contact (bergheim/contactor--org-to-contact))
+             (exported (bergheim/contactor--contact-to-vcard contact)))
         
         ;; Check that escaping didn't change (except FN and REV)
         (should (string-match-p "CATEGORIES:iPhone,Imported on 7/25,myContacts" exported))
@@ -1020,7 +1020,7 @@ EMAIL;TYPE=WORK:work@example.com
 EMAIL;TYPE=HOME:home@example.com
 TEL;TYPE=CELL:555-1234
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "EMAIL;TYPE=WORK" contact) "work@example.com"))
       (should (equal (assoc-default "EMAIL;TYPE=HOME" contact) "home@example.com"))
       (should (equal (assoc-default "TEL;TYPE=CELL" contact) "555-1234")))))
@@ -1035,7 +1035,7 @@ NOTE:This is a long note
  that continues on
  multiple lines
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       (should (equal (assoc-default "NOTE" contact) 
                      "This is a long notethat continues onmultiple lines")))))
 
@@ -1047,15 +1047,15 @@ UID:uid-123
 FN:Doe\\, John
 NOTE:Line1\\nLine2\\, with comma
 END:VCARD"))
-    (let ((contact (bergheim/vcard-string-to-contact vcard)))
+    (let ((contact (bergheim/contactor--vcard-to-contact vcard)))
       ;; Values stored RAW - escapes preserved
       (should (equal (assoc-default "FN" contact) "Doe\\, John"))
       (should (equal (assoc-default "NOTE" contact) "Line1\\nLine2\\, with comma")))))
 
 (ert-deftest bergheim/test-neo-org-timestamp-to-bday ()
   "Test timestamp conversion."
-  (should (equal (bergheim/org-timestamp-to-vcard-bday "<1980-12-25 +1y>") "19801225"))
-  (should (equal (bergheim/org-timestamp-to-vcard-bday "<12-25 +1y>") "--1225")))
+  (should (equal (bergheim/contactor--org-bday-to-vcard "<1980-12-25 +1y>") "19801225"))
+  (should (equal (bergheim/contactor--org-bday-to-vcard "<12-25 +1y>") "--1225")))
 
 (ert-deftest bergheim/test-neo-org-heading-to-contact-basic ()
   "Test extracting contact from org heading."
@@ -1076,7 +1076,7 @@ REV:2025-01-20T10:00:00Z
 :END:
 ")
     (goto-char (point-min))
-    (let ((contact (bergheim/org-heading-to-contact)))
+    (let ((contact (bergheim/contactor--org-to-contact)))
       (message "Full contact: %S" contact)
       (should (equal (assoc-default "BEGIN" contact) "VCARD"))
       (should (equal (assoc-default "VERSION" contact) "3.0"))
@@ -1105,7 +1105,7 @@ TEL;TYPE=CELL:555-1234
 :END:
 ")
     (goto-char (point-min))
-    (let ((drawer (bergheim/get-vcard-drawer)))
+    (let ((drawer (bergheim/contactor--vcard-drawer)))
       (message "Drawer content: %S" drawer)
       (should (string-match-p "VERSION:3.0" drawer))
       (should (string-match-p "N:Doe;John;;;" drawer))
@@ -1113,8 +1113,8 @@ TEL;TYPE=CELL:555-1234
 
 (ert-deftest bergheim/test-neo-vcard-bday-to-org-timestamp ()
   "Test BDAY conversion."
-  (should (equal (bergheim/vcard-bday-to-org-timestamp "19801225") "1980-12-25"))
-  (should (equal (bergheim/vcard-bday-to-org-timestamp "--1225") "12-25")))
+  (should (equal (bergheim/contactor--vcard-bday-to-org "19801225") "1980-12-25"))
+  (should (equal (bergheim/contactor--vcard-bday-to-org "--1225") "12-25")))
 
 (ert-deftest bergheim/test-neo-contact-to-org-heading ()
   "Test converting contact to org heading."
@@ -1129,7 +1129,7 @@ TEL;TYPE=CELL:555-1234
                    ("REV" . "2025-01-20T10:00:00Z")
                    ("END" . "VCARD"))))
 
-    (let ((org-string (bergheim/contact-to-org-heading contact)))
+    (let ((org-string (bergheim/contactor--contact-to-org contact)))
       (should (string-match-p "^\\* John Doe" org-string))
       (should (string-match-p ":UID: uid-123" org-string))
       (should (string-match-p ":EMAIL: john@example.com" org-string))
@@ -1161,14 +1161,14 @@ TEL;TYPE=CELL:555-1234
 Important stuff here
 ")
     (goto-char (point-min))
-    (let* ((contact1 (bergheim/org-heading-to-contact))
-           (org-string (bergheim/contact-to-org-heading contact1)))
+    (let* ((contact1 (bergheim/contactor--org-to-contact))
+           (org-string (bergheim/contactor--contact-to-org contact1)))
       ;; Insert the generated org string in a new buffer
       (with-temp-buffer
         (org-mode)
         (insert org-string)
         (goto-char (point-min))
-        (let ((contact2 (bergheim/org-heading-to-contact)))
+        (let ((contact2 (bergheim/contactor--org-to-contact)))
           ;; Should be identical (minus body content which we don't preserve yet)
           (should (equal contact1 contact2)))))))
 
@@ -1197,7 +1197,7 @@ Don't delete this!
                      ("EMAIL" . "new@example.com")
                      ("TEL;TYPE=CELL" . "555-1111")
                      ("END" . "VCARD"))))
-      (bergheim/contact-update-org-heading contact))
+      (bergheim/contactor--update-org-heading contact))
     
     ;; Check properties updated
     (goto-char (point-min))
@@ -1255,17 +1255,17 @@ Don't delete this!
             (goto-char (point-min))
             (org-set-property "EMAIL" "john.new@example.com")
             
-            ;; Mock bergheim/find-vcard-file-by-uid to return our temp file
-            (cl-letf (((symbol-function 'bergheim/find-vcard-file-by-uid)
+            ;; Mock bergheim/contactor--find-vcard-by-uid to return our temp file
+            (cl-letf (((symbol-function 'bergheim/contactor--find-vcard-by-uid)
                        (lambda (dir uid) temp-file)))
               
               ;; Export contact
               (goto-char (point-min))
-              (bergheim/export-contact-to-vcard))
+              (bergheim/contactor-export-at-point))
             
             ;; Check that VCARD has new REV (not property)
             (goto-char (point-min))
-            (let* ((contact (bergheim/org-heading-to-contact))
+            (let* ((contact (bergheim/contactor--org-to-contact))
                    (new-org-rev (assoc-default "REV" contact)))
               (should new-org-rev)
               (should-not (equal new-org-rev old-rev))
@@ -1274,7 +1274,7 @@ Don't delete this!
               (let* ((vcard-string (with-temp-buffer
                                      (insert-file-contents temp-file)
                                      (buffer-string)))
-                     (vcard-contact (bergheim/vcard-string-to-contact vcard-string))
+                     (vcard-contact (bergheim/contactor--vcard-to-contact vcard-string))
                      (new-vcard-rev (assoc-default "REV" vcard-contact)))
                 (should new-vcard-rev)
                 (should-not (equal new-vcard-rev old-rev))
@@ -1321,8 +1321,8 @@ Don't delete this!
             (cl-letf (((symbol-function 'yes-or-no-p)
                        (lambda (prompt) t)))  ; Always answer yes
               ;; Run sync (should import vCard, but preserve FOO:BAR)
-              (let ((bergheim/vcard-sync-directory vcard-dir))
-                (bergheim/import-vcards-to-org vcard-dir temp-file))
+              (let ((bergheim/contactor-sync-directory vcard-dir))
+                (bergheim/contactor-import vcard-dir temp-file))
               
               ;; Check that FOO:BAR is still there
               (with-current-buffer (find-file-noselect temp-file)
@@ -1386,7 +1386,7 @@ Don't delete this!
                 
                 ;; Run import
                 (condition-case err
-                    (bergheim/import-vcards-to-org vcard-dir temp-file)
+                    (bergheim/contactor-import vcard-dir temp-file)
                   (error (message "Import error: %S" err)
                          (signal (car err) (cdr err))))
                 
@@ -1425,7 +1425,7 @@ Don't delete this!
                          ("REV" . "2025-07-25T20:02:27Z")
                          ("END" . "VCARD"))))
     ;; REV is same, but CATEGORIES differs - should detect change
-    (should (bergheim/contact-changed-p org-contact vcard-contact))))
+    (should (bergheim/contactor--changed-p org-contact vcard-contact))))
 
 (ert-deftest bergheim/test-export-sets-last-exported ()
   "Test that exporting contact sets LAST_EXPORTED property."
@@ -1463,14 +1463,14 @@ Don't delete this!
             (should-not (org-entry-get nil "LAST_EXPORTED"))
             
             ;; mocks
-            (cl-letf (((symbol-function 'bergheim/find-vcard-file-by-uid)
+            (cl-letf (((symbol-function 'bergheim/contactor--find-vcard-by-uid)
                        (lambda (dir uid) temp-file))
                       ((symbol-function 'yes-or-no-p)
                        (lambda (prompt) t)))
               
               ;; Export contact
               (goto-char (point-min))
-              (bergheim/export-contact-to-vcard)
+              (bergheim/contactor-export-at-point)
               
               ;; Verify LAST_EXPORTED is now set
               (goto-char (point-min))
@@ -1512,12 +1512,12 @@ Don't delete this!
             (insert ":END:\n")
             
             ;; Mock find-vcard-file
-            (cl-letf (((symbol-function 'bergheim/find-vcard-file-by-uid)
+            (cl-letf (((symbol-function 'bergheim/contactor--find-vcard-by-uid)
                        (lambda (dir uid) temp-file)))
               
               ;; Export contact
               (goto-char (point-min))
-              (bergheim/export-contact-to-vcard)
+              (bergheim/contactor-export-at-point)
               
               ;; Verify both timestamps are now set
               (goto-char (point-min))

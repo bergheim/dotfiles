@@ -426,14 +426,17 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     "Configure CAPFs for Org buffers."
     (when buffer-file-name
       (setq-local completion-at-point-functions
-                  (list #'tempel-complete
-                        #'cape-tex       ;; expands \
-                        #'org-block-capf ;; expands <
-                        #'cape-elisp-block
-                        (cape-capf-super #'cape-dabbrev
-                                         #'cape-dict
-                                         #'cape-keyword)
-                        #'cape-emoji))))   ;; expands :
+                  (append (when (and (boundp 'bergheim/contactor-file)
+                                     (file-exists-p bergheim/contactor-file))
+                            (list (cape-capf-trigger #'bergheim/contactor-completion-at-point ?@)))
+                          (list #'tempel-complete
+                                #'cape-tex       ;; expands \
+                                #'org-block-capf ;; expands <
+                                #'cape-elisp-block
+                                (cape-capf-super #'cape-dabbrev
+                                                 #'cape-dict
+                                                 #'cape-keyword)
+                                #'cape-emoji)))))   ;; expands :
 
   (add-hook 'org-mode-hook #'bergheim/org-mode-setup-corfu))
 

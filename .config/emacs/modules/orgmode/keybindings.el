@@ -70,10 +70,10 @@
 
   "op" '(:ignore t :which-key "people (contacts)")
   "opg" '(bergheim/goto-contact :which-key "goto")
-  "opb" '(bergheim/goto-contact-backlink :which-key "backlinks")
-  "opm" '(bergheim/contact-compose-mail :which-key "mail")
-  "opl" '(bergheim/insert-contact-link :which-key "link")
-  "opt" '(bergheim/contact-capture-todo :which-key "todo")
+  "opb" '(bergheim/contactor-goto-backlink :which-key "backlinks")
+  "opm" '(bergheim/contactor-compose-mail :which-key "mail")
+  "opl" '(bergheim/contactor-insert-link :which-key "link")
+  "opt" '(bergheim/contactor-capture-todo :which-key "todo")
 
   "oq" '(:ignore t :which-key "org-ql")
   "oqv" #'org-ql-view
