@@ -329,7 +329,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :bind ("C-c p" . cape-prefix-map)
   (:map corfu-map
    ("S-SPC" . corfu-insert-separator)
-   ("BACKTAB" . corfu-previous)
    ([backtab] . corfu-previous)
    ("S-TAB" . corfu-previous)
    ("TAB" . corfu-next)
