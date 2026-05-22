@@ -282,6 +282,37 @@ With \\[universal-argument], search all emails where I am a recipient"
                                           (reply-to-text . (text))))))
     (mu4e-compose-new)))
 
+(defun bergheim/mu4e--contact-email (contact)
+  "Return CONTACT's email address."
+  (plist-get contact :email))
+
+(defun bergheim/mu4e--format-contact (contact)
+  "Format CONTACT for use in a message recipient header."
+  (let ((name (plist-get contact :name))
+        (email (bergheim/mu4e--contact-email contact)))
+    (if (and name (not (string-empty-p name)))
+        (format "%s <%s>" name email)
+      email)))
+
+(defun bergheim/mu4e--sent-follow-up-recipient (msg)
+  "Return the first non-self To or Cc recipient from sent MSG."
+  (seq-find
+   (lambda (contact)
+     (let ((email (bergheim/mu4e--contact-email contact)))
+       (and email
+            (not (mu4e-personal-or-alternative-address-p email)))))
+   (append (mu4e-message-field msg :to)
+           (mu4e-message-field msg :cc))))
+
+(defun bergheim/mu4e-follow-up-sent-message ()
+  "Compose a follow-up to the original recipient of a sent message."
+  (interactive)
+  (let* ((msg (mu4e-message-at-point))
+         (recipient (bergheim/mu4e--sent-follow-up-recipient msg)))
+    (unless recipient
+      (user-error "No non-self recipient found"))
+    (mu4e-compose-reply-to (bergheim/mu4e--format-contact recipient))))
+
 (defun bergheim/mu4e-reply-email (arg)
   "Compose a reply to an email. Use universal argument to compose in only plain text mode."
   (interactive "P")
@@ -290,9 +321,11 @@ With \\[universal-argument], search all emails where I am a recipient"
                                           '((new           . (text))
                                             (reply-to-html . (text))
                                             (reply-to-text . (text)))
-                                        '((new           . (text html))
-                                          (reply-to-html . (text html))
-                                          (reply-to-text . (text))))))
-    (mu4e-compose-reply)))
+                                          '((new           . (text html))
+                                            (reply-to-html . (text html))
+                                            (reply-to-text . (text))))))
+    (if (mu4e-message-sent-by-me (mu4e-message-at-point))
+        (bergheim/mu4e-follow-up-sent-message)
+      (mu4e-compose-reply))))
 
 ;;; helpers.el ends here
