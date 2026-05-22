@@ -54,6 +54,12 @@
           (when (assoc-default "UID" contact)
             (push contact contacts)))))
     
+    ;; Safety: an empty vcard dir almost always means the sync failed or the
+    ;; path is wrong, NOT that you suddenly have zero contacts. Bail before we
+    ;; touch the org buffer or its metadata.
+    (when (null contacts)
+      (user-error "No vCards found in %s — aborting (sync may have failed)" vcard-dir))
+
     ;; Check for conflicts before updating
     (with-current-buffer (find-file-noselect contacts-file)
       (dolist (contact contacts)
@@ -111,7 +117,14 @@
         (save-buffer))
       
       (let ((timestamp (bergheim/timestamp-now-org))
-            (total-contacts (+ added updated)))
+            ;; Count the contacts actually present in the file, not just the
+            ;; ones touched this run — this is the baseline export-precheck
+            ;; uses to detect a suspicious drop, so it must reflect reality.
+            (total-contacts (let ((n 0))
+                              (org-map-entries
+                               (lambda () (when (org-entry-get nil "UID") (setq n (1+ n))))
+                               nil nil)
+                              n)))
         (bergheim/update-sync-metadata
          :last-synced timestamp
          :contact-count total-contacts)
@@ -137,6 +150,14 @@
 (defun bergheim/export-dirty-contacts ()
   "Export all contacts modified since last export/sync."
   (interactive)
+  ;; Safety net: refuse a bulk export if the file looks wrong (never synced,
+  ;; stale sync, or a suspicious drop in contact count). Can be overridden
+  ;; interactively, but defaults to aborting so we never silently nuke vCards.
+  (let ((check (bergheim/export-precheck)))
+    (unless (or (plist-get check :safe)
+                (yes-or-no-p (format "Export safety check failed: %s  Export anyway? "
+                                     (plist-get check :reason))))
+      (user-error "Export aborted: %s" (plist-get check :reason))))
   (let ((dirty (bergheim/find-dirty-contacts))
         (exported 0)
         (skipped 0))
@@ -711,7 +732,12 @@ Decides what goes to PROPERTIES vs VCARD."
     (save-excursion
       (bergheim/export-contact-to-vcard))))
 
-(add-hook 'after-save-hook 'bergheim/maybe-export-contact-on-save)
+(defun bergheim/contacts-setup-auto-export ()
+  (when (and buffer-file-name
+             (string= buffer-file-name bergheim/contacts-file))
+    (add-hook 'after-save-hook #'bergheim/maybe-export-contact-on-save nil t)))
+
+(add-hook 'org-mode-hook #'bergheim/contacts-setup-auto-export)
 
 (defun bergheim/git-commit-vcard-changes (name vcard-file)
   "Commit changes to VCARD-FILE if in a git repo and auto-commit is enabled."
