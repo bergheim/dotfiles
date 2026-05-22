@@ -163,10 +163,6 @@
          :query "maildir:/Trash/ OR flag:trashed"
          :key ?x)
 
-        (:name "Economy"
-         :query ,(concat "maildir:/Inbox/ AND contact:/.*" bergheim/mu4e/economy "$/")
-         :key ?e)
-
         (:name "Focus inbox"
          :query "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"
          :key ?I)
@@ -174,5 +170,9 @@
         (:name "Sent items"
          :query "maildir:/Sent/"
          :key ?S)))
+
+(when (boundp 'bergheim/private-mu4e-bookmarks)
+  (setq mu4e-bookmarks
+        (append mu4e-bookmarks bergheim/private-mu4e-bookmarks)))
 
 ;;; settings.el ends here
