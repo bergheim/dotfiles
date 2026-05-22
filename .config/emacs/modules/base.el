@@ -61,16 +61,18 @@
   :config
   (unless (display-graphic-p)
     (xterm-mouse-mode 1))
-  ;; (setq xterm-mouse-mode t) ;; allow mouse events in terminal
-
 
   (setq-default abbrev-mode t
                 indent-tabs-mode nil) ;; I have given up on tabs
   ;; (setq confirm-nonexistent-file-or-buffer nil)
+  ;; make sure we get as few prompts as possible ("really follow this to source etc")
   (setq confirm-kill-emacs nil)
   (setq shell-kill-buffer-on-exit t)  ; Already in your config
   (setq comint-kill-buffer-on-exit t) ; Add this too
   (setq compilation-always-kill t) ; never ask "a compilation process is running, ...."
+  (setq vc-follow-symlinks t
+        large-file-warning-threshold nil
+        confirm-kill-processes nil)
   (setq use-short-answers t
         ;; don't confirm to kill attached buffer processes
         kill-buffer-query-functions (remq 'process-kill-buffer-query-function
