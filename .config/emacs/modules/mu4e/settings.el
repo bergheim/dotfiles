@@ -5,6 +5,12 @@
              `(,(regexp-quote mu4e-main-buffer-name)
                display-buffer-same-window))
 
+(defun bergheim/mu4e-catchall-address-p (address)
+  "Return non-nil when ADDRESS belongs to a catch-all mail domain I control."
+  (and (stringp address)
+       (or (string-suffix-p bergheim/glvortex/domain address t)
+           (string-suffix-p bergheim/personal/domain address t))))
+
 (setq user-mail-address bergheim/email
       user-full-name  bergheim/name
       mu4e-compose-signature bergheim/signature
@@ -75,6 +81,8 @@
       ;; allow setting account through email header
       message-sendmail-extra-arguments '("--read-envelope-from")
       message-sendmail-f-is-evil t
+      message-alternative-emails #'bergheim/mu4e-catchall-address-p
+      message-dont-reply-to-names #'bergheim/mu4e-catchall-address-p
 
       ;; figure out the account to reply from based on addresses
       mu4e-context-policy 'pick-first
