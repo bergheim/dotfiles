@@ -82,6 +82,7 @@
              (evil-ret))))
   (:states 'insert
    :keymaps 'shell-mode-map
+   "RET" #'comint-send-input
    "C-r" (lambda ()
            (interactive)
            (let ((input (comint-get-old-input-default)))
