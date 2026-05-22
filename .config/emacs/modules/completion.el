@@ -3,7 +3,7 @@
 (defun bergheim/disable-pgtk-im (&rest _args)
   ;; this enables S-SPC again, at the expense of input methods
   ;; see https://lists.gnu.org/archive/html/bug-gnu-emacs/2021-07/msg00071.html
-  (when (fboundp 'pgtk-use-im-context)
+  (when (and (display-graphic-p) (fboundp 'pgtk-use-im-context))
     (pgtk-use-im-context nil)))
 
 (use-package emacs
