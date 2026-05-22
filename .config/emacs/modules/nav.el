@@ -4,7 +4,7 @@
   :demand t
   :after evil
   :custom
-  (avy-timeout-seconds 0.4)
+  (avy-timeout-seconds 0.8)
   ;; this is needed if we want to allow actions on single matches
   ;; (avy-single-candidate-jump nil)
   :config
@@ -16,7 +16,7 @@
   (general-define-key
    :states '(normal visual)
    "M-d" 'evil-avy-goto-char-timer
-   "g SPC" 'evil-avy-goto-char-timer
+   ;; "g SPC" 'evil-avy-goto-char-timer
    "gu" 'avy-resume)
   ;; FIXME: too broad; this messes up the surround operator, say ds(
   ;; (general-define-key
@@ -28,6 +28,20 @@
   ;; (evil-global-set-key 'normal "s" 'evil-avy-goto-char-2-below)
   ;; (evil-global-set-key 'normal "S" 'evil-avy-goto-char-2-above)
   )
+
+(use-package fussy-avy
+  :ensure (:host github :repo "bergheim/fussy-avy")
+  :demand
+  :config
+  (general-define-key
+   :states '(normal visual)
+   "g SPC" 'evil-fussy-avy-goto-char-timer)
+  (setq fussy-avy-max-distance 1)      ; Max edit distance to tolerate
+  (setq fussy-avy-min-input-length 3)  ; Min chars before fuzzy matching
+  ;; (setq fussy-avy-all-windows t)    ; Search all windows on frame
+  ;; (fussy-avy-max-forgiving)         ; Sets distance=4, min-length=2
+  )
+
 
 (defun bergheim/swap-window-with ()
   "Interactively choose which window to swap with current window."
