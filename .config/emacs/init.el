@@ -120,12 +120,8 @@
     (load private-file)))
 
 (setq custom-file (bergheim/get-and-ensure-data-dir "etc/" "custom.el"))
-(let ((legacy-custom-file (expand-file-name "custom.el" bergheim/config-dir)))
-  (cond
-   ((file-exists-p custom-file)
-    (load custom-file))
-   ((file-exists-p legacy-custom-file)
-    (load legacy-custom-file))))
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir))
       (modules
