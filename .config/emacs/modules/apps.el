@@ -460,3 +460,72 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
                 nil t)
           (push (match-string 1) nicks)))
       nicks)))
+
+(use-package keymap-popup
+  :ensure (keymap-popup :host github :repo "emacs-straight/keymap-popup"))
+
+(elpaca-defscript jabber-build-omemo (:type system :dir source)
+  ("make" "module"))
+
+(use-package jabber
+  :ensure (jabber
+           :host codeberg
+           :repo "emacs-jabber/emacs-jabber"
+           :files ("lisp/*.el" "lisp/*.so")
+           :build (:before elpaca-build-link jabber-build-omemo))
+
+  :commands (jabber-connect-all jabber-display-roster jabber-roster-popup
+                                jabber-muc-leave jabber-muc-names
+                                jabber-activity-switch-to jabber-chat-with-jid-at-point
+                                jabber-muc-set-topic jabber-vcard-get
+                                jabber-send-presence)
+  :general
+  (bergheim/global-menu-keys
+    "aj"  '(:ignore t :which-key "Jabber")
+    "ajc" '(jabber-connect-all :which-key "Connect")
+    "ajr" '(jabber-roster-popup :which-key "Roster")
+    "ajq" '(jabber-disconnect :which-key "Disconnect")
+    "ajx" '(jabber-muc-leave :which-key "Leave room")
+    "ajn" '(jabber-muc-names :which-key "Participants")
+    "aja" '(jabber-activity-switch-to :which-key "Next unread")
+    "ajp" '(jabber-chat-with-jid-at-point :which-key "Chat at point")
+    "ajt" '(jabber-muc-set-topic :which-key "Set room topic")
+    "ajv" '(jabber-vcard-get :which-key "View vCard")
+    "aju" '(jabber-send-presence :which-key "Update presence"))
+  :custom
+  (jabber-chat-default-encryption 'plaintext)
+  ;; Password is NOT here — jabber.el pulls it from auth-source.
+  ;; You already use password-store; either add an ~/.authinfo(.gpg)
+  ;; line  `machine xmpp.glvortex.net login tsb password …`  or enable
+  ;; auth-source-pass so it reads your pass store.
+  (jabber-account-list
+   `(("tsb@xmpp.glvortex.net"
+      (:password . ,(password-store-get "apps/ejabberd/tsb"))
+      (:network-server . ,bergheim/irc-server)
+      (:port . 5222)
+      (:connection-type . starttls))))
+  (jabber-history-enabled t)
+  (jabber-use-global-history nil)
+  (jabber-db-path (bergheim/get-and-ensure-data-dir "jabber" "jabber.db"))
+  (jabber-history-dir (expand-file-name "jabber-history" bergheim/cache-dir))
+  (jabber-avatar-cache-directory (bergheim/get-and-ensure-data-dir "jabber/avatars"))
+  (jabber-auto-reconnect t)
+  (jabber-show-resources nil)
+  (jabber-roster-show-title nil)
+  (jabber-vcard-avatars-retrieve nil)
+  (jabber-alert-presence-hooks nil)
+  (jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll)))
+
+(use-package jabber-extra
+  :ensure nil
+  :load-path (lambda () (expand-file-name "modules" bergheim/config-dir))
+  :commands (bergheim/jabber-switch
+             bergheim/jabber-chat-with
+             bergheim/jabber-join
+             bergheim/jabber-discover-conferences)
+  :general
+  (bergheim/global-menu-keys
+    "ajj" '(bergheim/jabber-switch :which-key "Switch (all)")
+    "ajc" '(bergheim/jabber-chat-with :which-key "Chat with...")
+    "ajg" '(bergheim/jabber-join :which-key "Join room")
+    "ajd" '(bergheim/jabber-discover-conferences :which-key "Discover conferences")))
