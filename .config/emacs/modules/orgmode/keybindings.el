@@ -4,7 +4,6 @@
 
 (bergheim/global-menu-keys
   "C" '(org-capture :which-key "capture")
-  "k" '(org-capture :which-key "capture")
   "x" '(org-capture :which-key "capture")
 
   "o" '(:ignore t :which-key "Org Mode")

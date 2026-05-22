@@ -7,7 +7,7 @@
   (when (org-at-heading-p)
     (org-set-property "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))))
 
-(advice-add 'evil-org-org-insert-todo-heading-respect-content-below 
+(advice-add 'evil-org-org-insert-todo-heading-respect-content-below
             :after #'bergheim/add-created-property)
 
 ;; TODO: should this be interactive? if so, rename
@@ -122,59 +122,6 @@
 (defun bergheim/vertico--without-sorting (fn &rest args)
   (let ((vertico-sort-function nil))
     (apply fn args)))
-
-;; nicked from doom again!
-
-;;;###autoload
-(defvar +org-capture-frame-parameters
-  `((name . "org-capture")
-    (width . 70)
-    (height . 25)
-    (transient . t)
-    ,@(when IS-LINUX
-        `((window-system . ,(if (boundp 'pgtk-initialized) 'pgtk 'x))
-          (display . ,(or (getenv "WAYLAND_DISPLAY")
-                          (getenv "DISPLAY")
-                          ":0"))))
-    ,(if IS-MAC '(menu-bar-lines . 1)))
-  "TODO")
-
-;;;###autoload
-(defun +org-capture-frame-p (&rest _)
-  "Return t if the current frame is an org-capture frame opened by
-`+org-capture/open-frame'."
-  (and (equal (alist-get 'name +org-capture-frame-parameters)
-              (frame-parameter nil 'name))
-       (frame-parameter nil 'transient)))
-
-;;;###autoload
-(defun +org-capture/open-frame (&optional initial-input key)
-  "Opens the org-capture window in a floating frame that cleans itself up once
-you're done. This can be called from an external shell script."
-  (interactive)
-  (when (and initial-input (string-empty-p initial-input))
-    (setq initial-input nil))
-  (when (and key (string-empty-p key))
-    (setq key nil))
-  (let* ((frame-title-format "")
-         (frame (if (+org-capture-frame-p)
-                    (selected-frame)
-                  (make-frame +org-capture-frame-parameters))))
-    (select-frame-set-input-focus frame)  ; fix MacOS not focusing new frames
-    (with-selected-frame frame
-      (require 'org-capture)
-      (condition-case ex
-          (letf! ((#'pop-to-buffer #'switch-to-buffer))
-                 (switch-to-buffer (doom-fallback-buffer))
-                 (let ((org-capture-initial initial-input)
-                       org-capture-entry)
-                   (when (and key (not (string-empty-p key)))
-                     (setq org-capture-entry (org-capture-select-template key)))
-                   (funcall +org-capture-fn)))
-        ('error
-         (message "org-capture: %s" (error-message-string ex))
-         (delete-frame frame))))))
-
 
 (defun bergheim/org-archive-all-done-and-cancelled-tasks ()
   "Archive all DONE and CANCELLED tasks in the current buffer."

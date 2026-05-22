@@ -29,12 +29,18 @@
   (setq org-capture-custom-template-directory (expand-file-name "templates/capture/" user-emacs-directory)
         +org-capture-contacts-file (expand-file-name "contacts.org" org-directory)
         +org-capture-habits-file (expand-file-name "habits.org" org-directory)
+        +org-capture-projects-file (expand-file-name "projects/projects.org" org-directory)
         +org-capture-mail-followup-file (expand-file-name "email/followup.org" org-directory)
         +org-capture-mail-later-file (expand-file-name "email/later.org" org-directory)
         +org-capture-personal-file (concat org-directory "personal.org")
+        ;; TODO this is not used - check laptop
         +org-capture-review-file (expand-file-name "review.org" org-directory)
-        +org-capture-protocol-file (expand-file-name "inbox.org" org-directory)
+        +org-capture-protocol-file (expand-file-name "protocol.org" org-directory)
         +org-capture-quotes-file (expand-file-name "quotes.org" org-directory)
+        +org-capture-review-daily-file (expand-file-name "review/daily.org" org-directory)
+        +org-capture-review-weekly-file (expand-file-name "review/weekly.org" org-directory)
+        +org-capture-review-monthly-file (expand-file-name "review/monthly.org" org-directory)
+        +org-capture-review-yearly-file (expand-file-name "review/yearly.org" org-directory)
         +org-capture-work-file (concat org-directory "work.org")
         +org-capture-work-meeting (concat org-directory "roam/work/meetings.org")
         org-capture-templates
@@ -131,6 +137,16 @@
                              :headline "Meetings"
                              :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
+                ("Project" :keys "P"
+                 :icon ("nf-md-email" :set "mdicon" :color "green")
+                 :type entry
+                 ;; :headline "Projec"
+                 :file +org-capture-projects-file
+                 :clock-in t
+                 :jump-to-captured t
+                 :default-tags "project"
+                 :template-file ,(expand-file-name "project.org" org-capture-custom-template-directory))
+
                 ("Capture to clocked in task" :keys "c"
                  :icon ("nf-md-email" :set "mdicon" :color "green")
                  :type entry
@@ -161,7 +177,6 @@
                  :type entry
                  :clock-in t
                  :clock-keep t
-                 :file +org-capture-review-file
                  :jump-to-captured t
                  :default-tags "review"
                  :children (("Daily review"
@@ -257,7 +272,7 @@
                  :icon ("nf-oct-stop" :set "octicon" :color "red")
                  :type entry
                  :prepend nil
-                 :headline "Protocol"
+                 ;; :headline "Protocol"
                  :file +org-capture-protocol-file
                  :immediate-finish t
                  :template-file ,(expand-file-name "protocol-capture.org" org-capture-custom-template-directory))
@@ -343,5 +358,58 @@
   (org-download-enable))
 ;; Adding links quickly
 (use-package org-cliplink)
+
+;; nicked from doom again!
+;;;###autoload
+(defvar +org-capture-frame-parameters
+  `((name . "org-capture")
+    (width . 70)
+    (height . 25)
+    (transient . t)
+    ,@(when IS-LINUX
+        `((window-system . ,(if (boundp 'pgtk-initialized) 'pgtk 'x))
+          (display . ,(or (getenv "WAYLAND_DISPLAY")
+                          (getenv "DISPLAY")
+                          ":0"))))
+    ,(if IS-MAC '(menu-bar-lines . 1)))
+  "TODO")
+
+;;;###autoload
+(defun +org-capture-frame-p (&rest _)
+  "Return t if the current frame is an org-capture frame opened by
+`+org-capture/open-frame'."
+  (and (equal (alist-get 'name +org-capture-frame-parameters)
+              (frame-parameter nil 'name))
+       (frame-parameter nil 'transient)))
+
+;;;###autoload
+(defun +org-capture/open-frame (&optional initial-input key)
+  "Opens the org-capture window in a floating frame that cleans itself up once
+you're done. This can be called from an external shell script."
+  (interactive)
+  (when (and initial-input (string-empty-p initial-input))
+    (setq initial-input nil))
+  (when (and key (string-empty-p key))
+    (setq key nil))
+  (let* ((frame-title-format "")
+         (frame (if (+org-capture-frame-p)
+                    (selected-frame)
+                  (make-frame +org-capture-frame-parameters))))
+    (select-frame-set-input-focus frame)  ; fix MacOS not focusing new frames
+    (with-selected-frame frame
+      (require 'org-capture)
+      (condition-case ex
+          (letf! ((#'pop-to-buffer #'switch-to-buffer))
+                 (switch-to-buffer (doom-fallback-buffer))
+                 (let ((org-capture-initial initial-input)
+                       org-capture-entry)
+                   (when (and key (not (string-empty-p key)))
+                     (setq org-capture-entry (org-capture-select-template key)))
+                   (funcall +org-capture-fn)))
+        ('error
+         (message "org-capture: %s" (error-message-string ex))
+         (delete-frame frame))))))
+
+
 
 ;;; capture.el ends here

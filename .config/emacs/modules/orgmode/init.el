@@ -184,12 +184,12 @@
    "]" #'calfw-navi-next-view
    "A" #'calfw-org-open-agenda-day
    "C" #'calfw-org-capture
-   "U" #'(lambda ()
-           (interactive)
-           (org-caldav-sync)
-           (calfw-refresh-calendar-buffer))
    "q" #'calfw-org-clean-exit
    "gr" #'calfw-refresh-calendar-buffer
+   "gR" #'(lambda ()
+            (interactive)
+            (org-caldav-sync)
+            (calfw-refresh-calendar-buffer))
    "T" #'calfw-navi-goto-today-command
    "gt" #'calfw-navi-goto-today-command
    "d" #'calfw-change-view-day
@@ -213,10 +213,14 @@
 (use-package org-clock
   :ensure nil
   :after org
+  :custom
+  ;; displayed in the WM bar
+  (org-clock-clocked-in-display nil)
   :commands (org-clock-drawer-name))
 
 (use-package org-mru-clock
   :after org
+  :demand
   :init
   (setq org-mru-clock-files #'org-agenda-files
         org-mru-clock-how-many 100))
@@ -389,5 +393,12 @@ With universal arg ARG, search all .org files under `org-directory`."
    "M-n" 'org-noter-sync-next-note
    "M-." 'org-noter-sync-current-note
    "q" 'org-noter-kill-session))
+
+(use-package ox-extra
+  :ensure nil
+  :after org
+  ;; :demand
+  :config
+  (ox-extras-activate '( ignore-headlines)))
 
 ;;; org.el ends here

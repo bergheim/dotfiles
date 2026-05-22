@@ -30,7 +30,13 @@
 
   (setq org-agenda-custom-commands
         '(("d" "Dashboard for today"
-           ((agenda "" ((org-agenda-overriding-header "Dashboard")
+           (
+            ;; (todo "INPROGRESS"
+            ;;       ((org-agenda-overriding-header "Currently working on 🧑‍🏭")
+            ;;        (org-agenda-sorting-strategy '(priority-down))
+            ;;        (org-super-agenda-groups nil)))
+
+            (agenda "" ((org-agenda-overriding-header "Dashboard")
                         (org-agenda-span 'day)
                         ;; (org-agenda-current-span 'day)
                         (org-agenda-start-day (org-today))
@@ -40,24 +46,37 @@
                         ;; (org-agenda-show-log nil)
                         (org-super-agenda-groups
                          '((:name "Happy birthday 🎂"
-                            :property "BIRTHDAY"
+                            :and (:not (:time-grid t)  ; Exclude time-grid items first
+                                  :property "BIRTHDAY")
                             :order 2)
+
                            (:name "Keep your habits up 🔥"
                             :habit t
                             :order 3)
 
-                           (:name "Currently working on 🧑‍🏭"
-                            :todo "INPROGRESS"
-                            :order 2)
-
-                           (:name "Logged 📑" :log t :order 15)
+                           ;; (:name "Logged 📑" :log t :order 15)
 
                            (:discard (:todo "SOMEDAY"))
                            ;; (:name "Done today" :discard (:log t))
+                           (:discard (:todo "INPROGRESS"))  ; I want to see all INPROGRESS
 
                            (:name "This is how your day looks 🌞"
                             :time-grid t
                             :order 1)
+
+                           ;; (:name "Stuck Projects"
+                           ;;  :tag "project"
+                           ;;  :and (:todo "STUCK")
+                           ;;  :order 1)
+
+                           ;; (:name "Projects with TODOs"
+                           ;;  :tag "project"
+                           ;;  :children todo
+                           ;;  :order 1)
+
+                           (:name "Currently working on 🧑‍🏭"
+                            :todo "INPROGRESS"
+                            :order 2)
 
                            (:name "Waiting.. 😴"
                             :todo "WAITING"
@@ -89,7 +108,7 @@
                             :order 5)
                            ))))))
 
-          ("W" "Dashboard for the week"
+          ("W" "Log for last Week"
            ((agenda "" ((org-agenda-overriding-header "Dashboard")
                         (org-agenda-span 'week)
                         ;; (org-agenda-current-span 'day)
@@ -99,6 +118,12 @@
                         (org-super-agenda-groups
                          '((:time-grid t
                             :order 1)
+
+                           ;; FIXME: THIS WORKS HERE WAT
+                           ;; (:name "Keep your habits up 🔥"
+                           ;;  :habit t
+                           ;;  :order 3)
+
                            (:discard (:anything t))))))))
 
           ("w" "Work related tasks"
@@ -129,9 +154,30 @@
           ("i" "In progress" tags-todo "TODO=\"INPROGRESS\"")
           ("l" "Low effort tasks" tags-todo "EFFORT>=\"0:01\"&EFFORT<=\"0:15\"")
 
-          ("p" "Projects" tags "+project-someday-TODO=\"DONE\"-TODO=\"SOMEDAY\""
-           ((org-tags-exclude-from-inheritance '("project"))
-            (org-agenda-sorting-strategy '(priority-down tag-up category-keep effort-down))))
+          ("p" "Projects"
+           ((org-ql-block '(and (tags "project")
+                                (not (tags "someday"))
+                                (not (todo "DONE"))
+                                (not (todo "CANCELLED"))
+                                (not (ancestors (tags "project"))))
+                          ((org-ql-block-header "Projects")))))
+
+          ("S" "Stuck projects"
+           ((org-ql-block '(and (tags "project")
+                                (not (done))
+                                (not (ancestors (tags "project")))
+                                (not (descendants (todo "NEXT")))
+                                (not (descendants (scheduled))))
+                          ((org-ql-block-header "Stuck Projects")))))
+
+          ("P" "Projects Overview"
+           ((org-ql-block '(tags "project")
+                          ((org-ql-block-header "Projects Overview")
+                           (org-super-agenda-groups
+                            '((:auto-parent t
+                               :children t
+                               :name "Projects")))
+                           ))))
 
           ("O" "Timeline for today" ((agenda "" ))
            ((org-agenda-ndays 1)
@@ -219,21 +265,26 @@
                     ))))))
 
 (use-package org-super-agenda
+  :ensure (:host github :repo "alphapapa/org-super-agenda")
+  :demand
   :after org
-  :commands (bergheim/org-super-agenda)
+  ;; :commands (bergheim/org-super-agenda)
   :config
-  (defun bergheim/org-super-agenda (&rest args)
-    (interactive)
-    (apply #'org-agenda args))
-  ;; don't break evil on org-super-agenda headings, see
-  ;; https://github.com/alphapapa/org-super-agenda/issues/50
+  ;; (setq org-agenda-include-diary nil)
+  ;; (setq org-agenda-use-time-grid nil)
   (setq org-super-agenda-header-map (make-sparse-keymap))
   (org-super-agenda-mode 1)
+  (defun bergheim/org-super-agenda (&rest args)
+    (interactive)
+    ;; (setq org-agenda-include-diary nil)
+    (apply #'org-agenda args))
+  ;;   ;; don't break evil on org-super-agenda headings, see
+  ;;   ;; https://github.com/alphapapa/org-super-agenda/issues/50
 
   (org-super-agenda--def-auto-group
     bergheim/clocked-or-created
     "Group items based on the latest CLOCK or CREATED timestamp in the entry.
-The date is formatted according to `org-super-agenda-date-format'."
+  The date is formatted according to `org-super-agenda-date-format'."
     ;; :keyword :auto-
     :key-form
     (cl-labels ((latest-ts-up-to
@@ -245,7 +296,7 @@ The date is formatted according to `org-super-agenda-date-format'."
                    (-sort #'ts>)
                    car)))
       (org-super-agenda--when-with-marker-buffer
-        (org-super-agenda--get-marker item)
+          (org-super-agenda--get-marker item)
         (let* ((created (when (org-entry-get (point) "CREATED")
                           (ts-parse-org (org-entry-get (point) "CREATED"))))
                (clocked (let ((drawer-name (org-clock-drawer-name))
@@ -264,7 +315,8 @@ The date is formatted according to `org-super-agenda-date-format'."
                         'org-super-agenda-ts latest-ts)))))
     :key-sort-fn (lambda (a b)
                    (ts> (get-text-property 0 'org-super-agenda-ts a)
-                        (get-text-property 0 'org-super-agenda-ts b)))))
+                        (get-text-property 0 'org-super-agenda-ts b))))
+  )
 
 ;; TODO: verify this works (from https://github.com/unhammer/org-mru-clock/)
 ;; (add-hook 'minibuffer-setup-hook #'org-mru-clock-embark-minibuffer-hook)

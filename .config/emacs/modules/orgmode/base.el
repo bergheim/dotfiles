@@ -1,4 +1,4 @@
-;;; settings.el --- Description -*- lexical-binding: t; -*-
+;;; base.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
@@ -69,7 +69,7 @@
                            (org-agenda-files :maxlevel . 4))
 
       ;; include the file in the refile search
-      org-refile-use-outline-path 'file
+      org-refile-use-outline-path 'full-file-path
       org-outline-path-complete-in-steps nil
 
       ;; org-agenda-compact-blocks nil ;; don't compact the agenda
@@ -88,6 +88,8 @@
       ;; (quote (:link t :maxlevel 5 :fileskip0 t :compact t :narrow 80))
 
       org-habit-graph-column 60
+
+      ;; org-use-speed-commands t
 
       ;; include tags from all agenda files
       org-complete-tags-always-offer-all-agenda-tags t
