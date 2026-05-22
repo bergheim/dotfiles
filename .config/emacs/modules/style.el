@@ -19,8 +19,8 @@
 ;;
 ;;; Code:
 
-(defvar bergheim/theme-light 'modus-operandi)
-(defvar bergheim/theme-dark 'modus-vivendi)
+(defvar bergheim/theme-light 'ef-cyprus)
+(defvar bergheim/theme-dark 'ef-deuteranopia-dark)
 
 (defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
 (defvar bergheim/display 'medium)
@@ -64,9 +64,9 @@
       (dolist (preset presets)
         (let ((plist (cdr preset)))
           (dolist (field font-fields)
-            (when-let ((font (and (plist-member plist field)
-                                  (stringp (plist-get plist field))
-                                  (plist-get plist field))))
+            (when-let* ((font (and (plist-member plist field)
+                                   (stringp (plist-get plist field))
+                                   (plist-get plist field))))
               (push font fonts)))))
 
       ;; Remove duplicates and check availability
@@ -115,7 +115,6 @@
              ;; apparently Fontaine does not support multiple generations :p
              ;; :inherit large
              :default-height ,(round (* 100 bergheim/font-base))
-             :default-height 200
              :line-spacing 0.2)
 
             (prog/commit
@@ -203,7 +202,6 @@
              :inherit prog/base
              :default-family "Aporetic Sans Mono"
              :fixed-pitch-family "Aporetic Sans Mono"
-             :variable-pitch-family "Aporetic Sans"
              :variable-pitch-family "Aporetic Serif")
             (prog/inconsolata
              :inherit prog/base
@@ -298,14 +296,21 @@
                   (bergheim/set-font-size-based-on-frame-resolution)
                   (bergheim/generate-fontaine-presets)
 
-                  ))
+                  (fontaine-mode)
+                  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))))
     (bergheim/check-available-fonts fontaine-presets)
     (bergheim/set-font-size-based-on-frame-resolution)
-    (bergheim/generate-fontaine-presets)))
+    (bergheim/generate-fontaine-presets)
+
+    (fontaine-mode)
+    (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))))
 
 (defun bergheim//system-dark-mode-enabled-p ()
-  "Check if system dark mode is enabled."
-  (string= (string-trim (shell-command-to-string "gsettings get org.gnome.desktop.interface color-scheme")) "'prefer-dark'"))
+  "Check if system dark mode is enabled.
+Defaults to dark when gsettings is unavailable."
+  (let ((result (string-trim (shell-command-to-string
+                              "gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null"))))
+    (not (string= result "'prefer-light'"))))
 
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
@@ -414,7 +419,8 @@
   ;; apparently `file-name' is faster than `auto'
   ;; see https://github.com/seagle0128/doom-modeline#customize
   (setq doom-modeline-buffer-file-name-style 'file-name)
-  (setq doom-modeline-buffer-encoding nil)
+
+  (setq doom-modeline-display-misc-in-all-mode-lines nil)
 
   (setq doom-modeline-irc nil)
   (setq doom-modeline-mu4e nil)
@@ -517,8 +523,6 @@
         mouse-wheel-progressive-speed nil            ;; don't accelerate scrolling
         mouse-wheel-follow-mouse 't)                 ;; scroll window under mouse
 
-  (setq xterm-mouse-mode t) ;; allow mouse events in terminal
-
   (setq tab-bar-show t
         tab-bar-auto-width-min '(100 10)
         tab-bar-auto-width-max '(300 30)
@@ -536,7 +540,6 @@
   ;; (tab-bar-mode 1)
   (tab-bar-history-mode 1)
   (blink-cursor-mode -1)           ; Steady cursor
-  (pixel-scroll-precision-mode)    ; Smooth scrolling
   (show-paren-mode 1)              ;; Visualize matching parens
   (pixel-scroll-precision-mode 1)) ;; Enable smooth pixel scrolling
 
@@ -669,9 +672,10 @@
   (setq dashboard-items '(
                           ;; this will FUBAR your session if something is TRAMPed
                           ;; see https://github.com/emacs-dashboard/emacs-dashboard/issues/408
-                          (recents  . 5)
-                          (bookmarks . 5)
-                          (projects . 5)))
+                          ;; (recents  . 5)
+                          ;; (bookmarks . 5)
+                          ;; (projects . 5)
+                          ))
   (setq dashboard-banner-logo-title "NeoDOOM")
   (setq dashboard-startup-banner 'logo)
 
@@ -715,7 +719,7 @@
   (dashboard-setup-startup-hook))
 
 
-(defun bergheim/dired-set-as-wallpaper (darkmode)
+(defun bergheim/dired-set-as-wallpaper ()
   "Sets FILE to the current wallpaper"
   (interactive "P")
 
