@@ -184,6 +184,18 @@ derived from `dired-mode'."
                  ;;            (string-match "issue" (org-entry-get (point) "CUSTOM_ID"))))
                  :super-groups '((:auto-ts t)))))
 
+(defun bergheim/org-view-previous-review ()
+  "Open the previous review in `other-window'."
+  (interactive)
+  (save-excursion
+    (let ((parent (org-get-entry)))
+      (while (and parent (not (member "review" (org-get-local-tags))))
+        (setq parent (org-up-heading-safe)))
+      (when parent
+        (org-backward-heading-same-level 1)
+        (org-tree-to-indirect-buffer)
+        (other-window 1)))))
+
 (defun bergheim/org-agenda-work-items ()
   (interactive)
   (org-ql-search (org-agenda-files)

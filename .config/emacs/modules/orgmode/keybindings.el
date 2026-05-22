@@ -24,6 +24,7 @@
   "orr" '(bergheim/org-agenda-recent-changes :which-key "this week")
   "orw" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@work" "work" "neptune"))) :which-key "work")
   "orp" '((lambda () (interactive) (bergheim/org-agenda-recent-changes '("@life" "life"))) :which-key "private")
+  "orv" '(bergheim/org-view-previous-review :which-key "previous review")
   "orm" '((lambda () (interactive) (org-ql-view-recent-items :num-days 31 :type 'clocked)) :which-key "Last month")
 
   "on" '(bergheim/org-add-note-to-clocked-task :which-key "add note for...")
