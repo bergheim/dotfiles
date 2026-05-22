@@ -222,6 +222,13 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
     ("q" quit-window "quit" :color blue)))
 
 ;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
+;; see http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs/
+;; (use-package keyfreq
+;;   :config
+;;   (keyfreq-mode 1)
+;;   (keyfreq-autosave-mode 1)
+;;   )
+
 (use-package erc
   :ensure t
   :after consult
