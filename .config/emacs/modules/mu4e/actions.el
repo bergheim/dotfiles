@@ -27,7 +27,7 @@
                       (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
 (defun bergheim/mu4e-refile-as-spam (_msg)
-    (mu4e--in-headers-context (mu4e-headers-mark-for-spam)))
+  (mu4e--in-headers-context (mu4e-headers-mark-for-spam)))
 
 (defun bergheim/mu4e-refile-mail (msg)
   (let* ((maildir (mu4e-message-field msg :maildir))

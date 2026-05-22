@@ -219,12 +219,12 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
   (interactive)
   (cond
+   ((fboundp 'beframe-switch-buffer)
+    (call-interactively 'beframe-switch-buffer))
    ((project-current)
     (consult-project-buffer))
    ((and (fboundp 'activities-switch-buffer) (activities-current))
     (call-interactively 'activities-switch-buffer))
-   ((fboundp 'beframe-switch-buffer)
-    (call-interactively 'beframe-switch-buffer))
    (t
     (consult-buffer))))
 
@@ -270,6 +270,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
                                      (jinx-languages (vertico-sort-function . bergheim/jinx-language-sort))
                                      (mu4e-headers-action grid)
                                      (mu4e-view-action grid)
+                                     (consult-recent-file (vertico-sort-function . nil))
+
                                      ;; (execute-extended-command buffer)
                                      ;; (t posframe)
                                      )
