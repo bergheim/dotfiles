@@ -145,6 +145,22 @@
                                ("CANCELLED"  . (:foreground "LimeGreen" :weight bold))
                                ("OBSOLETE"   . (:foreground "LimeGreen" :weight bold))))
 
+;; Tags
+(setq org-tag-persistent-alist
+      '(("@work" . ?w)
+        ("@life" . ?l)
+        ("project" . ?p)
+        ("review" . ?r)
+        ("meeting" . ?m)
+        ("email" . ?e)
+        ("emacs" . ?E)))
+
+;; Tag colors
+(setq org-tag-faces
+      '(("@work" . (:foreground "royalblue1" :weight bold))
+        ("@life" . (:foreground "yellow1" :weight bold))))
+
+
 (org-clock-persistence-insinuate)
 
 (add-to-list 'org-modules 'org-habit)
