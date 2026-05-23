@@ -16,15 +16,15 @@ super + Return
 
 # terminal emulator
 super + shift + Return
-  ldpi alacritty
+  ldpi ghostty
 
 # vifm file manager
 super + ctrl + Return
   alacritty -e vifmrun
 
 # dolphin file manager
-super + d
-  dolphin
+# super + d
+#   dolphin
 
 # emacs: edit whatever
 super + z
