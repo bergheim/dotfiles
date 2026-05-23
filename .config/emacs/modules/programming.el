@@ -65,11 +65,82 @@
   :hook (prog-mode . hs-minor-mode))
 
 (use-package smartparens
-  :ensure t
+  :demand
+  ;; :disabled
   :config
-  (smartparens-global-mode t))
+  (smartparens-global-mode t)
+  (show-smartparens-global-mode t)
+  (smartparens-strict-mode t)
+  ;; (smartparens-global-mode t)
+  ;; (require 'smartparens-config)
+  ;; (general-define-key
+  ;;  :states 'normal
+  ;;  :keymaps 'smartparens-mode-map
+  ;;  "H" 'sp-backward-sexp
+  ;;  "L" 'sp-forward-sexp
+  ;;  "K" 'sp-backward-up-sexp
+  ;;  "J" 'sp-down-sexp
+  ;;  "C-M-l" 'sp-forward-slurp-sexp
+  ;;  "C-M-h" 'sp-backward-barf-sexp
+  ;;  "C-M-j" 'sp-forward-barf-sexp
+  ;;  "C-M-k" 'sp-backward-slurp-sexp)
+
+  ;; Prefer sp-comment in lisp-y buffers (respects sexps); fall back to
+  ;; evil-commentary elsewhere. Currently defined but unbound — uncomment
+  ;; the binding below (or rebind gcc) to actually use it.
+  (defun bergheim/conditional-comment ()
+    (interactive)
+    (if (and (bound-and-true-p smartparens-mode)
+             (fboundp 'sp-comment))
+        (call-interactively 'sp-comment)
+      (call-interactively 'evil-commentary)))
+  ;; (general-define-key
+  ;;  :states 'normal
+  ;;  :keymaps 'evil-commentary-mode-map
+  ;;  "gcc" #'bergheim/conditional-comment)
+  )
+
+(use-package evil-smartparens
+  :after smartparens
+  ;; :config
+  ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
+  :hook (emacs-lisp-mode . evil-smartparens-mode))
+
+;; Modal structural editing for sexps that fits evil's mindset:
+;; `symex-mode-interface' enters a transient state where h/j/k/l traverse
+;; sexps, ( / ) slurp/barf, x deletes, c changes, etc. — whole-sexp objects,
+;; evil-style keys. See https://countvajhula.github.io/symex.el/
+(use-package symex
+  :disabled
+  :ensure t
+  :after (evil general)
+  :custom
+  (symex-modal-backend 'evil)
+  :general
+  ;; Enter symex on demand via the leader — adjust prefix to taste.
+  ;; "ms" reads as modal-structural; move it under your "l"isp prefix etc.
+  ;; if you have one.
+  (bergheim/global-menu-keys
+    "ms" '(symex-mode-interface :which-key "symex"))
+  :hook ((emacs-lisp-mode lisp-mode lisp-interaction-mode
+                          scheme-mode clojure-mode racket-mode)
+         . symex-mode)
+  :config
+  ;; Two soft conflicts to be aware of when you actually enable symex:
+  ;;
+  ;; 1) evil-snipe-override-mode owns s/S globally. If you want `s' in lisp
+  ;;    buffers to enter symex (most ergonomic), turn snipe-override off
+  ;;    locally there — e.g.:
+  ;;    (add-hook 'emacs-lisp-mode-hook
+  ;;              (lambda () (turn-off-evil-snipe-override-mode)))
+  ;;
+  ;; 2) evil-smartparens (above) is a different structural paradigm; if you
+  ;;    commit to symex, consider dropping the evil-smartparens hook for the
+  ;;    same modes so the two don't tug at the same keys.
+  )
 
 (use-package paredit
+  :disabled
   :after general
   :hook (emacs-lisp-mode . (lambda ()
                              (setq-local evil-move-beyond-eol t)
