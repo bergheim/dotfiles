@@ -143,15 +143,16 @@
          "utils"
          "workspace"
          "shells"
+		 "orgmode/init"
+         "bergheim-denote"
+         "agent-helpers"
          )))
 
   (unless bergheim/container-mode-p
     (setq modules (append modules
-                          '("orgmode/init"
-                            "karakeep"
-                            "bergheim-denote"
-                            "mu4e/init"
-                            "apps"))))
+                          '( "karakeep"
+                             "mu4e/init"
+                             "apps"))))
   (dolist (file modules)
     (load-file (expand-file-name (format "%s.el" file) module-dir))))
 
