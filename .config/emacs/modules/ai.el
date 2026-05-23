@@ -472,49 +472,26 @@ Prompts for session name if none provided. Inserts selected region text into cha
    :keymaps 'agent-shell-mode-map
    :states '(normal insert visual motion emacs)
    "M-RET" 'comint-send-input)
-  (bergheim/localleader-keys
-    :keymaps 'agent-shell-mode-map
-    :states '(normal motion)
-    "d" '(shell-maker-delete-interaction-at-point :wk "delete interaction")
-    "b" '(bergheim/agent-shell-switch-buffer :wk "switch buffers")
-    "B" '(agent-shell-other-buffer :wk "other buffer")
-    "f" '(agent-shell-fork :wk "fork session")
-    "m" '(agent-shell-set-session-model :wk "model")
-    "M" '(agent-shell-set-session-mode :wk "mode")
-    "r" '(agent-shell-rename-buffer :wk "rename")
-    "h" '(agent-shell-search-history :wk "history")
-    "c" '(agent-shell-prompt-compose :wk "compose")
-    "x" '(agent-shell-restart :wk "restart")
-    "l" '(agent-shell-view-acp-logs :wk "view logs")
-    "t" '(agent-shell-open-transcript :wk "transcript"))
   (bergheim/global-menu-keys
-    "o"  '(:ignore t :wk "agent-shell")
-    "oo" '(agent-shell :wk "shell")
-    "on" '(agent-shell-new-shell :wk "new shell")
-    "ot" '(agent-shell-toggle :wk "toggle")
-    "ow" '(agent-shell-new-worktree-shell :wk "new worktree")
-
-    ;; context
-    "of" '(agent-shell-send-current-file :wk "send file")
-    "oi" '(agent-shell-insert-file :wk "insert file")
-    "oF" '(agent-shell-fork :wk "fork session")
-    "or" '(agent-shell-send-region :wk "send region")
-    "oa" '(agent-shell-send-dwim :wk "send dwim")
-    "os" '(agent-shell-send-screenshot :wk "send screenshot")
-    "o!" '(agent-shell-insert-shell-command-output :wk "shell output")
-
-    ;; compose & history
-    "oc" '(agent-shell-prompt-compose :wk "compose")
-    "oh" '(agent-shell-search-history :wk "history")
-
-    ;; session
-    "om" '(agent-shell-set-session-model :wk "model")
-    "oM" '(agent-shell-set-session-mode :wk "mode")
-    "ob" '(agent-shell-other-buffer :wk "other buffer")
-    "oR" '(agent-shell-rename-buffer :wk "rename")
-    "oX" '(agent-shell-restart :wk "restart")
-    "oL" '(agent-shell-view-acp-logs :wk "view logs")
-    "oT" '(agent-shell-open-transcript :wk "transcript"))
+    "k"  '(:ignore t :wk "agent-shell")
+    ;; shells
+    "kk" '(bergheim/agent-shell-switch-buffer :wk "switch/new shell")
+    "kn" '(agent-shell-new-shell :wk "new shell")
+    "kw" '(agent-shell-new-worktree-shell :wk "new worktree")
+    "kt" '(agent-shell-toggle :wk "toggle")
+    "kb" '(agent-shell-other-buffer :wk "other buffer")
+    "kF" '(agent-shell-fork :wk "fork session")
+    ;; send
+    "kf" '(agent-shell-send-file :wk "send file")
+    "kr" '(agent-shell-send-region :wk "send region")
+    "ka" '(agent-shell-send-dwim :wk "send dwim")
+    "ks" '(agent-shell-send-screenshot :wk "send screenshot")
+    "k!" '(agent-shell-insert-shell-command-output :wk "shell output")
+    "kc" '(agent-shell-prompt-compose :wk "compose")
+    ;; inspect
+    "kh" '(agent-shell-search-history :wk "history")
+    "kT" '(agent-shell-open-transcript :wk "transcript")
+    "kl" '(agent-shell-view-acp-logs :wk "view logs"))
   :config
   (defun bergheim/agent-shell-switch-buffer ()
     "Switch between agent-shell buffers, or create a new one.
