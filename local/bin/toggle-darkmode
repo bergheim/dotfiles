@@ -12,6 +12,7 @@ WAYBARCONF="${XDG_CONFIG_HOME}/waybar/config"
 XRES="${HOME}/.Xresources"
 XSETTINGS="${HOME}/.config/xsettingsd/xsettingsd.conf"
 QT_THEME="${XDG_CONFIG_HOME}/qt5ct/qt5ct.conf"
+QT6_THEME="${XDG_CONFIG_HOME}/qt6ct/qt6ct.conf"
 
 CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 
@@ -33,6 +34,7 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
+        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/airy.conf" $QT6_THEME
     fi
 
     ln -sf ~/.config/bat/themes/bergheim-light.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
@@ -60,6 +62,7 @@ else
     sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$XRES" "$BATCONF"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
+        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/darker.conf" $QT6_THEME
     fi
 
     ln -sf ~/.config/bat/themes/bergheim-dark.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
