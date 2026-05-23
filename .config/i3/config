@@ -105,8 +105,6 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-bindsym $mod+bar split toggle
-
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
 
@@ -120,10 +118,48 @@ bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; 
 # bindsym $mod+Shift+s sticky toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+x layout toggle tabbed splitv splith
+bindsym $mod+x layout toggle tabbed stacked splitv splith
 
 # focus on parent
-bindsym $mod+Shift+x focus parent
+# bindsym $mod+Shift+x focus parent
+# Return to child
+# bindsym $mod+Ctrl+x focus child
+# Hierarchy navigation (more frequently used)
+bindsym $mod+s focus parent
+bindsym $mod+d focus child
+
+# Layout selection
+bindsym $mod+shift+s layout toggle stacking tabbed
+bindsym $mod+shift+d layout toggle splitv splith
+# bindsym $mod+shift+f layout toggle split
+bindsym $mod+bar split toggle
+
+# Container creation
+bindsym $mod+ctrl+s split horizontal; layout stacking
+bindsym $mod+ctrl+d split vertical; layout tabbed
+
+# bindsym $mod+Shift+s layout stacking
+# bindsym $mod+Shift+t layout tabbed
+# bindsym $mod+Shift+d layout splitv
+# bindsym $mod+Shift+b layout splith
+
+
+bindsym $mod+m mode "layout"
+
+mode "layout" {
+    bindsym t layout tabbed
+    bindsym s layout stacking
+    bindsym v layout splitv
+    bindsym h layout splith
+    bindsym x layout toggle tabbed splitv splith
+
+    # parent/child navigation
+    bindsym p focus parent
+    bindsym c focus child
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
 
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
