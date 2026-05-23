@@ -14,7 +14,6 @@
       (getenv env-var)))
 
 (use-package mcp
-  :ensure t
   :after gptel
   :config
   (load "gptel/tools/mcp"))
@@ -220,7 +219,7 @@
   (defun bergheim/gptel--maybe-save-buffer ()
     "Save the gptel buffer when gptel-mode is enabled, the buffer is killed, and the buffer has unsaved changes."
     (interactive)
-    (when (and (buffer-live-p (current-buffer)) 
+    (when (and (buffer-live-p (current-buffer))
                (bound-and-true-p gptel-mode)
                (buffer-modified-p)
                ;; TODO Avoid saving empty or nearly empty buffers
@@ -232,7 +231,7 @@
 
   (defun bergheim/gptel--get-chat-buffers ()
     (mapcar #'buffer-name
-            (seq-filter (lambda (buf) 
+            (seq-filter (lambda (buf)
                           (with-current-buffer buf
                             (bound-and-true-p gptel-mode)))
                         (buffer-list))))
@@ -247,22 +246,22 @@ Prompts for session name if none provided. Inserts selected region text into cha
            (gptel-buffers (bergheim/gptel--get-chat-buffers))
            (chat-buffer-name
             (if (and (featurep 'consult) gptel-buffers)
-                (consult--read 
-                 (cons "*gptel*" gptel-buffers) 
-                 :prompt "GPTeL Session Name: " 
+                (consult--read
+                 (cons "*gptel*" gptel-buffers)
+                 :prompt "GPTeL Session Name: "
                  :state (consult--buffer-preview)
                  :default "*gptel*")
-              (completing-read "GPTeL Session Name (leave empty for *gptel*): " 
-                               (cons "*gptel*" gptel-buffers) 
+              (completing-read "GPTeL Session Name (leave empty for *gptel*): "
+                               (cons "*gptel*" gptel-buffers)
                                nil nil nil nil "*gptel*")))
            (existing-buffer (get-buffer chat-buffer-name))
-           (chat-buffer (or existing-buffer 
-                            (gptel (if (string= chat-buffer-name "*gptel*") 
-                                       chat-buffer-name 
+           (chat-buffer (or existing-buffer
+                            (gptel (if (string= chat-buffer-name "*gptel*")
+                                       chat-buffer-name
                                      (concat "*gptel " chat-buffer-name "*")))))
            (quote-style (if (derived-mode-p 'prog-mode)
                             ;; BEGIN_SRC does not use the -mode suffix
-                            (let ((lang (string-remove-suffix "-mode" 
+                            (let ((lang (string-remove-suffix "-mode"
                                                               (symbol-name major-mode))))
                               (format "#+begin_src %s\n%s\n#+end_src"
                                       lang  region-text))
@@ -400,18 +399,8 @@ Prompts for session name if none provided. Inserts selected region text into cha
     (add-hook 'completion-at-point-functions
               'ob-gptel-capf nil t)))
 
-(use-package org-ai
-  :ensure t
-  :commands (org-ai-mode
-             org-ai-global-mode)
-  :init
-  (add-hook 'org-mode-hook #'org-ai-mode)
-  ;; (org-ai-global-mode) ; installs global keybindings on C-c M-a
-  :config
-  ;; (org-ai-install-yasnippets))
-  (setq org-ai-default-chat-model "gpt-4"))
-
 (use-package copilot
+  :disabled
   :demand t
   :general
   (bergheim/global-menu-keys
@@ -431,8 +420,45 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (setq copilot-max-char 1000000)
   (setq copilot-max-char-warning-disable t))
 
+(use-package aider
+  :disabled
+  :bind (("C-c b" . aider-transient-menu))
+  :config
+  (setenv "ANTHROPIC_API_KEY" (auth-source-pick-first-password :host "anthropic"))
+  (setenv "GEMINI_API_KEY" (auth-source-pick-first-password :host "google" :user "gemini"))
+  ;; llama-swap is OpenAI-compatible; aider talks to it via the OpenAI provider
+  (setenv "OPENAI_API_BASE" (concat "http://" bergheim/llama-swap-endpoint "/v1"))
+  (setenv "OPENAI_API_KEY" "sk-no-key-required")
+  (setq aider-args '("--model" "openai/qwen3-coder")))
+
+(use-package monet
+  :disabled
+  :ensure (:host github :repo "stevemolitor/monet"))
+
+(use-package claude-code
+  :disabled
+  :ensure (:host github :repo "stevemolitor/claude-code.el")
+  :bind-keymap ("C-c c" . claude-code-command-map)
+  :bind (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode))
+  :config
+  (setq claude-code-program-switches '("--dangerously-skip-permissions"))
+  ;; Monet integration
+  (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  (monet-mode 1)
+  (claude-code-mode))
+
+(use-package claude-code-ide
+  :disabled
+  :ensure (:host github :repo "manzaltu/claude-code-ide.el")
+  :after eat
+  :commands (claude-code-ide-menu claude-code-ide-open-project-terminal)
+  :init
+  (setq claude-code-ide-terminal-backend 'eat)  ; or 'vterm if you prefer
+  :config
+  ;; MCP tools: xref, imenu, tree-sitter, project.el
+  (claude-code-ide-emacs-tools-setup))
+
 (use-package agent-shell
-  :ensure t
   :general
   (general-define-key
    :keymaps 'agent-shell-mode-map
