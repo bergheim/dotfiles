@@ -50,7 +50,9 @@ export MONITOR_SECONDARY="DP-2"
 # export GDK_SCALE=1.5
 # export GDK_DPI_SCALE=0.5
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
-export QT_QPA_PLATFORMTHEME=qt5ct
+# for qt5ct etc
+# export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=qt6ct
 
 # allow using the GnuPG agent as an SSH agent
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
@@ -72,5 +74,8 @@ export N_PREFIX=~/local
 skip_global_compinit=1
 
 export CANDLE_FLASH_ATTN_BUILD_DIR=~/.cache/candle
+
+# fix KDE associations
+export XDG_MENU_PREFIX=arch-
 
 source ~/.zshenv-private
