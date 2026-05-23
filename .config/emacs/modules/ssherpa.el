@@ -112,14 +112,16 @@ are scp'd to `ssherpa-dest-dir' first."
            (target (format "%s@localhost" ssherpa-user))
            (open-target
             (if (string-prefix-p "/" url)
+                ;; Quote only the filename so the dir's ~ still expands remotely.
                 (let ((dest (format "%s/%s"
                                     ssherpa-dest-dir
-                                    (file-name-nondirectory url))))
+                                    (shell-quote-argument
+                                     (file-name-nondirectory url)))))
                   (ssherpa--run
                    "scp" (list "-P" port url (format "%s:%s" target dest))
                    "scp")
                   dest)
-              url)))
+              (shell-quote-argument url))))
       (ssherpa--run
        "ssh" (list "-p" port target
                    (format "%s %s" ssherpa-opener open-target))

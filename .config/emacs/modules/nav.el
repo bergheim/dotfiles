@@ -159,13 +159,23 @@ argument is given, otherwise navigate backward."
 
   (defun bergheim/open-file (arg)
     "Open the current file in 'dired-mode' with an application.
-With a universal argument, it allows entering the application to use."
+With a universal argument, it allows entering the application to use.
+When ssherpa-connected and no ARG is given, route the open back to the
+laptop via `ssherpa-open' (with a custom command we stay local since
+the binary may not exist on the other side)."
     (interactive "P")
-    (if-let* ((file (dired-get-filename nil t))
-              (command (if arg
-                           (completing-read "Open current file with: " (bergheim//executables-in-path))
-                         "xdg-open")))
-        (start-process command nil command file)
+    (if-let* ((file (dired-get-filename nil t)))
+        (cond
+         ((and (not arg)
+               (fboundp 'ssherpa-connected-p)
+               (ssherpa-connected-p))
+          (ssherpa-open file))
+         (t
+          (let ((command (if arg
+                             (completing-read "Open current file with: "
+                                              (bergheim//executables-in-path))
+                           "xdg-open")))
+            (start-process command nil command file))))
       (message "No file on this line")))
 
   (setq dired-dwim-target t  ; suggest a target for moving/copying intelligently
