@@ -199,7 +199,7 @@ alias tmux='tmux -2'
 alias ht='mosh --ssh="ssh -p 1902" home -- ta me'
 alias h='mosh --ssh="ssh -p 1902" home'
 
-alias icat='chafa'
+alias icat='kitten icat'
 
 # prefer nvim to vim if it is installed
 if type nvim >/dev/null 2>/dev/null; then
@@ -391,6 +391,23 @@ glf() {
   done
 }
 
+# tmux town portal - switch windows
+tp() {
+  tmux list-panes -a -F $'#S:#I.#P\t#{pane_id}\t#{window_name}\t#{pane_current_path}\t#{pane_current_command}' \
+    | column -t -s $'\t' \
+    | fzf --prompt='pane> ' \
+    | awk '{print $1}' \
+    | xargs -I{} tmux switch-client -t {} \; select-pane -t {}
+}
+
+bindkey -M viins -r 'fj'
+alias fj=tp
+
+
+# bind Ctrl-6 / Ctrl-^ in both vi insert and command mode
+bindkey -M viins $'\x1e' tp
+bindkey -M vicmd $'\x1e' tp
+
 # attach and disconenct any current users (this enables resizing unlike tmux -A)
 # if it does not exist, create it
 # requires a string which is the session name
@@ -519,3 +536,15 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # resurrect C-^!
 export MOSH_ESCAPE_KEY=''
+
+
+export BERGHOME=berghome.ts.glvortex.net
+export NTFY_SERVER=http://burial.ts.glvortex.net:9080
+export LLAMA_HOST=http://$BERGHOME:11434
+export OLLAMA_HOST=http://$BERGHOME:11434
+export PERF_HOST=http://$BERGHOME:8888
+export SHARE_BASE_URL=http://$BERGHOME:8080
+export PYROSCOPE_HOST=http://$BERGHOME:4040
+
+[ -f ~/.zshrc.container ] && source ~/.zshrc.container
+
