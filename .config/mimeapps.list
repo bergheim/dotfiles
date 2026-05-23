@@ -1,9 +1,15 @@
 [Added Associations]
-application/pdf=okular.desktop;
+application/pdf=org.kde.okular.desktop;okular.desktop;
+image/png=org.kde.gwenview.desktop;
+image/bmp=org.kde.gwenview.desktop;
+image/gif=org.kde.gwenview.desktop;
+image/tiff=org.kde.gwenview.desktop;
+image/jpg=org.kde.gwenview.desktop;
+image/jpeg=org.kde.gwenview.desktop;
 
 [Default Applications]
 application/octet-stream=emacsclient.desktop;
-application/pdf=okular.desktop;zathura.desktop;
+application/pdf=org.kde.okular.desktop;zathura.desktop;
 application/x-extension-htm=firefox.desktop;
 application/x-extension-html=firefox.desktop;
 application/x-extension-shtml=firefox.desktop;
@@ -11,12 +17,12 @@ application/x-extension-xht=firefox.desktop;
 application/x-extension-xhtml=firefox.desktop;
 application/x-matroska=mpv.desktop;
 application/xhtml+xml=firefox.desktop;
-image/bmp=oculante.desktop;
-image/gif=oculante.desktop;
-image/jpeg=oculante.desktop;
-image/jpg=oculante.desktop;
-image/png=oculante.desktop;
-image/tiff=oculante.desktop;
+image/bmp=org.kde.gwenview.desktop;
+image/gif=org.kde.gwenview.desktop;
+image/jpeg=org.kde.gwenview.desktop;
+image/jpg=org.kde.gwenview.desktop;
+image/png=org.kde.gwenview.desktop;
+image/tiff=org.kde.gwenview.desktop;
 inode/directory=org.kde.dolphin.desktop;
 text/html=firefox.desktop;emacsclient.desktop;nvim.desktop;
 text/plain=emacsclient.desktop;nvim.desktop;
@@ -39,3 +45,5 @@ x-scheme-handler/msteams=teams.desktop;
 x-scheme-handler/org-protocol=org-protocol.desktop;
 x-scheme-handler/tg=org.telegram.desktop.desktop;
 x-scheme-handler/tonsite=org.telegram.desktop.desktop;
+x-scheme-handler/mailto=emacsclient-email.desktop;
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop;
