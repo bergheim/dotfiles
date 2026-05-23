@@ -114,144 +114,25 @@ If FRAME is nil or not provided, use the selected frame."
     )
   )
 
-(defun browse-url-host (url &optional _new-window)
-  "Open URL on the host machine via an SSH tunnel."
-  (interactive (browse-url-interactive-arg "URL: "))
+;; Route mu4e file opens and shr links through ssherpa, so attachments
+;; and web links pop on the laptop when SSH'd in from the road.
+(use-package ssherpa
+  :ensure nil
+  :commands (ssherpa-connect ssherpa-disconnect ssherpa-open)
+  :init
+  (defun bergheim/mu4e-open-file-via-ssherpa (_orig-fun &rest args)
+    "Route `mu4e--view-open-file' through `ssherpa-open'."
+    (ssherpa-open (car args)))
 
-  (if (not (bergheim/ssh-status))
-      (browse-url-default-browser url)
-    (when-let* ((ssh-client (or (getenv "SSH_CLIENT") (bergheim/ssh-status)))
-                (remote-user "tsb")
-                (remote-host "localhost")
-                (remote-port "25509")
-                (remote-path (concat "/tmp/" (file-name-nondirectory url)))
-                (ssh-cmd ""))
-      ;; if it is an actual file, transfer it before calling open
-      (if (string-prefix-p "/" url)
-          (progn
-            (setq remote-path (format "~'%s'" remote-path))
-            (call-process-shell-command (format "scp -P %s \"%s\" %s@%s:%s"
-                                                remote-port url remote-user remote-host remote-path))
-            (setq url remote-path))
-        (setq url (format "'%s'" url)))
+  (defun bergheim/shr-browse-url-via-ssherpa (orig-fun &optional external mouse-event new-window)
+    "Around advice for `shr-browse-url': route URL at point through `ssherpa-open'."
+    (let ((url (get-text-property (point) 'shr-url)))
+      (if url
+          (ssherpa-open url)
+        (funcall orig-fun external mouse-event new-window))))
 
-      (setq ssh-cmd (format "ssh %s@%s -p %s \"systemd-run --user --quiet --pipe xdg-open %s\""
-                            remote-user remote-host remote-port url))
-      (call-process shell-file-name nil 0 nil "-c" ssh-cmd))))
-
-;; (advice-add 'shr-browse-url :around
-;;             (lambda (orig-func url &optional new-window)
-;;               "Use `browse-url-host` to handle URLs when browsing via `shr-browse-url`."
-;;               (browse-url-host url new-window)))
-
-;; (advice-add 'shr-browse-url :around
-;;             (lambda (orig-func url &optional new-window)
-;;               (interactive (browse-url-interactive-arg "URL: "))
-;;               ;; Directly call `browse-url-host` with the correct parameters.
-;;               (browse-url-host url new-window)))
-
-
-
-
-
-
-(defun my-mu4e-view-open-file-advice (orig-fun &rest args)
-  "Advice function to override `mu4e~view-open-file` behavior with custom function."
-  ;; Extract the file path from args. The original function signature is
-  ;; (mu4e~view-open-file path), where `path` is the first element in args.
-  (let ((file-path (car args)))
-    (message "Path %s" file-path)
-    (browse-url-host file-path)))
-
-(advice-add 'mu4e--view-open-file :around #'my-mu4e-view-open-file-advice)
-
-;; (advice-remove 'mu4e--view-open-file #'my-mu4e-view-open-file-advice)
-
-
-
-
-
-
-
-
-;; FIXME: update for linux?
-(defun bergheim/shr-browse-url-advice (original-func url &optional new-window)
-  (when-let* ((ssh-client (or (getenv "SSH_CLIENT") (bergheim/ssh-status)))
-              (ssh-cmd (format "ssh tsb@localhost -p 25509 \"open '%s'\"" url)))
-    (message "%s" ssh-cmd)
-    (call-process shell-file-name nil 0 nil "-c" ssh-cmd)
-    t))  ; Return t to indicate the URL was handled
-
-
-(defun bergheim/shr-browse-url-advice (orig-fun url &optional new-window)
-  "Advice to make `shr-browse-url' use `browse-url-host' instead of its default behavior."
-  ;; Ensure URL is not nil and is passed correctly
-  (if url
-      (browse-url-host url new-window)
-    (message "No URL providddded.")))
-
-
-;; (advice-add 'shr-browse-url :around #'bergheim/shr-browse-url-advice)
-
-;; (defun shr-browse-url (&optional external mouse-event new-window)
-;;   "Redefine `shr-browse-url` to open URLs on the host machine via SSH tunnel."
-;;   (interactive (list current-prefix-arg last-nonmenu-event))
-;;   (let ((url (shr-get-url-at-point)))
-;;     (if url
-;;         (browse-url-host url)
-;;       (message "No URL found at point!"))))
-
-
-(defun bergheim/shr-browse-url-advice (original-func &optional external mouse-event new-window)
-  "Around advice for `shr-browse-url'. Uses `browse-url-host' for URLs at point."
-  (let ((url (get-text-property (point) 'shr-url)))
-    (if url
-        (browse-url-host url)
-      (funcall original-func external mouse-event new-window))))
-
-(advice-add 'shr-browse-url :around #'bergheim/shr-browse-url-advice)
-
-
-
-
-;; (advice-add 'shr-browse-url :around
-;;             (lambda (orig-fun url &rest args)
-;;               (browse-url-host url)))
-
-
-
-
-
-;; (when (getenv "SSH_CLIENT")
-;;   (setq browse-url-browser-function 'browse-url-host))
-
-(setq browse-url-browser-function 'browse-url-host)
-
-;; Ensure my-custom-ssh-flag is defined globally
-;; (defvar bergheim/ssh-connection-active nil "Flag to indicate an SSH connection for emacsclient sessions.")
-
-(defun bergheim/ssh-connect ()
-  "Mark the current frame as being connected over SSH"
-  (interactive)
-  ;; (setq bergheim/ssh-connection-active t)
-  ;; Use a frame parameter to mark this frame as connected via SSH
-  (set-frame-parameter nil 'ssh-connected t))
-
-(defun bergheim/ssh-status ()
-  "Return T if we are using SSH"
-  (interactive)
-  (frame-parameter nil 'ssh-connected))
-
-(defun bergheim/ssh-disconnect (&optional frame)
-  "Function to execute actions when an emacsclient frame is deleted."
-  (interactive)
-  (set-frame-parameter frame 'ssh-connected nil)
-  (message "Emacsclient frame closed."))
-
-;; Add the reset function to server-done-hook
-;; (add-hook 'server-done-hook 'bergheim/ssh-disconnect)
-;; (add-hook 'server-visit-hook 'bergheim/ssh-disconnect)
-
-;; (add-hook 'delete-frame-functions #'bergheim/ssh-disconnect)
+  (advice-add 'mu4e--view-open-file :around #'bergheim/mu4e-open-file-via-ssherpa)
+  (advice-add 'shr-browse-url :around #'bergheim/shr-browse-url-via-ssherpa)
+  (setq browse-url-browser-function #'ssherpa-open))
 
 ;;; session.el ends here

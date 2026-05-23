@@ -1,10 +1,8 @@
 #!/usr/bin/env sh
 
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_TTY" ]; then
-    # SSH session - use terminal
-    # TODO: add this back once the function is merged
-    # emacsclient -a "" -t --eval '(bergheim/ssh-connect)' "$@"
-    emacsclient -a "" -t "$@"
+    # SSH session - use terminal, tag the frame for ssherpa routing
+    emacsclient -a "" -t --eval '(ssherpa-connect)' "$@"
 elif [ -n "$WAYLAND_DISPLAY" ] || [ -n "$DISPLAY" ]; then
     # GUI available (Sway, i3, or other)
     emacsclient -a "" -nc "$@"

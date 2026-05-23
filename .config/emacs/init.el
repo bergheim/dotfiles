@@ -138,6 +138,7 @@
          "bergheim-eglot"
          ;; I for one come our new AI overlords
          "ai"
+         "ssherpa"
          "session"
          ;; TODO split this up
          "utils"
