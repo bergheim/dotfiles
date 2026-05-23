@@ -5,7 +5,7 @@
 ;; Author: Thomas Bergheim
 ;; Maintainer: Thomas Bergheim
 
-(setq bergheim/ollama-endpoint "berghome:11434")
+(setq bergheim/llama-swap-endpoint "berghome:11434")
 
 (defun bergheim/get-api-key (pass-key env-var)
   "Get API key from password-store first, fallback to environment variable."
@@ -129,25 +129,37 @@
                (string-match-p "/llm/" (buffer-file-name)))
       (gptel-mode 1)))
 
-  (defun bergheim/ollama-get-models ()
-    "Fetch available models from Ollama API and return as a list."
-    (let* ((url (concat "http://" bergheim/ollama-endpoint "/api/tags"))
-           (response (with-current-buffer
-                         (url-retrieve-synchronously url t)
-                       (goto-char (point-min))
-                       (re-search-forward "^$")
-                       (buffer-substring-no-properties (point) (point-max))))
-           (json-object-type 'hash-table)
-           (json-array-type 'list)
-           (json-key-type 'string)
-           (data (json-read-from-string response)))
-      (mapcar (lambda (model)
-                (gethash "name" model))
-              (gethash "models" data))))
+  (defun bergheim/llama-swap-get-models ()
+    "Fetch available models from llama-swap's OpenAI-compatible API."
+    (condition-case err
+        (let* ((url (concat "http://" bergheim/llama-swap-endpoint "/v1/models"))
+               (response-buf (url-retrieve-synchronously url t))
+               (response (when response-buf
+                           (with-current-buffer response-buf
+                             (goto-char (point-min))
+                             (if (re-search-forward "^$" nil t)
+                                 (buffer-substring-no-properties (point) (point-max))
+                               "")))))
+          (when response-buf (kill-buffer response-buf))
+          (if (and response (not (string-empty-p (s-trim response))))
+              (let* ((json-object-type 'hash-table)
+                     (json-array-type 'list)
+                     (json-key-type 'string)
+                     (data (json-read-from-string response)))
+                (mapcar (lambda (model)
+                          (intern (gethash "id" model)))
+                        (gethash "data" data)))
+            (message "llama-swap returned empty response")
+            nil))
+      (error
+       (message "Failed to fetch llama-swap models: %s" (error-message-string err))
+       nil)))
 
-  (gptel-make-ollama "Ollama"
+  (gptel-make-openai "llama-swap"
     :stream t
-    :host bergheim/ollama-endpoint :models (bergheim/ollama-get-models))
+    :protocol "http"
+    :host bergheim/llama-swap-endpoint
+    :models (bergheim/llama-swap-get-models))
 
   (gptel-make-gemini "Gemini"
     :stream t
@@ -160,14 +172,15 @@
   (setq gptel-cache '(message system tool))
   (setq gptel-api-key (bergheim/get-api-key "api/llm/openai" "OPENAI_API_KEY"))
 
-  (setq gptel-model 'claude-sonnet-4-5-20250929
-        gptel-backend
-        (gptel-make-anthropic "Claude"
-          :stream t
-          :key (bergheim/get-api-key "api/llm/anthropic" "ANTHROPIC_API_KEY")))
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (bergheim/get-api-key "api/llm/anthropic" "ANTHROPIC_API_KEY"))
+
+  (setq gptel-model 'qwen3-coder
+        gptel-backend (gptel-get-backend "llama-swap"))
   ;; :models '((claude-sonnet-4-20250514
-  ;;            :capabilities (media    json                 tool-use) 
-  ;;            ;;                ▲     ▲ supports           ▲ 
+  ;;            :capabilities (media    json                 tool-use)
+  ;;            ;;                ▲     ▲ supports           ▲
   ;;            ;; supports media╶╯     ╰─structured outputs ╰─can use tools
   ;;            :mimetypes ("application/pdf" "image/png" "image/jpeg")))))
 
@@ -369,8 +382,8 @@ Prompts for session name if none provided. Inserts selected region text into cha
   :ensure (gptel-quick :host github :repo "karthink/gptel-quick")
   :after gptel
   :config
-  (setq gptel-quick-backend (gptel-get-backend "Ollama")
-        gptel-quick-model "mistral-small")
+  (setq gptel-quick-backend (gptel-get-backend "llama-swap")
+        gptel-quick-model 'gemma4)
   :general
   (bergheim/global-menu-keys
     "sq" 'gptel-quick)
