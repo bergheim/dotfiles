@@ -47,12 +47,6 @@
   (bergheim/global-menu-keys
     "hg" '(fontaine-set-preset :which-key "glyphs")
     "hG" '(fontaine-toggle-preset :which-key "toggle glyphs"))
-  :hook
-  ;; Persist the latest font preset when closing/starting Emacs.
-  ((after-init . fontaine-mode)
-   (after-init . (lambda ()
-                   ;; Set last preset or fall back to desired style from `fontaine-presets'.
-                   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium)))))
   :config
   ;; TODO this should be part of fontaine
   (defun bergheim/check-available-fonts (presets)
@@ -291,17 +285,14 @@
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook
                 (lambda ()
-                  (bergheim/check-available-fonts fontaine-presets)
-
                   (bergheim/set-font-size-based-on-frame-resolution)
                   (bergheim/generate-fontaine-presets)
-
+                  (bergheim/check-available-fonts fontaine-presets)
                   (fontaine-mode)
                   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))))
-    (bergheim/check-available-fonts fontaine-presets)
     (bergheim/set-font-size-based-on-frame-resolution)
     (bergheim/generate-fontaine-presets)
-
+    (bergheim/check-available-fonts fontaine-presets)
     (fontaine-mode)
     (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))))
 
