@@ -50,24 +50,26 @@
   :config
   ;; TODO this should be part of fontaine
   (defun bergheim/check-available-fonts (presets)
-    "Check font availability in PRESETS and warn about missing fonts."
-    (let ((font-fields '(:default-family :fixed-pitch-family :variable-pitch-family))
-          (fonts '()))
+    "Check font availability in PRESETS and warn about missing fonts.
+Skipped on TUI frames and in container mode where fonts come from the host."
+    (when (and (display-graphic-p)
+               (not bergheim/container-mode-p))
+      (let ((font-fields '(:default-family :fixed-pitch-family :variable-pitch-family))
+            (fonts '()))
 
-      ;; Collect all font names
-      (dolist (preset presets)
-        (let ((plist (cdr preset)))
-          (dolist (field font-fields)
-            (when-let* ((font (and (plist-member plist field)
-                                   (stringp (plist-get plist field))
-                                   (plist-get plist field))))
-              (push font fonts)))))
+        ;; Collect all font names
+        (dolist (preset presets)
+          (let ((plist (cdr preset)))
+            (dolist (field font-fields)
+              (when-let* ((font (and (plist-member plist field)
+                                     (stringp (plist-get plist field))
+                                     (plist-get plist field))))
+                (push font fonts)))))
 
-      ;; Remove duplicates and check availability
-      (dolist (font (delete-dups fonts))
-        (unless (find-font (font-spec :name font))
-          ;; (message "Warning: Font '%s' not found on your system" font)))))
-          (display-warning 'fonts (format "Font '%s' not found on your system" font))))))
+        ;; Remove duplicates and check availability
+        (dolist (font (delete-dups fonts))
+          (unless (find-font (font-spec :name font))
+            (display-warning 'fonts (format "Font '%s' not found on your system" font)))))))
 
   ;; This is defined in Emacs C code (it belongs to font settings)
   (setq x-underline-at-descent-line nil)
