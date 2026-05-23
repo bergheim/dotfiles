@@ -79,10 +79,16 @@
            (interactive)
            (if (comint-after-pmark-p)
                (comint-send-input)
-             (evil-ret))))
+             (evil-ret)))
+   "<return>" (lambda ()
+                (interactive)
+                (if (comint-after-pmark-p)
+                    (comint-send-input)
+                  (evil-ret))))
   (:states 'insert
    :keymaps 'shell-mode-map
    "RET" #'comint-send-input
+   "<return>" #'comint-send-input
    "C-r" (lambda ()
            (interactive)
            (let ((input (comint-get-old-input-default)))
@@ -124,6 +130,9 @@
   :config
   (setq comint-check-proc nil)
   (setq confirm-kill-processes nil)
+
+  ;; in 31, this causes Cannot syntax-propertize because of narrowing!
+  (setq shell-fontify-input-enable nil)
   (advice-add 'shell-mode :after
               (lambda ()
                 (remove-hook 'kill-buffer-query-functions
