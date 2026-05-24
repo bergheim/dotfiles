@@ -3,12 +3,15 @@ Description=mbsync all service
 ConditionPathExists=%h/.mbsyncrc
 Wants=network-online.target
 After=network-online.target
+Conflicts=mbsync-inbox.service
 
 [Service]
-Type=simple
+Type=oneshot
 Environment="PATH=%h/local/bin:/usr/local/bin:/usr/bin"
+
+# Only run if not in Extreme Powersave on some laptop
+ExecCondition=/usr/bin/bash -c "if gdbus introspect --system --dest com.tuxedocomputers.tccd --object-path /com/tuxedocomputers/tccd >/dev/null 2>&1; then gdbus call --system --dest com.tuxedocomputers.tccd --object-path /com/tuxedocomputers/tccd --method com.tuxedocomputers.tccd.GetActiveProfileJSON | /usr/bin/grep -qv '__legacy_powersave_extreme__'; else exit 0; fi"
 ExecStart=%h/local/bin/sync-mail all
-# ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

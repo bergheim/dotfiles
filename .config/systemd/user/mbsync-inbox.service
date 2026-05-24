@@ -3,14 +3,15 @@ Description=mbsync inbox service
 ConditionPathExists=%h/.mbsyncrc
 Wants=network-online.target
 After=network-online.target
+Conflicts=mbsync-all.service
 
 [Service]
-# Type=simple
 Type=oneshot
 Environment="PATH=%h/local/bin:%h/.local/bin:/usr/local/bin:/usr/bin"
+
+# Skip sync ONLY if TUXEDO Control Center is active AND set to Extreme Powersave.
+ExecCondition=/usr/bin/bash -c "if gdbus introspect --system --dest com.tuxedocomputers.tccd --object-path /com/tuxedocomputers/tccd >/dev/null 2>&1; then gdbus call --system --dest com.tuxedocomputers.tccd --object-path /com/tuxedocomputers/tccd --method com.tuxedocomputers.tccd.GetActiveProfileJSON | /usr/bin/grep -qv '__legacy_powersave_extreme__'; else exit 0; fi"
 ExecStart=%h/local/bin/sync-mail
-# don't do this - only update index if we have new emails
-# ExecStartPost=/usr/bin/emacsclient -e '(mu4e-update-index)'
 
 [Install]
 WantedBy=default.target

@@ -4,9 +4,9 @@ ConditionPathExists=%h/.mbsyncrc
 
 [Timer]
 OnBootSec=10m
-# OnUnitActiveSec=60m
 OnUnitInactiveSec=60m
-# Unit=mbsync.service
+RandomizedDelaySec=1m
+Unit=mbsync-all.service
 
 [Install]
-WantedBy=default.target
+WantedBy=timers.target
