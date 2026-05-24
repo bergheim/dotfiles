@@ -9,7 +9,7 @@
 (use-package emacs
   :ensure nil
   :config
-  (add-hook 'after-make-frame-functions #'bergheim/disable-pgtk-im)
+  (add-hook 'window-setup-hook #'bergheim/disable-pgtk-im)
   (setq enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
   (setq completion-cycle-threshold 1)                  ; TAB cycles candidates
   (setq completions-detailed t)                        ; Show annotations
@@ -248,6 +248,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-styles '(basic substring partial-completion regex flex))
+  ;; only show usable commands in M-x
+  (read-extended-command-predicate #'command-completion-default-include-p)
   :init
   (vertico-mode)
   (vertico-multiform-mode)
@@ -325,21 +327,13 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 ;; COmpletion in Region FUnction (code completion)
 (use-package corfu
   :init
-  ;; (setq corfu-max-width 150)
-  ;; (setq corfu-max-height 35)
   (global-corfu-mode)
   :bind ("C-c p" . cape-prefix-map)
   (:map corfu-map
    ("S-SPC" . corfu-insert-separator)
    ([backtab] . corfu-previous)
    ("S-TAB" . corfu-previous)
-   ("TAB" . corfu-next)
-   ("C-n" . corfu-next)
-   ("C-p" . corfu-previous)
-   ("C-j" . corfu-next)
-   ("C-k" . corfu-previous)
-   ("M-n" . nil)
-   ("M-p" . nil))
+   ("TAB" . corfu-next))
   :custom
   ;; use `cape-dict' instead
   (text-mode-ispell-word-completion nil)
@@ -357,7 +351,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   :hook (corfu-mode . corfu-popupinfo-mode)
   :general
   (corfu-map
-   "C-h" 'corfu-popupinfo-documentation)
+   "C-n" 'corfu-info-documentation)
   :custom
   (corfu-popupinfo-delay '(0.25 . 0.1))
   (corfu-popupinfo-hide nil)
@@ -417,9 +411,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   ;; globally available CAPE completions (with lower priority)
   (add-hook 'completion-at-point-functions (cape-capf-super #'cape-dabbrev
                                                             #'cape-dict))
+
+  ;; add buffer local defaults
   (add-hook 'completion-at-point-functions #'cape-file)
   ;; (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
-  (dolist (hook '(text-mode-hook markdown-mode-hook org-mode-hook erc-mode-hook))
+  (dolist (hook '(text-mode-hook prog-mode-hook erc-mode-hook))
     (add-hook hook
               (lambda ()
                 (add-hook 'completion-at-point-functions #'cape-emoji 80 t))))
@@ -521,9 +517,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     (setq-local completion-at-point-functions
                 (append (remove #'tempel-complete completion-at-point-functions)
                         (list #'tempel-complete)))
-    (setq-local corfu-auto-trigger "/"
+    (setq-local corfu-auto-trigger "\\"
                 completion-at-point-functions
-                (cons (cape-capf-trigger #'tempel-complete ?/)
+                (cons (cape-capf-trigger #'tempel-complete ?\\)
                       completion-at-point-functions)))
 
   (add-hook 'conf-mode-hook 'tempel-setup-capf)
