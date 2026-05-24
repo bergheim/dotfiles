@@ -1,17 +1,65 @@
-// niri config — mirrors the sway setup at stash/swayr/config.
+// niri config — mirrors stash/swayr/config (sway).
 // Install at ~/.config/niri/config.kdl on the host.
 //
-// Notes on what does NOT translate from sway:
-//   - i3 container layouts ($mod+s/d/x, split, focus parent/child, $mod+\):
-//     niri is column-scrolling; closest analogs are toggle-column-tabbed-display
-//     and consume/expel-window. Old binds left unbound — repurpose if useful.
-//   - xkill mode, resize mode, gaps mode: niri has no input modes. Use direct
-//     binds (resize binds preserved as $mod+$alt+hjkl) or skip.
-//   - Scratchpad ($mod+grave): niri has no scratchpad concept.
-//   - swayfx blur: not supported in niri. Shadows are supported.
-//   - Wallpaper: niri does not paint a background, swaybg is launched at startup.
-//   - swayr LRU window switcher: no built-in equivalent. Use the overview
-//     ($mod+o) or fuzzel-via-niri-msg as a stopgap.
+// === Sway bindings that do NOT translate, with reasons ===
+//
+//   $mod+$alt+BackSpace   mode "xkill"
+//                         niri has no input modes. Use Mod+Shift+BackSpace
+//                         (force-kill focused PID) below.
+//   $mod+x                layout toggle tabbed splitv splith
+//                         niri columns are 1D; only tabbed display exists,
+//                         and that's on Mod+D.
+//   $mod+s                layout stacking
+//                         No stacking layout. Tabbed display is the closest.
+//   $mod+shift+s          focus parent
+//   $mod+shift+d          focus child
+//                         No container hierarchy: columns have no parents.
+//   $mod+ctrl+s           split horizontal; layout stacking
+//   $mod+ctrl+d           split vertical; layout tabbed
+//   $mod+\                split toggle
+//                         No splits — niri has columns and floating only.
+//                         Use Mod+BracketLeft/Right (consume-or-expel-window)
+//                         and Mod+D (toggle tabbed) to compose layouts.
+//   $mod+a                [urgent=latest] focus
+//                         No focus-urgent action. Urgent windows show via
+//                         the urgent-color border on the focus ring.
+//   $mod+grave            scratchpad show
+//                         No scratchpad concept in niri. Closest: a window
+//                         rule with open-floating + a key that spawn-sh's
+//                         the app, but no hide/show toggle exists.
+//   $mod+i                mode "resize"
+//                         No input modes. Direct resize binds preserved on
+//                         $mod+$alt+hjkl.
+//   $mod+shift+f          fullscreen disable; floating toggle; resize 1920 1080;
+//                         move position center; sticky enable
+//                         niri has no sticky-across-workspaces. The float +
+//                         resize part is reachable via $mod+$alt+f and
+//                         set-window-width/height, but not as one bind.
+//                         Left unbound — pick a niri-native sequence later.
+//   $mod+Shift+g          mode "$mode_gaps"   (and the +/- gap presets)
+//   $mod+minus/equal      gap presets
+//   $mod+shift+minus/eq.  gap presets
+//                         niri gaps are global, not per-workspace, and have
+//                         no runtime adjustment binds.
+//   $alt+b                border toggle
+//                         No per-window border toggle. Configure globally in
+//                         the layout {} block.
+//   XF86TouchpadToggle/On/Off
+//                         No runtime input-device enable/disable action.
+//   floating_modifier $mod (Mod+drag to move/resize floats)
+//                         niri supports this via move-window-with-mouse and
+//                         resize-window-with-mouse, but the mouse-button bind
+//                         syntax varies by version — added below as a TODO
+//                         the user can verify.
+//
+// === Niri-essential binds NOT in sway, but kept because the column model ===
+// === can't be operated without them ===
+//
+//   Mod+BracketLeft/Right consume-or-expel-window (move window into/out of column)
+//   Mod+Comma/Period      consume/expel-window-into-column (single-window variant)
+//   Mod+M                 inline fuzzel window switcher + app icons (swayr LRU)
+//   Alt+Tab               toggle-overview
+//   Mod+Space             NOT a niri bind — xkb grp:win_space_toggle (us↔no)
 
 input {
     keyboard {
@@ -37,8 +85,10 @@ input {
 }
 
 // Outputs: run `niri msg outputs` once running, then fill in modes.
-// The sway config places workspaces 1–9 on DP-0 and 10–13 on DP-2;
-// the named-workspace blocks below pin them to those outputs.
+// Workspace model is hybrid: ws 1-6 named/persistent (identity + app
+// routing + stable waybar icons); 7+ dynamic. Output pins removed —
+// the single-display laptop never used them and niri keeps workspaces
+// per-output without them.
 //
 // /-output "DP-0" {
 //     mode "..."
@@ -51,20 +101,18 @@ input {
 //     position x=1920 y=0
 // }
 
-// Persistent named workspaces, matching the sway slots.
-workspace "1"  { open-on-output "DP-0"; }   // firefox
-workspace "2"  { open-on-output "DP-0"; }   // chat
-workspace "3"  { open-on-output "DP-0"; }   // music
-workspace "4"  { open-on-output "DP-0"; }   // email
-workspace "5"  { open-on-output "DP-0"; }   // emacs
-workspace "6"  { open-on-output "DP-0"; }   // emacs
-workspace "7"  { open-on-output "DP-0"; }
-workspace "8"  { open-on-output "DP-0"; }
-workspace "9"  { open-on-output "DP-0"; }
-workspace "10" { open-on-output "DP-2"; }
-workspace "11" { open-on-output "DP-2"; }
-workspace "12" { open-on-output "DP-2"; }
-workspace "13" { open-on-output "DP-2"; }
+// Hybrid model: only 1-6 are NAMED (persistent) — they carry identity,
+// app routing (see open-on-workspace rules), and stable waybar icons.
+// 7+ are dynamic: created on demand, hidden by waybar hide-empty when
+// empty (sway-like). No open-on-output pins — niri keeps workspaces
+// per-output on its own, and the pins were dead on the single-display
+// laptop anyway.
+workspace "1"   // browser (firefox)
+workspace "2"   // chat (Telegram/Discord/Slack/Element)
+workspace "3"   // music (Spotify)
+workspace "4"   // email (Chromium)
+workspace "5"   // emacs
+workspace "6"   // emacs
 
 layout {
     gaps 10
@@ -78,7 +126,7 @@ layout {
 
     default-column-width { proportion 0.5; }
 
-    // Gruvbox-light focus ring, matching $c10 / $bg from the sway colors block.
+    // Gruvbox-light, matching $c10 / $bg / $c1 from the sway colors block.
     focus-ring {
         width 2
         active-color "#c0df6f"
@@ -89,6 +137,24 @@ layout {
         off
         width 1
         active-color "#c0df6f"
+        inactive-color "#1d2021"
+        urgent-color "#cc241d"
+    }
+
+    tab-indicator {
+        hide-when-single-tab          // no strip when a column has one window
+        place-within-column           // strip eats column space instead of overlapping the gap
+        gap 5
+        width 4
+        position "right"
+        gaps-between-tabs 2
+        corner-radius 8
+        // Static, theme-agnostic: niri config can't switch per
+        // light/dark (Super+F1 only retints waybar/GTK, not niri).
+        // #b8bb26 = Gruvbox bright green — legible as a thin strip on
+        // BOTH backgrounds; the theme focus_bg greens (#086608 dark /
+        // #c0df6f light) are background tints, too low-contrast here.
+        active-color "#b8bb26"
         inactive-color "#1d2021"
         urgent-color "#cc241d"
     }
@@ -104,10 +170,15 @@ layout {
     struts {}
 }
 
-// Window opacity 0.8 like the swayfx for_window [class=".*"] opacity 0.8.
-// Active=1.0, inactive=0.9 approximates default_dim_inactive 0.1.
+// opacity 0.8 (swayfx for_window [class=".*"] opacity 0.8)
+// + default_dim_inactive 0.1 → active 1.0, inactive 0.9
 window-rule {
     opacity 0.9
+    // Rounded corners for all windows. Both keys are required:
+    // geometry-corner-radius alone only rounds the border/focus-ring;
+    // clip-to-geometry actually clips the window content to the shape.
+    geometry-corner-radius 10
+    clip-to-geometry true
 }
 window-rule {
     match is-active=true
@@ -149,7 +220,7 @@ window-rule {
     open-floating true
 }
 
-// Auto-place windows on workspaces (sway "assign" + "for_window move to workspace").
+// Auto-place on workspaces (sway "assign" + for_window move to workspace).
 window-rule {
     match app-id=r#"^TelegramDesktop$"#
     open-on-workspace "2"
@@ -175,8 +246,11 @@ window-rule {
     open-on-workspace "4"
 }
 
-// Startup. systemctl --user import-environment is handled by niri's session unit;
-// listed here for parity with the sway config's exec lines.
+layer-rule {
+    match namespace="^noctalia-overview*"
+    place-within-backdrop true
+}
+
 spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
 spawn-at-startup "systemctl" "--user" "start" "emacs.service"
@@ -197,9 +271,12 @@ hotkey-overlay {
 }
 
 binds {
-    // Mod = Super on TTY, Alt-as-second-mod is just Alt+ in niri syntax.
+    // Mod = Super on TTY. Alt+ = Mod1 / sway's $alt.
 
-    // -- Apps & launchers --
+    Mod+Shift+F { maximize-column; }
+
+
+    // -- Apps & launchers (sway lines 268, 272, 278, 281–283, 361, 364, 372, 375) --
     Mod+Shift+Return       { spawn "ghostty"; }
     Mod+Return             { spawn "emacsclient" "-nc"; }
     Mod+R                  { spawn "fuzzel"; }
@@ -216,47 +293,64 @@ binds {
     Mod+F5                 { spawn "alacritty" "--class" "floating" "-e" "impala"; }
     Mod+F12                { spawn-sh "journalctl --user -u niri -n 100 > /tmp/niri-debug.log && notify-send 'Niri log dumped'"; }
 
-    // Replacement for swayr LRU switcher: niri overview.
-    Mod+Space repeat=false { toggle-overview; }
+    // sway 367–368 (swayr LRU switcher). Mod+Space is intentionally NOT bound
+    // here — xkb grp:win_space_toggle owns it for us↔no layout switching, and a
+    // niri bind shadows that. Do not re-add Mod+Space. Window switcher
+    // is Mod+M — INLINE on purpose: no external script / host-install
+    // dependency (a script broke once because it wasn't on PATH). fuzzel
+    // + app icons via the NUL icon protocol built with printf; the id
+    // rides a trailing tab field and awk recovers it. Overview: Alt+Tab.
+    Mod+M     repeat=false { spawn-sh "T=$(printf '\\t'); niri msg --json windows | jq -r '.[] | [.title, .id, .app_id] | @tsv' | while IFS= read -r L; do printf '%s\\0icon\\037%s\\n' \"${L%${T}*}\" \"${L##*${T}}\"; done | fuzzel --dmenu --prompt 'window: ' | awk -F'\\t' '{print $NF}' | xargs -r niri msg action focus-window --id"; }
     Alt+Tab   repeat=false { toggle-overview; }
 
-    // -- Notifications (mako) --
+    // -- Notifications, mako (sway lines 378–381) --
     Mod+Ctrl+Grave         { spawn "makoctl" "dismiss"; }
     Mod+Ctrl+1             { spawn "makoctl" "restore"; }
     Mod+Ctrl+3             { spawn "makoctl" "dismiss" "--all"; }
     Mod+Ctrl+2             { spawn-sh "makoctl menu -- fuzzel -d -p 'Select action:'"; }
 
-    // -- Window management --
+    // -- Window management (sway lines 108, 142, 145, 162, 176, 286) --
     Mod+BackSpace          { close-window; }
+    Mod+Shift+BackSpace    { spawn-sh "PID=$(niri msg --json focused-window 2>/dev/null | jq -r '.pid // empty'); [ -n \"$PID\" ] && kill -9 \"$PID\""; }
     Mod+F                  { fullscreen-window; }
     Mod+Alt+F              { toggle-window-floating; }
-    Mod+Shift+F            { maximize-column; }
+    Mod+D                  { toggle-column-tabbed-display; }   // sway: layout tabbed
+    Mod+Shift+Space        { switch-focus-between-floating-and-tiling; }   // sway: focus mode_toggle
+
+    // niri-essential column manipulation (no sway equivalent — see header).
     Mod+BracketLeft        { consume-or-expel-window-left; }
     Mod+BracketRight       { consume-or-expel-window-right; }
     Mod+Comma              { consume-window-into-column; }
     Mod+Period             { expel-window-from-column; }
 
-    // -- Focus (hjkl + arrows) --
+    // -- Focus, hjkl + arrows (sway lines 118–127) --
+    // j/k use *-or-workspace: navigate windows within a column, and at
+    // the column edge fall through to the next/prev workspace (vim-key
+    // parity with h/l moving between columns; works in the overview too).
+    // Workspace-only jumps remain on Mod+Ctrl+H/L and Mod+Tab.
     Mod+H        { focus-column-left; }
-    Mod+J        { focus-window-down; }
-    Mod+K        { focus-window-up; }
+    Mod+J        { focus-window-or-workspace-down; }
+    Mod+K        { focus-window-or-workspace-up; }
     Mod+L        { focus-column-right; }
     Mod+Left     { focus-column-left; }
-    Mod+Down     { focus-window-down; }
-    Mod+Up       { focus-window-up; }
+    Mod+Down     { focus-window-or-workspace-down; }
+    Mod+Up       { focus-window-or-workspace-up; }
     Mod+Right    { focus-column-right; }
 
-    // -- Move (Shift + focus) --
+    // -- Move (sway lines 130–139) --
+    // j/k use *-or-to-workspace: move the window within the column, and
+    // at the column edge carry it to the next/prev workspace (symmetry
+    // with the focus j/k -or-workspace binds above).
     Mod+Shift+H     { move-column-left; }
-    Mod+Shift+J     { move-window-down; }
-    Mod+Shift+K     { move-window-up; }
+    Mod+Shift+J     { move-window-down-or-to-workspace-down; }
+    Mod+Shift+K     { move-window-up-or-to-workspace-up; }
     Mod+Shift+L     { move-column-right; }
     Mod+Shift+Left  { move-column-left; }
-    Mod+Shift+Down  { move-window-down; }
-    Mod+Shift+Up    { move-window-up; }
+    Mod+Shift+Down  { move-window-down-or-to-workspace-down; }
+    Mod+Shift+Up    { move-window-up-or-to-workspace-up; }
     Mod+Shift+Right { move-column-right; }
 
-    // -- Resize (Mod+Alt+hjkl, with Shift to shrink) --
+    // -- Resize, $mod+$alt+hjkl (sway lines 257–265) --
     Mod+Alt+L         { set-column-width "+10%"; }
     Mod+Alt+H         { set-column-width "-10%"; }
     Mod+Alt+Shift+L   { set-column-width "-10%"; }
@@ -266,56 +360,71 @@ binds {
     Mod+Alt+Shift+J   { set-window-height "-10%"; }
     Mod+Alt+Shift+K   { set-window-height "+10%"; }
 
-    // -- Workspaces --
+    // -- Workspaces (sway lines 205–217) --
     Mod+1 { focus-workspace "1"; }
     Mod+2 { focus-workspace "2"; }
     Mod+3 { focus-workspace "3"; }
     Mod+Q { focus-workspace "4"; }
     Mod+W { focus-workspace "5"; }
     Mod+E { focus-workspace "6"; }
-    Mod+4 { focus-workspace "7"; }
-    Mod+5 { focus-workspace "8"; }
-    Mod+6 { focus-workspace "9"; }
-    Mod+7 { focus-workspace "10"; }
-    Mod+8 { focus-workspace "11"; }
-    Mod+9 { focus-workspace "12"; }
-    Mod+0 { focus-workspace "13"; }
+    // 7+ dynamic: unquoted index navigates positionally and never
+    // creates a named (persistent) workspace. Quoted "1".."6" above
+    // are named refs on purpose — leave them quoted.
+    Mod+4 { focus-workspace 7; }
+    Mod+5 { focus-workspace 8; }
+    Mod+6 { focus-workspace 9; }
+    Mod+7 { focus-workspace 10; }
+    Mod+8 { focus-workspace 11; }
+    Mod+9 { focus-workspace 12; }
+    Mod+0 { focus-workspace 13; }
 
+    // Move column to workspace (sway lines 220–232).
     Mod+Alt+1 { move-column-to-workspace "1"; }
     Mod+Alt+2 { move-column-to-workspace "2"; }
     Mod+Alt+3 { move-column-to-workspace "3"; }
     Mod+Alt+Q { move-column-to-workspace "4"; }
     Mod+Alt+W { move-column-to-workspace "5"; }
     Mod+Alt+E { move-column-to-workspace "6"; }
-    Mod+Alt+4 { move-column-to-workspace "7"; }
-    Mod+Alt+5 { move-column-to-workspace "8"; }
-    Mod+Alt+6 { move-column-to-workspace "9"; }
-    Mod+Alt+7 { move-column-to-workspace "10"; }
-    Mod+Alt+8 { move-column-to-workspace "11"; }
-    Mod+Alt+9 { move-column-to-workspace "12"; }
-    Mod+Alt+0 { move-column-to-workspace "13"; }
+    // 7+ dynamic: unquoted index (see focus-workspace note above).
+    Mod+Alt+4 { move-column-to-workspace 7; }
+    Mod+Alt+5 { move-column-to-workspace 8; }
+    Mod+Alt+6 { move-column-to-workspace 9; }
+    Mod+Alt+7 { move-column-to-workspace 10; }
+    Mod+Alt+8 { move-column-to-workspace 11; }
+    Mod+Alt+9 { move-column-to-workspace 12; }
+    Mod+Alt+0 { move-column-to-workspace 13; }
 
-    // back_and_forth + workspace next/prev.
+    // back_and_forth + workspace next/prev (sway lines 179–181).
     Mod+Tab     { focus-workspace-previous; }
     Mod+Ctrl+L  { focus-workspace-down; }
     Mod+Ctrl+H  { focus-workspace-up; }
 
-    // -- Monitors --
+    // -- Monitors (sway lines 189, 191) --
     Mod+N        { focus-monitor-right; }
     Mod+Shift+N  { move-workspace-to-monitor-right; }
 
-    // -- Screenshots --
-    Print        { screenshot; }
-    Ctrl+Print   { screenshot-screen; }
-    Alt+Print    { screenshot-window; }
+    // -- Screenshots (sway lines 298–299) --
+    // Sway uses grimshot (sway-only) + a custom thumbnail/upload pipeline.
+    // niri's built-ins don't replicate that; bind the closest niri actions and
+    // add upload/thumbnail scripts later if desired.
+    Print        { screenshot-window; }   // sway: grimshot save active
+    Shift+Print  { screenshot; }          // sway: grimshot save anything (+ upload)
 
-    // -- System --
-    Mod+Shift+C       { spawn-sh "niri msg action load-config-file"; }
+    // -- Recording (sway lines 313, 315, 316) --
+    // record-sway likely uses swaymsg internally; you'll need a niri-aware
+    // version (record-niri?) for window/region selection.
+    Mod+Shift+R  { spawn "record-sway"; }
+    Mod+Shift+W  { spawn "record-sway" "window"; }
+    Mod+Shift+T  { spawn-sh "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"; }
+
+    // -- System (sway lines 78, 309, 386, 390, 407) --
+    Mod+Shift+C       { spawn-sh "niri msg action load-config-file"; }   // sway: reload
+    Mod+F6            { spawn-sh "niri msg action load-config-file"; }   // sway: F6 reload
+    Mod+Alt+Escape    { spawn-sh "niri msg action load-config-file"; }   // sway: $mod+$alt+Escape restart
     Mod+Shift+Q       { spawn-sh "ACT=$(printf 'lock\\nlogout\\nsuspend\\nreboot\\nshutdown\\nuefi' | fuzzel -d -p 'system: '); case \"$ACT\" in lock) fancylocksway;; logout) niri msg action quit;; suspend) systemctl suspend;; reboot) systemctl reboot;; shutdown) systemctl poweroff -i;; uefi) systemctl reboot --firmware-setup;; esac"; }
     Ctrl+Alt+Delete   { spawn-sh "[ \"$(printf 'NO\\nYES' | fuzzel -d -p 'Really restart system? ')\" = YES ] && restart-system"; }
-    Mod+Alt+Escape    { spawn-sh "niri msg action load-config-file"; }
 
-    // -- Audio / brightness (swayosd-client, same as sway) --
+    // -- Audio / brightness, swayosd-client (sway lines 347–358) --
     XF86AudioRaiseVolume   allow-when-locked=true { spawn "swayosd-client" "--output-volume" "raise"; }
     XF86AudioLowerVolume   allow-when-locked=true { spawn "swayosd-client" "--output-volume" "lower"; }
     XF86AudioMute          allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle"; }
@@ -323,6 +432,6 @@ binds {
     XF86MonBrightnessUp    allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
     XF86MonBrightnessDown  allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
 
-    // -- Quit (with confirm dialog) --
+    // niri convention: hotkey overlay.
     Mod+Shift+Slash { show-hotkey-overlay; }
 }

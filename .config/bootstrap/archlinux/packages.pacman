@@ -173,3 +173,8 @@ pipewire-pulse
 perl-curses-ui # for tmux copycat
 libvips # used by dirvish
 less
+adobe-source-code-pro-fonts
+ttf-ibm-plex
+otf-atkinson-hyperlegible
+adobe-source-sans-fonts
+otf-fira-sans
