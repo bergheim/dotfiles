@@ -339,9 +339,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
       (gptel-mode)
       ;; (setq-local gptel--system-message (cdr (assoc 'git gptel-directives)))))
       (gptel-request
-       diff
-       :system "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Start with the 80 char summary and then provide relevant details, if any. Keep it short and use bullet-points where it makes sense. Don't add anything else to the response. THE ONLY THING THAT MATTERS IS WHAT THE CHANGE ENABLES, NOT HOW - THAT IS IN THE CODE!"
-       :stream t)))
+          diff
+        :system "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Start with the 80 char summary and then provide relevant details, if any. Keep it short and use bullet-points where it makes sense. Don't add anything else to the response. THE ONLY THING THAT MATTERS IS WHAT THE CHANGE ENABLES, NOT HOW - THAT IS IN THE CODE!"
+        :stream t)))
 
   (defun bergheim/gptel-email-response ()
     (interactive)
@@ -353,9 +353,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
             (gptel-mode)
             ;; (setq-local gptel--system-message (cdr (assoc 'git gptel-directives)))))
             (gptel-request
-             diff
-             :system "The user provides an email that he wants to respond to. You suggest a brief and professional email response. Do not add anything else to the response."
-             :stream t))
+                diff
+              :system "The user provides an email that he wants to respond to. You suggest a brief and professional email response. Do not add anything else to the response."
+              :stream t))
         (funcall curr-mode))))
 
   :custom
@@ -377,8 +377,12 @@ Prompts for session name if none provided. Inserts selected region text into cha
      (org-mode . "* ")
      (text-mode . "@user "))))
 
+(use-package gptel-agent
+  :ensure (:host github :repo "karthink/gptel-agent")
+  :config (gptel-agent-update))
+
 (use-package gptel-quick
-  :ensure (gptel-quick :host github :repo "karthink/gptel-quick")
+  :ensure (:host github :repo "karthink/gptel-quick")
   :after gptel
   :config
   (setq gptel-quick-backend (gptel-get-backend "llama-swap")
@@ -388,16 +392,16 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "sq" 'gptel-quick)
   :bind ("C-c q" . gptel-quick))
 
-(use-package ob-gptel
-  :ensure (:host github :repo "jwiegley/ob-gptel")
-  :hook ((org-mode . ob-gptel-install-completions))
-  :defines ob-gptel-install-completions
-  :config
-  (add-to-list 'org-babel-load-languages '(gptel . t))
-  ;; Optional, for better completion-at-point
-  (defun ob-gptel-install-completions ()
-    (add-hook 'completion-at-point-functions
-              'ob-gptel-capf nil t)))
+;; (use-package ob-gptel
+;;   :ensure (:host github :repo "jwiegley/ob-gptel")
+;;   :hook ((org-mode . ob-gptel-install-completions))
+;;   :defines ob-gptel-install-completions
+;;   :config
+;;   (add-to-list 'org-babel-load-languages '(gptel . t))
+;;   ;; Optional, for better completion-at-point
+;;   (defun ob-gptel-install-completions ()
+;;     (add-hook 'completion-at-point-functions
+;;               'ob-gptel-capf nil t)))
 
 (use-package copilot
   :disabled
@@ -513,5 +517,10 @@ Type an existing name to switch, or a new suffix to start a fresh shell."
 
   (add-hook 'agent-shell-mode-hook #'agent-shell-toggle-logging)
   (setq agent-shell-permission-responder-function #'agent-shell-permission-allow-always)
-  (setq agent-shell-anthropic-claude-acp-command '("claude-agent-acp")))
+  (setq agent-shell-anthropic-claude-acp-command '("claude-agent-acp"))
+  ;; (setq agent-shell-session-strategy 'new)
+  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input))
+
 ;;; ai.el ends here

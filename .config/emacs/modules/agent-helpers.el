@@ -580,12 +580,18 @@ Returns list of plists (:id :title :keywords :path) sorted newest first."
     (insert-file-contents filepath)
     (buffer-string)))
 
-(defun bergheim/agent-denote-list (dir &optional limit)
-  "List denote notes in DIR, newest first. Returns up to LIMIT entries (default 10).
-Each entry is a plist with :id :title :keywords :path."
-  (let* ((all (bergheim/agent-denote-find dir))
-         (n (or limit 10)))
-    (seq-take all n)))
+  (defun bergheim/agent-denote-list (dir &optional limit)
+    "List denote notes in DIR, newest first. Returns up to LIMIT entries (default 10).
+  Each entry is a plist with :id :title :keywords. To read or link, pass
+  :id to the relevant helper, or call `bergheim/agent-denote-find' when
+  you need :path."
+    (let* ((all (bergheim/agent-denote-find dir))
+           (n (or limit 10)))
+      (mapcar (lambda (note)
+                (list :id (plist-get note :id)
+                      :title (plist-get note :title)
+                      :keywords (plist-get note :keywords)))
+              (seq-take all n))))
 
 (defun bergheim/agent-denote-link (source-path target-paths)
   "Add denote links from SOURCE-PATH to each file in TARGET-PATHS.
