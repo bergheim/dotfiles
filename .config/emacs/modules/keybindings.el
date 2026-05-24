@@ -69,11 +69,15 @@
 
   (general-def
     :keymaps '(evil-normal-state-map org-agenda-mode-map global-map)
-    "C-S-u" 'universal-argument
+    "C-M-u" 'universal-argument
     "C-u" 'evil-scroll-up
     "M-r" #'vertico-repeat-select
     ;; I sometimes want to use C-h for other things..
     "C-c h" 'help-command)
+
+  (general-def
+    :keymaps 'evil-insert-state-map
+    "C-M-u" 'universal-argument)
 
   (general-def
     :keymaps '(evil-motion-state-map)
@@ -180,8 +184,8 @@
     ;; TODO are these useful?
     ;; "cR" '(xref-query-replace-in-results :which-key "Rename")
     ;; "cR" '(xref-find-references-and-replace :which-key "Rename")
-    "ce" '(consult-flymake :which-key "Search errors")
-    "cE" '(flymake-show-buffer-diagnostics :which-key "Show errors")
+    "ce" '((lambda () (interactive) (consult-flymake t)) :which-key "Search errors")
+    "cE" '(flymake-show-project-diagnostics :which-key "Show errors")
     
     "d" '(:ignore t :which-key "dotfiles")
     "dd" (lambda () (interactive) (magit-status "/yadm::") :which-key "Magit")
