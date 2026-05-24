@@ -1,4 +1,15 @@
 #!/bin/sh
+# Screencast recorder for sway/niri. Records via wf-recorder to mkv,
+# then transcodes to a looping webp for sharing.
+#
+# Usage:
+#   record-sway          # interactive region (slurp)
+#   record-sway window   # focused window rect (sway only;
+#                        # niri/unknown falls back to slurp)
+#
+# Stop the take with the bound key (pkill -INT wf-recorder).
+
+set -eu
 
 VIDDIR="$HOME/Videos/screencasts"
 mkdir -p "$VIDDIR"
@@ -6,28 +17,32 @@ STAMP=$(date +%F_%H%M%S)
 TMPVID="$VIDDIR/screencast_$STAMP.mkv"
 OUTWEBP="$VIDDIR/screencast_$STAMP.webp"
 
-# disable notifications while recording
-makoctl set-mode do-not-disturb
+focused_rect_sway() {
+    [ -n "${SWAYSOCK:-}" ] || return 0
+    command -v swaymsg >/dev/null 2>&1 || return 0
+    swaymsg -t get_tree 2>/dev/null \
+        | jq -r '.. | select(.focused? == true) | .rect
+                 | "\(.x),\(.y) \(.width)x\(.height)"'
+}
 
-# Get recording area: either use argument "window" or prompt with slurp
-if [ "$1" = "window" ]; then
-    RECT=$(swaymsg -t get_tree | \
-        jq -r '.. | select(.focused? == true) | .rect | "\(.x),\(.y) \(.width)x\(.height)"')
-
+if [ "${1:-}" = window ]; then
+    RECT=$(focused_rect_sway)
     if [ -z "$RECT" ]; then
-        notify-send "Wayland WebP Record" "Could not find focused window. Falling back to region select."
+        notify-send "Wayland WebP Record" \
+            "No focused-window rect (niri or unknown compositor); region select."
         RECT=$(slurp)
     fi
 else
     RECT=$(slurp)
 fi
 
-# notify-send "Wayland WebP Record" "Recording area: $RECT"
+# Restore mako on any exit (incl. SIGINT from the stop-bind).
+trap 'makoctl set-mode default 2>/dev/null || true' EXIT INT TERM
+makoctl set-mode do-not-disturb 2>/dev/null || true
+
 wf-recorder -g "$RECT" -f "$TMPVID"
 
-makoctl set-mode default
-
 notify-send "Wayland WebP Record" "Converting to webp..."
-ffmpeg -i "$TMPVID" -vf "fps=10,scale=1280:-1:flags=lanczos" -loop 0 "$OUTWEBP"
-
+ffmpeg -y -i "$TMPVID" \
+    -vf "fps=10,scale=1280:-1:flags=lanczos" -loop 0 "$OUTWEBP"
 notify-send "Wayland WebP Record" "Done! Output: $OUTWEBP"
