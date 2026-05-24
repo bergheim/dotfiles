@@ -350,11 +350,13 @@ Defaults to dark when gsettings is unavailable."
 (defun bergheim/theme-dark ()
   (interactive)
   (consult-theme bergheim/theme-dark)
+  (bergheim/set-erc-log-match-format)
   (setq bergheim/dark-mode-p t))
 
 (defun bergheim/theme-light ()
   (interactive)
   (consult-theme bergheim/theme-light)
+  (bergheim/set-erc-log-match-format)
   (setq bergheim/dark-mode-p nil))
 
 ;; (use-package doom-themes
@@ -440,7 +442,7 @@ Defaults to dark when gsettings is unavailable."
 ;;   :init (breadcrumb-mode))
 
 (use-package spacious-padding
-  :ensure
+  :demand
   :config
   (setq spacious-padding-widths
         '(:internal-border-width 15

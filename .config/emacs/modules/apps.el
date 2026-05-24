@@ -264,7 +264,7 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
   (erc-autojoin-timing 'ident)
   (erc-autojoin-delay 5)
-  (erc-fill-static-center 14)
+  (erc-fill-static-center 3)
   (erc-fool-highlight-type 'all)
 
   ;;;; Logging
@@ -277,15 +277,31 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
   (erc-fools bergheim/irc-fools)
   (erc-header-line-format nil)
   (erc-log-insert-log-on-open t)
-  (erc-insert-timestamp-function 'erc-insert-timestamp-left)
+  (erc-insert-timestamp-function 'erc-insert-timestamp-right)
   (erc-timestamp-only-if-changed-flag t)
   (erc-interpret-mirc-color t)
   (erc-join-buffer 'buffer)
   ;; (erc-nicks-contrast-range '(1 . 100))
   (erc-nick "tsb")
-  (erc-prompt (format ">"))
   (erc-prompt-for-password nil)
   (erc-prompt "⟩")
+  (erc-prompt (lambda () (concat
+                          (propertize
+                           (format "%c"
+                                   (char-from-name
+                                    "TOP LEFT HALF BRACKET"))
+                           ;;"⸢"
+                           'face '(:family "Symbola")
+                           )
+                          (buffer-name)
+                          (propertize
+                           (format "%c ⟩ "
+                                   (char-from-name
+                                    "BOTTOM RIGHT HALF BRACKET"))
+                           ;;"⸥"
+                           'face '(:family "Symbola"))
+                          )))
+
 
   :general
   (bergheim/global-menu-keys
@@ -331,6 +347,14 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 
   (add-to-list 'erc-modules 'scrolltobottom)
 
+  (defun erc-cmd-LATEST (&rest args)
+    "Get latest messages using IRCv3 CHATHISTORY.
+Usage: /LATEST [count] (defaults to 100)"
+    (let ((count (if args
+                     (string-to-number (car args))
+                   100)))
+      (erc-server-send (format "CHATHISTORY LATEST %s * %d" 
+                               (erc-default-target) count))))
   (defun bergheim/erc-buffer-connected-p (buffer)
     "Check if ERC BUFFER is connected."
     (with-current-buffer buffer
@@ -460,7 +484,169 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
                 "<\\(@?[A-Za-z0-9_]+\\)> "
                 nil t)
           (push (match-string 1) nicks)))
-      nicks)))
+      nicks))
+
+;;;; (core) erc erc-match
+
+  ;; Hijack ERC-match module in order to create a "unified inbox" type
+  ;; of buffer which contains all incoming messages from all channel
+  ;; buffers.
+
+  (define-advice erc-log-match-make-buffer (:filter-return (buffer))
+    "Enable `visual-line-mode'."
+    (with-current-buffer buffer (visual-line-mode))
+    buffer)
+
+  (setopt erc-keyword-highlight-type
+          nil)
+  (setopt erc-keywords
+          (cons "$" bergheim/irc-keywords))
+  (setopt erc-log-matches-flag
+          t)
+  (setopt erc-log-matches-types-alist
+          '((keyword . "erc-unified")))
+  (setopt erc-match-exclude-server-buffer
+          t)
+
+  ;; (setopt erc-log-match-format
+  ;;         (concat
+  ;;          (propertize "%t" 'face (list :foreground faded))
+  ;;          " "
+  ;;          (propertize "%c" 'face (list :foreground bright-blue))
+  ;;          " "
+  ;;          (propertize "%n" 'face (list :foreground bright-yellow))
+  ;;          ": "
+  ;;          (propertize "%m"
+  ;;                      'wrap-prefix (list 'space :width 4)
+  ;;                      'line-prefix (list 'space :width 4))))
+
+
+
+  (defun bergheim/set-erc-log-match-format ()
+    "Set `erc-log-match-format` colors based on the current theme."
+    (let* ((is-dark (bergheim//system-dark-mode-enabled-p))
+           (faded (if is-dark "#5b5b5b" "#888888"))
+           (bright-blue (if is-dark "#61afef" "#007acc"))
+           (bright-yellow (if is-dark "#e4c44c" "#b5a11e")))
+      (setopt erc-log-match-format
+              (concat
+               (propertize "%t" 'face (list :foreground faded))
+               " "
+               (propertize "%c" 'face (list :foreground bright-blue))
+               " "
+               (propertize "%n" 'face (list :foreground bright-yellow))
+               ": "
+               (propertize "%m"
+                           'wrap-prefix (list 'space :width 4)
+                           'line-prefix (list 'space :width 4))))))
+
+
+  ;; Call the function to set the format initially
+  (bergheim/set-erc-log-match-format)
+
+  ;; Update the ERC log format when the theme changes.
+  (add-hook 'after-load-theme-hook #'bergheim/set-erc-log-match-format)
+
+  (defun bergheim/erc-custom-prompt ()
+    (setq-local erc-prompt
+                (lambda ()
+                  (concat
+                   (propertize
+                    (format "%c"
+                            (char-from-name
+                             "TOP LEFT HALF BRACKET"))
+                    ;;"⸢"
+                    'face '(:family "Symbola")
+                    )
+                   (buffer-name)
+                   (propertize
+                    (format "%c ⟩"
+                            (char-from-name
+                             "BOTTOM RIGHT HALF BRACKET"))
+                    ;;"⸥"
+                    'face '(:family "Symbola"))))))
+
+  (add-hook 'erc-join-hook #'bergheim/erc-custom-prompt)
+
+  (define-derived-mode bergheim/erc-unified-mode fundamental-mode "ERC-Unified"
+    "Major mode for ERC unified log buffer."
+
+    ;; (setq-local erc-input-line-position 0)
+    ;; (setq-local erc-scrolltobottom-all 'relaxed)
+    ;; (setq-local erc-scrolltobottom-all nil)
+    (setq-local scroll-conservatively most-positive-fixnum)
+    (setq-local auto-window-vscroll nil)
+    ;; Disable ERC scrolling behaviors
+    (remove-hook 'post-command-hook 'erc-scrolltobottom-all t)
+    (remove-hook 'window-scroll-functions 'erc-scrolltobottom-all t)
+    (setq-local buffer-read-only t))
+
+  (evil-define-key 'normal bergheim/erc-unified-mode-map
+    (kbd "RET") #'bergheim/erc-unified-visit)
+
+  (defun bergheim/erc-unified-visit ()
+    "In an `erc-unified' buffer, jump to the same message in its channel buffer.
+Searches from the bottom of the channel buffer backward for the exact text."
+    (interactive)
+    (let* ((line (buffer-substring-no-properties
+                  (line-beginning-position)
+                  (line-end-position)))
+           ;; match “[time] #chan nick:
+           message…”
+           (re   "^\\[.*?\\] \\([^ ]+\\) [^:]+: \\(.*\\)$")
+           (chan (and (string-match re line) (match-string 1 line)))
+           (msg  (and (string-match re line) (match-string 2 line)))
+           (buf  (and chan (get-buffer chan))))
+      (unless (and buf msg)
+        (user-error "Cannot parse channel or message"))
+      ;; switch to channel buffer in another window (splits if needed)
+      (switch-to-buffer-other-window buf)
+      (evil-normal-state)
+      ;; go to bottom and search backward for the exact message text
+      (goto-char (point-max))
+      (if (re-search-backward (regexp-quote msg) nil t)
+          (goto-char (match-beginning 0))
+        (message "ERC[%s]: \"%s\" not found, at bottom" chan msg)
+        (goto-char (point-max))))))
+
+(use-package erc-image
+  :after erc
+  :demand t
+  :hook (erc-mode-hook . erc-image-mode)
+  :config
+  (setopt erc-image-inline-rescale 'window)
+  (erc-update-modules))
+
+;; FIXME: fucks up mu4e view
+(use-package image-slicing
+  :demand
+  :ensure (:host github :repo "ginqi7/image-slicing")
+  :general
+  (bergheim/global-menu-keys
+    "tu" #'bergheim/toggle-line-spacing-for-images)
+  :config
+  (defvar bergheim/original-line-spacing nil
+    "Store the original line-spacing value before setting to 0.")
+
+  (defun bergheim/toggle-line-spacing-for-images ()
+    "Toggle line-spacing between 0 and whatever it was before."
+    (interactive)
+    (if (and (numberp line-spacing) (= line-spacing 0))
+        (setq line-spacing bergheim/original-line-spacing)
+      (setq bergheim/original-line-spacing line-spacing)
+      (setq line-spacing 0))
+    (redisplay))
+  ;; (setopt line-spacing 0) ;; without this we get gaps
+
+  ;; Only enable in eww-mode, not globally
+  (defun bergheim/enable-image-slicing ()
+    "Enable image-slicing for this buffer."
+    (setq-local shr-external-rendering-functions
+                '((img . image-slicing-tag-img)))
+    (image-slicing-mode 1))
+
+  (add-hook 'eww-mode-hook #'bergheim/enable-image-slicing))
+
 
 (use-package keymap-popup
   :ensure (keymap-popup :host github :repo "emacs-straight/keymap-popup"))
