@@ -54,45 +54,69 @@
 (use-package posframe) ; for dap-ui-controls
 
 (use-package dap-mode
-  :bind ("C-c d" . dap-debug-last)
-  :config
-  (setq dap-auto-configure-features '(sessions locals breakpoints expressions controls)) ; https://github.com/emacs-lsp/dap-mode/issues/314
 
-  ;; (require 'dap-js)        ; ships with the latest dap-mode
+  :bind (("C-c d" . dap-debug-last)
+         ("C-c D" . dap-debug))
+  :general
+  (bergheim/global-menu-keys
+    "d" '(:ignore t :which-key "debug")
+    "dd" '(dap-debug :which-key "start debug")
+    "dl" '(dap-debug-last :which-key "debug last")
+    "db" '(dap-breakpoint-toggle :which-key "toggle breakpoint")
+    "dB" '(dap-breakpoint-delete-all :which-key "delete all breakpoints")
+    "dc" '(dap-continue :which-key "continue")
+    "dn" '(dap-next :which-key "next")
+    "di" '(dap-step-in :which-key "step in")
+    "do" '(dap-step-out :which-key "step out")
+    "dr" '(dap-restart-frame :which-key "restart frame")
+    "ds" '(dap-switch-session :which-key "switch session")
+    "dt" '(dap-terminate :which-key "terminate")
+    "du" '(dap-ui-mode :which-key "toggle ui mode")
+    "de" '(dap-eval :which-key "eval expression")
+    "dh" '(dap-hydra :which-key "debug hydra"))
+  :config
+  (setq dap-auto-configure-features '(sessions locals breakpoints expressions controls tooltip))
+
   (require 'dap-node)
   (dap-node-setup)
 
-  (dap-register-debug-template "Node::Run"
-                               (list :type "pwa-node"
+  ;; Simple Bun execution (most reliable)
+  (dap-register-debug-template "Bun::Run"
+                               (list :type "node"
                                      :request "launch"
-                                     :name "Node :: Run"
-                                     :skipFiles '("<node_internals>/**")
+                                     :name "Bun Run"
+                                     :program "bun"
+                                     :args ["src/index.ts"]
                                      :cwd (expand-file-name (project-root (project-current)))
-                                     :program (expand-file-name
-                                               "src/index.js" (project-root (project-current)))))
+                                     :sourceMaps t))
 
-  (dap-register-debug-template
-   "Node::Attach"
-   (list :type    "pwa-node"
-         :request "attach"
-         :name    "JS::Attach"
-         :host    "127.0.0.1"
-         :port    9229
-         :cwd (expand-file-name (project-root (project-current)))))
+  ;; Node.js with compiled JS
+  (dap-register-debug-template "Node::Run"
+                               (list :type "node"
+                                     :request "launch"
+                                     :name "Node Compiled"
+                                     :program (expand-file-name "dist/index.js" (project-root (project-current)))
+                                     :cwd (expand-file-name (project-root (project-current)))
+                                     :sourceMaps t))
 
-  ;; pull in support for gdb
-  ;; (require 'dap-gdb-lldb)
+  ;; Attach to running process
+  (dap-register-debug-template "Node::Attach"
+                               (list :type "node"
+                                     :request "attach"
+                                     :name "Node Attach"
+                                     :address "localhost"
+                                     :port 9229
+                                     :program "__ignored"  ; workaround for dap-mode bug
+                                     :localRoot (expand-file-name (project-root (project-current)))
+                                     :remoteRoot (expand-file-name (project-root (project-current)))))
+
   (dap-mode 1)
-  ;; show fringe indicators for errors and breakpoints and the like
   (dap-ui-mode 1)
-  ;; displays floating panel with debug buttons, requires emacs 26+ and posframe package
   (dap-ui-controls-mode 1)
-
   (dap-tooltip-mode 1)
   (tooltip-mode 1)
-  ;; automatically trigger the hydra when the program hits a breakpoint
-  (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra)))
-  )
+
+  (add-hook 'dap-stopped-hook (lambda (arg) (call-interactively #'dap-hydra))))
 
 ;; (use-package dap-ui
 ;;   :after dap-mode
