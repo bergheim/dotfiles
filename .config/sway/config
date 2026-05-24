@@ -2,6 +2,9 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
+exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY
+exec systemctl --user start emacs.service
+
 set $mod Mod4
 set $alt Mod1
 
@@ -31,7 +34,8 @@ set $ws13 "13"
 set $monitor1 DP-0
 set $monitor2 DP-2
 
-input "1:1:AT_Translated_Set_2_keyboard" {
+# input "1:1:AT_Translated_Set_2_keyboard" {
+input "type:keyboard" {
     xkb_layout "us,no"
     # xkb_variant ","
     xkb_variant "altgr-intl"
@@ -103,6 +107,13 @@ floating_modifier $mod
 # TODO: move this maybe?
 bindsym $mod+BackSpace kill
 
+bindsym $mod+$alt+BackSpace mode "xkill"
+mode "xkill" {
+    bindsym --whole-window button1 "kill -9"
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
 # change focus
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
@@ -127,8 +138,6 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-bindsym $mod+backslash split toggle
-
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen toggle
 
@@ -143,7 +152,25 @@ bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; 
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+x layout toggle tabbed splitv splith
-bindsym $mod+Shift+x focus parent
+# bindsym $mod+Shift+x focus parent
+
+# focus the child container
+#bindsym $mod+d focus child
+
+# Direct layout selection
+bindsym $mod+s layout stacking
+bindsym $mod+d layout tabbed
+
+# Hierarchy navigation
+bindsym $mod+shift+s focus parent
+bindsym $mod+shift+d focus child
+
+# Container creation (the power moves)
+bindsym $mod+ctrl+s split horizontal; layout stacking
+bindsym $mod+ctrl+d split vertical; layout tabbed
+
+# toggle where to split
+bindsym $mod+backslash split toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+shift+Space focus mode_toggle
@@ -238,14 +265,14 @@ bindsym $mod+$alt+Shift+j resize shrink down 10 px or 10 ppt
 bindsym $mod+$alt+Shift+k resize shrink up 10 px or 10 ppt
 
 # Terminal emulator
-bindsym $mod+Shift+Return exec foot
+bindsym $mod+Shift+Return exec ghostty
 # bindsym $mod+Return exec emacsclient -c -n -F '((menu-bar-lines . 0) (tool-bar-lines . 0) (tab-bar-lines . 0) (vertical-scroll-bars . nil))' -e '(shell (generate-new-buffer-name "*shell*"))'
 
 # Emacsclient
 bindsym $mod+Return exec emacsclient -nc
 
 # File managers
-bindsym $mod+d exec dolphin
+# bindsym $mod+d exec dolphin
 
 # Application launcher (replace rofi with wofi or fuzzel)
 bindsym $mod+r exec fuzzel
@@ -286,7 +313,7 @@ bindsym $mod+F6 reload
 bindsym $mod+Shift+r exec "record-sway"
 # window
 bindsym $mod+Shift+w exec "record-sway window"
-bindsym $mod+Shift+s exec "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"
+bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"
 
 # Media keys
 # bindsym XF86AudioPrev exec playerctl previous  
@@ -338,7 +365,7 @@ bindsym $mod+v exec cliphist list | wofi -dmenu | cliphist decode | wl-copy
 
 # Window switcher (replace rofi)
 bindsym $alt+Tab exec swayr switch-window
-bindsym $mod+Space exec swayr switch-window
+# bindsym $mod+Space exec swayr switch-window
 # bindsym $mod+Tab exec swayr switch-to-urgent-or-lru-window
 
 # Emoji picker
@@ -357,7 +384,7 @@ bindsym $mod+ctrl+2 exec makoctl menu -- fuzzel -d -p 'Select action:'
 # bindsym $mod+Tab exec swaymsg -t get_tree | jq -r '.. | select(.type? == "con" and .app_id?) | "\(.id):\(.app_id) - \(.name)"' | fuzzel --dmenu | cut -d: -f1 | xargs -I{} swaymsg '[con_id={}] focus'
 
 bindsym $mod+Shift+c reload
-# bindsym ctrl+$alt+Delete exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
+bindsym ctrl+$alt+Backspace exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
 
 # bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | bemenu -sb "#b89000" -i -p "Really exit Sway session?") = "YES" ] && reboot'
 bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | fuzzel -d -p "Really restart system? ") = "YES" ] && restart-system'
@@ -510,7 +537,7 @@ assign [class="^discord$"] $ws2
 assign [class="Slack"] $ws2
 assign [class="^Element"] $ws2
 assign [class="^Chromium$"] $ws4
-assign [class="^steam"] $ws7
+# assign [class="^steam"] $ws7
 # }}}
 
 # {{{ automatically starting applications on sway startup
@@ -519,16 +546,18 @@ exec swayrd
 exec wl-paste --watch cliphist store
 exec waybar
 exec mako
+exec kdeconnect-indicator
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec swayosd-server
 exec swayidle -w \
     timeout 300 'fancylocksway' \
-    timeout 600 'swaymsg "output * dpms off"' \
+    timeout 600 'swaymsg "output * power off"' \
+        resume 'swaymsg "output * power on"' \
     timeout 1800 'systemctl suspend-then-hibernate' \
-    resume 'swaymsg "output * dpms on"' \
     before-sleep 'fancylocksway' \
-    after-resume 'swaymsg "output * dpms on"' \
+    after-resume 'swaymsg "output * power on"' \
     lock 'fancylocksway'
+exec kanshi
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
 # }}}
@@ -552,3 +581,5 @@ for_window [title="emacs-float"] floating enable, resize set 800 600, move posit
 for_window [title="Picture-in-Picture"] floating enable, sticky enable
 
 output * bg ~/Pictures/wallpapers/active/light/primary.jpg fill
+
+bindsym $mod+F12 exec journalctl --user -u sway -n 100 > /tmp/sway-debug.log && notify-send "Sway log dumped"
