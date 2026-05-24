@@ -42,7 +42,7 @@
         +org-capture-review-monthly-file (expand-file-name "review/monthly.org" org-directory)
         +org-capture-review-yearly-file (expand-file-name "review/yearly.org" org-directory)
         +org-capture-work-file (concat org-directory "work.org")
-        +org-capture-work-meeting (concat org-directory "roam/work/meetings.org")
+        +org-capture-work-meeting (concat org-directory "meetings.org")
         org-capture-templates
         (doct `(("Personal"
                  :icon ("nf-cod-person" :set "codicon" :color "green")
@@ -141,7 +141,7 @@
                                          :icon ("nf-oct-calendar" :set "octicon" :color "orange")
                                          :keys "s"
                                          :extra "\nSCHEDULED: %^{Start time:}t")))
-                            ("Meeting"
+                            ("Meeting minutes"
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"
                              :jump-to-captured t
