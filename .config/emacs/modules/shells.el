@@ -1,4 +1,4 @@
-;;; shells.el --- Description -*- lexical-binding: t; -*-
+;;; shells.el --- Shell, eshell, eat, vterm, and compilation config -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2026 Thomas Bergheim
 ;;
@@ -27,12 +27,6 @@
   ;; don't ask for history confirmation on quit
   (remove-hook 'kill-buffer-query-functions #'multishell-kill-buffer-query-function))
 
-(defun bergheim/is-remote-shell-p ()
-  "Check if shell is remote by looking for @ in recent prompt."
-  (save-excursion
-    (goto-char (point-max))
-    (re-search-backward "@.*λ" (max 1 (- (point-max) 200)) t)))
-
 (use-package shell
   :ensure nil
   :general
@@ -57,19 +51,6 @@
            (if (comint-after-pmark-p)
                (comint-send-eof)
              (evil-scroll-down nil)))
-   "RET" (lambda ()
-           (interactive)
-           (when (comint-after-pmark-p)
-             (comint-send-input)))
-   ;; "C-r" (lambda ()
-   ;;         (interactive)
-   ;;         (if (bergheim/is-remote-shell-p)
-   ;;             ;; Remote: let shell handle it (fzf via your zsh config)
-   ;;             (comint-send-string (current-buffer) "\C-r")
-   ;;           ;; Local: use consult-history
-   ;;           (goto-char (point-max))
-   ;;           (comint-kill-input)
-   ;;           (consult-history)))
    "C-r" (lambda ()
            (interactive)
            (goto-char (point-max))
@@ -137,10 +118,11 @@
               (lambda ()
                 (remove-hook 'kill-buffer-query-functions
                              'comint-kill-buffer-query-function t)))
-  (setq shell-file-name "/bin/zsh"
-        explicit-shell-file-name "/bin/zsh"
-        explicit-zsh-args '("-i")
-        shell-completion-execonly nil)
+  (let ((zsh (or (executable-find "zsh") "/bin/zsh")))
+    (setq shell-file-name zsh
+          explicit-shell-file-name zsh
+          explicit-zsh-args '("-i")
+          shell-completion-execonly nil))
 
   (defun bergheim/setup-shell ()
     "Custom configurations for shell mode."
@@ -312,23 +294,14 @@
             (insert (format "tmux attach-session -t %s" pane-target))
             (comint-send-input))
           (switch-to-buffer buffer-name)
-          (message "Attaching to tmux pane %s" pane-target)
-          ;; (run-with-timer 2 nil #'bergheim/tmux-emacs-mode-on)
-          (bergheim/tmux-emacs-mode-on)
-          )))))
-
-(add-hook 'kill-buffer-hook
-          (lambda ()
-            (when (and (derived-mode-p 'comint-mode)
-                       (string-match-p "tmux" (buffer-name))
-                       (get-buffer-process (current-buffer)))
-              (bergheim/tmux-emacs-mode-off))))
+          (message "Attaching to tmux pane %s" pane-target))))))
 
 (use-package compile
   :ensure nil
   :hook
   (compilation-filter . ansi-osc-compilation-filter)
   (compilation-filter . ansi-color-compilation-filter)
+  (typescript-ts-mode . +typescript-compiler-h)
   :general
   (bergheim/global-menu-keys
     "pc" '(bergheim/project-compile-dwim :which-key "compile")
@@ -338,8 +311,37 @@
   (compilation-max-output-line-length nil)
   (compilation-ask-about-save nil)
   (compilation-scroll-output t)
+  (compilation-auto-jump-to-first-error t)
 
   :config
+  (defun bergheim/trust-dev-dir-locals (orig-fun var val)
+    "Auto-approve all dir-locals under ~/dev/."
+    (if (and buffer-file-name
+             (string-prefix-p (expand-file-name "~/dev/")
+                              (file-name-directory buffer-file-name)))
+        t
+      (funcall orig-fun var val)))
+  (advice-add 'safe-local-variable-p :around #'bergheim/trust-dev-dir-locals)
+
+  ;; Add a generic file:line:col matcher without wiping the built-ins
+  ;; (gcc, python, ruby, etc. ship with sensible regexps already).
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(file-line-col
+                 "\\([^[:space:]:\n]+\\.[a-zA-Z0-9]+\\):\\([0-9]+\\):\\([0-9]+\\)"
+                 1 2 3))
+  (add-to-list 'compilation-error-regexp-alist 'file-line-col)
+
+  (defun +typescript-compiler-h ()
+    (setq-local compile-command "npm run dev")
+    ;; Register the TS stack-trace matcher globally (idempotent) and
+    ;; prefer it for this buffer's compilations — don't clobber others.
+    (add-to-list 'compilation-error-regexp-alist-alist
+                 '(typescript-stack
+                   "(\\([^):\n]+\\):\\([0-9]+\\):\\([0-9]+\\))"
+                   1 2 3))
+    (setq-local compilation-error-regexp-alist
+                '(typescript-stack file-line-col)))
+
   (setq project-compilation-buffer-name-function
         (lambda (dir)
           (format "*compilation-%s*" (project-name (project-current)))))
@@ -374,37 +376,6 @@
 ;;   (with-eval-after-load 'compile
 ;; 						(fancy-compilation-mode)))
 
-
-(defun bergheim/tmux-emacs-mode-on ()
-  "Configure current tmux session for Emacs-friendly behavior."
-  (interactive)
-  (when (and (derived-mode-p 'comint-mode)
-             (string-match-p "tmux" (buffer-name)))
-    (let ((commands '("tmux set-option -p status off"
-                      "_zsh_autosuggest_disable"
-                      "unsetopt AUTO_MENU"
-                      "bindkey -M viins '^R' history-incremental-search-backward")))
-      ;; kind of dangerous to just straight up send these
-      ;; (comint-send-string (current-buffer) "\C-c")
-      ;; (sit-for 0.1)
-      ;; (comint-send-string (current-buffer) "\C-u")
-      ;; (sit-for 0.1)
-      (dolist (cmd commands)
-        (comint-send-string (current-buffer) (concat cmd "\n")))
-      (message "Tmux session configured for Emacs"))))
-
-(defun bergheim/tmux-emacs-mode-off ()
-  "Restore original tmux session behavior."
-  (interactive)
-  (when (and (derived-mode-p 'comint-mode)
-             (string-match-p "tmux" (buffer-name)))
-    (let ((commands '("tmux set-option -p status on"
-                      "_zsh_autosuggest_enable"
-                      "setopt AUTO_MENU"
-                      "bindkey -M viins '^R' fzf-history-widget"))) ; Restore fzf
-      (dolist (cmd commands)
-        (comint-send-string (current-buffer) (concat cmd "\n")))
-      (message "Tmux session restored to original behavior"))))
 
 (use-package coterm
   :after shell
@@ -451,8 +422,11 @@
 
   (setq eshell-prompt-function 'bergheim/eshell-prompt)
 
-  (defun eshell-get-old-input ()
-    "Retrieve the current input from the Eshell prompt in the buffer."
+  (defun bergheim/eshell-get-old-input ()
+    "Return the eshell input from start-of-input to point.
+Unlike the built-in `eshell-get-old-input', this only returns what
+has been typed up to point — used by the consult/affe helpers below
+that want to grab a partial command line."
     (buffer-substring-no-properties
      (save-excursion (eshell-bol) (point))
      (point)))
@@ -486,7 +460,7 @@
   (defun eshell/find-file-with-affe ()
     "Search for files using affe based on the current Eshell input and insert the selected file path into Eshell."
     (interactive)
-    (let* ((input (eshell-get-old-input))
+    (let* ((input (bergheim/eshell-get-old-input))
            ;; Extract the command and arguments from the input
            (args (split-string input "[ \t\n]+" t))
            (command (car args))
@@ -507,7 +481,7 @@
   (defun eshell/find-file-with-consult ()
     "Find files from your current dir args"
     (interactive)
-    (let* ((input (eshell-get-old-input))
+    (let* ((input (bergheim/eshell-get-old-input))
            ;; Extract arguments from input
            (args (split-string input "[ \t\n]+" t))
            (command (or (car args) ""))
@@ -557,7 +531,7 @@
   (defun bergheim/open-dired-and-insert-file ()
     "Open Dired for the current input directory and insert selected file back into Eshell."
     (interactive)
-    (let* ((current-input (eshell-get-old-input))
+    (let* ((current-input (bergheim/eshell-get-old-input))
            (parts (split-string current-input " "))
            (command (car parts))
            (path (mapconcat 'identity (cdr parts) " "))
@@ -589,7 +563,7 @@
   (defun bergheim/extract-path ()
     "Extract the path or return nil if not found."
     (interactive) ;; TODO remove this
-    (let* ((current-input (eshell-get-old-input))
+    (let* ((current-input (bergheim/eshell-get-old-input))
            (parts (split-string current-input " "))
            (command (car parts))
            (path (mapconcat 'identity (cdr parts) " "))
@@ -634,8 +608,6 @@ Open `dired` in the resolved directory of the current command."
             (lambda ()
               (evil-define-key 'insert eshell-mode-map (kbd "TAB") 'bergheim/completion-at-point-or-dired)
               (evil-define-key 'insert eshell-mode-map (kbd "C-d") 'bergheim/exit-eshell-from-insert-mode)
-
-              (eshell/alias "cat" "eshell/cat $*")
 
               (evil-define-key 'normal eshell-mode-map
                 ;; this binding is pretty non-standard, but who uses A in the shell..
@@ -686,14 +658,11 @@ Open `dired` in the resolved directory of the current command."
             (lambda ()
               (evil-define-key 'insert eat-mode-map (kbd "C-r") 'bergheim/eat-ctrl-r)))
   :custom
-  (eat-shell "/bin/zsh")
+  (eat-shell (or (executable-find "zsh") "/bin/zsh"))
   ;; works pretty well with vi mode.. except for fzf
   (eat-enable-auto-line-mode t)
   (eat-kill-buffer-on-exit t)
   :general
-  (:states 'insert
-   :keymaps 'eat-mode-map
-   "C-r" #'consult-history)  ; Same as shell-mode
   (bergheim/global-menu-keys
     "atE" '(eat :which-key "Eat"))
   :config
@@ -720,7 +689,7 @@ Open `dired` in the resolved directory of the current command."
   (bergheim/global-menu-keys
     "atv" '(vterm :which-key "vterm"))
   :config
-  (setq vterm-shell "/usr/bin/zsh")
+  (setq vterm-shell (or (executable-find "zsh") "/usr/bin/zsh"))
   (setq vterm-max-scrollback 10000)
   (setq vterm-set-bold-hightbright t)
   (add-hook 'vterm-mode-hook
