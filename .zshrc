@@ -548,3 +548,15 @@ export PYROSCOPE_HOST=http://$BERGHOME:4040
 
 [ -f ~/.zshrc.container ] && source ~/.zshrc.container
 
+share() {
+    local target="${1:-.}" abs base
+    abs=$(realpath "$target") || return 1
+    base=$(basename "$abs")
+    if [ -d "$abs" ]; then
+        rsync -a "$abs/" "laptop:~/share-inbox/$base/"
+        ssh laptop "xdg-open ~/share-inbox/$base/"
+    else
+        scp "$abs" "laptop:~/share-inbox/$base"
+        ssh laptop "xdg-open ~/share-inbox/$base"
+    fi
+}
