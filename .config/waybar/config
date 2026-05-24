@@ -17,12 +17,15 @@
 
     "modules-left": [
       // "custom/misc_menu",
+      // sway/* render empty under niri and vice-versa; both kept for
+      // dual sway+niri support. sway/scratchpad omitted (no niri equiv).
+      "niri/workspaces",
       "sway/workspaces",
-      // "sway/scratchpad",
-      "sway/mode",
+      "sway/mode"
     ],
 
     "modules-center": [
+      "niri/window",
       "sway/window"
     ],
 
@@ -63,6 +66,44 @@
       }
     },
 
+    // sway + niri both supported (user alternates sessions). A sway
+    // CLONE of this block lives below — keep both format-icons maps
+    // identical, and likewise for sway/window + niri/window.
+    "niri/workspaces": {
+        "all-outputs": false,
+        // niri-only. NOTE: hide-empty only culls *dynamic/unnamed*
+        // empty workspaces. The ws "1".."13" defined in config.kdl are
+        // NAMED workspaces, which niri keeps persistent by design — it
+        // CANNOT hide those when empty. So this does NOT give full
+        // sway-like behaviour while config.kdl names every workspace.
+        // Kept on because it still removes niri's trailing dynamic
+        // empties. Do NOT mirror onto sway/workspaces (sway auto-
+        // destroys empty workspaces; the option is a no-op there).
+        "hide-empty": true,
+        "format": "{icon}",
+        "format-icons": {
+            "1": "󰈹",      // firefox (browser)
+            "2": "󰭹",      // chat
+            "3": "󰝚",      // music/spotify
+            "4": "󰇮",      // email
+            "5": "󰚀",      // emacs
+            "5": "λ",       // lambda
+            "6": "󰚀",      // emacs (second workspace)
+            "7": "󰊴",      // games
+            "8": "󰧞",      // general
+            "9": "󰧞",      // general
+            "10": "󰍹",     // monitor2
+            "11": "󰍹",     // monitor2
+            "12": "󰍹",     // monitor2
+            "13": "󰍹",     // monitor2
+            "urgent": "󰀪",
+            // "focused": "󰮯",
+            "default": "󰧞"
+        }
+    },
+
+    // CLONE of niri/workspaces for sway sessions.
+    // KEEP format-icons IDENTICAL to niri/workspaces above.
     "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": false,
@@ -95,15 +136,19 @@
       "tooltip-format": "{app}: {title}"
     },
 
-    "sway/window": {
-      "format": "{shell}: {title}",
+    "niri/window": {
+      "format": "{title}",
       "max-length": 100,
       "icon": true,
       "icon-size": 20,
-      "rewrite": {
-        "xdg_shell: (.*)": "  $1",
-        "xwayland: (.*)": "  $1",  // rise monads
-      },
+    },
+
+    // CLONE of niri/window for sway sessions (format kept identical).
+    "sway/window": {
+      "format": "{title}",
+      "max-length": 100,
+      "icon": true,
+      "icon-size": 20,
     },
 
     /* Modules-Center */
@@ -319,9 +364,9 @@
 
     "custom/keymap": {
         "format": "{}",
-        "exec": "bash ~/.config/waybar/scripts/keymap.sh",
-        "interval": 1,
-        "on-click": "swaymsg input type:keyboard xkb_switch_layout next"
+        "exec": "~/.config/waybar/scripts/keymap.sh",
+        "interval": 2,
+        "on-click": "~/.config/waybar/scripts/keymap.sh toggle"
     },
 
     "tray": {
