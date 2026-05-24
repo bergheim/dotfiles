@@ -60,10 +60,11 @@
   :ensure t
   :hook (emacs-startup . global-jinx-mode)
   :config
-  (setq jinx-completion-method 'vertico))
+  (setq jinx-completion-method 'vertico
+        jinx-languages "en_US nb_NO"))
 
 (defvar bergheim/jinx-languages
-  '("en_US" "nb" "fr_FR" "de_DE"))
+  '("en_US" "nb_NO" "fr_FR" "de_DE"))
 
 (defun bergheim/jinx-language-sort (cands)
   (let ((langs (seq-intersection cands bergheim/jinx-languages)))
@@ -258,20 +259,20 @@ Lisp function does not specify a special indentation."
   :config
   (engine-mode t)
   (defengine duckduckgo "https://search.ts.glvortex.net/search?q=%s"
-    :keybinding "e"
-    :browser 'eww)
+             :keybinding "e"
+             :browser 'eww)
   (defengine duckduckgo-external "https://search.ts.glvortex.net/search?q=%s"
-    :keybinding "E")
+             :keybinding "E")
   (defengine github "https://github.com/search?ref=simplesearch&q=%s"
-    :keybinding "h")
+             :keybinding "h")
   (defengine google "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
-    :keybinding "g")
+             :keybinding "g")
   (defengine wikipedia "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
-    :keybinding "w")
+             :keybinding "w")
   (defengine wolfram-alpha "https://www.wolframalpha.com/input/?i=%s"
-    :keybinding "a")
+             :keybinding "a")
   (defengine youtube "https://www.youtube.com/results?aq=f&oq=&search_query=%s"
-    :keybinding "t"))
+             :keybinding "t"))
 
 ;;;###autoload
 (defun bergheim/find-in-dotfiles ()
@@ -384,23 +385,31 @@ Lisp function does not specify a special indentation."
     (setq-local header-line-format
                 (format " %s to insert text or %s to cancel."
                         (propertize "C-c C-c" 'face 'help-key-binding)
-			            (propertize "C-c C-k" 'face 'help-key-binding)))
-    (local-set-key (kbd "C-c C-k")
-		           (lambda () (interactive)
-		             (kill-new (buffer-string))
-		             (delete-frame)))
-    (local-set-key (kbd "C-c C-c")
-		           (lambda () (interactive)
-		             (start-process-shell-command
-		              "wtype" nil
-		              (thanos/wtype-text (buffer-string)))
-		             (delete-frame)))))
+			(propertize "C-c C-k" 'face 'help-key-binding)))
+    (let ((map (make-sparse-keymap)))
+      (set-keymap-parent map (current-local-map))
+      (define-key map (kbd "C-c C-k")
+        (lambda () (interactive)
+          (kill-new (buffer-string))
+          (delete-frame)))
+      (define-key map (kbd "C-c C-c")
+        (lambda () (interactive)
+          (start-process-shell-command
+           "wtype" nil
+           (thanos/wtype-text (buffer-string)))
+          (delete-frame)))
+      (use-local-map map))))
 
 (use-package term-keys
   :ensure (:host github :repo "CyberShadow/term-keys")
   :demand
   :config
   (term-keys-mode t))
+
+(use-package mise
+  :disabled
+  :config
+  (global-mise-mode))
 
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here
