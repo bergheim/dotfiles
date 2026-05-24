@@ -39,6 +39,18 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   :defer t
   :bind (("M-<mouse-1>" . eglot-find-implementation))
   :config
+  ;; make it possible to follow eldoc links
+  (defun eglot-open-link ()
+    (interactive)
+    (if-let* ((url (get-text-property (point) 'help-echo)))
+        (browse-url url)
+      (user-error "No URL at point")))
+
+  (define-advice eldoc-display-in-buffer (:after (&rest _) update-keymap)
+    (with-current-buffer eldoc--doc-buffer
+      (keymap-local-set "RET" #'eglot-open-link)
+      (general-define-key :keymaps 'local :states 'motion "RET" #'eglot-open-link)))
+
   ;; disabling event logging
   (setq eglot-events-buffer-size 0)
   (add-to-list 'eglot-server-programs
@@ -71,6 +83,13 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (add-to-list 'eglot-server-programs
                '(org-mode . ("harper-ls" "--stdio")))
 
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("pyright-langserver" "--stdio")))
+
+  ;; (add-to-list 'eglot-server-programs
+  ;;              '((js-mode js-ts-mode tsx-ts-mode typescript-ts-mode typescript-mode)
+  ;;                "biome" "lsp-proxy"))
+
   ;; ignore debug logging - should speed up LSP
   (fset #'jsonrpc--log-event #'ignore)
   :custom
@@ -79,6 +98,8 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   :hook
   (eglot-managed-mode . me/eglot-inlay-hints-maybe)
   (eglot-managed-mode . bergheim/eglot-capf)
+  (eglot-managed-mode . (lambda ()
+                          (evil-local-set-key 'normal (kbd "K") #'eldoc-print-current-symbol-info)))
   (web-mode . eglot-ensure)
   (python-ts-mode . eglot-ensure)
   (rust-ts-mode . eglot-ensure)
@@ -97,10 +118,27 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
     "c o" '(eglot-code-action-organize-imports :which-key "Organize imports")))
 
 (use-package eldoc-box
-  :after eglot
+  :ensure t
+  :custom
+  (eldoc-box-clear-with-C-g t)
   :config
-  (add-hook 'eldoc-box-buffer-setup-hook #'eldoc-box-prettify-ts-errors 0 t)
-  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+  (setq eldoc-box-position-function #'eldoc-box--default-at-point-position-function)
+
+  (defun bergheim/eldoc-box-toggle ()
+    "Toggle eldoc-box-hover-mode."
+    (interactive)
+    (eldoc-box-hover-mode (if eldoc-box-hover-mode -1 1)))
+
+  :general
+  (bergheim/global-menu-keys
+    "t h" '(bergheim/eldoc-box-toggle :which-key "Eldoc box"))
+
+  :hook
+  (eldoc-box-buffer-setup . eldoc-box-prettify-ts-errors)
+  (eglot-managed-mode . (lambda ()
+                          (setq-local eldoc-idle-delay 3.0)
+                          (eldoc-box-hover-mode 1)
+                          (evil-local-set-key 'normal (kbd "K") #'eldoc-print-current-symbol-info))))
 
 (use-package consult-eglot
   :ensure t
@@ -161,6 +199,25 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                                "*/.pnpm/*"]
                    )
                  ))
+
+  (setq dape-configs
+        (seq-filter (lambda (config)
+                      (not (eq (car config) 'bun-debug)))
+                    dape-configs))
+
+  ;; Now add ONE clean config - bun needs to be started separately
+  (with-eval-after-load 'dape
+    (add-to-list 'dape-configs
+                 '(bun-debug
+                   modes (js-mode js-ts-mode typescript-mode typescript-ts-mode)
+                   ensure dape-ensure-command
+                   command "node"
+                   command-args ("/home/tsb/.cache/emacs/var/dape/adapters/js-debug/src/dapDebugServer.js" :autoport)
+                   port :autoport
+                   :type "pwa-node"
+                   :request "attach"
+                   :port 9229)))
+
   ;; (setq dape-configs (assq-delete-all 'nextjs-debug dape-configs))
 
   ;; Info buffers to the right
