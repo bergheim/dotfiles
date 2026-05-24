@@ -78,4 +78,13 @@
    'org-babel-load-languages
    (append org-babel-load-languages '((typescript . t)))))
 
+(use-package verb
+  :after org
+  :demand t
+  :config
+  (require 'ob-verb)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages '((verb . t)))))
+
 ;; (provide 'langs)
