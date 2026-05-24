@@ -140,12 +140,6 @@
     (elfeed-protocol-fever-reinit bergheim/elfeed-fever-url))
   :config
   (setq elfeed-use-curl t)
-  ;; nextcloud
-  ;; (setq elfeed-protocol-feeds '(("owncloud+https://tsb@cloud.thomasbergheim.com"
-  ;;                                :password (password-store-get "websites/cloud.thomasbergheim.com/tsb"))))
-  ;; (setq elfeed-protocol-enabled-protocols '(owncloud))
-  ;; (setq elfeed-protocol-owncloud-star-tag 'star)
-
   ;; miniflux / fever
   (setq elfeed-protocol-fever-update-unread-only nil)
   (setq elfeed-protocol-fever-fetch-category-as-tag nil)
