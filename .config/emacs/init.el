@@ -1,4 +1,4 @@
-;;; init.el --- Emacs configuration -*- lexical-binding: t -*-
+;;; init.el --- Emacs configuration -*- lexical-binding: t; no-native-compile: t; no-byte-compile: t -*-
 
 (defvar bergheim/container-mode-p
   (getenv "EMACS_CONTAINER")
@@ -125,35 +125,43 @@
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir))
       (modules
-       '("evil.module"
-         "base"
-         "style"
-         "vcs"
-         "formating"
-         "nav"
-         "keybindings"
-         "programming"
-         "completion"
-         ;; "lsp"
+       '("bergheim-evil"
+         "bergheim-base"
+         "bergheim-tramp"
+         "bergheim-style"
+         "bergheim-vcs"
+         "bergheim-formatting"
+         "bergheim-nav"
+         "bergheim-keybindings"
+         "bergheim-diagnostics"
+         "bergheim-programming"
+         "bergheim-completion"
+         ;; "bergheim-lsp"
          "bergheim-eglot"
          ;; I for one come our new AI overlords
-         "ai"
-         "ssherpa"
-         "session"
-         ;; TODO split this up
-         "utils"
-         "workspace"
-         "shells"
+         "bergheim-ai"
+         "bergheim-ssherpa"
+         "bergheim-session"
+         "bergheim-utils"
+         "bergheim-writing"
+         "bergheim-containers"
+         "bergheim-workspace"
+         "bergheim-compile"
+         "bergheim-shells"
+         "bergheim-viewers"
 		 "orgmode/init"
          "bergheim-denote"
-         "agent-helpers"
+         "bergheim-agent-helpers"
          )))
 
   (unless bergheim/container-mode-p
     (setq modules (append modules
-                          '( "karakeep"
+                          '( "bergheim-karakeep"
                              "mu4e/init"
-                             "apps"))))
+                             "bergheim-browser"
+                             "bergheim-feeds"
+                             "bergheim-chat"
+                             "bergheim-apps"))))
   (dolist (file modules)
     (load-file (expand-file-name (format "%s.el" file) module-dir))))
 

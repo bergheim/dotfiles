@@ -220,4 +220,4 @@ With universal argument, prompt for list selection."
        (t
         (karakeep-send-link list-id))))))
 
-(provide 'karakeep-send)
+(provide 'bergheim-karakeep)

@@ -1,230 +1,6 @@
-;; -*- lexical-binding: t; -*-
-
-(use-package password-store
-  :general
-  (bergheim/global-menu-keys
-    "yp" 'password-store-copy
-    "ip" 'password-store-generate
-    "iP" 'password-store-generate-no-symbols))
-
-(use-package pass
-  :unless bergheim/container-mode-p)
-
-(use-package shr
-  :ensure nil
-  :custom
-  ;; (toggle-truncate-lines 1)
-  (shr-max-width 120))
-
-(use-package proced
-  :ensure nil
-  :commands proced
-  :general
-  (bergheim/global-menu-keys
-    "ap" '(proced :which-key "Proced"))
-  :hook
-  (proced-post-display . hl-line-mode)
-  :custom
-  (proced-auto-update-flag 'visible)
-  (proced-auto-update-interval 2)
-  (proced-goal-attribute nil) ;; don't move cursor to args when navigating
-  (proced-show-remote-processes t) ;; enable TRAMP support
-  (proced-enable-color-flag t)
-  (proced-format 'custom)
-  :config
-  (add-to-list
-   'proced-format-alist
-   '(custom user pid tree pcpu rss start state (args comm))))
-
-;; pastebin stuff
-(use-package 0x0
-  :unless bergheim/container-mode-p
-  :after general
-
-  :general
-  (bergheim/global-menu-keys
-    "ys" '(:ignore t :which-key "Share")
-    "yss" '(0x0-dwim :which-key "Dwim")
-    "ysp" '(0x0-popup :which-key "Text")
-    "ysf" '(0x0-upload-file :which-key "File")))
-
-(use-package elfeed
-  :unless bergheim/container-mode-p
-  :after general
-  :commands elfeed
-  :init
-  (setq elfeed-db-directory (bergheim/get-and-ensure-data-dir "elfeed/db/")
-        elfeed-enclosure-default-dir (bergheim/get-and-ensure-data-dir "elfeed/enclosures/"))
-
-  :hook
-  (elfeed-search . (lambda () (setq-local display-line-numbers nil)))
-  (elfeed-show . (lambda () (setq-local display-line-numbers nil)))
-
-  :general
-  (:keymaps 'elfeed-search-mode-map
-   :states 'normal
-   "d" #'bergheim/elfeed-by-domain
-   "C" #'bergheim/elfeed-by-domain)
-
-  :config
-  (defun bergheim/elfeed-by-domain ()
-    "Filter Elfeed search results to show only entries from the domain of the currently selected feed."
-    (interactive)
-    (let* ((entry (or (elfeed-search-selected :single)
-                      (user-error "No entry selected")))
-           (feed (elfeed-entry-feed entry))
-           (feed-url (elfeed-feed-url feed))
-           (url-host (when feed-url
-                       (url-host (url-generic-parse-url feed-url)))))
-      (unless url-host
-        (user-error "Unable to determine feed's domain"))
-      (elfeed-search-set-filter (format "=%s" url-host))))
-
-  (defhydra bergheim/hydra-elfeed (:foreign-keys run)
-    "filter"
-    ("a" (elfeed-search-set-filter "@6-months-ago")            "All")
-    ("d" (elfeed-search-set-filter "@6-months-ago +dev")       "Development")
-    ("e" (elfeed-search-set-filter "@6-months-ago +emacs")     "Emacs")
-    ("*" (elfeed-search-set-filter "@6-months-ago +star")      "Starred")
-    ("r" (elfeed-search-set-filter "@6-months-ago -unread")      "Read")
-    ("u" (elfeed-search-set-filter "@6-months-ago +unread")      "Unread")
-    ;; ("m" (bergheim/elfeed-toggle-starred)                                    "Star")
-    ("m" (lambda () (interactive) (elfeed-search-toggle-all 'star))                                    "Star")
-    ("t" (elfeed-search-set-filter "@1-day-ago")               "Today")
-    ("q" nil                                                   "quit" :color blue))
-
-  ;; (transient-define-prefix bergheim/elfeed-transient ()
-  ;;   "Elfeed Transient"
-  ;;   ["Elfeed Filters"
-  ;;    ("e" "emacs"       (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +emacs")) :transient t)
-  ;;    ("d" "dev"   (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +dev")))
-  ;;    ("*" "Starred"     (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +star")))
-  ;;    ;; ("M" "Mark"        elfeed-toggle-star)
-  ;;    ("a" "All"         (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago")))
-  ;;    ("t" "Today"       (lambda () (interactive) (elfeed-search-set-filter "@1-day-ago")))
-  ;;    ["General"
-  ;;     ;; ("Q" "Quit Elfeed" bjm/elfeed-save-db-and-bury)
-  ;;     ;; ("q" "quit" nil)
-  ;;     ]]
-  ;;   )
-  )
-
-;; from https://github.com/skeeto/elfeed/issues/466#issuecomment-1275327427
-(define-advice elfeed-search--header (:around (oldfun &rest args))
-  (if elfeed-db
-      (apply oldfun args)
-    "No database loaded yet"))
-
-(use-package elfeed-org
-  :after elfeed
-  :demand
-  :init
-  (setq rmh-elfeed-org-files (list (expand-file-name "elfeed/elfeed.org" org-directory)))
-  :config
-  (elfeed-org))
-
-(use-package elfeed-protocol
-  :after elfeed
-  :demand
-  :general
-  (:keymaps 'elfeed-search-mode-map
-   :states 'normal
-   "gr" #'bergheim/elfeed-refresh)
-  :init
-  (defun bergheim/elfeed-refresh ()
-    (interactive)
-    (mark-whole-buffer)
-    (cl-loop for entry in (elfeed-search-selected)
-             do (elfeed-untag-1 entry 'unread))
-    (elfeed-search-update--force)
-    (elfeed-protocol-fever-reinit bergheim/elfeed-fever-url))
-  :config
-  (setq elfeed-use-curl t)
-  ;; miniflux / fever
-  (setq elfeed-protocol-fever-update-unread-only nil)
-  (setq elfeed-protocol-fever-fetch-category-as-tag nil)
-  (setq elfeed-protocol-feeds
-        `((,(concat "fever+" bergheim/elfeed-fever-url)
-           :api-url ,bergheim/elfeed-fever-api-url
-           :password ,(password-store-get bergheim/elfeed-fever-password-store-key))))
-  (setq elfeed-protocol-enabled-protocols '(fever))
-
-  ;; (defvar elfeed-protocol-orig-feeds nil
-  ;;   "Store original content of `elfeed-feeds'.")
-  ;; (defadvice elfeed (after configure-elfeed-feeds activate)
-  ;;   "Make elfeed-org autotags rules works with elfeed-protocol."
-  ;;   (setq
-  ;;    elfeed-protocol-orig-feeds elfeed-protocol-feeds
-  ;;    elfeed-protocol-feeds (list
-  ;;                           (list "fever+https://tsb@thomasbergheim.com/rss"
-  ;;                                 :api-url "https://thomasbergheim.com/rss/fever/"
-  ;;                                 :password (password-store-get "mycloud/miniflux/fever")
-  ;;                                 :autotags  elfeed-protocol-orig-feeds)))
-  ;;   (elfeed-update))
-
-
-  ;; enable elfeed-protocol
-  (elfeed-protocol-enable))
-
-;; (use-package elfeed-goodies
-;;   :after elfeed
-;;   :demand
-;;   :config
-;;   (elfeed-goodies/setup))
-
-(use-package smudge
-  :unless bergheim/container-mode-p
-  :init
-  (setq smudge-api-oauth2-token-directory
-        (file-name-as-directory (bergheim/get-and-ensure-data-dir "smudge"))
-        smudge-api-oauth2-token-file
-        (expand-file-name "token" smudge-api-oauth2-token-directory))
-  :custom
-  (smudge-oauth2-client-secret bergheim/spotify/client-secret)
-  (smudge-oauth2-client-id bergheim/spotify/client-id)
-  (smudge-player-use-transient-map t)
-  (smudge-transport 'connect)
-  (smudge-player-status-refresh-interval 0)
-  (smudge-api-locale "nb_NO")
-  (smudge-api-country "NO")
-  (smudge-status-location nil)
-  :config
-  ;; A hydra for controlling spotify.
-  (defhydra hydra-spotify (:hint nil)
-    "
-^Search^                  ^Control^               ^Manage^
-^^^^^^^^-----------------------------------------------------------------
-_t_: Track               _SPC_: Play/Pause        _+_: Volume up
-_m_: My Playlists        _n_  : Next Track        _-_: Volume down
-_f_: Featured Playlists  _p_  : Previous Track    _x_: Mute
-_u_: User Playlists      _r_  : Repeat            _d_: Device
-^^                       _s_  : Shuffle           _q_: Quit
-"
-    ("t" smudge-track-search :exit t)
-    ("m" smudge-my-playlists :exit t)
-    ("f" smudge-featured-playlists :exit t)
-    ("u" smudge-user-playlists :exit t)
-    ("SPC" smudge-controller-toggle-play :exit nil)
-    ("n" smudge-controller-next-track :exit nil)
-    ("p" smudge-controller-previous-track :exit nil)
-    ("r" smudge-controller-toggle-repeat :exit nil)
-    ("s" smudge-controller-toggle-shuffle :exit nil)
-    ("+" smudge-controller-volume-up :exit nil)
-    ("-" smudge-controller-volume-down :exit nil)
-    ("x" smudge-controller-volume-mute-unmute :exit nil)
-    ("d" smudge-select-device :exit nil)
-    ("q" quit-window "quit" :color blue)))
-
-;; nicked from https://codeberg.org/alternateved/dotfiles/src/branch/main/emacs/.config/emacs/init.el
-;; see http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs/
-;; (use-package keyfreq
-;;   :config
-;;   (keyfreq-mode 1)
-;;   (keyfreq-autosave-mode 1)
-;;   )
+;;; bergheim-chat.el --- IRC (erc) and XMPP (jabber) -*- lexical-binding: t; -*-
 
 (use-package erc
-  :ensure t
   :after consult
   :autoload erc-buffer-list
   :init
@@ -353,7 +129,7 @@ Usage: /LATEST [count] (defaults to 100)"
     (let ((count (if args
                      (string-to-number (car args))
                    100)))
-      (erc-server-send (format "CHATHISTORY LATEST %s * %d" 
+      (erc-server-send (format "CHATHISTORY LATEST %s * %d"
                                (erc-default-target) count))))
   (defun bergheim/erc-buffer-connected-p (buffer)
     "Check if ERC BUFFER is connected."
@@ -617,40 +393,6 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (setopt erc-image-inline-rescale 'window)
   (erc-update-modules))
 
-;; FIXME: fucks up mu4e view
-(use-package image-slicing
-  :demand
-  :ensure (:host github :repo "ginqi7/image-slicing")
-  :general
-  (bergheim/global-menu-keys
-    "tu" #'bergheim/toggle-line-spacing-for-images)
-  :config
-  (defvar bergheim/original-line-spacing nil
-    "Store the original line-spacing value before setting to 0.")
-
-  (defun bergheim/toggle-line-spacing-for-images ()
-    "Toggle line-spacing between 0 and whatever it was before."
-    (interactive)
-    (if (and (numberp line-spacing) (= line-spacing 0))
-        (setq line-spacing bergheim/original-line-spacing)
-      (setq bergheim/original-line-spacing line-spacing)
-      (setq line-spacing 0))
-    (redisplay))
-  ;; (setopt line-spacing 0) ;; without this we get gaps
-
-  ;; Only enable in eww-mode, not globally
-  (defun bergheim/enable-image-slicing ()
-    "Enable image-slicing for this buffer."
-    (setq-local shr-external-rendering-functions
-                '((img . image-slicing-tag-img)))
-    (image-slicing-mode 1))
-
-  (add-hook 'eww-mode-hook #'bergheim/enable-image-slicing))
-
-
-(use-package keymap-popup
-  :ensure (keymap-popup :host github :repo "emacs-straight/keymap-popup"))
-
 (elpaca-defscript jabber-build-omemo (:type system :dir source)
   ("make" "module"))
 
@@ -703,7 +445,7 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-alert-presence-hooks nil)
   (jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll)))
 
-(use-package jabber-extra
+(use-package bergheim-jabber-extra
   :ensure nil
   :load-path (lambda () (expand-file-name "modules" bergheim/config-dir))
   :commands (bergheim/jabber-switch
@@ -716,3 +458,5 @@ Searches from the bottom of the channel buffer backward for the exact text."
     "ajc" '(bergheim/jabber-chat-with :which-key "Chat with...")
     "ajg" '(bergheim/jabber-join :which-key "Join room")
     "ajd" '(bergheim/jabber-discover-conferences :which-key "Discover conferences")))
+
+;;; bergheim-chat.el ends here

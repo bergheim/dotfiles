@@ -1,4 +1,4 @@
-;;; keybindings.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-keybindings.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 ;;

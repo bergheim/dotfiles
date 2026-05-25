@@ -1,4 +1,4 @@
-;;; jabber-extra.el --- vertico/marginalia-friendly jabber helpers -*- lexical-binding: t; -*-
+;;; bergheim-jabber-extra.el --- vertico/marginalia-friendly jabber helpers -*- lexical-binding: t; -*-
 
 ;; `jabber-chat-with' calls `jabber-read-jid-completing', which does its own
 ;; first-keystroke filtering inside the completion table and stops vertico /
@@ -718,5 +718,5 @@ built automatically so you never have to type
                               (jabber-muc-read-my-nickname jc jid))))
             (jabber-muc-join jc jid nick t))))
 
-(provide 'jabber-extra)
-;;; jabber-extra.el ends here
+(provide 'bergheim-jabber-extra)
+;;; bergheim-jabber-extra.el ends here

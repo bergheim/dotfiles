@@ -1,4 +1,4 @@
-;;; completion.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-completion.el --- Description -*- lexical-binding: t; -*-
 
 (defun bergheim/disable-pgtk-im (&rest _args)
   ;; this enables S-SPC again, at the expense of input methods
@@ -537,5 +537,5 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
       (apply orig-fun args))))
 
 (advice-add 'find-file :around #'bergheim/find-file-recognize-home)
-(provide 'completion)
-;;; completion.el ends here
+(provide 'bergheim-completion)
+;;; bergheim-completion.el ends here

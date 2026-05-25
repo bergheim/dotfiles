@@ -1,4 +1,4 @@
-;;; ssherpa.el --- Carry display intent back to your laptop over SSH  -*- lexical-binding: t; -*-
+;;; bergheim-ssherpa.el --- Carry display intent back to your laptop over SSH  -*- lexical-binding: t; -*-
 
 ;; Author: Thomas Bergheim
 ;; Version: 0.1.0
@@ -127,5 +127,5 @@ are scp'd to `ssherpa-dest-dir' first."
                    (format "%s %s" ssherpa-opener open-target))
        "open"))))
 
-(provide 'ssherpa)
-;;; ssherpa.el ends here
+(provide 'bergheim-ssherpa)
+;;; bergheim-ssherpa.el ends here

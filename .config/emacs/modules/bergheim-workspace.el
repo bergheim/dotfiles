@@ -1,4 +1,4 @@
-;;; workspace.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-workspace.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 ;;
@@ -131,4 +131,4 @@ If NEW-FRAME is non-nil, open the project in a new frame."
   (tab-new 99999)
   (if (not (string= name ""))
       (tab-rename name)))
-;;; workspace.el ends here
+;;; bergheim-workspace.el ends here

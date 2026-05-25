@@ -1,4 +1,4 @@
-;;; lsp.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-lsp.el --- lsp-mode setup (alternative to eglot) -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2025 Thomas Bergheim
 

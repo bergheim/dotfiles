@@ -1,4 +1,4 @@
-;;; session.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-session.el --- Description -*- lexical-binding: t; -*-
 
 ;; this causes warnings when we restart emacs with eglot-buffers open
 ;; and anyway, this is no legacy config!
@@ -135,4 +135,4 @@ If FRAME is nil or not provided, use the selected frame."
   (advice-add 'shr-browse-url :around #'bergheim/shr-browse-url-via-ssherpa)
   (setq browse-url-browser-function #'ssherpa-open))
 
-;;; session.el ends here
+;;; bergheim-session.el ends here

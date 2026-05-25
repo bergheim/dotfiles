@@ -1,8 +1,7 @@
-;;; bergheim-utils.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-utils.el --- Small utility commands and helper packages -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
-;; TODO: rename this to bootstrap and move the others here out
 (defun bergheim/toggle-scratch-buffer ()
   "Toggle the *scratch* buffer: show, hide, or switch to it based on its current state."
   (interactive)
@@ -56,36 +55,6 @@
          (next-pos (mod (+ position arg) num-files))) ; Wrap around using `mod`
     (find-file (nth next-pos files))))
 
-(use-package jinx
-  :ensure t
-  :hook (emacs-startup . global-jinx-mode)
-  :config
-  (setq jinx-completion-method 'vertico
-        jinx-languages "en_US nb_NO"))
-
-(defvar bergheim/jinx-languages
-  '("en_US" "nb_NO" "fr_FR" "de_DE"))
-
-(defun bergheim/jinx-language-sort (cands)
-  (let ((langs (seq-intersection cands bergheim/jinx-languages)))
-    (vertico-sort-history-alpha langs)))
-
-(defun jinx--add-to-abbrev (overlay word)
-  "Add abbreviation to `global-abbrev-table'.
-The misspelled word is taken from OVERLAY.  WORD is the corrected word."
-  (let ((abbrev (buffer-substring-no-properties
-                 (overlay-start overlay)
-                 (overlay-end overlay))))
-    (message "Abbrev: %s -> %s" abbrev word)
-    (define-abbrev global-abbrev-table abbrev word)))
-
-(advice-add 'jinx--correct-replace :before #'jinx--add-to-abbrev)
-
-;; (use-package unicode-fonts
-;;   :ensure t
-;;   :config
-;;   (unicode-fonts-setup))
-
 (use-package expand-region
   :ensure t
   :defer t
@@ -107,22 +76,6 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
      (width . 80)
      (height . 30))))
 
-(use-package ox-hugo
-  :after ox
-  :config
-  (defun my/org-change-draft-when-blog-state-changes ()
-    (interactive)
-    (pcase (org-get-todo-state)
-      ("PUBLISH" (org-set-property "EXPORT_HUGO_DRAFT" "false")
-       (org-hugo-export-wim-to-md))
-      ("DRAFT" (org-set-property "EXPORT_HUGO_DRAFT" "true"))
-      ("POST" (org-set-property "EXPORT_HUGO_DRAFT" "true")
-       (org-hugo-export-wim-to-md))
-      (_ ())))
-
-  (add-hook 'org-after-todo-state-change-hook
-            'my/org-change-draft-when-blog-state-changes))
-
 (use-package iedit
   :demand t
   :custom
@@ -130,16 +83,6 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
   :general
   (:states '(normal visual)
    "gR" 'iedit-mode))
-
-;; display match info in the modeline
-(use-package evil-anzu
-  :after evil-collection
-  :general
-  (:states '(normal visual)
-   ;; unlike gR (iedit-mode) you have to confirm matches here
-   "gC" 'anzu-query-replace-at-cursor)
-  :config
-  (global-anzu-mode +1))
 
 (use-package tmr
   :config
@@ -235,23 +178,6 @@ Lisp function does not specify a special indentation."
 (add-hook 'emacs-lisp-mode-hook
           (lambda () (setq-local lisp-indent-function #'lisp-indent-function)))
 
-(use-package powerthesaurus
-  :after embark
-  :general
-  (bergheim/global-menu-keys
-    "st" '(powerthesaurus-lookup-dwim :which-key "Search thesaurus"))
-  :bind
-  (:map embark-general-map
-   ("D" . bergheim/embark-powerthesaurus))
-  :config
-  (defun bergheim/embark-powerthesaurus ()
-    "Use Powerthesaurus to find synonyms for the word at point."
-    (interactive)
-    (let ((word (thing-at-point 'word t)))
-      (if word
-          (powerthesaurus-lookup word :definitions)
-        (message "No word at point")))))
-
 (use-package engine-mode
   :general
   (bergheim/global-menu-keys
@@ -314,38 +240,6 @@ Lisp function does not specify a special indentation."
           (user-error "Couldn't copy filename in current buffer")))
     (error "Couldn't find filename in current buffer")))
 
-(use-package docker
-  :config
-  (setq docker-show-messages nil)
-  (bergheim/global-menu-keys
-    "ad" '(:ignore t :which-key "Docker")
-    "add" '(docker :which-key "Docker")
-    "adc" '(docker-containers :which-key "Containers")
-    "adi" '(docker-images :which-key "Images")
-    "adn" '(docker-networks :which-key "Networks")
-    "adv" '(docker-volumes :which-key "Volumes")))
-
-(use-package docker-compose-mode)
-
-(use-package devcontainer
-  :demand
-  :ensure (:host github :repo "johannes-mueller/devcontainer.el")
-  :general
-  (bergheim/global-menu-keys
-    "cc" '(:ignore t :which-key "devcontainers")
-    "ccc" '(devcontainer-up :which-key "Start")
-    "ccd" '(devcontainer-tramp-dired :which-key "dired")
-    "ccr" '(devcontainer-restart :which-key "Restart")
-    "ccR" '(devcontainer-rebuild-and-restart :which-key "rebuild and restart")
-    "cct" '(devcontainer-term :which-key "terminal")
-    "ccx" '(devcontainer-kill-container :which-key "kill"))
-  :config
-  (add-to-list 'devcontainer-execute-outside-container "podman")
-  (setq devcontainer-engine 'podman
-        devcontainer-term-shell "zsh"
-        devcontainer-term-function #'eat)
-  (devcontainer-mode 1))
-
 (use-package plz
   :commands (plz))
 
@@ -399,17 +293,6 @@ Lisp function does not specify a special indentation."
            (thanos/wtype-text (buffer-string)))
           (delete-frame)))
       (use-local-map map))))
-
-(use-package term-keys
-  :ensure (:host github :repo "CyberShadow/term-keys")
-  :demand
-  :config
-  (term-keys-mode t))
-
-(use-package mise
-  :disabled
-  :config
-  (global-mise-mode))
 
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here

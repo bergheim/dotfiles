@@ -1,4 +1,4 @@
-;;; formating.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-formatting.el --- Code formatting -*- lexical-binding: t; -*-
 
 (use-package apheleia
   :init
@@ -21,5 +21,5 @@
                   typescript-ts-mode))
     (setf (alist-get mode apheleia-mode-alist) 'biome)))
 
-(provide 'formating)
-;;; formating.el ends here
+(provide 'bergheim-formatting)
+;;; bergheim-formatting.el ends here

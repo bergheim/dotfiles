@@ -1,4 +1,4 @@
-;;; ai.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-ai.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 ;;
@@ -339,9 +339,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
       (gptel-mode)
       ;; (setq-local gptel--system-message (cdr (assoc 'git gptel-directives)))))
       (gptel-request
-          diff
-        :system "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Start with the 80 char summary and then provide relevant details, if any. Keep it short and use bullet-points where it makes sense. Don't add anything else to the response. THE ONLY THING THAT MATTERS IS WHAT THE CHANGE ENABLES, NOT HOW - THAT IS IN THE CODE!"
-        :stream t)))
+       diff
+       :system "The user provides the result of running `git diff --cached`. You suggest a conventional commit message. Start with the 80 char summary and then provide relevant details, if any. Keep it short and use bullet-points where it makes sense. Don't add anything else to the response. THE ONLY THING THAT MATTERS IS WHAT THE CHANGE ENABLES, NOT HOW - THAT IS IN THE CODE!"
+       :stream t)))
 
   (defun bergheim/gptel-email-response ()
     (interactive)
@@ -353,9 +353,9 @@ Prompts for session name if none provided. Inserts selected region text into cha
             (gptel-mode)
             ;; (setq-local gptel--system-message (cdr (assoc 'git gptel-directives)))))
             (gptel-request
-                diff
-              :system "The user provides an email that he wants to respond to. You suggest a brief and professional email response. Do not add anything else to the response."
-              :stream t))
+             diff
+             :system "The user provides an email that he wants to respond to. You suggest a brief and professional email response. Do not add anything else to the response."
+             :stream t))
         (funcall curr-mode))))
 
   :custom
@@ -434,6 +434,29 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (setenv "OPENAI_API_BASE" (concat "http://" bergheim/llama-swap-endpoint "/v1"))
   (setenv "OPENAI_API_KEY" "sk-no-key-required")
   (setq aider-args '("--model" "openai/qwen3-coder")))
+
+(use-package minuet
+  :disabled
+  :ensure (:host github :repo "milanglacier/minuet-ai.el")
+  :general
+  (bergheim/global-menu-keys
+    "lm" '(:ignore t :wk "minuet")
+    "lmm" 'minuet-auto-suggestion-mode
+    "lmc" 'minuet-complete-with-minibuffer
+    "lms" 'minuet-show-suggestion
+    "lmC" 'minuet-configure-provider)
+  :config
+  ;; Point the FIM-compatible provider at the local llama-swap endpoint
+  ;; instead of Deepseek (whose DEEPSEEK_API_KEY env var isn't set, which
+  ;; is what produced the "provider not available" timer errors).
+  (setenv "LLAMA_SWAP_API_KEY" "sk-no-key-required")
+  (setq minuet-provider 'openai-fim-compatible)
+  (plist-put minuet-openai-fim-compatible-options :name "llama-swap")
+  (plist-put minuet-openai-fim-compatible-options :end-point
+             (concat "http://" bergheim/llama-swap-endpoint "/v1/completions"))
+  (plist-put minuet-openai-fim-compatible-options :api-key "LLAMA_SWAP_API_KEY")
+  ;; Pick a sensible default; user can switch via M-x minuet-configure-provider
+  (plist-put minuet-openai-fim-compatible-options :model "qwen3-coder"))
 
 (use-package monet
   :disabled
@@ -523,4 +546,4 @@ Type an existing name to switch, or a new suffix to start a fresh shell."
   (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
   (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input))
 
-;;; ai.el ends here
+;;; bergheim-ai.el ends here

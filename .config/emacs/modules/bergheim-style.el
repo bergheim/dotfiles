@@ -1,4 +1,4 @@
-;;; style.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-style.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 ;;
@@ -350,13 +350,15 @@ Defaults to dark when gsettings is unavailable."
 (defun bergheim/theme-dark ()
   (interactive)
   (consult-theme bergheim/theme-dark)
-  (bergheim/set-erc-log-match-format)
+  (when (fboundp 'bergheim/set-erc-log-match-format)
+    (bergheim/set-erc-log-match-format))
   (setq bergheim/dark-mode-p t))
 
 (defun bergheim/theme-light ()
   (interactive)
   (consult-theme bergheim/theme-light)
-  (bergheim/set-erc-log-match-format)
+  (when (fboundp 'bergheim/set-erc-log-match-format)
+    (bergheim/set-erc-log-match-format))
   (setq bergheim/dark-mode-p nil))
 
 ;; (use-package doom-themes
@@ -734,5 +736,5 @@ Defaults to dark when gsettings is unavailable."
             )))
     (warn "Unable to find a file")))
 
-(provide 'style)
-;;; style.el ends here
+(provide 'bergheim-style)
+;;; bergheim-style.el ends here

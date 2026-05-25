@@ -1,4 +1,4 @@
-;;; nav.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-nav.el --- Description -*- lexical-binding: t; -*-
 
 (use-package avy
   :demand t
@@ -342,4 +342,4 @@ Otherwise, use current directory."
 (use-package treemacs-evil
   :after (treemacs evil))
 
-;;; nav.el ends here
+;;; bergheim-nav.el ends here

@@ -1,4 +1,4 @@
-;;; programming.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-programming.el --- Description -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 ;;
@@ -290,4 +290,9 @@
   ;; needed for dape
   (use-package jsonrpc))
 
-;;; programming.el ends here
+(use-package mise
+  :disabled
+  :config
+  (global-mise-mode))
+
+;;; bergheim-programming.el ends here

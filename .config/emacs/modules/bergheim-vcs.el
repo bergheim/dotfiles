@@ -1,4 +1,4 @@
-;;; vcs.el --- Description -*- lexical-binding: t; -*-
+;;; bergheim-vcs.el --- Description -*- lexical-binding: t; -*-
 ;;
 
 (use-package magit
