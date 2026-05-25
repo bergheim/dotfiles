@@ -1,4 +1,4 @@
-;;; actions.el --- Description -*- lexical-binding: t; -*-
+;;; actions.el --- Refile, read-later, follow-up, link-store actions -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 

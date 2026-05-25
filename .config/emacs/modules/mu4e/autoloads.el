@@ -1,4 +1,4 @@
-;;; autoloads.el --- Description -*- lexical-binding: t; -*-
+;;; autoloads.el --- Mail-search shortcuts available without loading mu4e -*- lexical-binding: t; -*-
 
 ;;;###autoload
 (defmacro define-mu4e-search-fn (name docstring bookmark-string)
@@ -60,9 +60,3 @@
   "Show the junk mail from all accounts"
   "maildir:/Spam/")
 
-;;;###autoload
-(defun bergheim/lookup-anything ()
-  "Look up a word in some way"
-  (interactive)
-  (require 'powerthesaurus nil t)
-  (powerthesaurus-lookup-dwim))

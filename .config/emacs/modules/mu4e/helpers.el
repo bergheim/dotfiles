@@ -1,4 +1,4 @@
-;;; helpers.el --- Description -*- lexical-binding: t; -*-
+;;; helpers.el --- Message/account/maildir helpers -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 

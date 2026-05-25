@@ -1,4 +1,4 @@
-;;; search.el --- Description -*- lexical-binding: t; -*-
+;;; search.el --- Search helpers: sender, domain, list, name -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 

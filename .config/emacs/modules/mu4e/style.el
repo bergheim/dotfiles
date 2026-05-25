@@ -1,4 +1,4 @@
-;;; style.el --- Description -*- lexical-binding: t; -*-
+;;; style.el --- mu4e header columns and read-option tweaks -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
@@ -20,4 +20,4 @@
                 :help "Modified Maildir"
                 :function bergheim/mu4e--msg-get-modified-maildir)))
 
-;;; viewer.el ends here
+;;; style.el ends here

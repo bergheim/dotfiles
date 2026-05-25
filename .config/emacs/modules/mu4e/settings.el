@@ -1,4 +1,4 @@
-;;; settings.el --- Description -*- lexical-binding: t; -*-
+;;; settings.el --- mu4e behaviour and view-format settings -*- lexical-binding: t; -*-
 
 ;; open mu4e in the current window instead of current frame
 (add-to-list 'display-buffer-alist

@@ -1,4 +1,4 @@
-;;; accounts.el --- Description -*- lexical-binding: t; -*-
+;;; accounts.el --- Per-account contexts and identities -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 

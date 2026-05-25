@@ -42,4 +42,11 @@ The misspelled word is taken from OVERLAY.  WORD is the corrected word."
           (powerthesaurus-lookup word :definitions)
         (message "No word at point")))))
 
+;;;###autoload
+(defun bergheim/lookup-anything ()
+  "Look up a word in some way"
+  (interactive)
+  (require 'powerthesaurus nil t)
+  (powerthesaurus-lookup-dwim))
+
 ;;; bergheim-writing.el ends here

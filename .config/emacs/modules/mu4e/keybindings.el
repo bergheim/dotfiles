@@ -1,4 +1,4 @@
-;;; keybindings.el --- Description -*- lexical-binding: t; -*-
+;;; keybindings.el --- mu4e headers- and view-mode key setup -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
