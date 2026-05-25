@@ -295,8 +295,10 @@ bindsym $mod+F1 exec toggle-darkmode
 bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
 
 # Screenshots
-bindsym Print exec FILE=~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.png && grimshot save active "$FILE" && notify-send "Screenshot saved" "$(basename "$FILE")" && vips thumbnail "$FILE" '.webp[Q=80,strip]' 1920 --height 1200 --size down > ~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-local__.webp && rm "$FILE"
-bindsym Shift+Print exec FILE=~/Pictures/screenshots/$(date -u '+%Y%m%dT%H%M%S')--screenshot-shared__.png && grimshot save anything "$FILE" && notify-send "Screenshot saved, uploading..." && vips thumbnail "$FILE" '.webp[Q=80,strip]' 1920 --height 1200 --size down | curl --form 'file=@-' -Fsecret= -Fexpires=24 http://0x0.st | wl-copy && notify-send "URL copied" || notify-send "Upload failed"
+bindsym  Shift+Print exec share-screenshot active     # active window
+bindsym        Print exec share-screenshot anything   # interactive selection (your old behavior)
+bindsym   Ctrl+Print exec share-screenshot output     # current monitor
+
 # bindsym Mod4+p       exec grimshot save active
 # bindsym Mod4+Shift+p exec grimshot save area
 # bindsym Mod4+Mod1+p  exec grimshot save output

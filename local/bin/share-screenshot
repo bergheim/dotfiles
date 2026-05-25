@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# share-screenshot — capture via grimshot, resize via vips, upload to MicroBin.
+# Copies the resulting direct-image URL to the Wayland clipboard.
+#
+# Usage:   share-screenshot [grimshot-mode]
+# Modes:   anything (default) | active | area | output | window
+#
+# Configurable via env (sane defaults baked in):
+#   SHARE_SCREENSHOT_DIR   destination for the original PNG
+#   MICROBIN_URL           full /upload endpoint
+#   MICROBIN_PASS_ENTRY    `pass` path containing the uploader password
+#   MICROBIN_EXPIRATION    one of 1min 10min 1hour 24hour 3days 1week 1month
+#                          6months 1year 2years 4years 8years 16years (server default if unset)
+
+set -euo pipefail
+
+DEST_DIR="${SHARE_SCREENSHOT_DIR:-$HOME/Pictures/screenshots}"
+MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
+PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
+EXPIRATION="${MICROBIN_EXPIRATION:-}"
+GRIMSHOT_MODE="${1:-anything}"
+
+mkdir -p "$DEST_DIR"
+
+TS=$(date -u '+%Y%m%dT%H%M%S')
+STEM="${TS}--screenshot-shared__"
+PNG="$DEST_DIR/${STEM}.png"
+WEBP_NAME="${STEM}.webp"
+
+# grimshot returns non-zero on cancel; treat that as a clean exit.
+if ! grimshot save "$GRIMSHOT_MODE" "$PNG"; then
+  notify-send "Screenshot canceled"
+  exit 0
+fi
+
+notify-send "Screenshot saved, uploading…" "$(basename "$PNG")"
+
+PW=$(pass show "$PASS_ENTRY")
+
+# vips writes a resized stripped webp to stdout; curl streams it in.
+# --write-out captures the Location header from MicroBin's 302 (success → /upload/<id>,
+# bad password → /incorrect).
+# filename= mirrors the local PNG's denote-style stem so MicroBin's admin
+# view and any Save-As dialog show the right name instead of "screenshot.webp".
+CURL_ARGS=(
+  --silent --show-error
+  --output /dev/null
+  --write-out '%{redirect_url}'
+  --form-string "uploader_password=$PW"
+  -F "file=@-;type=image/webp;filename=$WEBP_NAME"
+)
+[[ -n "$EXPIRATION" ]] && CURL_ARGS+=( -F "expiration=$EXPIRATION" )
+
+REDIRECT=$(
+  vips thumbnail "$PNG" '.webp[Q=80,strip]' 1920 --height 1200 --size down \
+    | curl "${CURL_ARGS[@]}" "$MICROBIN_URL"
+) || {
+  notify-send "Upload failed" "curl exit $?"
+  exit 1
+}
+
+case "$REDIRECT" in
+  */upload/*)
+    # Direct-bytes URL — paste into chat and the image embeds inline.
+    URL="${REDIRECT/\/upload\//\/file\/}"
+    printf '%s' "$URL" | wl-copy
+    notify-send "URL copied" "$URL"
+    ;;
+  */incorrect)
+    notify-send "Upload rejected" "Check $PASS_ENTRY"
+    exit 1
+    ;;
+  *)
+    notify-send "Upload failed" "Unexpected response: ${REDIRECT:-(empty)}"
+    exit 1
+    ;;
+esac
