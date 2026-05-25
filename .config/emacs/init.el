@@ -80,7 +80,7 @@
 (let ((modules-dir (concat bergheim/config-dir "modules/")))
   (unless (file-exists-p modules-dir)
     (make-directory modules-dir))
-  (load-file (expand-file-name "bootstrap.el" modules-dir)))
+  (load-file (expand-file-name "bergheim-bootstrap.el" modules-dir)))
 
 (setq visible-bell t ;; flash
       inhibit-startup-message t
