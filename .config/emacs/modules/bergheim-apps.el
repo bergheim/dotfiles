@@ -31,16 +31,21 @@
    '(custom user pid tree pcpu rss start state (args comm))))
 
 ;; pastebin stuff
-(use-package 0x0
-  :unless bergheim/container-mode-p
-  :after general
-
+(use-package bergheim-microbin
+  :ensure nil
+  :custom
+  (bergheim/microbin-password-function
+   (lambda () (password-store-get "homelab/microbin/uploader")))
   :general
   (bergheim/global-menu-keys
-    "ys" '(:ignore t :which-key "Share")
-    "yss" '(0x0-dwim :which-key "Dwim")
-    "ysp" '(0x0-popup :which-key "Text")
-    "ysf" '(0x0-upload-file :which-key "File")))
+    "ys"  '(:ignore t :which-key "Share")
+    "yss" '(bergheim/microbin-upload-dwim          :which-key "Dwim (raw)")
+    "ysS" '(bergheim/microbin-upload-dwim-pretty   :which-key "Dwim (pretty)")
+    "ysb" '(bergheim/microbin-upload-buffer        :which-key "Buffer (raw)")
+    "ysB" '(bergheim/microbin-upload-buffer-pretty :which-key "Buffer (pretty)")
+    "ysr" '(bergheim/microbin-upload-region        :which-key "Region (raw)")
+    "ysR" '(bergheim/microbin-upload-region-pretty :which-key "Region (pretty)")
+    "ysf" '(bergheim/microbin-upload-file          :which-key "File")))
 
 (use-package smudge
   :unless bergheim/container-mode-p
