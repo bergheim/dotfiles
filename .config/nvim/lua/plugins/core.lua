@@ -71,14 +71,15 @@ return {
         },
     },
     {
-        "ahmedkhalf/project.nvim",
+        -- ahmedkhalf/project.nvim is archived; this is the maintained fork.
+        -- Note: require name changed `project_nvim` → `project`.
+        "DrKJeff16/project.nvim",
         config = function()
-            require("project_nvim").setup({
-                require("telescope").load_extension("projects"),
-                vim.keymap.set("n", "<leader>pp", function()
-                    require("telescope").extensions.projects.projects({})
-                end, { desc = "Select project" }),
-            })
+            require("project").setup({})
+            require("telescope").load_extension("projects")
+            vim.keymap.set("n", "<leader>pp", function()
+                require("telescope").extensions.projects.projects({})
+            end, { desc = "Select project" })
         end,
     },
 }

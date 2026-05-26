@@ -5,6 +5,9 @@ return {
         dependencies = { "nvim-treesitter/nvim-treesitter" },
         opts = {
             -- filetypes = { "heex", "html", "css", "javascript", "typescript" },
+            -- LSP is already set up in lsp.lua; tailwind-tools auto-setup uses
+            -- the deprecated require('lspconfig') API so disable it here.
+            server = { override = false },
         },
     },
     {
