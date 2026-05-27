@@ -14,10 +14,19 @@ vim.opt.mouse = "a"
 vim.opt.showmode = false
 
 -- Sync clipboard between OS and Neovim.
-vim.opt.clipboard = "unnamedplus"
+-- vim.opt.clipboard = "unnamedplus"
 
 -- Force OSC 52 instead of nvim's auto-pick
 local osc52 = require("vim.ui.clipboard.osc52")
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		if vim.v.event.operator == "y" then
+			vim.fn.setreg("+", vim.v.event.regcontents, vim.v.event.regtype)
+		end
+	end,
+})
+
 vim.g.clipboard = {
 	name = "OSC 52",
 	copy = {
