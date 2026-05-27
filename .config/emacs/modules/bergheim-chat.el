@@ -445,6 +445,11 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-alert-presence-hooks nil)
   (jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll)))
 
+;; goto-addr only binds mouse-2 / C-c RET; without plain RET on the overlay,
+;; evil-ret falls through to push-button which crashes on Emacs 31.
+(with-eval-after-load 'goto-addr
+  (define-key goto-address-highlight-keymap (kbd "RET") #'goto-address-at-point))
+
 (use-package bergheim-jabber-extra
   :ensure nil
   :load-path (lambda () (expand-file-name "modules" bergheim/config-dir))
