@@ -16,6 +16,20 @@ vim.opt.showmode = false
 -- Sync clipboard between OS and Neovim.
 vim.opt.clipboard = "unnamedplus"
 
+-- Force OSC 52 instead of nvim's auto-pick
+local osc52 = require("vim.ui.clipboard.osc52")
+vim.g.clipboard = {
+	name = "OSC 52",
+	copy = {
+		["+"] = osc52.copy("+"),
+		["*"] = osc52.copy("*"),
+	},
+	paste = {
+		["+"] = osc52.paste("+"),
+		["*"] = osc52.paste("*"),
+	},
+}
+
 -- Enable break indent
 vim.opt.breakindent = true
 
