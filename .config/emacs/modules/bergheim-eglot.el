@@ -72,7 +72,7 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                '((html-mode css-mode web-mode) "tailwindcss-language-server" "--stdio"))
 
   (add-to-list 'eglot-server-programs
-               '((elixir-mode elixir-ts-mode) "/usr/lib/elixir-ls/language_server.sh"))
+               '((elixir-mode elixir-ts-mode heex-ts-mode) . ("expert" "--stdio")))
 
   (add-to-list 'eglot-server-programs
                '(go-ts-mode . ("gopls")))
