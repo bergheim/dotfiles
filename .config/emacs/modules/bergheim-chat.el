@@ -407,7 +407,8 @@ Searches from the bottom of the channel buffer backward for the exact text."
                                 jabber-muc-leave jabber-muc-names
                                 jabber-activity-switch-to jabber-chat-with-jid-at-point
                                 jabber-muc-set-topic jabber-vcard-get
-                                jabber-send-presence)
+                                jabber-send-presence
+                                bergheim/jabber-unified-show)
   :general
   (bergheim/global-menu-keys
     "aj"  '(:ignore t :which-key "Jabber")
@@ -420,7 +421,8 @@ Searches from the bottom of the channel buffer backward for the exact text."
     "ajp" '(jabber-chat-with-jid-at-point :which-key "Chat at point")
     "ajt" '(jabber-muc-set-topic :which-key "Set room topic")
     "ajv" '(jabber-vcard-get :which-key "View vCard")
-    "aju" '(jabber-send-presence :which-key "Update presence"))
+    "aju" '(jabber-send-presence :which-key "Update presence")
+    "aji" '(bergheim/jabber-unified-show :which-key "Unified inbox"))
   :custom
   (jabber-chat-default-encryption 'plaintext)
   ;; Password is NOT here — jabber.el pulls it from auth-source.
@@ -443,7 +445,196 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-roster-show-title nil)
   (jabber-vcard-avatars-retrieve nil)
   (jabber-alert-presence-hooks nil)
-  (jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll)))
+  (jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll))
+
+  :config
+;;;; Unified jabber buffer
+  ;; Funnel all incoming PMs and MUC messages into a single buffer,
+  ;; mirroring the ERC unified-inbox setup above. Jabber's alert hooks
+  ;; hand us the source BUFFER, so RET jumps back via a stored marker
+  ;; rather than regex-parsing the line.
+
+  (defvar bergheim/jabber-unified-buffer-name "*jabber-unified*")
+
+  (define-derived-mode bergheim/jabber-unified-mode fundamental-mode "Jabber-Unified"
+    "Major mode for the jabber unified log buffer."
+    (visual-line-mode 1)
+    (setq-local scroll-conservatively most-positive-fixnum)
+    (setq-local auto-window-vscroll nil)
+    (setq-local buffer-read-only t))
+
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal bergheim/jabber-unified-mode-map
+      (kbd "RET") #'bergheim/jabber-unified-visit))
+
+  (defun bergheim/jabber-unified--buffer ()
+    "Return the unified jabber buffer, creating it if needed."
+    (or (get-buffer bergheim/jabber-unified-buffer-name)
+        (with-current-buffer (get-buffer-create bergheim/jabber-unified-buffer-name)
+          (bergheim/jabber-unified-mode)
+          (current-buffer))))
+
+  (defun bergheim/jabber-unified--source-marker (source-buffer)
+    "Return a marker pointing into SOURCE-BUFFER for RET-jump.
+Prefers the start of the last ewoc node so we land on the right
+message; falls back to `jabber-point-insert' or `point-max' when
+the ewoc lookup is unavailable (e.g. MUC paths that fire the alert
+hook without an ewoc-enter).  Returns nil only if SOURCE-BUFFER is
+not live."
+    (when (buffer-live-p source-buffer)
+      (with-current-buffer source-buffer
+        (let ((ewoc (bound-and-true-p jabber-chat-ewoc)))
+          (copy-marker
+           (or (and ewoc
+                    (when-let ((node (ewoc-nth ewoc -1)))
+                      (ewoc-location node)))
+               (and (markerp (bound-and-true-p jabber-point-insert))
+                    (marker-position jabber-point-insert))
+               (point-max)))))))
+
+  (defun bergheim/jabber-unified--append (prefix nick text source-buffer type jid)
+    "Render a unified-buffer line and stash source info for RET-jump.
+PREFIX is the displayed source context (\"#room\" or sender JID).
+NICK is the MUC sender's nick, or nil for 1:1 messages.
+TEXT is the message body.
+SOURCE-BUFFER is the chat buffer at capture time (may be nil for
+MUC messages received for rooms with no open buffer).
+TYPE is `:pm' or `:muc' and JID is the bare JID of the source,
+both used by `bergheim/jabber-unified-visit' to re-resolve the
+chat buffer when the marker is missing or detached.  TEXT is also
+stashed so visit can locate the exact line via text search when
+no marker is available (e.g. after auto-creating the buffer)."
+    (let* ((time (format-time-string "%H:%M"))
+           (marker (bergheim/jabber-unified--source-marker source-buffer))
+           ;; Property is (MARKER-OR-NIL . PLIST).  PLIST always has
+           ;; :type, :jid, :text and :time so visit can recover even
+           ;; when MARKER is nil or its buffer has been killed.  TIME
+           ;; matches jabber's `jabber-chat-time-format' (\"%H:%M\")
+           ;; so the line search can anchor on it.
+           (prop (cons marker
+                       (list :type type :jid jid :text text :time time))))
+      (with-current-buffer (bergheim/jabber-unified--buffer)
+        (let ((inhibit-read-only t)
+              (start (point-max)))
+          (goto-char start)
+          (insert (propertize (format "[%s] " time) 'face 'shadow))
+          (insert (propertize prefix 'face 'font-lock-keyword-face))
+          (when nick
+            (insert " " (propertize nick 'face 'font-lock-function-name-face)))
+          (insert ": " (or text "") "\n")
+          (put-text-property start (point)
+                             'bergheim/jabber-source prop)))))
+
+  (defun bergheim/jabber-unified-capture-pm (from buffer text _title)
+    "Capture an incoming 1:1 message into the unified buffer."
+    (let ((jid (jabber-jid-user from)))
+      (bergheim/jabber-unified--append jid nil text buffer :pm jid)))
+
+  (defun bergheim/jabber-unified--room-label (group)
+    "Return a short channel label for the MUC GROUP JID.
+Strips the biboumi-style `%network' suffix used by IRC bridge
+JIDs (e.g. `#emacs%irc.libera.chat' → `#emacs') and prepends `#'
+only if the result doesn't already start with one."
+    (let* ((node (jabber-jid-username group))
+           (label (replace-regexp-in-string "%.*\\'" "" node)))
+      (if (string-prefix-p "#" label)
+          label
+        (concat "#" label))))
+
+  (defun bergheim/jabber-unified-capture-muc (nick group buffer text _title)
+    "Capture an incoming MUC message into the unified buffer."
+    (bergheim/jabber-unified--append
+     (bergheim/jabber-unified--room-label group) nick text buffer :muc group))
+
+  (defun bergheim/jabber-unified--resolve-buffer (source)
+    "Look up a live chat buffer from SOURCE plist, or nil."
+    (when source
+      (pcase (plist-get source :type)
+        (:muc (jabber-muc-find-buffer (plist-get source :jid)))
+        (:pm  (jabber-chat-find-buffer (plist-get source :jid))))))
+
+  (defun bergheim/jabber-unified--ensure-buffer (source)
+    "Return the chat buffer for SOURCE, creating it if needed.
+Uses the first live jabber connection so the buffer can be
+populated from `jabber-db-backlog' on creation."
+    (or (bergheim/jabber-unified--resolve-buffer source)
+        (when-let* ((jc (car (bound-and-true-p jabber-connections)))
+                    (jid (plist-get source :jid)))
+          (pcase (plist-get source :type)
+            (:muc (jabber-muc-create-buffer jc jid))
+            (:pm  (jabber-chat-create-buffer jc jid)))
+          (bergheim/jabber-unified--resolve-buffer source))))
+
+  (defun bergheim/jabber-unified--locate-line (buffer text time)
+    "Return BOL of the most recent line in BUFFER matching TEXT and TIME.
+TIME is jabber's `%H:%M' timestamp captured when the message
+arrived; the search prefers a line containing both TIME and TEXT
+and falls back to the latest TEXT match if no time-anchored line
+is found."
+    (when (and (buffer-live-p buffer)
+               (stringp text) (not (string-empty-p text)))
+      (with-current-buffer buffer
+        (save-excursion
+          (or (and (stringp time)
+                   (catch 'found
+                     (goto-char (point-max))
+                     (while (search-backward text nil t)
+                       (let ((bol (line-beginning-position))
+                             (eol (line-end-position)))
+                         (save-excursion
+                           (goto-char bol)
+                           (when (search-forward time eol t)
+                             (throw 'found bol)))))
+                     nil))
+              (progn
+                (goto-char (point-max))
+                (when (search-backward text nil t)
+                  (line-beginning-position))))))))
+
+  (defun bergheim/jabber-unified-visit ()
+    "Jump from the unified buffer to the original message location.
+Auto-creates the chat buffer if it isn't open, then jumps to the
+marker if it's still valid, otherwise searches the buffer for the
+captured message text.  When point is on the empty trailing line
+(typical right after the buffer received new messages), resolves
+the previous line instead."
+    (interactive)
+    (let* ((line-bol (save-excursion
+                       (when (and (eobp) (bolp))
+                         (forward-line -1))
+                       (line-beginning-position)))
+           (prop (get-text-property line-bol 'bergheim/jabber-source))
+           (marker (and (consp prop) (car prop)))
+           (source (and (consp prop) (cdr prop)))
+           (live-marker (and (markerp marker) (marker-buffer marker) marker))
+           (buffer (or (and live-marker (marker-buffer live-marker))
+                       (bergheim/jabber-unified--ensure-buffer source))))
+      (cond
+       ((null prop)
+        (user-error "No source recorded for this line"))
+       ((null buffer)
+        (user-error "Could not open source buffer: %s"
+                    (or (plist-get source :jid) "unknown")))
+       (t
+        (switch-to-buffer-other-window buffer)
+        (when (featurep 'evil) (evil-normal-state))
+        (let ((pos (or (and live-marker (eq (marker-buffer live-marker) buffer)
+                            (marker-position live-marker))
+                       (bergheim/jabber-unified--locate-line
+                        buffer
+                        (plist-get source :text)
+                        (plist-get source :time)))))
+          (if pos
+              (progn (goto-char pos) (beginning-of-line))
+            (goto-char (point-max))))))))
+
+  (defun bergheim/jabber-unified-show ()
+    "Open the jabber unified buffer."
+    (interactive)
+    (pop-to-buffer (bergheim/jabber-unified--buffer)))
+
+  (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
+  (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
 
 ;; goto-addr only binds mouse-2 / C-c RET; without plain RET on the overlay,
 ;; evil-ret falls through to push-button which crashes on Emacs 31.

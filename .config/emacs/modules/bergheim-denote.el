@@ -2,7 +2,8 @@
 
 (use-package denote
   :init
-  (setq denote-directory (expand-file-name "denote" org-directory))
+  (setq denote-directory (list (expand-file-name "denote" org-directory)
+                               (expand-file-name "~/stash/notes/")))
   :custom
   (denote-known-keywords '("emacs" "journal"))
   (denote-date-prompt-use-org-read-date t)
@@ -12,9 +13,8 @@
   :config
   (setq denote-dired-directories-include-subdirectories t
         denote-dired-directories
-        (list denote-directory
-              (expand-file-name "data" denote-directory)
-              (expand-file-name "data" org-directory)))
+        (append denote-directory
+                (list (expand-file-name "data" org-directory))))
 
   (defun my-denote-tmr ()
     (tmr "5" "Write focused now.."))
