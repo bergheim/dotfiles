@@ -445,7 +445,6 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-roster-show-title nil)
   (jabber-vcard-avatars-retrieve nil)
   (jabber-alert-presence-hooks nil)
-  (jabber-alert-message-hooks '(jabber-message-echo jabber-message-scroll))
 
   :config
 ;;;; Unified jabber buffer
@@ -455,6 +454,19 @@ Searches from the bottom of the channel buffer backward for the exact text."
   ;; rather than regex-parsing the line.
 
   (defvar bergheim/jabber-unified-buffer-name "*jabber-unified*")
+
+  (defcustom bergheim/jabber-unified-lines-to-keep 5000
+    "Maximum number of lines to retain in the unified jabber buffer.
+After each append, lines beyond this from the top are deleted.
+Set to nil to disable trimming.  Mirrors jabber's own
+`jabber-log-lines-to-keep' but defaults higher since this buffer
+aggregates traffic from every room and DM."
+    :type '(choice (integer :tag "Lines to keep")
+                   (const :tag "Unlimited" nil))
+    :group 'bergheim)
+
+  (defvar-local bergheim/jabber-unified--last-date nil
+    "Date string of the most recently inserted line, for day separators.")
 
   (define-derived-mode bergheim/jabber-unified-mode fundamental-mode "Jabber-Unified"
     "Major mode for the jabber unified log buffer."
@@ -505,6 +517,7 @@ chat buffer when the marker is missing or detached.  TEXT is also
 stashed so visit can locate the exact line via text search when
 no marker is available (e.g. after auto-creating the buffer)."
     (let* ((time (format-time-string "%H:%M"))
+           (date (format-time-string "%Y-%m-%d %A"))
            (marker (bergheim/jabber-unified--source-marker source-buffer))
            ;; Property is (MARKER-OR-NIL . PLIST).  PLIST always has
            ;; :type, :jid, :text and :time so visit can recover even
@@ -524,6 +537,14 @@ no marker is available (e.g. after auto-creating the buffer)."
                          (lambda (w) (= (window-point w) start))
                          (get-buffer-window-list (current-buffer) nil t))))
           (goto-char start)
+          ;; Day separator when the date rolls over.  The separator line
+          ;; gets no `bergheim/jabber-source' property so RET on it
+          ;; harmlessly says "No source recorded for this line".
+          (unless (equal date bergheim/jabber-unified--last-date)
+            (insert (propertize (format "── %s ──\n" date)
+                                'face 'shadow))
+            (setq bergheim/jabber-unified--last-date date)
+            (setq start (point)))
           (insert (propertize (format "[%s] " time) 'face 'shadow))
           (insert (propertize prefix 'face 'font-lock-keyword-face))
           (when nick
@@ -535,8 +556,21 @@ no marker is available (e.g. after auto-creating the buffer)."
           ;; faces so timestamp/prefix/nick colours stay intact.
           (when mention
             (add-face-text-property start (point) 'bold))
+          (bergheim/jabber-unified--trim)
           (dolist (w tailing)
             (set-window-point w (point-max)))))))
+
+  (defun bergheim/jabber-unified--trim ()
+    "Trim top of current buffer to `bergheim/jabber-unified-lines-to-keep'."
+    (when (and (integerp bergheim/jabber-unified-lines-to-keep)
+               (> bergheim/jabber-unified-lines-to-keep 0))
+      (let ((excess (- (count-lines (point-min) (point-max))
+                       bergheim/jabber-unified-lines-to-keep)))
+        (when (> excess 0)
+          (save-excursion
+            (goto-char (point-min))
+            (forward-line excess)
+            (delete-region (point-min) (point)))))))
 
   (defun bergheim/jabber-unified--own-jid-p (jid)
     "Non-nil if JID matches any of our connected bare JIDs.
