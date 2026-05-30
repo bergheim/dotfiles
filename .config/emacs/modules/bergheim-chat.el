@@ -492,7 +492,7 @@ not live."
                     (marker-position jabber-point-insert))
                (point-max)))))))
 
-  (defun bergheim/jabber-unified--append (prefix nick text source-buffer type jid)
+  (defun bergheim/jabber-unified--append (prefix nick text source-buffer type jid &optional mention)
     "Render a unified-buffer line and stash source info for RET-jump.
 PREFIX is the displayed source context (\"#room\" or sender JID).
 NICK is the MUC sender's nick, or nil for 1:1 messages.
@@ -514,8 +514,15 @@ no marker is available (e.g. after auto-creating the buffer)."
            (prop (cons marker
                        (list :type type :jid jid :text text :time time))))
       (with-current-buffer (bergheim/jabber-unified--buffer)
-        (let ((inhibit-read-only t)
-              (start (point-max)))
+        (let* ((inhibit-read-only t)
+               (start (point-max))
+               ;; Tail-follow: windows whose point sits at the (old)
+               ;; end-of-buffer get advanced to the new end after we
+               ;; insert.  Windows scrolled back to read older messages
+               ;; have point < start and are left alone.
+               (tailing (seq-filter
+                         (lambda (w) (= (window-point w) start))
+                         (get-buffer-window-list (current-buffer) nil t))))
           (goto-char start)
           (insert (propertize (format "[%s] " time) 'face 'shadow))
           (insert (propertize prefix 'face 'font-lock-keyword-face))
@@ -523,12 +530,29 @@ no marker is available (e.g. after auto-creating the buffer)."
             (insert " " (propertize nick 'face 'font-lock-function-name-face)))
           (insert ": " (or text "") "\n")
           (put-text-property start (point)
-                             'bergheim/jabber-source prop)))))
+                             'bergheim/jabber-source prop)
+          ;; Mention/PM: overlay `bold' on top of the existing per-segment
+          ;; faces so timestamp/prefix/nick colours stay intact.
+          (when mention
+            (add-face-text-property start (point) 'bold))
+          (dolist (w tailing)
+            (set-window-point w (point-max)))))))
+
+  (defun bergheim/jabber-unified--own-jid-p (jid)
+    "Non-nil if JID matches any of our connected bare JIDs.
+Catches carbon-copied messages we sent from another device."
+    (when-let* ((bare (jabber-jid-user jid))
+                (mine (mapcar #'jabber-connection-bare-jid
+                              (bound-and-true-p jabber-connections))))
+      (member bare mine)))
 
   (defun bergheim/jabber-unified-capture-pm (from buffer text _title)
-    "Capture an incoming 1:1 message into the unified buffer."
+    "Capture an incoming 1:1 message into the unified buffer.
+Skips messages we sent ourselves (e.g. carbons from another device).
+All other 1:1 messages count as a ping (bolded)."
     (let ((jid (jabber-jid-user from)))
-      (bergheim/jabber-unified--append jid nil text buffer :pm jid)))
+      (unless (bergheim/jabber-unified--own-jid-p jid)
+        (bergheim/jabber-unified--append jid nil text buffer :pm jid t))))
 
   (defun bergheim/jabber-unified--room-label (group)
     "Return a short channel label for the MUC GROUP JID.
@@ -541,10 +565,22 @@ only if the result doesn't already start with one."
           label
         (concat "#" label))))
 
+  (defun bergheim/jabber-unified--mentioned-p (group text)
+    "Non-nil if TEXT word-mentions our nick in GROUP."
+    (when-let* ((mynick (jabber-muc-nickname group))
+                ((stringp text)))
+      (let ((case-fold-search t))
+        (string-match-p (concat "\\b" (regexp-quote mynick) "\\b") text))))
+
   (defun bergheim/jabber-unified-capture-muc (nick group buffer text _title)
-    "Capture an incoming MUC message into the unified buffer."
-    (bergheim/jabber-unified--append
-     (bergheim/jabber-unified--room-label group) nick text buffer :muc group))
+    "Capture an incoming MUC message into the unified buffer.
+Skips messages we sent ourselves (echoed back by the room).  Bolds
+the line when our nick is mentioned in TEXT (case-insensitive,
+word-boundary match)."
+    (unless (jabber-muc-our-nick-p group nick)
+      (bergheim/jabber-unified--append
+       (bergheim/jabber-unified--room-label group) nick text buffer :muc group
+       (bergheim/jabber-unified--mentioned-p group text))))
 
   (defun bergheim/jabber-unified--resolve-buffer (source)
     "Look up a live chat buffer from SOURCE plist, or nil."
@@ -629,9 +665,12 @@ the previous line instead."
             (goto-char (point-max))))))))
 
   (defun bergheim/jabber-unified-show ()
-    "Open the jabber unified buffer."
+    "Open the jabber unified buffer and snap to the latest line."
     (interactive)
-    (pop-to-buffer (bergheim/jabber-unified--buffer)))
+    (let ((buf (bergheim/jabber-unified--buffer)))
+      (pop-to-buffer buf)
+      (with-current-buffer buf
+        (goto-char (point-max)))))
 
   (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
   (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
