@@ -423,6 +423,15 @@ Searches from the bottom of the channel buffer backward for the exact text."
     "ajv" '(jabber-vcard-get :which-key "View vCard")
     "aju" '(jabber-send-presence :which-key "Update presence")
     "aji" '(bergheim/jabber-unified-show :which-key "Unified inbox"))
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps '(jabber-chat-mode-map bergheim/jabber-unified-mode-map)
+    "b" '(bergheim/jabber-switch :which-key "switch chat"))
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'jabber-chat-mode-map
+    "s" '(bergheim/jabber-swoop-nick :which-key "swoop")
+    "d" '(bergheim/jabber-open-or-capture-user-note-denote :which-key "denote"))
   :custom
   (jabber-chat-default-encryption 'plaintext)
   ;; Password is NOT here — jabber.el pulls it from auth-source.
@@ -705,6 +714,97 @@ the previous line instead."
       (pop-to-buffer buf)
       (with-current-buffer buf
         (goto-char (point-max)))))
+
+  (defun bergheim/jabber--swoop-nicks ()
+    "Return candidate nicks for the current jabber chat buffer.
+For MUC buffers, this is the active participant list.  For 1:1
+chats, it's the single contact (so prompts can skip selection)."
+    (cond
+     ((bound-and-true-p jabber-group)
+      (cdr (assoc jabber-group jabber-muc-participants)))
+     ((bound-and-true-p jabber-chatting-with)
+      (list (jabber-jid-displayname jabber-chatting-with)))))
+
+  (defun bergheim/jabber--pick-nick ()
+    "Prompt for a nick, auto-selecting when only one candidate exists."
+    (let ((nicks (or (bergheim/jabber--swoop-nicks)
+                     (user-error "No nicks available in this buffer"))))
+      (if (length= nicks 1)
+          (car nicks)
+        (completing-read "Choose nick: " nicks nil t))))
+
+  (defun bergheim/jabber-swoop-nick ()
+    "Search the current jabber chat buffer for messages from a chosen nick.
+Mirrors `bergheim/erc-swoop-nick': prompts with active nicks and
+calls `consult-line' scoped to the `<nick>` prefix jabber prints."
+    (interactive)
+    (let ((nick (bergheim/jabber--pick-nick)))
+      (consult-line (format "<%s>" (regexp-quote nick)))))
+
+  (defun bergheim/jabber--note-keywords (jid)
+    "Return denote keywords for JID, matching the ERC contact-note format.
+
+For biboumi-style bridged JIDs (e.g. `nick%irc.libera.chat@biboumi…'),
+returns the friendly transport + the network behind the `%' suffix
+\(stripping a leading `irc.') so a libera-bridged contact ends up
+under `(\"irc\" \"liberachat\")' — the same keywords used by
+`bergheim/erc-open-or-capture-user-note-denote'.
+
+For native XMPP JIDs, returns `(\"jabber\" SERVER)' with a leading
+`xmpp.' stripped so `xmpp.glvortex.net' tags as `glvortexnet'
+after `denote-sluggify' rather than the uglier `xmppglvortexnet'."
+    (let* ((node (jabber-jid-username jid))
+           (bridged (and node
+                         (string-match "%\\([^@]+\\)\\'" node)
+                         (match-string 1 node))))
+      (if bridged
+          (list (downcase (bergheim/jabber--transport jid))
+                (replace-regexp-in-string "^irc\\." "" bridged))
+        (list "jabber"
+              (replace-regexp-in-string "^xmpp\\." ""
+                                        (jabber-jid-server jid))))))
+
+  (defun bergheim/jabber-open-or-capture-user-note-denote ()
+    "Open or capture a denote note for a jabber contact / MUC participant.
+Mirrors `bergheim/erc-open-or-capture-user-note-denote': looks up
+an existing note by slug + transport-aware keywords (see
+`bergheim/jabber--note-keywords'), otherwise creates one.  If the
+region is active when capturing, the selected text is inserted as
+an org quote block under a timestamped heading."
+    (interactive)
+    (require 'denote)
+    (require 'bergheim-jabber-extra)
+    (let* ((nick (bergheim/jabber--pick-nick))
+           (conv-jid (or (bound-and-true-p jabber-group)
+                         (bound-and-true-p jabber-chatting-with)))
+           (slugified-title (denote-sluggify 'title nick))
+           (keywords (bergheim/jabber--note-keywords conv-jid))
+           (selected-text (when (use-region-p)
+                            (string-trim
+                             (buffer-substring-no-properties
+                              (region-beginning) (region-end)))))
+           (choice (completing-read "Action: " '("Open note" "Capture info") nil t))
+           (file-regex (format ".*%s.*%s"
+                               (regexp-quote slugified-title)
+                               (string-join
+                                (mapcar (lambda (kw)
+                                          (denote-sluggify 'keyword kw))
+                                        keywords)
+                                ".*")))
+           (existing-file (car (denote-directory-files file-regex))))
+      (if existing-file
+          (find-file-other-window existing-file)
+        (when (one-window-p) (split-window-right))
+        (other-window 1)
+        (denote slugified-title keywords nil nil nil 'person))
+      (when (string-equal choice "Capture info")
+        (goto-char (point-max))
+        (insert (format "\n** %s\n" (format-time-string "[%Y-%m-%d %a %H:%M]")))
+        (when selected-text
+          (insert (format "#+begin_quote\n%s\n#+end_quote\n" selected-text)))
+        (save-buffer)
+        (when (featurep 'evil)
+          (evil-insert-state)))))
 
   (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
   (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
