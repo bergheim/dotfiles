@@ -480,6 +480,7 @@ aggregates traffic from every room and DM."
   (define-derived-mode bergheim/jabber-unified-mode fundamental-mode "Jabber-Unified"
     "Major mode for the jabber unified log buffer."
     (visual-line-mode 1)
+    (goto-address-mode 1)
     (setq-local scroll-conservatively most-positive-fixnum)
     (setq-local auto-window-vscroll nil)
     (setq-local buffer-read-only t))
