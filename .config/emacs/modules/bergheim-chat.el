@@ -600,14 +600,41 @@ All other 1:1 messages count as a ping (bolded)."
 
   (defun bergheim/jabber-unified--room-label (group)
     "Return a short channel label for the MUC GROUP JID.
-Strips the biboumi-style `%network' suffix used by IRC bridge
-JIDs (e.g. `#emacs%irc.libera.chat' → `#emacs') and prepends `#'
-only if the result doesn't already start with one."
-    (let* ((node (jabber-jid-username group))
-           (label (replace-regexp-in-string "%.*\\'" "" node)))
-      (if (string-prefix-p "#" label)
-          label
-        (concat "#" label))))
+Prefers a friendly name from XEP-0048 bookmarks or the roster.
+Falls back to stripping the biboumi-style `%network' suffix from the
+node and prepending `#' for rooms with no bookmark/roster entry."
+    (let* ((bare (jabber-jid-user group))
+           (friendly (jabber-jid-bookmarkname group)))
+      (if (and friendly (not (equal friendly bare)))
+          friendly
+        (let* ((node (jabber-jid-username group))
+               (label (replace-regexp-in-string "%.*\\'" "" node)))
+          (if (string-prefix-p "#" label)
+              label
+            (concat "#" label))))))
+
+  (defun bergheim/jabber-unified-preview-room-labels ()
+    "Show how `bergheim/jabber-unified--room-label' resolves every bookmarked room.
+Useful for inspecting whether bridge-supplied friendly names are
+arriving via XEP-0048 bookmarks the way Dino sees them."
+    (interactive)
+    (require 'jabber-bookmarks)
+    (let (rows)
+      (maphash (lambda (_account bookmarks)
+                 (dolist (bm bookmarks)
+                   (let ((jid (plist-get bm :jid)))
+                     (push (format "%-50s → %s"
+                                   jid
+                                   (bergheim/jabber-unified--room-label jid))
+                           rows))))
+               jabber-bookmarks)
+      (with-current-buffer (get-buffer-create "*jabber-unified-room-labels*")
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (insert (string-join (nreverse rows) "\n"))
+          (insert "\n"))
+        (special-mode)
+        (pop-to-buffer (current-buffer)))))
 
   (defun bergheim/jabber-unified--mentioned-p (group text)
     "Non-nil if TEXT word-mentions our nick in GROUP."
