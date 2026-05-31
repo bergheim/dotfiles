@@ -408,11 +408,12 @@ Searches from the bottom of the channel buffer backward for the exact text."
                                 jabber-activity-switch-to jabber-chat-with-jid-at-point
                                 jabber-muc-set-topic jabber-vcard-get
                                 jabber-send-presence
-                                bergheim/jabber-unified-show)
+                                bergheim/jabber-unified-show
+                                bergheim/jabber-launch)
   :general
   (bergheim/global-menu-keys
     "aj"  '(:ignore t :which-key "Jabber")
-    "ajc" '(jabber-connect-all :which-key "Connect")
+    "ajc" '(bergheim/jabber-launch :which-key "Launch (connect + layout)")
     "ajr" '(jabber-roster-popup :which-key "Roster")
     "ajq" '(jabber-disconnect :which-key "Disconnect")
     "ajx" '(jabber-muc-leave :which-key "Leave room")
@@ -742,6 +743,52 @@ the previous line instead."
       (pop-to-buffer buf)
       (with-current-buffer buf
         (goto-char (point-max)))))
+
+;;;; Launcher: connect + lay out (unified inbox + predefined room)
+
+  (defcustom bergheim/jabber-startup-room nil
+    "MUC JID to display on the right when `bergheim/jabber-launch' runs.
+The buffer is created via `jabber-muc-create-buffer' (idempotent;
+populates from `jabber-db-backlog'), so the room doesn't need to
+be in autojoin first.  When nil, the launcher just opens the
+unified inbox."
+    :type '(choice (const :tag "None" nil)
+                   (string :tag "MUC JID"))
+    :group 'bergheim)
+
+  (defun bergheim/jabber--launch-layout ()
+    "Arrange the launch layout in the current frame.
+Unified inbox in the main window; `bergheim/jabber-startup-room'
+in a plain right-split window (~40% width).  Regular windows
+\(not side windows) so they can be moved, rotated and deleted."
+    (delete-other-windows)
+    (switch-to-buffer (bergheim/jabber-unified--buffer))
+    (goto-char (point-max))
+    (when bergheim/jabber-startup-room
+      (when-let ((jc (car (bound-and-true-p jabber-connections))))
+        (jabber-muc-create-buffer jc bergheim/jabber-startup-room))
+      (when-let ((chan (jabber-muc-find-buffer bergheim/jabber-startup-room)))
+        (let ((win (split-window-right
+                    (- (round (* 0.4 (frame-width)))))))
+          (set-window-buffer win chan)))))
+
+  (defun bergheim/jabber--launch-layout-once (&rest _)
+    "One-shot wrapper for `jabber-post-connect-hooks'."
+    (remove-hook 'jabber-post-connect-hooks
+                 #'bergheim/jabber--launch-layout-once)
+    (bergheim/jabber--launch-layout))
+
+  (defun bergheim/jabber-launch ()
+    "Connect (if needed), open the unified inbox, dock the predefined room.
+If already connected, just re-applies the layout.  The post-connect
+layout work runs from `jabber-post-connect-hooks' so it doesn't
+race against the handshake (no `run-with-timer' hack)."
+    (interactive)
+    (if (bound-and-true-p jabber-connections)
+        (bergheim/jabber--launch-layout)
+      (add-hook 'jabber-post-connect-hooks
+                #'bergheim/jabber--launch-layout-once)
+      (jabber-connect-all)))
 
   (defun bergheim/jabber--swoop-nicks ()
     "Return candidate nicks for the current jabber chat buffer.
