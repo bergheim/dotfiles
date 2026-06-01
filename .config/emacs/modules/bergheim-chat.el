@@ -1,6 +1,7 @@
 ;;; bergheim-chat.el --- IRC (erc) and XMPP (jabber) -*- lexical-binding: t; -*-
 
 (use-package erc
+  :disabled
   :after consult
   :autoload erc-buffer-list
   :init
