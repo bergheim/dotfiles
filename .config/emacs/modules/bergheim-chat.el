@@ -470,6 +470,7 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-alert-presence-hooks nil)
 
   :config
+  (setopt jabber-groupchat-buffer-format "*%b*")
 ;;;; Unified jabber buffer
   ;; Funnel all incoming PMs and MUC messages into a single buffer,
   ;; mirroring the ERC unified-inbox setup above. Jabber's alert hooks
