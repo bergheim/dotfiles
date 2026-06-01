@@ -432,7 +432,19 @@ Searches from the bottom of the channel buffer backward for the exact text."
     :states '(normal visual)
     :keymaps 'jabber-chat-mode-map
     "s" '(bergheim/jabber-swoop-nick :which-key "swoop")
-    "d" '(bergheim/jabber-open-or-capture-user-note-denote :which-key "denote"))
+    "d" '(bergheim/jabber-open-or-capture-user-note-denote :which-key "denote")
+    "f" '(jabber-chat-attach-file :which-key "attach file/image")
+    ;; jabber.el's own popup menus (also on C-c C-o / C-c C-m / C-c C-e)
+    "o" '(jabber-chat-operations-menu :which-key "chat operations")
+    "m" '(jabber-muc-menu :which-key "MUC menu")
+    "e" '(jabber-chat-encryption-menu :which-key "encryption")
+    ;; quick standalone actions (all live in the operations menu too)
+    "r" '(jabber-chat-reply :which-key "reply to message")
+    "k" '(jabber-chat-cancel-reply :which-key "cancel reply")
+    "E" '(jabber-correct-last-message :which-key "edit last message")
+    "i" '(jabber-chat-get-info :which-key "peer info")
+    "R" '(jabber-chat-buffer-refresh :which-key "refresh")
+    "S" '(jabber-mam-sync-buffer :which-key "sync (MAM)"))
   :custom
   (jabber-chat-default-encryption 'plaintext)
   ;; Password is NOT here — jabber.el pulls it from auth-source.
