@@ -545,6 +545,46 @@ not live."
                     (marker-position jabber-point-insert))
                (point-max)))))))
 
+  (defcustom bergheim/jabber-unified-transport-icons
+    '(("Telegram"   nerd-icons-faicon "nf-fa-telegram")
+      ("Signal"     nerd-icons-faicon "nf-fa-signal")
+      ("WhatsApp"   nerd-icons-faicon "nf-fa-whatsapp")
+      ("Discord"    nerd-icons-faicon "nf-fa-discord")
+      ("Slack"      nerd-icons-faicon "nf-fa-slack")
+      ("IRC"        nerd-icons-faicon "nf-fa-hashtag")
+      ("Messenger"  nerd-icons-faicon "nf-fa-facebook_messenger")
+      ("Mattermost" nerd-icons-mdicon "nf-md-forum")
+      ("Matrix"     nerd-icons-mdicon "nf-md-matrix"))
+    "Per-transport prefix glyph for unified-buffer lines.
+Keys are transport labels as returned by `bergheim/jabber--transport'
+\(the values in `bergheim/jabber-transport-labels').  Each value is
+\(FUNCTION ICON-NAME), called to produce the glyph — typically a
+`nerd-icons-*' constructor.  Transports with no entry (and native XMPP,
+which has no transport) fall back to `bergheim/jabber-unified-transport-icon-default'."
+    :type '(alist :key-type string :value-type (list function string))
+    :group 'bergheim)
+
+  (defcustom bergheim/jabber-unified-transport-icon-default
+    '(nerd-icons-faicon "nf-fa-comment_o")
+    "Fallback (FUNCTION ICON-NAME) glyph for transports with no specific icon."
+    :type '(list function string)
+    :group 'bergheim)
+
+  (defun bergheim/jabber-unified--transport-icon (jid)
+    "Return a propertized transport glyph for JID, or nil.
+Resolves the transport via `bergheim/jabber--transport' (loading
+`bergheim-jabber-extra' if needed) and looks it up in
+`bergheim/jabber-unified-transport-icons', else the default.  Returns
+nil when nerd-icons or the transport helper is unavailable, so callers
+must guard."
+    (when (and (fboundp 'nerd-icons-faicon)
+               (or (fboundp 'bergheim/jabber--transport)
+                   (require 'bergheim-jabber-extra nil t)))
+      (let* ((label (bergheim/jabber--transport jid))
+             (spec (or (cdr (assoc label bergheim/jabber-unified-transport-icons))
+                       bergheim/jabber-unified-transport-icon-default)))
+        (ignore-errors (apply (car spec) (cdr spec))))))
+
   (defun bergheim/jabber-unified--append (prefix nick text source-buffer type jid &optional mention time-value)
     "Render a unified-buffer line and stash source info for RET-jump.
 PREFIX is the displayed source context (\"#room\" or sender JID).
@@ -590,7 +630,11 @@ time rather than the moment it was replayed."
                                 'face 'shadow))
             (setq bergheim/jabber-unified--last-date date)
             (setq start (point)))
-          (insert (propertize (format "[%s] " time) 'face 'shadow))
+          (insert (propertize (format "%s " time) 'face 'shadow))
+          ;; Transport glyph after the timestamp (Telegram/Signal/IRC/…).
+          (let ((icon (bergheim/jabber-unified--transport-icon jid)))
+            (when (and icon (not (string-empty-p icon)))
+              (insert icon " ")))
           ;; `<speaker>' instead of a trailing colon, matching the
           ;; `<nick>' convention in regular chat buffers.  For MUC the
           ;; room PREFIX is the context and NICK is the speaker; for 1:1
