@@ -468,6 +468,12 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-roster-show-title nil)
   (jabber-vcard-avatars-retrieve nil)
   (jabber-alert-presence-hooks nil)
+  ;; Drop the chat/room header line; the only unique info it carries
+  ;; (encryption + MAM-sync indicators) is surfaced in the modeline
+  ;; instead via `bergheim/jabber--chat-modeline-encryption' below.
+  (jabber-chat-header-line-format nil)
+  (jabber-muc-header-line-format nil)
+  (jabber-muc-private-header-line-format nil)
 
   :config
   (setopt jabber-groupchat-buffer-format "*%b*")
@@ -894,6 +900,21 @@ an org quote block under a timestamped heading."
         (save-buffer)
         (when (featurep 'evil)
           (evil-insert-state)))))
+
+  (defun bergheim/jabber--chat-modeline-encryption ()
+    "Splice a 🔒 / 🔓 indicator into `mode-line-misc-info'.
+Derived from `jabber-chat-encryption' directly so the modeline
+shows a single glyph instead of jabber's `[plaintext]'/`[OMEMO]'
+text.  doom-modeline renders `mode-line-misc-info' automatically,
+but only on the active window."
+    (setq-local mode-line-misc-info
+                (append mode-line-misc-info
+                        '((:eval
+                           (pcase (bound-and-true-p jabber-chat-encryption)
+                             ((or 'omemo 'openpgp 'openpgp-legacy) " 🔒")
+                             (_ " 🔓")))))))
+
+  (add-hook 'jabber-chat-mode-hook #'bergheim/jabber--chat-modeline-encryption)
 
   (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
   (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
