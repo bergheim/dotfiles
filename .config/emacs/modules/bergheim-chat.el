@@ -466,6 +466,10 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-auto-reconnect t)
   (jabber-show-resources nil)
   (jabber-roster-show-title nil)
+  ;; Drop the chat-window header line: it only carried a name/presence
+  ;; restatement plus an encryption tag, cluttering the top of every chat.
+  (jabber-muc-header-line-format nil)
+  (jabber-muc-private-header-line-format nil)
   (jabber-vcard-avatars-retrieve nil)
   (jabber-alert-presence-hooks nil)
   ;; Drop the chat/room header line; the only unique info it carries
@@ -477,6 +481,12 @@ Searches from the bottom of the channel buffer backward for the exact text."
 
   :config
   (setopt jabber-groupchat-buffer-format "*%b*")
+;;;; Drop the chat-window header line
+  ;; `jabber-chat-header-line-format' is a plain defvar (the two MUC
+  ;; variants are defcustoms set in `:custom').  nil it out so chat,
+  ;; MUC and private-MUC buffers all start without a header line.
+  (setq jabber-chat-header-line-format nil)
+
 ;;;; Unified jabber buffer
   ;; Funnel all incoming PMs and MUC messages into a single buffer,
   ;; mirroring the ERC unified-inbox setup above. Jabber's alert hooks
