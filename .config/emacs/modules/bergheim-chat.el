@@ -723,6 +723,21 @@ node and prepending `#' for rooms with no bookmark/roster entry."
               label
             (concat "#" label))))))
 
+  (defun bergheim/jabber-unified--room-display (group)
+    "Room label for the unified buffer.
+Like `bergheim/jabber-unified--room-label' but strips the biboumi-style
+\" on NETWORK\" suffix that IRC rooms carry in their bookmark name (e.g.
+\"#emacs on irc.libera.chat\" → \"#emacs\").  The transport icon already
+conveys the network, and NETWORK is taken from the JID's own `%network'
+part so only that exact suffix is removed — never an \" on …\" that's
+genuinely part of a room's name.  Buffer naming keeps the full label."
+    (let ((label (bergheim/jabber-unified--room-label group))
+          (node (jabber-jid-username group)))
+      (if (and node (string-match "%\\(.+\\)\\'" node))
+          (replace-regexp-in-string
+           (concat " on " (regexp-quote (match-string 1 node)) "\\'") "" label)
+        label)))
+
   ;; Override `jabber-muc-get-buffer' so MUC buffer names go through our
   ;; bridge-aware label helper instead of the upstream %b format spec.
   ;; %b falls back to the raw JID whenever a room has no XEP-0048
@@ -788,7 +803,7 @@ receipts) are skipped."
     (unless (or (bergheim/jabber-unified--bodyless-p text)
                 (jabber-muc-our-nick-p group nick))
       (bergheim/jabber-unified--append
-       (bergheim/jabber-unified--room-label group) nick text buffer :muc group
+       (bergheim/jabber-unified--room-display group) nick text buffer :muc group
        (bergheim/jabber-unified--mentioned-p group text))))
 
   (defun bergheim/jabber-unified--resolve-buffer (source)
@@ -920,7 +935,7 @@ mistaken for the peer's."
            (ts   (plist-get row :timestamp)))
       (if (equal (plist-get row :type) "groupchat")
           (bergheim/jabber-unified--append
-           (bergheim/jabber-unified--room-label peer)
+           (bergheim/jabber-unified--room-display peer)
            (unless out (plist-get row :resource))
            body nil :muc peer nil ts)
         (bergheim/jabber-unified--append
