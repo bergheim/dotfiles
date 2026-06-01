@@ -916,6 +916,19 @@ but only on the active window."
 
   (add-hook 'jabber-chat-mode-hook #'bergheim/jabber--chat-modeline-encryption)
 
+  ;; TODO(upstream): jabber's MUC notice handler (presence/topic/role/
+  ;; affiliation) is gated on `jabber-muc-find-buffer' returning non-nil
+  ;; at the moment the stanza arrives -- see jabber-muc.el:1929-1938.
+  ;; Autojoined rooms send presence before any buffer exists, so the
+  ;; welcome banner (subject + participant list) is silently dropped.
+  ;; Workaround: pre-create the buffer here, before the join goes out,
+  ;; so notices land.  Drop this once the upstream fix is merged --
+  ;; see ~/stash/notes/20260601T143553--upstream-jabberel-...
+  (define-advice jabber-muc--send-join-presence
+      (:before (jc group &rest _) bergheim/precreate-room-buffer)
+    "Ensure the chat buffer exists before MUC join presence is sent."
+    (jabber-muc-create-buffer jc group))
+
   (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
   (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
 
