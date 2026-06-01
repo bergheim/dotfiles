@@ -545,7 +545,7 @@ not live."
                     (marker-position jabber-point-insert))
                (point-max)))))))
 
-  (defun bergheim/jabber-unified--append (prefix nick text source-buffer type jid &optional mention)
+  (defun bergheim/jabber-unified--append (prefix nick text source-buffer type jid &optional mention time-value)
     "Render a unified-buffer line and stash source info for RET-jump.
 PREFIX is the displayed source context (\"#room\" or sender JID).
 NICK is the MUC sender's nick, or nil for 1:1 messages.
@@ -556,9 +556,13 @@ TYPE is `:pm' or `:muc' and JID is the bare JID of the source,
 both used by `bergheim/jabber-unified-visit' to re-resolve the
 chat buffer when the marker is missing or detached.  TEXT is also
 stashed so visit can locate the exact line via text search when
-no marker is available (e.g. after auto-creating the buffer)."
-    (let* ((time (format-time-string "%H:%M"))
-           (date (format-time-string "%Y-%m-%d %A"))
+no marker is available (e.g. after auto-creating the buffer).
+TIME-VALUE, when non-nil, is a time (e.g. a unix-epoch integer) used
+for the displayed timestamp and day separator instead of the current
+time — this is what lets the history seed show each message's real
+time rather than the moment it was replayed."
+    (let* ((time (format-time-string "%H:%M" time-value))
+           (date (format-time-string "%Y-%m-%d %A" time-value))
            (marker (bergheim/jabber-unified--source-marker source-buffer))
            ;; Property is (MARKER-OR-NIL . PLIST).  PLIST always has
            ;; :type, :jid, :text and :time so visit can recover even
@@ -587,10 +591,18 @@ no marker is available (e.g. after auto-creating the buffer)."
             (setq bergheim/jabber-unified--last-date date)
             (setq start (point)))
           (insert (propertize (format "[%s] " time) 'face 'shadow))
-          (insert (propertize prefix 'face 'font-lock-keyword-face))
-          (when nick
-            (insert " " (propertize nick 'face 'font-lock-function-name-face)))
-          (insert ": " (or text "") "\n")
+          ;; `<speaker>' instead of a trailing colon, matching the
+          ;; `<nick>' convention in regular chat buffers.  For MUC the
+          ;; room PREFIX is the context and NICK is the speaker; for 1:1
+          ;; the PREFIX is itself the speaker (no separate NICK).
+          (if nick
+              (insert (propertize prefix 'face 'font-lock-keyword-face)
+                      " "
+                      (propertize (format "<%s>" nick)
+                                  'face 'font-lock-function-name-face))
+            (insert (propertize (format "<%s>" prefix)
+                                'face 'font-lock-keyword-face)))
+          (insert " " (or text "") "\n")
           (put-text-property start (point)
                              'bergheim/jabber-source prop)
           ;; Mention/PM: overlay `bold' on top of the existing per-segment
@@ -621,13 +633,36 @@ Catches carbon-copied messages we sent from another device."
                               (bound-and-true-p jabber-connections))))
       (member bare mine)))
 
+  (defun bergheim/jabber-unified--bodyless-p (text)
+    "Non-nil when TEXT carries no actual message body.
+The alert hooks also fire for bodyless stanzas — room subjects, typing
+notifications (chat states), and read receipts / chat markers — which
+flood the unified buffer with empty-bodied lines on connect.  Skipping
+these is the difference between a useful log and join-time noise."
+    (or (null text) (string-empty-p (string-trim text))))
+
+  (defun bergheim/jabber-unified--peer-label (jid)
+    "Human label for a 1:1 chat peer JID.
+Roster name when set; otherwise the bare local-part with biboumi-style
+`%network' bridge suffixes stripped, so `nick%irc.libera.chat@gw'
+shows as `nick' and `7790581310@telegram…' as `7790581310' rather than
+the full JID.  Bare-domain gateway JIDs (no local-part) keep their host."
+    (or (jabber-jid-rostername jid)
+        (let ((local (jabber-jid-username jid)))
+          (if (and local (not (string-empty-p local)))
+              (car (split-string local "%" t))
+            jid))))
+
   (defun bergheim/jabber-unified-capture-pm (from buffer text _title)
     "Capture an incoming 1:1 message into the unified buffer.
-Skips messages we sent ourselves (e.g. carbons from another device).
-All other 1:1 messages count as a ping (bolded)."
+Skips messages we sent ourselves (e.g. carbons from another device)
+and bodyless control stanzas.  All other 1:1 messages count as a ping
+\(bolded)."
     (let ((jid (jabber-jid-user from)))
-      (unless (bergheim/jabber-unified--own-jid-p jid)
-        (bergheim/jabber-unified--append jid nil text buffer :pm jid t))))
+      (unless (or (bergheim/jabber-unified--bodyless-p text)
+                  (bergheim/jabber-unified--own-jid-p jid))
+        (bergheim/jabber-unified--append
+         (bergheim/jabber-unified--peer-label jid) nil text buffer :pm jid t))))
 
   (defun bergheim/jabber-unified--room-label (group)
     "Return a short channel label for the MUC GROUP JID.
@@ -643,6 +678,32 @@ node and prepending `#' for rooms with no bookmark/roster entry."
           (if (string-prefix-p "#" label)
               label
             (concat "#" label))))))
+
+  ;; Override `jabber-muc-get-buffer' so MUC buffer names go through our
+  ;; bridge-aware label helper instead of the upstream %b format spec.
+  ;; %b falls back to the raw JID whenever a room has no XEP-0048
+  ;; bookmark, or its bookmark has no :name (common with snapshot
+  ;; rejoins and legacy XEP-0049 storage), which leaves us with
+  ;; *room%network@gateway/...* style buffer names.  Doing it here also
+  ;; covers `jabber-muc-find-buffer's name-based lookups, so we stay
+  ;; consistent across find/create.
+  (define-advice jabber-muc-get-buffer
+      (:around (orig group &optional jc) bergheim/friendly-name)
+    "Name MUC buffers via `bergheim/jabber-unified--room-label'.
+On label collisions (two rooms resolve to the same short name --
+e.g. #emacs on multiple bridged IRC networks), suffix the host so
+each room keeps its own buffer."
+    (if (fboundp 'bergheim/jabber-unified--room-label)
+        (let* ((label (bergheim/jabber-unified--room-label group))
+               (base (format "*%s*" label))
+               (existing (get-buffer base)))
+          (if (and existing
+                   (buffer-local-value 'jabber-group existing)
+                   (not (equal (buffer-local-value 'jabber-group existing)
+                               group)))
+              (format "*%s@%s*" label (jabber-jid-server group))
+            base))
+      (funcall orig group jc)))
 
   (defun bergheim/jabber-unified-preview-room-labels ()
     "Show how `bergheim/jabber-unified--room-label' resolves every bookmarked room.
@@ -678,8 +739,10 @@ arriving via XEP-0048 bookmarks the way Dino sees them."
     "Capture an incoming MUC message into the unified buffer.
 Skips messages we sent ourselves (echoed back by the room).  Bolds
 the line when our nick is mentioned in TEXT (case-insensitive,
-word-boundary match)."
-    (unless (jabber-muc-our-nick-p group nick)
+word-boundary match).  Bodyless stanzas (topics, chat states,
+receipts) are skipped."
+    (unless (or (bergheim/jabber-unified--bodyless-p text)
+                (jabber-muc-our-nick-p group nick))
       (bergheim/jabber-unified--append
        (bergheim/jabber-unified--room-label group) nick text buffer :muc group
        (bergheim/jabber-unified--mentioned-p group text))))
@@ -774,6 +837,101 @@ the previous line instead."
       (with-current-buffer buf
         (goto-char (point-max)))))
 
+;;;; History seed: last message per conversation on launch
+  ;; Pulled straight from the local `jabber.db'.  This is a pure local
+  ;; read — zero network traffic — so it never sends read receipts or
+  ;; chat markers and therefore never marks anything read on the remote
+  ;; side (including bridged networks like Signal/Telegram).
+
+  (defun bergheim/jabber-unified--recent-rows (account)
+    "Return the latest non-empty message per peer for ACCOUNT.
+Each element is a plist with :peer :direction :body :timestamp
+:resource :type, ordered oldest-first."
+    (when-let* ((db (jabber-db-ensure-open)))
+      (mapcar
+       (lambda (row)
+         (seq-let (peer direction body timestamp resource type) row
+           (list :peer peer :direction direction :body body
+                 :timestamp timestamp :resource resource :type type)))
+       (sqlite-select
+        db
+        "SELECT peer, direction, body, timestamp, resource, type \
+FROM message m \
+WHERE account = ? AND body IS NOT NULL AND TRIM(body) <> '' \
+AND timestamp = (SELECT MAX(timestamp) FROM message \
+WHERE account = m.account AND peer = m.peer \
+AND body IS NOT NULL AND TRIM(body) <> '') \
+GROUP BY peer \
+ORDER BY timestamp ASC"
+        (list account)))))
+
+  (defun bergheim/jabber-unified--seed-row (row)
+    "Append one history ROW (plist from `--recent-rows') to the unified buffer.
+Outgoing messages get a `→' marker so a self-sent last line isn't
+mistaken for the peer's."
+    (let* ((peer (plist-get row :peer))
+           (out  (equal (plist-get row :direction) "out"))
+           (body (let ((b (plist-get row :body)))
+                   (if out (concat "→ " b) b)))
+           (ts   (plist-get row :timestamp)))
+      (if (equal (plist-get row :type) "groupchat")
+          (bergheim/jabber-unified--append
+           (bergheim/jabber-unified--room-label peer)
+           (unless out (plist-get row :resource))
+           body nil :muc peer nil ts)
+        (bergheim/jabber-unified--append
+         (bergheim/jabber-unified--peer-label peer)
+         nil body nil :pm peer nil ts))))
+
+  (defun bergheim/jabber-unified-seed-recent ()
+    "Seed the unified buffer with each conversation's last stored message.
+No-op unless the buffer is empty, so reconnecting or re-applying the
+layout never double-seeds.  Reads only the local DB (see section note).
+Resolves MUC/Signal-group names via the roster + bookmark cache, so it
+must run only after bookmarks have loaded (see
+`bergheim/jabber--launch-seed-after-bookmarks')."
+    (let ((buf (bergheim/jabber-unified--buffer)))
+      (when (with-current-buffer buf (= (point-min) (point-max)))
+        (let* ((accounts (delq nil
+                               (mapcar #'jabber-connection-bare-jid
+                                       (bound-and-true-p jabber-connections))))
+               (rows (sort (mapcan #'bergheim/jabber-unified--recent-rows accounts)
+                           (lambda (a b) (< (plist-get a :timestamp)
+                                            (plist-get b :timestamp))))))
+          (when rows
+            (with-current-buffer buf
+              (let ((inhibit-read-only t))
+                (goto-char (point-max))
+                (insert (propertize "──── recent history (local) ────\n"
+                                    'face 'shadow))))
+            (mapc #'bergheim/jabber-unified--seed-row rows)
+            ;; The seed inserted asynchronously (post-bookmarks), so the
+            ;; layout's initial snap-to-bottom already ran on the empty
+            ;; buffer.  Re-snap every unified window to the newest line.
+            (with-current-buffer buf
+              (goto-char (point-max))
+              (dolist (w (get-buffer-window-list buf nil t))
+                (set-window-point w (point-max)))))))))
+
+  (defun bergheim/jabber--launch-seed-after-bookmarks ()
+    "Seed the unified buffer once every connection's bookmarks are loaded.
+Bookmarks carry the human names for MUCs and bridged groups (Signal,
+etc.); jabber fetches them asynchronously *after* the roster, so seeding
+straight off `jabber-post-connect-hooks' renders raw JIDs.  Fetching
+them first (a no-op when already cached) makes the seed show friendly
+labels.  Falls back to an immediate seed when there are no connections."
+    (let* ((conns (bound-and-true-p jabber-connections))
+           (pending (length conns)))
+      (if (zerop pending)
+          (bergheim/jabber-unified-seed-recent)
+        (dolist (jc conns)
+          (jabber-get-bookmarks
+           jc
+           (lambda (&rest _)
+             (setq pending (1- pending))
+             (when (zerop pending)
+               (bergheim/jabber-unified-seed-recent))))))))
+
 ;;;; Launcher: connect + lay out (unified inbox + predefined room)
 
   (defcustom bergheim/jabber-startup-room nil
@@ -794,6 +952,9 @@ in a plain right-split window (~40% width).  Regular windows
     (delete-other-windows)
     (switch-to-buffer (bergheim/jabber-unified--buffer))
     (goto-char (point-max))
+    ;; Seed after bookmarks load so names resolve to human labels, not
+    ;; raw JIDs.  Async, so it lands a beat after the window is shown.
+    (bergheim/jabber--launch-seed-after-bookmarks)
     (when bergheim/jabber-startup-room
       (when-let ((jc (car (bound-and-true-p jabber-connections))))
         (jabber-muc-create-buffer jc bergheim/jabber-startup-room))
