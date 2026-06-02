@@ -139,16 +139,28 @@ First matching entry wins; unmatched servers fall back to the raw hostname."
             (< (bergheim/jabber--cand-rank a)
                 (bergheim/jabber--cand-rank b)))))
 
+(defface bergheim/jabber-unread-face
+    '((((class color) (min-colors 88) (background light))
+          :weight bold :foreground "#0031a9")
+         (((class color) (min-colors 88) (background dark))
+             :weight bold :foreground "#79a8ff")
+         (t :weight bold :inverse-video t))
+    "Face for unread (pinged) rows in `bergheim/jabber-switch'.
+Bold plus an intense colour so PMs/@-mentions stand out in the
+completion list — plain `bold' is too faint on light themes.
+Customise with \\[customize-face]."
+    :group 'jabber)
+
 (defun bergheim/jabber--with-transport (text jid)
     "Append a `— Transport' suffix to TEXT for JID, and prefix an unread
-indicator: a bold `MARKER N' ping count, a dim dot for plain activity,
-or blank padding when quiet."
+indicator: a `MARKER N' ping count in `bergheim/jabber-unread-face', a
+dim dot for plain activity, or blank padding when quiet."
     (let* ((count (bergheim/jabber--unread-count jid))
               (lhs (cond
                        ((> count 0)
                            (propertize (format "%s %d %s"
                                            bergheim/jabber-unread-marker count text)
-                               'face 'bold))
+                               'face 'bergheim/jabber-unread-face))
                        ((bergheim/jabber--unread-active-p jid)
                            (concat (propertize "· " 'face 'shadow) text))
                        (t (concat "  " text)))))
