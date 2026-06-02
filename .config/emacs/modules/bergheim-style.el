@@ -456,7 +456,15 @@ Defaults to dark when gsettings is unavailable."
           :scroll-bar-width 8
           :fringe-width 8)
         spacious-padding-subtle-mode-line nil)
-  (spacious-padding-mode))
+  ;; Defer in daemon mode -- enabling at `:config' time computes
+  ;; face bgs from the daemon's hidden F1 frame, whose default
+  ;; :background is `unspecified-bg', producing 24 "Unable to load
+  ;; color" messages.
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook
+                (lambda ()
+                  (unless spacious-padding-mode (spacious-padding-mode))))
+    (spacious-padding-mode)))
 
 (defun bergheim/toggle-visual-fluff ()
   "Toggle the menu bar and scroll bar on and off."
