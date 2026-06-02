@@ -23,8 +23,7 @@ NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
 echo "Num new mails ${NEW_MAILS_COUNT}"
 
 if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
-    /usr/bin/emacsclient -e '(mu4e-update-index)'
-    /usr/bin/emacsclient -e '(mu4e~headers-maybe-auto-update)'
+    /usr/bin/emacsclient -e "(when (and (fboundp 'mu4e-running-p) (mu4e-running-p)) (mu4e-update-index) (mu4e~headers-maybe-auto-update))"
     if [ "$NEW_MAILS_COUNT" -gt "1" ]; then
         notify-send --icon=emblem-documents --category email --app-name=mbsync "You've got mail" "You have $NEW_MAILS_COUNT new emails" &
     fi
