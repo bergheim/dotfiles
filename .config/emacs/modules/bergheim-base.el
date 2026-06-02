@@ -58,6 +58,23 @@
 
   (add-hook 'tty-setup-hook #'kkp-force-enable-on-tty))
 
+(defun bergheim/terminal-clipboard-available-p ()
+  "Return non-nil when Emacs should export kills with OSC 52."
+  (or (getenv "EMACS_CONTAINER")
+      (not (display-graphic-p))))
+
+(defun bergheim/send-osc52-to-terminal (text)
+  "Export TEXT to the host clipboard.
+On TTY/container frames, write an OSC 52 escape to the
+controlling terminal."
+  (if (bergheim/terminal-clipboard-available-p)
+      (let ((inhibit-message t))
+        (send-string-to-terminal
+         (format "\e]52;c;%s\a"
+                 (base64-encode-string (encode-coding-string text 'utf-8) t))))
+    (when (fboundp 'gui-select-text)
+      (gui-select-text text))))
+
 (use-package emacs
   :ensure nil
   :config
@@ -108,14 +125,7 @@
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
 
-  ;; Send kills to host clipboard via OSC 52 (terminal/container only)
-  (when (getenv "EMACS_CONTAINER")
-    (setq interprogram-cut-function
-          (lambda (text)
-            (let ((inhibit-message t))
-              (send-string-to-terminal
-               (format "\e]52;c;%s\a"
-                       (base64-encode-string (encode-coding-string text 'utf-8) t)))))))
+  (setq interprogram-cut-function #'bergheim/send-osc52-to-terminal)
 
 
   ;; Reload files that are changed outside of Emacs
