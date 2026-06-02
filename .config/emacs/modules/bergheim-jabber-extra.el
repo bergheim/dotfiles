@@ -99,6 +99,7 @@ First matching entry wins; unmatched servers fall back to the raw hostname."
 (declare-function bergheim/jabber-unread-active-p  "bergheim-chat")
 (declare-function bergheim/jabber-unread-clear     "bergheim-chat")
 (declare-function bergheim/jabber-unread-ping-jids "bergheim-chat")
+(declare-function bergheim/jabber-unread-jump-marker "bergheim-chat")
 
 ;; Thin wrappers over the bergheim-chat.el tracker, guarded so the
 ;; switcher still works (just with no unread info) if it isn't loaded.
@@ -449,15 +450,38 @@ Already-joined rooms are excluded so they only appear under Channels."
     (when (fboundp 'bergheim/jabber-unread-clear)
         (bergheim/jabber-unread-clear jid)))
 
+(defun bergheim/jabber--unread-mark (jid)
+    "Marker at JID's first unread ping, or nil (best-effort, may be stale)."
+    (and (fboundp 'bergheim/jabber-unread-jump-marker)
+        (bergheim/jabber-unread-jump-marker jid)))
+
+(defun bergheim/jabber--goto-unread-mark (mark)
+    "Move point to MARK (first unread mention/message) if it's still live.
+Sets point in the marker's buffer and, if a window shows it, scrolls
+that window so the line sits near the top.  No-op for a dead/stale
+marker, so we simply leave point wherever the switch landed."
+    (when (and (markerp mark) (buffer-live-p (marker-buffer mark)))
+        (let ((buf (marker-buffer mark)))
+            (with-current-buffer buf
+                (goto-char mark)
+                (when (featurep 'evil) (evil-normal-state)))
+            (when-let ((win (get-buffer-window buf)))
+                (set-window-point win mark)
+                (with-selected-window win (recenter 1))))))
+
 (defun bergheim/jabber--act-chat (str)
-    (let ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str)))
+    (let* ((jid  (or (get-text-property 0 'bergheim/jabber-jid str) str))
+              (mark (bergheim/jabber--unread-mark jid)))
         (bergheim/jabber--mark-read jid)
-        (jabber-chat-with (bergheim/jabber--connection) jid nil)))
+        (jabber-chat-with (bergheim/jabber--connection) jid nil)
+        (bergheim/jabber--goto-unread-mark mark)))
 
 (defun bergheim/jabber--act-channel (str)
-    (let ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str)))
+    (let* ((jid  (or (get-text-property 0 'bergheim/jabber-jid str) str))
+              (mark (bergheim/jabber--unread-mark jid)))
         (bergheim/jabber--mark-read jid)
-        (jabber-muc-switch-to jid)))
+        (jabber-muc-switch-to jid)
+        (bergheim/jabber--goto-unread-mark mark)))
 
 (defun bergheim/jabber--act-bookmark (str)
     (let* ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str))
@@ -472,12 +496,14 @@ Already-joined rooms are excluded so they only appear under Channels."
 (defun bergheim/jabber--act-activity (str)
     "Switch to the chat or room buffer for an activity entry."
     (let* ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str))
-              (buf (jabber-activity-find-buffer-name jid)))
+              (buf  (jabber-activity-find-buffer-name jid))
+              (mark (bergheim/jabber--unread-mark jid)))
         (bergheim/jabber--mark-read jid)
         (cond
             ((buffer-live-p buf) (switch-to-buffer buf))
             ((jabber-muc-joined-p jid) (jabber-muc-switch-to jid))
-            (t (jabber-chat-with (bergheim/jabber--connection) jid nil)))))
+            (t (jabber-chat-with (bergheim/jabber--connection) jid nil)))
+        (bergheim/jabber--goto-unread-mark mark)))
 
 (defvar bergheim/jabber--source-unread
     `(:name     "Unread"

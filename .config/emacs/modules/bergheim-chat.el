@@ -712,23 +712,29 @@ the full JID.  Bare-domain gateway JIDs (no local-part) keep their host."
   ;; functions below.
 
   (defvar bergheim/jabber-unread--table (make-hash-table :test 'equal)
-    "Hash: bare JID -> plist (:pings INT :active BOOL).
+    "Hash: bare JID -> plist (:pings INT :active BOOL :marker MARKER-or-nil).
+:marker points at the FIRST unread ping (first @-mention in a channel,
+first new message in a PM) so opening the conversation can jump there.
 See the section comment.  Keyed by `jabber-jid-user' form.")
 
   (defun bergheim/jabber-unread--key (jid)
     "Normalise JID to the bare form used as a table key."
     (jabber-jid-user jid))
 
-  (defun bergheim/jabber-unread-record (jid kind)
+  (defun bergheim/jabber-unread-record (jid kind &optional marker)
     "Record activity for JID.  KIND is `ping' or `active'.
 `ping' increments the unread count (and implies activity); `active'
-only raises the low-priority flag."
+only raises the low-priority flag.  MARKER, when given on the FIRST
+ping of an unread run, is remembered as the jump target; later pings
+keep the first one."
     (let* ((key (bergheim/jabber-unread--key jid))
            (cur (gethash key bergheim/jabber-unread--table))
-           (pings (or (plist-get cur :pings) 0)))
+           (pings (or (plist-get cur :pings) 0))
+           (mark  (plist-get cur :marker)))
       (puthash key
                (list :pings (if (eq kind 'ping) (1+ pings) pings)
-                     :active t)
+                     :active t
+                     :marker (or mark (and (eq kind 'ping) marker)))
                bergheim/jabber-unread--table)))
 
   (defun bergheim/jabber-unread-clear (jid)
@@ -748,6 +754,13 @@ only raises the low-priority flag."
                              bergheim/jabber-unread--table)
                     :active)
          t))
+
+  (defun bergheim/jabber-unread-jump-marker (jid)
+    "Marker at JID's first unread ping, or nil.
+May be stale (buffer killed, etc.); callers must check `marker-buffer'."
+    (plist-get (gethash (bergheim/jabber-unread--key jid)
+                        bergheim/jabber-unread--table)
+               :marker))
 
   (defun bergheim/jabber-unread-rank (jid)
     "Sort rank for JID: 0 = has pings, 1 = active only, 2 = nothing."
@@ -783,7 +796,8 @@ the chat."
         (bergheim/jabber-unified--append
          (bergheim/jabber-unified--peer-label jid) nil text buffer :pm jid t)
         (unless (bergheim/jabber-unread--viewing-p buffer)
-          (bergheim/jabber-unread-record jid 'ping)))))
+          (bergheim/jabber-unread-record
+           jid 'ping (bergheim/jabber-unified--source-marker buffer))))))
 
   (defun bergheim/jabber-unified--room-label (group)
     "Return a short channel label for the MUC GROUP JID.
@@ -915,8 +929,11 @@ receipts) are skipped."
          (bergheim/jabber-unified--room-display group) nick text buffer :muc group
          mention)
         ;; A mention is a ping; plain room chatter only flags activity.
+        ;; Only mentions carry a jump marker (to the first highlight).
         (unless (bergheim/jabber-unread--viewing-p buffer)
-          (bergheim/jabber-unread-record group (if mention 'ping 'active))))))
+          (bergheim/jabber-unread-record
+           group (if mention 'ping 'active)
+           (and mention (bergheim/jabber-unified--source-marker buffer)))))))
 
   (defun bergheim/jabber-unified--resolve-buffer (source)
     "Look up a live chat buffer from SOURCE plist, or nil."
