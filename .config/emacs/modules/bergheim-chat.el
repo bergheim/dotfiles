@@ -841,6 +841,37 @@ each room keeps its own buffer."
             base))
       (funcall orig group jc)))
 
+;;;; Hush the join-time participant dump
+  ;; When you join a MUC, the server replays every existing occupant's
+  ;; presence — each rendered as "X enters the room" — before sending
+  ;; your own self-presence.  jabber only marks the room joined on that
+  ;; self-presence, so during the initial dump `jabber-muc-joined-p' is
+  ;; still nil.  We use that to drop only the initial "enters" notices;
+  ;; real-time joins (after you're in) and all parts are untouched.
+  (defvar bergheim/jabber-muc--suppress-enter nil
+    "Dynamically bound non-nil while rendering an initial-join occupant.")
+
+  (define-advice jabber-muc--process-enter
+      (:around (orig jc group nickname symbol status-codes x-muc actor reason our-nickname)
+               bergheim/hush-initial-joins)
+    "Mark initial-join occupant presences so their notice is suppressed.
+True only before our own self-presence has marked the room joined, and
+never for our own presence — so live joins still show."
+    (let ((bergheim/jabber-muc--suppress-enter
+           (and (not (jabber-muc-joined-p group jc))
+                (not (or (member jabber-muc-status-self-presence status-codes)
+                         (string= nickname our-nickname))))))
+      (funcall orig jc group nickname symbol status-codes x-muc actor reason our-nickname)))
+
+  (define-advice jabber-muc-report-delta
+      (:around (orig nickname old-plist new-plist reason actor) bergheim/hush-initial-joins)
+    "Drop the \"enters the room\" notice during the initial join dump.
+Only the first-sighting case (OLD-PLIST nil) is hushed; role and
+affiliation change reports always pass through."
+    (if (and bergheim/jabber-muc--suppress-enter (null old-plist))
+        nil
+      (funcall orig nickname old-plist new-plist reason actor)))
+
   (defun bergheim/jabber-unified-preview-room-labels ()
     "Show how `bergheim/jabber-unified--room-label' resolves every bookmarked room.
 Useful for inspecting whether bridge-supplied friendly names are
