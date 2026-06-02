@@ -90,37 +90,67 @@ First matching entry wins; unmatched servers fall back to the raw hostname."
 
 (declare-function jabber-activity-clean "jabber-activity")
 
+;; Unread state is owned by the custom two-tier tracker in
+;; bergheim-chat.el (fed by the unified-buffer capture, which already
+;; knows PMs/@-mentions).  Forward declarations so this module
+;; byte-compiles standalone; the accessor wrappers below degrade to
+;; "nothing unread" if it somehow isn't loaded.
+(declare-function bergheim/jabber-unread-count     "bergheim-chat")
+(declare-function bergheim/jabber-unread-active-p  "bergheim-chat")
+(declare-function bergheim/jabber-unread-clear     "bergheim-chat")
+(declare-function bergheim/jabber-unread-ping-jids "bergheim-chat")
+
+;; Thin wrappers over the bergheim-chat.el tracker, guarded so the
+;; switcher still works (just with no unread info) if it isn't loaded.
+(defun bergheim/jabber--unread-count (jid)
+    "Pending ping count (PMs + @-mentions) for JID, or 0."
+    (if (fboundp 'bergheim/jabber-unread-count)
+        (bergheim/jabber-unread-count jid)
+        0))
+
+(defun bergheim/jabber--unread-active-p (jid)
+    "Non-nil when JID has low-priority MUC activity pending."
+    (and (fboundp 'bergheim/jabber-unread-active-p)
+        (bergheim/jabber-unread-active-p jid)))
+
+(defun bergheim/jabber--unread-p (jid)
+    "Non-nil when JID has real unread (one or more pings)."
+    (> (bergheim/jabber--unread-count jid) 0))
+
+(defun bergheim/jabber--cand-rank (cand)
+    "Sort rank for candidate CAND: 0 = pings, 1 = active only, 2 = quiet."
+    (let ((jid (get-text-property 0 'bergheim/jabber-jid cand)))
+        (cond ((null jid) 2)
+            ((> (bergheim/jabber--unread-count jid) 0) 0)
+            ((bergheim/jabber--unread-active-p jid) 1)
+            (t 2))))
+
 (defun bergheim/jabber--candidate-unread-p (cand)
-    "Whether candidate string CAND points at a JID with unread activity."
+    "Whether candidate string CAND points at a JID with pending pings."
     (let ((jid (get-text-property 0 'bergheim/jabber-jid cand)))
         (and jid (bergheim/jabber--unread-p jid))))
 
 (defun bergheim/jabber--unread-first (cands)
-    "Stable-sort CANDS so unread items come first.  Preserves original order
-within each unread/read bucket."
+    "Stable-sort CANDS by unread rank: pinged first, then active, then quiet.
+`sort' on lists is stable, so original order is preserved within a rank."
     (sort (copy-sequence cands)
         (lambda (a b)
-            (and (bergheim/jabber--candidate-unread-p a)
-                (not (bergheim/jabber--candidate-unread-p b))))))
-
-(defun bergheim/jabber--unread-p (jid)
-    "Non-nil when `jabber-activity-jids' has an entry whose bare form matches JID.
-Trusts jabber's activity tracker — `jabber-activity-clean' has already
-been invoked from `bergheim/jabber-switch' before candidates are built."
-    (let ((bare (jabber-jid-user jid)))
-        (and (boundp 'jabber-activity-jids)
-            (cl-some (lambda (a) (string= bare (jabber-jid-user a)))
-                jabber-activity-jids))))
+            (< (bergheim/jabber--cand-rank a)
+                (bergheim/jabber--cand-rank b)))))
 
 (defun bergheim/jabber--with-transport (text jid)
-    "Append a `— Transport' suffix to TEXT for JID; prepend the unread
-marker and bold the LHS when JID has unread activity."
-    (let* ((unread (bergheim/jabber--unread-p jid))
-              (lhs (if unread
-                       (propertize (concat bergheim/jabber-unread-marker " " text)
-                           'face 'bold)
-                       (concat (make-string (1+ (length bergheim/jabber-unread-marker)) ?\s)
-                           text))))
+    "Append a `— Transport' suffix to TEXT for JID, and prefix an unread
+indicator: a bold `MARKER N' ping count, a dim dot for plain activity,
+or blank padding when quiet."
+    (let* ((count (bergheim/jabber--unread-count jid))
+              (lhs (cond
+                       ((> count 0)
+                           (propertize (format "%s %d %s"
+                                           bergheim/jabber-unread-marker count text)
+                               'face 'bold))
+                       ((bergheim/jabber--unread-active-p jid)
+                           (concat (propertize "· " 'face 'shadow) text))
+                       (t (concat "  " text)))))
         (concat lhs
             (propertize (format " — %s" (bergheim/jabber--transport jid))
                 'face 'shadow))))
@@ -361,15 +391,21 @@ Preference: bookmark name → stripped Biboumi-style local-part → raw local-pa
         (bergheim/jabber--candidate (jabber-jid-symbol jid))))
 
 (defun bergheim/jabber--activity-items ()
-    "All `jabber-activity-jids' entries, bare-deduplicated and formatted."
-    (let ((seen (make-hash-table :test 'equal))
-             out)
-        (dolist (raw jabber-activity-jids)
-            (let ((jid (jabber-jid-user raw)))
-                (unless (gethash jid seen)
-                    (puthash jid t seen)
-                    (push (bergheim/jabber--activity-render jid) out))))
-        (nreverse out)))
+    "Conversations with pending pings, highest count first.
+Sourced from the bergheim-chat.el unread tracker (PMs + @-mentions),
+not jabber's own activity list."
+    (if (fboundp 'bergheim/jabber-unread-ping-jids)
+        (mapcar #'bergheim/jabber--activity-render
+            (bergheim/jabber-unread-ping-jids))
+        ;; Fallback: jabber's own tracker, bare-deduplicated.
+        (let ((seen (make-hash-table :test 'equal))
+                 out)
+            (dolist (raw jabber-activity-jids)
+                (let ((jid (jabber-jid-user raw)))
+                    (unless (gethash jid seen)
+                        (puthash jid t seen)
+                        (push (bergheim/jabber--activity-render jid) out))))
+            (nreverse out))))
 
 (defun bergheim/jabber--bookmarked-rooms ()
     "Return list of (cons jid plist) for bookmarks across all accounts.
@@ -408,12 +444,19 @@ Already-joined rooms are excluded so they only appear under Channels."
         (propertize (format "  %s" jid)
             'face 'completions-annotations)))
 
+(defun bergheim/jabber--mark-read (jid)
+    "Clear unread/active state for JID (opening a conversation reads it)."
+    (when (fboundp 'bergheim/jabber-unread-clear)
+        (bergheim/jabber-unread-clear jid)))
+
 (defun bergheim/jabber--act-chat (str)
     (let ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str)))
+        (bergheim/jabber--mark-read jid)
         (jabber-chat-with (bergheim/jabber--connection) jid nil)))
 
 (defun bergheim/jabber--act-channel (str)
     (let ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str)))
+        (bergheim/jabber--mark-read jid)
         (jabber-muc-switch-to jid)))
 
 (defun bergheim/jabber--act-bookmark (str)
@@ -423,12 +466,14 @@ Already-joined rooms are excluded so they only appear under Channels."
               (nick (or (and bm (plist-get bm :nick))
                         (jabber-muc-nickname jid jc)
                         (jabber-muc-read-my-nickname jc jid))))
+        (bergheim/jabber--mark-read jid)
         (jabber-muc-join jc jid nick t)))
 
 (defun bergheim/jabber--act-activity (str)
     "Switch to the chat or room buffer for an activity entry."
     (let* ((jid (or (get-text-property 0 'bergheim/jabber-jid str) str))
               (buf (jabber-activity-find-buffer-name jid)))
+        (bergheim/jabber--mark-read jid)
         (cond
             ((buffer-live-p buf) (switch-to-buffer buf))
             ((jabber-muc-joined-p jid) (jabber-muc-switch-to jid))

@@ -697,16 +697,93 @@ the full JID.  Bare-domain gateway JIDs (no local-part) keep their host."
               (car (split-string local "%" t))
             jid))))
 
+;;;; Unread tracker (two-tier: pings vs. activity)
+  ;; A custom, authoritative unread tracker fed by the same capture that
+  ;; populates the unified buffer — so it sees exactly what arrived and
+  ;; already knows which MUC lines mention us.  This replaces leaning on
+  ;; jabber's own `jabber-activity-jids', which doesn't reflect our
+  ;; unified-buffer flow.  Two tiers:
+  ;;   ping   — a PM or an @-mention: real unread, counted.
+  ;;   active — plain MUC chatter: a low-priority "something happened"
+  ;;            flag, no count.
+  ;; Ephemeral (not persisted); the launch seed is history, not unread,
+  ;; so the table starts empty and fills only with live traffic.  The
+  ;; switcher in bergheim-jabber-extra.el reads this via the query
+  ;; functions below.
+
+  (defvar bergheim/jabber-unread--table (make-hash-table :test 'equal)
+    "Hash: bare JID -> plist (:pings INT :active BOOL).
+See the section comment.  Keyed by `jabber-jid-user' form.")
+
+  (defun bergheim/jabber-unread--key (jid)
+    "Normalise JID to the bare form used as a table key."
+    (jabber-jid-user jid))
+
+  (defun bergheim/jabber-unread-record (jid kind)
+    "Record activity for JID.  KIND is `ping' or `active'.
+`ping' increments the unread count (and implies activity); `active'
+only raises the low-priority flag."
+    (let* ((key (bergheim/jabber-unread--key jid))
+           (cur (gethash key bergheim/jabber-unread--table))
+           (pings (or (plist-get cur :pings) 0)))
+      (puthash key
+               (list :pings (if (eq kind 'ping) (1+ pings) pings)
+                     :active t)
+               bergheim/jabber-unread--table)))
+
+  (defun bergheim/jabber-unread-clear (jid)
+    "Clear all unread/active state for JID (i.e. mark it read)."
+    (remhash (bergheim/jabber-unread--key jid) bergheim/jabber-unread--table))
+
+  (defun bergheim/jabber-unread-count (jid)
+    "Pending ping count for JID (PMs + @-mentions), or 0."
+    (or (plist-get (gethash (bergheim/jabber-unread--key jid)
+                            bergheim/jabber-unread--table)
+                   :pings)
+        0))
+
+  (defun bergheim/jabber-unread-active-p (jid)
+    "Non-nil when JID has low-priority MUC activity pending."
+    (and (plist-get (gethash (bergheim/jabber-unread--key jid)
+                             bergheim/jabber-unread--table)
+                    :active)
+         t))
+
+  (defun bergheim/jabber-unread-rank (jid)
+    "Sort rank for JID: 0 = has pings, 1 = active only, 2 = nothing."
+    (cond ((> (bergheim/jabber-unread-count jid) 0) 0)
+          ((bergheim/jabber-unread-active-p jid) 1)
+          (t 2)))
+
+  (defun bergheim/jabber-unread-ping-jids ()
+    "Bare JIDs with pending pings, highest count first."
+    (let (out)
+      (maphash (lambda (jid pl)
+                 (when (> (or (plist-get pl :pings) 0) 0)
+                   (push (cons jid (plist-get pl :pings)) out)))
+               bergheim/jabber-unread--table)
+      (mapcar #'car (sort out (lambda (a b) (> (cdr a) (cdr b)))))))
+
+  (defun bergheim/jabber-unread--viewing-p (buffer)
+    "Non-nil when BUFFER is the selected window's buffer (actively read).
+A message landing in the chat you're already looking at shouldn't mark
+that chat unread."
+    (and (buffer-live-p buffer)
+         (eq buffer (window-buffer (selected-window)))))
+
   (defun bergheim/jabber-unified-capture-pm (from buffer text _title)
     "Capture an incoming 1:1 message into the unified buffer.
 Skips messages we sent ourselves (e.g. carbons from another device)
 and bodyless control stanzas.  All other 1:1 messages count as a ping
-\(bolded)."
+\(bolded), and bump the unread tracker unless you're already looking at
+the chat."
     (let ((jid (jabber-jid-user from)))
       (unless (or (bergheim/jabber-unified--bodyless-p text)
                   (bergheim/jabber-unified--own-jid-p jid))
         (bergheim/jabber-unified--append
-         (bergheim/jabber-unified--peer-label jid) nil text buffer :pm jid t))))
+         (bergheim/jabber-unified--peer-label jid) nil text buffer :pm jid t)
+        (unless (bergheim/jabber-unread--viewing-p buffer)
+          (bergheim/jabber-unread-record jid 'ping)))))
 
   (defun bergheim/jabber-unified--room-label (group)
     "Return a short channel label for the MUC GROUP JID.
@@ -802,9 +879,13 @@ word-boundary match).  Bodyless stanzas (topics, chat states,
 receipts) are skipped."
     (unless (or (bergheim/jabber-unified--bodyless-p text)
                 (jabber-muc-our-nick-p group nick))
-      (bergheim/jabber-unified--append
-       (bergheim/jabber-unified--room-display group) nick text buffer :muc group
-       (bergheim/jabber-unified--mentioned-p group text))))
+      (let ((mention (bergheim/jabber-unified--mentioned-p group text)))
+        (bergheim/jabber-unified--append
+         (bergheim/jabber-unified--room-display group) nick text buffer :muc group
+         mention)
+        ;; A mention is a ping; plain room chatter only flags activity.
+        (unless (bergheim/jabber-unread--viewing-p buffer)
+          (bergheim/jabber-unread-record group (if mention 'ping 'active))))))
 
   (defun bergheim/jabber-unified--resolve-buffer (source)
     "Look up a live chat buffer from SOURCE plist, or nil."
@@ -876,6 +957,8 @@ the previous line instead."
         (user-error "Could not open source buffer: %s"
                     (or (plist-get source :jid) "unknown")))
        (t
+        ;; Opening a conversation marks it read.
+        (when source (bergheim/jabber-unread-clear (plist-get source :jid)))
         (switch-to-buffer-other-window buffer)
         (when (featurep 'evil) (evil-normal-state))
         (let ((pos (or (and live-marker (eq (marker-buffer live-marker) buffer)
