@@ -777,6 +777,19 @@ May be stale (buffer killed, etc.); callers must check `marker-buffer'."
                bergheim/jabber-unread--table)
       (mapcar #'car (sort out (lambda (a b) (> (cdr a) (cdr b)))))))
 
+  (defun bergheim/jabber-unread-sorted-jids ()
+    "All JIDs with unread/activity, pinged (by count desc) first, then active.
+Feeds the switcher's top \"Unread\" group so @-mentions/PMs stay above
+the bold activity-only rows."
+    (let (pinged active)
+      (maphash (lambda (jid pl)
+                 (let ((p (or (plist-get pl :pings) 0)))
+                   (cond ((> p 0) (push (cons jid p) pinged))
+                         ((plist-get pl :active) (push jid active)))))
+               bergheim/jabber-unread--table)
+      (append (mapcar #'car (sort pinged (lambda (a b) (> (cdr a) (cdr b)))))
+              (nreverse active))))
+
   (defun bergheim/jabber-unread--viewing-p (buffer)
     "Non-nil when BUFFER is the selected window's buffer (actively read).
 A message landing in the chat you're already looking at shouldn't mark

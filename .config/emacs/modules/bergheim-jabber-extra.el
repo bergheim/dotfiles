@@ -99,6 +99,7 @@ First matching entry wins; unmatched servers fall back to the raw hostname."
 (declare-function bergheim/jabber-unread-active-p  "bergheim-chat")
 (declare-function bergheim/jabber-unread-clear     "bergheim-chat")
 (declare-function bergheim/jabber-unread-ping-jids "bergheim-chat")
+(declare-function bergheim/jabber-unread-sorted-jids "bergheim-chat")
 (declare-function bergheim/jabber-unread-jump-marker "bergheim-chat")
 
 ;; Thin wrappers over the bergheim-chat.el tracker, guarded so the
@@ -414,12 +415,13 @@ Preference: bookmark name → stripped Biboumi-style local-part → raw local-pa
         (bergheim/jabber--candidate (jabber-jid-symbol jid))))
 
 (defun bergheim/jabber--activity-items ()
-    "Conversations with pending pings, highest count first.
-Sourced from the bergheim-chat.el unread tracker (PMs + @-mentions),
-not jabber's own activity list."
-    (if (fboundp 'bergheim/jabber-unread-ping-jids)
+    "Conversations with unread/activity for the top \"Unread\" group.
+Sourced from the bergheim-chat.el tracker: pinged (PMs + @-mentions,
+highest count first) on top, then channels with plain activity.  Falls
+back to jabber's own activity list if the tracker isn't loaded."
+    (if (fboundp 'bergheim/jabber-unread-sorted-jids)
         (mapcar #'bergheim/jabber--activity-render
-            (bergheim/jabber-unread-ping-jids))
+            (bergheim/jabber-unread-sorted-jids))
         ;; Fallback: jabber's own tracker, bare-deduplicated.
         (let ((seen (make-hash-table :test 'equal))
                  out)
