@@ -312,8 +312,9 @@ Defaults to dark when gsettings is unavailable."
         (load-theme bergheim/theme-dark t)
       (load-theme bergheim/theme-light t))))
 
-(with-eval-after-load 'elpaca
-  (add-hook 'elpaca-after-init-hook #'bergheim/frame-setup))
+(if (daemonp)
+    (add-hook 'server-after-make-frame-hook #'bergheim/frame-setup)
+  (add-hook 'emacs-startup-hook #'bergheim/frame-setup))
 
 (defun bergheim/zoom-window ()
   "Maximize the window or restore the previous layout."
