@@ -78,15 +78,15 @@ First matching entry wins; unmatched servers fall back to the raw hostname."
 
 ;; Ride entirely on jabber's activity tracker: bold when JID is in
 ;; `jabber-activity-jids', no number (jabber doesn't track per-JID
-;; counts). `jabber-activity--init' wires the internal hooks and
+;; counts). `jabber-activity-mode' wires the activity hooks and
 ;; `jabber-activity-clean' on `window-configuration-change-hook'
 ;; handles automatic clearing when a chat buffer becomes visible.
-(declare-function jabber-activity--init "jabber-activity")
+(declare-function jabber-activity-mode "jabber-activity")
 (defvar jabber-activity-jids)
 
 (with-eval-after-load 'jabber
     (require 'jabber-activity)
-    (jabber-activity--init))
+    (jabber-activity-mode 1))
 
 (declare-function jabber-activity-clean "jabber-activity")
 
