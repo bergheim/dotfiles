@@ -101,6 +101,10 @@ First matching entry wins; unmatched servers fall back to the raw hostname."
 (declare-function bergheim/jabber-unread-ping-jids "bergheim-chat")
 (declare-function bergheim/jabber-unread-sorted-jids "bergheim-chat")
 (declare-function bergheim/jabber-unread-jump-marker "bergheim-chat")
+;; Canonical name formatters live in bergheim-chat.el (used by the unified
+;; buffer); the switcher delegates to them so names are identical everywhere.
+(declare-function bergheim/jabber-unified--peer-label   "bergheim-chat")
+(declare-function bergheim/jabber-unified--room-display "bergheim-chat")
 
 ;; Thin wrappers over the bergheim-chat.el tracker, guarded so the
 ;; switcher still works (just with no unread info) if it isn't loaded.
@@ -209,8 +213,14 @@ A baked-in transport suffix keeps the gateway visible even when the
 annotation column is suppressed (eg. by marginalia not handling
 `multi-category')."
     (let* ((jid  (symbol-name sym))
-              (name (let ((n (get sym 'name))) (and n (> (length n) 0) n)))
-              (text (bergheim/jabber--with-transport (or name jid) jid)))
+              ;; Same clean 1:1 label as the unified buffer: roster name,
+              ;; else the local-part with the biboumi `%network' stripped,
+              ;; so PMs never show a raw `nick%irc…@gw' JID.
+              (name (if (fboundp 'bergheim/jabber-unified--peer-label)
+                        (bergheim/jabber-unified--peer-label jid)
+                        (let ((n (get sym 'name)))
+                            (if (and n (> (length n) 0)) n jid))))
+              (text (bergheim/jabber--with-transport name jid)))
         (propertize text 'bergheim/jabber-jid jid)))
 
 (defun bergheim/jabber--affix (cands)
@@ -374,13 +384,16 @@ BMP monochrome characters; replace per environment if any tofu."
         nil))
 
 (defun bergheim/jabber--room-name (jid)
-    "Best-effort human label for room JID.
-Preference: bookmark name → stripped Biboumi-style local-part → raw local-part."
-    (or (bergheim/jabber--bookmark-name jid)
-        (let* ((local (or (jabber-jid-user jid) jid))
-                  ;; Biboumi-style IRC: '#channel%irc.libera.chat' → '#channel'
-                  (head  (car (split-string local "%" t))))
-            (or head local))))
+    "Human label for room JID, identical to the unified buffer's.
+Delegates to `bergheim/jabber-unified--room-display' (friendly name with
+the biboumi \" on NETWORK\" suffix stripped); falls back to a local
+bookmark/local-part lookup only if that helper isn't loaded."
+    (if (fboundp 'bergheim/jabber-unified--room-display)
+        (bergheim/jabber-unified--room-display jid)
+        (or (bergheim/jabber--bookmark-name jid)
+            (let* ((local (or (jabber-jid-user jid) jid))
+                      (head  (car (split-string local "%" t))))
+                (or head local)))))
 
 (defun bergheim/jabber--channel-items ()
     (bergheim/jabber--unread-first
