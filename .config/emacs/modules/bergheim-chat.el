@@ -734,7 +734,9 @@ keep the first one."
       (puthash key
                (list :pings (if (eq kind 'ping) (1+ pings) pings)
                      :active t
-                     :marker (or mark (and (eq kind 'ping) marker)))
+                     :marker (or mark (and (eq kind 'ping) marker))
+                     ;; Most-recent activity time, for recency sorting.
+                     :time (float-time))
                bergheim/jabber-unread--table)))
 
   (defun bergheim/jabber-unread-clear (jid)
@@ -778,17 +780,20 @@ May be stale (buffer killed, etc.); callers must check `marker-buffer'."
       (mapcar #'car (sort out (lambda (a b) (> (cdr a) (cdr b)))))))
 
   (defun bergheim/jabber-unread-sorted-jids ()
-    "All JIDs with unread/activity, pinged (by count desc) first, then active.
-Feeds the switcher's top \"Unread\" group so @-mentions/PMs stay above
-the bold activity-only rows."
+    "All JIDs with unread/activity, most-recent first within each tier.
+Pinged (PMs + @-mentions) come first, then channels with plain activity;
+each tier is ordered newest-first by last-activity time.  Feeds the
+switcher's top \"Unread\" group so @-mentions/PMs stay above activity."
     (let (pinged active)
       (maphash (lambda (jid pl)
-                 (let ((p (or (plist-get pl :pings) 0)))
-                   (cond ((> p 0) (push (cons jid p) pinged))
-                         ((plist-get pl :active) (push jid active)))))
+                 (let ((p  (or (plist-get pl :pings) 0))
+                       (tm (or (plist-get pl :time) 0)))
+                   (cond ((> p 0)               (push (cons jid tm) pinged))
+                         ((plist-get pl :active) (push (cons jid tm) active)))))
                bergheim/jabber-unread--table)
-      (append (mapcar #'car (sort pinged (lambda (a b) (> (cdr a) (cdr b)))))
-              (nreverse active))))
+      (let ((by-recency (lambda (a b) (> (cdr a) (cdr b)))))
+        (append (mapcar #'car (sort pinged by-recency))
+                (mapcar #'car (sort active by-recency))))))
 
   (defun bergheim/jabber-unread--viewing-p (buffer)
     "Non-nil when BUFFER is the selected window's buffer (actively read).
