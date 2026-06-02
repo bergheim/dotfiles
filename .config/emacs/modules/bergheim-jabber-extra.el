@@ -151,10 +151,19 @@ completion list — plain `bold' is too faint on light themes.
 Customise with \\[customize-face]."
     :group 'jabber)
 
+(defface bergheim/jabber-active-face
+    '((t :weight bold))
+    "Face for channels with plain activity (no @-mention) in the switcher.
+Bold so you can see there's traffic and it sorts up — but no colour and
+no count, a lighter middle tier between pinged and quiet rows.
+Customise with \\[customize-face]."
+    :group 'jabber)
+
 (defun bergheim/jabber--with-transport (text jid)
     "Append a `— Transport' suffix to TEXT for JID, and prefix an unread
-indicator: a `MARKER N' ping count in `bergheim/jabber-unread-face', a
-dim dot for plain activity, or blank padding when quiet."
+indicator: a `MARKER N' ping count in `bergheim/jabber-unread-face' for
+pinged rows, plain bold (`bergheim/jabber-active-face') for channels
+with mere activity, or blank padding when quiet."
     (let* ((count (bergheim/jabber--unread-count jid))
               (lhs (cond
                        ((> count 0)
@@ -162,7 +171,8 @@ dim dot for plain activity, or blank padding when quiet."
                                            bergheim/jabber-unread-marker count text)
                                'face 'bergheim/jabber-unread-face))
                        ((bergheim/jabber--unread-active-p jid)
-                           (concat (propertize "· " 'face 'shadow) text))
+                           (concat (propertize "· " 'face 'shadow)
+                               (propertize text 'face 'bergheim/jabber-active-face)))
                        (t (concat "  " text)))))
         (concat lhs
             (propertize (format " — %s" (bergheim/jabber--transport jid))
