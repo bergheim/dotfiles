@@ -298,6 +298,7 @@ bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperatur
 bindsym  Shift+Print exec share-screenshot active     # active window
 bindsym        Print exec share-screenshot anything   # interactive selection (your old behavior)
 bindsym   Ctrl+Print exec share-screenshot output     # current monitor
+bindsym   Mod1+Print exec share-screenshot anything edit  # select, crop/redact in satty, then share
 
 # bindsym Mod4+p       exec grimshot save active
 # bindsym Mod4+Shift+p exec grimshot save area

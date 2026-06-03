@@ -1,67 +1,72 @@
 #!/usr/bin/env bash
-# share-screenshot — capture via grimshot, resize via vips, upload to MicroBin.
-# Copies the resulting direct-image URL to the Wayland clipboard.
+# share-screenshot — capture via grimshot, resize via vips,
+# upload to MicroBin, copy the URL.  Also drops a copy in ~/stash/screenshots/.
 #
-# Usage:   share-screenshot [grimshot-mode]
+# Usage:   share-screenshot [grimshot-mode] [edit]
 # Modes:   anything (default) | active | area | output | window
-#
-# Configurable via env (sane defaults baked in):
-#   SHARE_SCREENSHOT_DIR   destination for the original PNG
-#   MICROBIN_URL           full /upload endpoint
-#   MICROBIN_PASS_ENTRY    `pass` path containing the uploader password
-#   MICROBIN_EXPIRATION    one of 1min 10min 1hour 24hour 3days 1week 1month
-#                          6months 1year 2years 4years 8years 16years (server default if unset)
+# Edit:    pass `edit' as 2nd arg to crop/redact in satty before sharing;
+#          quitting satty without saving cancels the upload.
 
 set -euo pipefail
 
-DEST_DIR="${SHARE_SCREENSHOT_DIR:-$HOME/Pictures/screenshots}"
+ARCHIVE_DIR="${SHARE_ARCHIVE_DIR:-$HOME/Pictures/screenshots}"
+STASH_DIR="${SHARE_STASH_DIR:-$HOME/stash/screenshots}"
 MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
 PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
-EXPIRATION="${MICROBIN_EXPIRATION:-}"
 GRIMSHOT_MODE="${1:-anything}"
+EDIT_MODE="${2:-}"
 
-mkdir -p "$DEST_DIR"
+mkdir -p "$ARCHIVE_DIR" "$STASH_DIR"
 
 TS=$(date -u '+%Y%m%dT%H%M%S')
 STEM="${TS}--screenshot-shared__"
-PNG="$DEST_DIR/${STEM}.png"
-WEBP_NAME="${STEM}.webp"
+PNG="$ARCHIVE_DIR/${STEM}.png"
+WEBP="$STASH_DIR/${STEM}.webp"
 
-# grimshot returns non-zero on cancel; treat that as a clean exit.
 if ! grimshot save "$GRIMSHOT_MODE" "$PNG"; then
   notify-send "Screenshot canceled"
   exit 0
 fi
 
-notify-send "Screenshot saved, uploading…" "$(basename "$PNG")"
+# Optional interactive crop/redact in satty before sharing.  satty only
+# writes the --edited.png on a save action, so quitting without saving
+# leaves it absent → cancel the upload.  (The raw capture stays in the
+# local archive; only what you upload is gated.)
+if [[ "$EDIT_MODE" == edit ]]; then
+  EDITED="${PNG%.png}--edited.png"
+  # `--default-fill-shapes' makes the rectangle tool draw a SOLID opaque
+  # box — the only safe way to redact secrets (blur/pixelate are
+  # recoverable, e.g. via Depix).  Use rectangle for passwords; crop is
+  # the startup tool for the common "keep this region" case.
+  satty -f "$PNG" -o "$EDITED" --early-exit --initial-tool crop \
+        --default-fill-shapes \
+        --actions-on-enter save-to-file --actions-on-escape exit
+  if [[ ! -f "$EDITED" ]]; then
+    notify-send "Edit discarded — not uploaded"
+    exit 0
+  fi
+  PNG="$EDITED"
+fi
+
+# Resize + strip metadata to the stash dir (so containers see it too).
+vips thumbnail "$PNG" "${WEBP}[Q=80,strip]" 1920 --height 1200 --size down
+
+notify-send "Screenshot saved, uploading…" "$(basename "$WEBP")"
 
 PW=$(pass show "$PASS_ENTRY")
 
-# vips writes a resized stripped webp to stdout; curl streams it in.
-# --write-out captures the Location header from MicroBin's 302 (success → /upload/<id>,
-# bad password → /incorrect).
-# filename= mirrors the local PNG's denote-style stem so MicroBin's admin
-# view and any Save-As dialog show the right name instead of "screenshot.webp".
-CURL_ARGS=(
-  --silent --show-error
-  --output /dev/null
-  --write-out '%{redirect_url}'
-  --form-string "uploader_password=$PW"
-  -F "file=@-;type=image/webp;filename=$WEBP_NAME"
-)
-[[ -n "$EXPIRATION" ]] && CURL_ARGS+=( -F "expiration=$EXPIRATION" )
-
-REDIRECT=$(
-  vips thumbnail "$PNG" '.webp[Q=80,strip]' 1920 --height 1200 --size down \
-    | curl "${CURL_ARGS[@]}" "$MICROBIN_URL"
-) || {
-  notify-send "Upload failed" "curl exit $?"
-  exit 1
+REDIRECT=$(curl --silent --show-error \
+  --output /dev/null \
+  --write-out '%{redirect_url}' \
+  --form-string "uploader_password=$PW" \
+  -F "file=@${WEBP};type=image/webp;filename=${STEM}.webp" \
+  "$MICROBIN_URL") || {
+    notify-send "Upload failed" "curl exit $?"
+    exit 1
 }
 
 case "$REDIRECT" in
   */upload/*)
-    # Direct-bytes URL — paste into chat and the image embeds inline.
     URL="${REDIRECT/\/upload\//\/file\/}"
     printf '%s' "$URL" | wl-copy
     notify-send "URL copied" "$URL"
@@ -71,7 +76,7 @@ case "$REDIRECT" in
     exit 1
     ;;
   *)
-    notify-send "Upload failed" "Unexpected response: ${REDIRECT:-(empty)}"
+    notify-send "Upload failed" "Unexpected: ${REDIRECT:-empty}"
     exit 1
     ;;
 esac
