@@ -508,12 +508,11 @@ Defaults to dark when gsettings is unavailable."
                 (append mode-line-format
                         '((:eval (bergheim/dired-rsync-modeline)))))
 
-  (when (member "Noto Color Emoji" (font-family-list))
-    (set-fontset-font t 'emoji
-                      (font-spec :family "Noto Color Emoji") nil 'prepend)
-    ;; additional unicode ranges (needed for trev)
-    (set-fontset-font t '(#x1F000 . #x1FAFF)
-                      (font-spec :family "Noto Color Emoji") nil 'prepend))
+  (set-fontset-font t 'emoji
+                    (font-spec :family "Noto Color Emoji") nil 'prepend)
+  ;; additional unicode ranges (needed for trev)
+  (set-fontset-font t '(#x1F000 . #x1FAFF)
+                    (font-spec :family "Noto Color Emoji") nil 'prepend)
 
   (setq scroll-step 1
         scroll-conservatively 10
