@@ -305,9 +305,23 @@ Defaults to dark when gsettings is unavailable."
                               "gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null"))))
     (not (string= result "'prefer-light'"))))
 
+(defun bergheim/setup-emoji-fonts ()
+  "Point the emoji/symbol fontset at Noto Color Emoji.
+`set-fontset-font' only takes effect when a graphical display
+exists, so under a daemon this must run per client frame (via
+`server-after-make-frame-hook'), not at init time when there is
+no frame yet — otherwise emojis show up as tofu in emacsclient."
+  (when (display-graphic-p)
+    (set-fontset-font t 'emoji
+                      (font-spec :family "Noto Color Emoji") nil 'prepend)
+    ;; additional unicode ranges (needed for trev)
+    (set-fontset-font t '(#x1F000 . #x1FAFF)
+                      (font-spec :family "Noto Color Emoji") nil 'prepend)))
+
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
     (scroll-bar-mode -1)
+    (bergheim/setup-emoji-fonts)
     (if (bergheim//system-dark-mode-enabled-p)
         (load-theme bergheim/theme-dark t)
       (load-theme bergheim/theme-light t))))
@@ -507,12 +521,6 @@ Defaults to dark when gsettings is unavailable."
   (setq-default mode-line-format
                 (append mode-line-format
                         '((:eval (bergheim/dired-rsync-modeline)))))
-
-  (set-fontset-font t 'emoji
-                    (font-spec :family "Noto Color Emoji") nil 'prepend)
-  ;; additional unicode ranges (needed for trev)
-  (set-fontset-font t '(#x1F000 . #x1FAFF)
-                    (font-spec :family "Noto Color Emoji") nil 'prepend)
 
   (setq scroll-step 1
         scroll-conservatively 10
@@ -726,7 +734,7 @@ Defaults to dark when gsettings is unavailable."
 
 (defun bergheim/dired-set-as-wallpaper ()
   "Sets FILE to the current wallpaper"
-  (interactive "P")
+  (interactive)
 
   (if-let* ((file (dired-file-name-at-point))
             (swaysock (car (file-expand-wildcards "/run/user/*/sway-ipc.*.sock")))
