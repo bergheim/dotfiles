@@ -14,6 +14,7 @@ Relies on the symlink dropped by `mu4e-build-mu' putting mu on PATH."
                                    (or (getenv "XDG_CACHE_HOME")
                                        (expand-file-name "~/.cache"))))
         (addresses (list bergheim/gmail/email
+                         bergheim/anthropic/email
                          bergheim/ntnu/email
                          bergheim/personal/email
                          bergheim/mailbox/email

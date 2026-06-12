@@ -86,6 +86,33 @@
                                             ))))
 
        (make-mu4e-context
+        :name "anthropic"
+        :match-func
+        (lambda (msg)
+          (when msg
+            (string-match-p "^/anthropic" (mu4e-message-field msg :maildir))))
+
+        :vars `(
+                (user-full-name         . ,bergheim/anthropic/name)
+                (user-mail-address      . ,bergheim/anthropic/email)
+                ;; (message-signature      . ,bergheim/anthropic/signature)
+                (org-msg-signature      . ,bergheim/anthropic/signature-html)
+
+                (mu4e-compose-format-flowed . t)
+
+                (mu4e-sent-folder   . "/anthropic/Sent")
+                (mu4e-trash-folder  . "/anthropic/Trash")
+                (mu4e-drafts-folder . "/anthropic/Drafts")
+                (mu4e-refile-folder . bergheim/mu4e-refile-mail)
+                (mu4e-spam-folder   . "/anthropic/Spam")
+
+                (mu4e-maildir-shortcuts  . (("/anthropic/Inbox"  . ?i)
+                                            ("/anthropic/Sent"   . ?s)
+                                            ("/anthropic/Trash"  . ?t)
+                                            ("/anthropic/Drafts" . ?d)
+                                            ))))
+
+       (make-mu4e-context
         :name "ntnu"
         :match-func
         (lambda (msg)

@@ -154,3 +154,76 @@ Group gmail-inbox
     Channel gmail-sent
     Channel gmail-drafts
     Channel gmail-starred
+
+# anthropic account
+# --------------
+IMAPAccount anthropic
+    Host imap.gmail.com
+    UserCmd "pass show email/anthropic/address"
+    PassCmd "pass show email/anthropic/password"
+    AuthMechs LOGIN
+    TLSType IMAPS
+    CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore anthropic-remote
+    Account anthropic
+
+MaildirStore anthropic-local
+    SubFolders Verbatim
+    # Trailing / is important
+    Path ~/.mail/anthropic/
+    Inbox ~/.mail/anthropic/Inbox
+    Flatten .
+
+Channel anthropic-inbox
+    Far :anthropic-remote:
+    Near :anthropic-local:
+    # Just sync things that operations on an email can affect
+    Patterns "INBOX"
+    Expunge Both
+
+Channel anthropic-archive
+    Far :anthropic-remote:"[Gmail]/All e-post"
+    Near :anthropic-local:"Archive"
+    Expunge Both
+
+Channel anthropic-trash
+    Far :anthropic-remote:"[Gmail]/Papirkurv"
+    Near :anthropic-local:"Trash"
+    Expunge Both
+
+Channel anthropic-sent
+    Far :anthropic-remote:"[Gmail]/Sendt e-post"
+    Near :anthropic-local:"Sent"
+    Expunge Both
+
+Channel anthropic-drafts
+    Far :anthropic-remote:"[Gmail]/Utkast"
+    Near :anthropic-local:"Drafts"
+    Expunge Both
+
+Channel anthropic-starred
+    Far :anthropic-remote:"[Gmail]/Stjernemerket"
+    Near :anthropic-local:"Starred"
+    Expunge Both
+
+Channel anthropic-spam
+    Far :anthropic-remote:"[Gmail]/Søppelpost"
+    Near :anthropic-local:"Spam"
+    Expunge Both
+
+Group anthropic
+    Channel anthropic-inbox
+    Channel anthropic-archive
+    Channel anthropic-trash
+    Channel anthropic-sent
+    Channel anthropic-drafts
+    Channel anthropic-starred
+    Channel anthropic-spam
+
+Group anthropic-inbox
+    Channel anthropic-inbox
+    Channel anthropic-trash
+    Channel anthropic-sent
+    Channel anthropic-drafts
+    Channel anthropic-starred
