@@ -65,6 +65,7 @@
     "njj" '(bergheim/denote-new-journal-entry :which-key "New journal"))
 
   :config
+  (setq denote-journal-directory (expand-file-name "denote/journal" org-directory))
   (defun bergheim/denote-new-journal-entry ()
     "Create a new journal entry and enter writer mode"
     (interactive)
