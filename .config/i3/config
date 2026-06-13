@@ -61,6 +61,12 @@ bindsym $mod+$alt+Escape restart
 # font pango:DejaVu Sans Mono 11
 font pango:Inconsolata 14
 
+# Light up graphical-session.target so xdg-desktop-portal / dconf deliver the
+# color-scheme signal that toggle-darkmode triggers (ghostty themeing).
+exec        --no-startup-id systemctl --user start i3-session.target
+exec        --no-startup-id systemctl --user import-environment DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP
+exec_always --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP=i3
+
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 # exec --no-startup-id dex --autostart --environment i3
