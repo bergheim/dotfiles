@@ -16,7 +16,7 @@ QT6_THEME="${XDG_CONFIG_HOME}/qt6ct/qt6ct.conf"
 
 CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 
-kill -USR1 $(pgrep foot)
+pkill -USR1 -x foot
 
 if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     if [[ -n "$WAYLAND_DISPLAY" ]]; then
