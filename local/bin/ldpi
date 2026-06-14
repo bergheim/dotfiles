@@ -7,8 +7,7 @@
 OLDDPI=$(xrdb -query | awk '/Xft.dpi/ {print $2}')
 SCREEN=$(current-screen)
 
-if [[ $SCREEN == *"DP-0"* ]]; then
-    # DP-0 is my 1440p
+if [[ $SCREEN == *"$MONITOR_SECONDARY"* ]]; then
     xrdb -merge <(echo "Xft.dpi: 109")
     "$*" &
     xrdb -merge <(echo "Xft.dpi: $OLDDPI")
