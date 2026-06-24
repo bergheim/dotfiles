@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# share-screenshot — capture via grimshot, resize via vips,
-# upload to MicroBin, copy the URL.  Also drops a copy in ~/stash/screenshots/.
+# share-screenshot — capture, resize via vips, upload to MicroBin,
+# copy the URL.  Also drops a copy in ~/stash/screenshots/.
+# Uses grimshot on Wayland and scrot+xdotool on X11.
 #
-# Usage:   share-screenshot [grimshot-mode] [edit]
+# Usage:   share-screenshot [mode] [edit]
 # Modes:   anything (default) | active | area | output | window
 # Edit:    pass `edit' as 2nd arg to crop/redact in satty before sharing;
 #          quitting satty without saving cancels the upload.
@@ -13,7 +14,7 @@ ARCHIVE_DIR="${SHARE_ARCHIVE_DIR:-$HOME/Pictures/screenshots}"
 STASH_DIR="${SHARE_STASH_DIR:-$HOME/stash/screenshots}"
 MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
 PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
-GRIMSHOT_MODE="${1:-anything}"
+MODE="${1:-anything}"
 EDIT_MODE="${2:-}"
 
 mkdir -p "$ARCHIVE_DIR" "$STASH_DIR"
@@ -23,9 +24,55 @@ STEM="${TS}--screenshot-shared__"
 PNG="$ARCHIVE_DIR/${STEM}.png"
 WEBP="$STASH_DIR/${STEM}.webp"
 
-if ! grimshot save "$GRIMSHOT_MODE" "$PNG"; then
-  notify-send "Screenshot canceled"
-  exit 0
+capture_x11() {
+  local out="$1"
+  case "$MODE" in
+    anything|area|window)
+      # scrot -s: drag → region, click → window.  -f freezes the screen.
+      scrot --select --freeze --overwrite "$out"
+      ;;
+    active)
+      scrot --focused --overwrite "$out"
+      ;;
+    output)
+      # Find which xrandr output contains the cursor, capture that geometry.
+      local X Y SCREEN WINDOW geom
+      eval "$(xdotool getmouselocation --shell)"
+      geom=$(xrandr --query | awk -v cx="$X" -v cy="$Y" '
+        / connected/ {
+          for (i = 3; i <= NF; i++) {
+            if ($i ~ /^[0-9]+x[0-9]+\+[0-9]+\+[0-9]+$/) {
+              split($i, a, /[x+]/)
+              if (cx >= a[3] && cx < a[3] + a[1] && cy >= a[4] && cy < a[4] + a[2]) {
+                printf "%d,%d,%d,%d", a[3], a[4], a[1], a[2]
+                exit
+              }
+              break
+            }
+          }
+        }')
+      [[ -n $geom ]] || { notify-send "Couldn't determine output under cursor"; return 1; }
+      scrot --autoselect "$geom" --overwrite "$out"
+      ;;
+    *)
+      notify-send "Unknown screenshot mode: $MODE"
+      return 1
+      ;;
+  esac
+}
+
+if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+  if ! grimshot save "$MODE" "$PNG"; then
+    notify-send "Screenshot canceled"
+    exit 0
+  fi
+  copy_url() { wl-copy; }
+else
+  if ! capture_x11 "$PNG"; then
+    notify-send "Screenshot canceled"
+    exit 0
+  fi
+  copy_url() { xclip -selection clipboard -i; }
 fi
 
 # Optional interactive crop/redact in satty before sharing.  satty only
@@ -68,7 +115,7 @@ REDIRECT=$(curl --silent --show-error \
 case "$REDIRECT" in
   */upload/*)
     URL="${REDIRECT/\/upload\//\/file\/}"
-    printf '%s' "$URL" | wl-copy
+    printf '%s' "$URL" | copy_url
     notify-send "URL copied" "$URL"
     ;;
   */incorrect)

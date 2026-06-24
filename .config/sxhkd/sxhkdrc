@@ -56,13 +56,29 @@ super + @F1
 super + @F2
   screenshot -a && notify-send -u low 'Screenshot area captured'
 
+# share-screenshot: interactive selection → upload → URL on clipboard
+@Print
+  share-screenshot anything
+
+# share-screenshot: active window
+shift + @Print
+  share-screenshot active
+
+# share-screenshot: current monitor (under cursor)
+ctrl + @Print
+  share-screenshot output
+
+# share-screenshot: select, crop/redact in satty, then share
+alt + @Print
+  share-screenshot anything edit
+
 # toggle desktop dark/white
 super + F7
   toggle-darkmode
 
 # toggle picom / hardware acceleration
 super + F8
-  (pkill picom && dunstify "Disabling picom" --icon=to-the-moon) || (dunstify "Enabling picom" --icon=to-the-moon && picom)
+  picom-toggle-fx
 
 # toggle redshift
 super + F9
