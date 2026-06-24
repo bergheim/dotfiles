@@ -1,0 +1,39 @@
+#!/bin/env sh
+
+# Day mode - brighter, cooler, higher contrast
+
+# Display 1 (27GN950)
+ddcutil --display 1 setvcp 87 70 # slightly higher sharpness for day
+ddcutil --display 1 setvcp 10 90 # brightness (higher for day)
+ddcutil --display 1 setvcp 12 75 # contrast (higher for day)
+
+# Reset RGB to neutral
+ddcutil --display 1 setvcp 16 50 # red
+ddcutil --display 1 setvcp 18 50 # green
+ddcutil --display 1 setvcp 1a 50 # blue
+# # Reset black levels to neutral
+# ddcutil --display 1 setvcp 6c 110  # red black level
+# ddcutil --display 1 setvcp 6e 110  # green black level
+# ddcutil --display 1 setvcp 70 110  # blue black level
+# ddcutil --display 1 setvcp 14 0x09   # 10000K
+
+# Display 2 (27GL850)
+ddcutil --display 2 setvcp 87 75 # sharpness
+ddcutil --display 2 setvcp 10 90 # brightness
+ddcutil --display 2 setvcp 12 75 # contrast
+# Reset RGB to neutral
+ddcutil --display 2 setvcp 16 50 # red
+ddcutil --display 2 setvcp 18 50 # green
+ddcutil --display 2 setvcp 1a 50 # blue
+# Reset 6-axis saturation to neutral
+ddcutil --display 2 setvcp 59 50 # red saturation
+ddcutil --display 2 setvcp 5a 50 # yellow saturation
+ddcutil --display 2 setvcp 5b 50 # green saturation
+ddcutil --display 2 setvcp 5c 50 # cyan saturation
+ddcutil --display 2 setvcp 5d 50 # blue saturation
+ddcutil --display 2 setvcp 5e 50 # magenta saturation
+# Reset black levels to neutral
+ddcutil --display 2 setvcp 6c 50   # red black level
+ddcutil --display 2 setvcp 6e 50   # green black level
+ddcutil --display 2 setvcp 70 50   # blue black level
+ddcutil --display 2 setvcp 14 0x09 # 10000K
