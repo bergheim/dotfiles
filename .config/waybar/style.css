@@ -76,7 +76,7 @@ window#waybar {
 #mpris {
   color: @accent_3;
   /* Gap between the center window title and the first right-side module. */
-  margin-left: 30px;
+    margin-left: 5em;
 }
 
 #mpris.paused {
