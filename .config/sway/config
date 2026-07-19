@@ -410,6 +410,11 @@ mode "$mode_system" {
 
 bindsym $mod+Shift+q mode "$mode_system"
 
+# output scale — pinned here (not just in kanshi) so `swaymsg reload`
+# doesn't reset DP-2 to scale 1.0 and shrink the external display.
+output eDP-1 scale 2
+output DP-2 scale 2
+
 # gaps
 gaps inner 10
 gaps outer 5
