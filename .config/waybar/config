@@ -26,7 +26,8 @@
       // dual sway+niri support. sway/scratchpad omitted (no niri equiv).
       "niri/workspaces",
       "sway/workspaces",
-      "sway/mode"
+      "sway/mode",
+      "mpris"
     ],
 
     "modules-center": [
@@ -41,7 +42,6 @@
       // "memory",
       // "temperature",
       "custom/weather",
-      "mpris",
       // "pulseaudio",
       // "backlight",
       // "sway/language",
@@ -211,7 +211,7 @@
       "status-icons": {
         "paused": "⏸"
       },
-      "max-length": 20,
+      "max-length": 50,
     },
 
     "pulseaudio": {
