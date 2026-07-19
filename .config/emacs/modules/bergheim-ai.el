@@ -493,10 +493,6 @@ Prompts for session name if none provided. Inserts selected region text into cha
    "RET" 'newline)
   (general-define-key
    :keymaps 'agent-shell-mode-map
-   :states 'normal
-   "RET" 'comint-send-input)
-  (general-define-key
-   :keymaps 'agent-shell-mode-map
    :states '(normal insert visual motion emacs)
    "M-RET" 'comint-send-input)
   (bergheim/global-menu-keys
@@ -518,32 +514,145 @@ Prompts for session name if none provided. Inserts selected region text into cha
     ;; inspect
     "kh" '(agent-shell-search-history :wk "history")
     "kT" '(agent-shell-open-transcript :wk "transcript")
-    "kl" '(agent-shell-view-acp-logs :wk "view logs"))
+    "kl" '(agent-shell-view-acp-logs :wk "view logs")
+    "kR" '(agent-shell-restart :wk "restart (drop history)")
+    "kL" '(agent-shell-reload :wk "reload (keep history)"))
+  (bergheim/localleader-keys
+    :keymaps 'agent-shell-mode-map
+    :states '(normal visual)
+    ;; session configuration
+    "m" '(agent-shell-set-session-model :wk "model")
+    "s" '(agent-shell-set-session-mode :wk "session mode")
+    "t" '(agent-shell-set-session-thought-level :wk "thought level")
+    "o" '(agent-shell-set-session-config-option :wk "config option")
+    ;; interaction
+    "c" '(agent-shell-prompt-compose :wk "compose")
+    "q" '(agent-shell-queue-request :wk "queue request")
+    "x" '(agent-shell-interrupt :wk "interrupt")
+    ;; pending permissions
+    "p" '(:ignore t :wk "permission")
+    "py" '(evil-collection-agent-shell-permission-allow-once :wk "allow once")
+    "pa" '(evil-collection-agent-shell-permission-allow-always :wk "allow always")
+    "pn" '(evil-collection-agent-shell-permission-reject-once :wk "reject")
+    "pv" '(evil-collection-agent-shell-permission-view-diff :wk "view diff")
+    ;; navigation and inspection
+    "b" '(agent-shell-other-buffer :wk "other buffer")
+    "h" '(agent-shell-search-history :wk "history")
+    "T" '(agent-shell-open-transcript :wk "transcript")
+    "l" '(agent-shell-view-acp-logs :wk "ACP logs")
+    "z" '(agent-shell-ui-toggle-all-fragments :wk "toggle all folds")
+    ;; session lifecycle
+    "f" '(agent-shell-fork :wk "fork")
+    "r" '(agent-shell-reload :wk "reload")
+    "R" '(agent-shell-restart :wk "restart"))
   :config
   (defun bergheim/agent-shell-switch-buffer ()
-    "Switch between agent-shell buffers, or create a new one.
-Type an existing name to switch, or a new suffix to start a fresh shell."
+    "Switch between agent-shell buffers, or create a new one."
     (interactive)
     (let* ((buffers (agent-shell-buffers))
-           (names (mapcar #'buffer-name buffers))
-           (choice (completing-read "Agent shell: " names)))
-      (if (member choice names)
-          (switch-to-buffer choice)
-        (let* ((base (when-let ((cur (car buffers)))
-                       (string-trim-right
-                        (string-trim (buffer-name cur) "\\*" "\\*"))))
-               (new-name (if base
-                             (format "%s %s" base choice)
-                           (format "%s" choice))))
+           (names (mapcar #'buffer-name buffers)))
+      (if (null names)
           (agent-shell-new-shell)
-          (rename-buffer new-name t)))))
+        (let ((choice (completing-read "Agent shell: " names)))
+          (if (member choice names)
+              (switch-to-buffer choice)
+            (agent-shell-new-shell)
+            (when (not (string-empty-p choice))
+              (rename-buffer (format "*agent-shell %s*" choice) t)))))))
+  (setq acp-logging-enabled t)
 
-  (add-hook 'agent-shell-mode-hook #'agent-shell-toggle-logging)
-  (setq agent-shell-permission-responder-function #'agent-shell-permission-allow-always)
-  (setq agent-shell-anthropic-claude-acp-command '("claude-agent-acp"))
+  (defun bergheim/agent-shell-disable-tui-busy-indicator ()
+    "Disable agent-shell's high-frequency animation in terminal frames."
+    (unless (display-graphic-p)
+      (setq-local agent-shell-show-busy-indicator nil)))
+
+  (add-hook 'agent-shell-mode-hook
+            #'bergheim/agent-shell-disable-tui-busy-indicator)
+  ;; Prefer the full transcript; the viewport remains available via toggle.
+  (setq agent-shell-prefer-viewport-interaction nil)
+  (setq agent-shell-session-restore-verbosity 'last)
+  (setq agent-shell-confirm-interrupt nil)
+  ;; (setq agent-shell-permission-responder-function #'agent-shell-permission-allow-always)
+  (setq agent-shell-permission-responder-function nil)
+  (setq agent-shell-openai-codex-acp-command
+        (list (or (executable-find "codex-acp")
+                  (expand-file-name "~/.local/share/pnpm/bin/codex-acp"))))
+  (setq agent-shell-anthropic-claude-acp-command
+        (list (or (executable-find "claude-agent-acp")
+                  (expand-file-name "~/.local/share/mise/installs/node/latest/bin/claude-agent-acp"))))
   ;; (setq agent-shell-session-strategy 'new)
-  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
+  ;; Mirror the heading-local RET action in Evil normal state.
+  (defun bergheim/agent-shell-toggle-fragment-at-point ()
+    "Toggle the agent-shell fragment at point."
+    (interactive)
+    (agent-shell-ui--toggle-fragment-at-point))
+
+  (defun bergheim/agent-shell-insert-at-prompt-start ()
+    "Enter insert state at the start of the current prompt input."
+    (interactive)
+    (goto-char (marker-position (cdr comint-last-prompt)))
+    (evil-insert-state))
+
+  (defun bergheim/agent-shell-insert-at-prompt-end ()
+    "Enter insert state at the end of the current prompt input."
+    (interactive)
+    (goto-char (point-max))
+    (evil-insert-state))
+
+  (defun bergheim/agent-shell-diff-evil-bindings ()
+    "Install Evil normal-state bindings in an agent-shell diff buffer."
+    (evil-local-set-key 'normal (kbd "g y") #'agent-shell-diff-accept-all)
+    (evil-normalize-keymaps))
+
+  (add-hook 'agent-shell-diff-mode-hook
+            #'bergheim/agent-shell-diff-evil-bindings)
+
   (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
-  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input))
+  (evil-define-key 'normal agent-shell-mode-map
+    (kbd "RET") #'bergheim/agent-shell-toggle-fragment-at-point
+    (kbd "<return>") #'bergheim/agent-shell-toggle-fragment-at-point
+    (kbd "I") #'bergheim/agent-shell-insert-at-prompt-start
+    (kbd "A") #'bergheim/agent-shell-insert-at-prompt-end)
+  ;; Install our overrides after evil-collection has populated its maps.
+  (with-eval-after-load 'evil-collection-agent-shell
+    (evil-collection-define-key 'normal 'agent-shell-mode-map
+      (kbd "RET") #'bergheim/agent-shell-toggle-fragment-at-point
+      (kbd "<return>") #'bergheim/agent-shell-toggle-fragment-at-point
+      (kbd "I") #'bergheim/agent-shell-insert-at-prompt-start
+      (kbd "A") #'bergheim/agent-shell-insert-at-prompt-end
+      (kbd "TAB") #'agent-shell-next-item
+      (kbd "<backtab>") #'agent-shell-previous-item)
+    (evil-collection-define-key 'normal 'agent-shell-viewport-view-mode-map
+      "gQ" 'agent-shell-viewport-quote-reply))
+
+  ;; The viewport compose buffer (also reached via reply from view mode) is
+  ;; for typing a prompt — start in insert state, like magit commit buffers.
+  (evil-set-initial-state 'agent-shell-viewport-edit-mode 'insert)
+
+  ;; shell-maker only auto-scrolls streaming output when (eobp), but evil
+  ;; normal state pins point onto the last *char*, never past it — so the
+  ;; viewport/shell un-docks from the bottom mid-stream and stops following.
+  ;; Count "point on the last line" as docked, keeping the original
+  ;; window-end check so wheel-scrolling up still pauses auto-scroll.
+  (define-advice shell-maker--should-auto-scroll-p (:around (orig) bergheim/evil)
+    "Evil normal state can't sit at `point-max'; count last-line point as docked."
+    (or (funcall orig)
+        (and (bound-and-true-p evil-local-mode)
+             (memq evil-state '(normal motion))
+             (>= (point) (save-excursion (goto-char (point-max))
+                                         (line-beginning-position)))
+             (save-excursion (goto-char (point-max))
+                             (funcall orig)))))
+
+  ;; Evil doesn't respect cursor-intangible-mode properly: entering insert
+  ;; state can strand the cursor inside intangible regions (the viewport
+  ;; header newline). Jump past it on insert-state entry.
+  (defun bergheim/agent-shell-viewport-fix-cursor ()
+    "Move point past cursor-intangible text in viewport edit buffers."
+    (when (and (derived-mode-p 'agent-shell-viewport-edit-mode)
+               (get-text-property (point) 'cursor-intangible))
+      (goto-char (or (next-single-property-change (point) 'cursor-intangible)
+                     (point-max)))))
+  (add-hook 'evil-insert-state-entry-hook #'bergheim/agent-shell-viewport-fix-cursor))
 
 ;;; bergheim-ai.el ends here
