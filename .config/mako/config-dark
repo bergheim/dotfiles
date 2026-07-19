@@ -12,14 +12,14 @@ font=JetBrains Mono 10
 
 background-color=#0a0f14e6
 text-color=#ecf0f1
-border-color=#ecf0f140
+border-color=#086608
 progress-color=over #2c3e50
 
 [urgency=low]
 border-color=#2c3e50
 
 [urgency=normal]
-border-color=#ecf0f140
+border-color=#086608
 
 [urgency=high]
 background-color=#8b0000e6
