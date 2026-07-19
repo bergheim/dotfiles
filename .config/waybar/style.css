@@ -75,6 +75,8 @@ window#waybar {
 
 #mpris {
   color: @accent_3;
+  /* Gap between the center window title and the first right-side module. */
+  margin-left: 30px;
 }
 
 #mpris.paused {
@@ -100,8 +102,7 @@ window#waybar {
  * butt up against mpris / right-side modules when the title is long-ish.
  * Doesn't cap length — the title still truncates at its `max-length`. */
 #window {
-  margin-right: 30px;
-  margin-left: 30px;
+    /* padding-right: 20em; */
 }
 
 #tray {
