@@ -5,6 +5,8 @@
 # `output=` is machine-specific — adjust per host.
 output=DP-1
 default-timeout=5000
+width=500
+height=250
 border-radius=6
 border-size=2
 padding=10
