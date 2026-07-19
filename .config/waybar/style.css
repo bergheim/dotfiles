@@ -96,6 +96,14 @@ window#waybar {
   color: @dim_bg;
 }
 
+/* Center window title: give it right-side breathing room so it doesn't
+ * butt up against mpris / right-side modules when the title is long-ish.
+ * Doesn't cap length — the title still truncates at its `max-length`. */
+#window {
+  margin-right: 30px;
+  margin-left: 30px;
+}
+
 #tray {
   color: @dim_bg;
   /* background-color: @bg_secondary; */
