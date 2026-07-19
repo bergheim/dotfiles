@@ -376,7 +376,7 @@ bindsym XF86MonBrightnessDown exec swayosd-client --brightness lower
 bindsym $mod+p exec fuzzel-pass
 
 # Clipboard (replace clipmenu with wl-clipboard)
-bindsym $mod+v exec cliphist list | wofi -dmenu | cliphist decode | wl-copy
+bindsym $mod+v exec fuzzel-cliphist
 
 # Window switcher (replace rofi)
 bindsym $alt+Tab exec swayr switch-window

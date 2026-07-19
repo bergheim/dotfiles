@@ -1,0 +1,5 @@
+#!/bin/bash
+
+list=$(cliphist list) || exit
+idx=$(printf '%s\n' "$list" | cut -f2- | fuzzel --dmenu --index "$@") || exit
+printf '%s\n' "$list" | sed -n "$((idx + 1))p" | cliphist decode | wl-copy
