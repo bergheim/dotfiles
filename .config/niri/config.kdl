@@ -408,8 +408,11 @@ binds {
     Mod+Ctrl+H  { focus-workspace-up; }
 
     // -- Monitors (sway lines 189, 191) --
-    Mod+N        { focus-monitor-right; }
-    Mod+Shift+N  { move-workspace-to-monitor-right; }
+    // -next/-previous cycle through all monitors regardless of their
+    // left/right position, so SUPER+N always switches with 2 displays
+    // (the old -right was a no-op from whichever monitor was rightmost).
+    Mod+N        { focus-monitor-next; }            // focus the other monitor
+    Mod+Shift+N  { move-workspace-to-monitor-next; } // send THIS workspace over
 
     // -- Screenshots (sway lines 298–299) --
     // Sway uses grimshot (sway-only) + a custom thumbnail/upload pipeline.
