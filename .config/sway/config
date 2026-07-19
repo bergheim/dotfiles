@@ -3,6 +3,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY
+exec systemctl --user start sway-session.target
 exec systemctl --user start emacs.service
 
 set $mod Mod4
