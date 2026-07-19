@@ -6,6 +6,12 @@ exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY
 exec systemctl --user start sway-session.target
 exec systemctl --user start emacs.service
 
+# Feed XWayland clients (GTK3, Xt/lucid, etc.) the Xft antialias/hint
+# resources — without this, GTK3-X11 Emacs falls back to bare Xft and
+# looks like lucid.
+exec xrdb -merge ~/.Xresources
+exec xsettingsd
+
 set $mod Mod4
 set $alt Mod1
 
