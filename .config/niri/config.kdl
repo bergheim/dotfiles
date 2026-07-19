@@ -421,12 +421,12 @@ binds {
     Print        { screenshot-window; }   // sway: grimshot save active
     Shift+Print  { screenshot; }          // sway: grimshot save anything (+ upload)
 
-    // -- Recording (sway lines 313, 315, 316) --
-    // record-sway likely uses swaymsg internally; you'll need a niri-aware
-    // version (record-niri?) for window/region selection.
-    Mod+Shift+R  { spawn "record-sway"; }
-    Mod+Shift+W  { spawn "record-sway" "window"; }
-    Mod+Shift+T  { spawn-sh "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"; }
+    // -- Recording (-> looping .webp in ~/Videos/screencasts) --
+    // record-niri uses slurp + wf-recorder, then transcodes to webp.
+    //   R = pick a region, W = whole output. Stop with T.
+    Mod+Shift+R  { spawn "record-niri"; }          // region (slurp)
+    Mod+Shift+W  { spawn "record-niri" "full"; }   // whole focused output
+    Mod+Shift+T  { spawn-sh "pkill -INT wf-recorder && notify-send 'WebP Record' 'Recording stopped.'"; }
 
     // -- System (sway lines 78, 309, 386, 390, 407) --
     Mod+Shift+C       { spawn-sh "niri msg action load-config-file"; }   // sway: reload

@@ -1,0 +1,122 @@
+#!/bin/sh
+# Screencast recorder for niri. Records via wf-recorder, then transcodes to a
+# looping .webp for sharing (like a screenshot, but a clip).
+#
+# Usage:
+#   record-niri          # interactive region (slurp)        [default]
+#   record-niri full     # the whole focused output
+#   record-niri window   # focused window (niri geometry; falls back to region)
+#
+# Stop the take with the bound key:  pkill -INT wf-recorder
+# Output goes to ~/Videos/screencasts/screencast_<stamp>.webp
+
+set -u
+
+VIDDIR="$HOME/Videos/screencasts"
+# Upload target — same MicroBin as share-screenshot.
+MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
+PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
+mkdir -p "$VIDDIR"
+STAMP=$(date +%F_%H%M%S)
+TMPVID="$VIDDIR/screencast_$STAMP.mkv"
+OUTWEBP="$VIDDIR/screencast_$STAMP.webp"
+OUTJSON="$(mktemp)"
+
+note() { notify-send "WebP Record" "$1" 2>/dev/null || true; }
+cleanup() {
+    makoctl set-mode default 2>/dev/null || true
+    rm -f "$OUTJSON"
+}
+trap cleanup EXIT INT TERM
+
+# Compute the focused window's logical rect from niri IPC. Prints "x,y WxH" or nothing.
+focused_window_rect() {
+    niri msg -j focused-output > "$OUTJSON" 2>/dev/null || return 0
+    niri msg -j windows 2>/dev/null | jq -r --slurpfile o "$OUTJSON" '
+        ($o[0].logical) as $L
+        | .[] | select(.is_focused == true) | .layout as $l
+        | select($l.tile_pos_in_workspace_view != null)
+        | ($L.x + $l.tile_pos_in_workspace_view[0] + ($l.window_offset_in_tile[0] // 0)) as $x
+        | ($L.y + $l.tile_pos_in_workspace_view[1] + ($l.window_offset_in_tile[1] // 0)) as $y
+        | "\($x|floor),\($y|floor) \($l.window_size[0]|floor)x\($l.window_size[1]|floor)"
+    ' 2>/dev/null
+}
+
+GEO=""
+OUTPUT=""
+case "${1:-region}" in
+    full|screen|output)
+        OUTPUT=$(niri msg -j focused-output 2>/dev/null | jq -r '.name')
+        ;;
+    window)
+        GEO=$(focused_window_rect)
+        if [ -z "$GEO" ]; then
+            note "Window geometry unavailable — select a region."
+            GEO=$(slurp 2>/dev/null) || GEO=""
+        fi
+        ;;
+    *)  # region (default)
+        GEO=$(slurp 2>/dev/null) || GEO=""
+        ;;
+esac
+
+# Pause notifications while recording (mako); restored by the EXIT trap.
+makoctl set-mode do-not-disturb 2>/dev/null || true
+
+# Hardware (VAAPI) encoding so capture keeps up at full resolution — software
+# x264 was dropping to ~11fps. Override with WF_CODEC / WF_DEVICE if needed.
+WF_CODEC="${WF_CODEC:-h264_vaapi}"
+WF_DEVICE="${WF_DEVICE:-/dev/dri/renderD128}"
+
+note "Recording — stop with the stop key (Mod+Shift+T)."
+if [ -n "$OUTPUT" ]; then
+    wf-recorder -c "$WF_CODEC" -d "$WF_DEVICE" -o "$OUTPUT" -f "$TMPVID"
+elif [ -n "$GEO" ]; then
+    wf-recorder -c "$WF_CODEC" -d "$WF_DEVICE" -g "$GEO" -f "$TMPVID"
+else
+    note "Cancelled."
+    exit 0
+fi
+
+# wf-recorder exits when stopped (SIGINT from the stop-bind). Transcode to webp.
+[ -s "$TMPVID" ] || { note "Nothing recorded."; exit 0; }
+note "Converting to webp…"
+# FPS/width/quality are tunable via env (RECORD_FPS / RECORD_WIDTH / RECORD_QUALITY).
+# Higher fps = smoother but larger files (animated webp grows fast).
+FPS="${RECORD_FPS:-30}"
+WIDTH="${RECORD_WIDTH:-1280}"
+QUALITY="${RECORD_QUALITY:-80}"
+if ! ffmpeg -y -i "$TMPVID" \
+        -vf "fps=${FPS},scale='min(${WIDTH},iw)':-1:flags=lanczos" \
+        -c:v libwebp_anim -quality "$QUALITY" -compression_level 4 \
+        -loop 0 -an "$OUTWEBP" >/dev/null 2>&1; then
+    note "ffmpeg failed; raw video kept at $TMPVID"
+    exit 1
+fi
+
+# Upload to MicroBin (share.glvortex.net) and copy the URL — same flow as
+# share-screenshot: POST the file with the uploader password, then rewrite the
+# /upload/<id> redirect to /file/<id>.
+note "Uploading to share.glvortex.net…"
+PW=$(pass show "$PASS_ENTRY" 2>/dev/null) || { note "No upload password ($PASS_ENTRY); kept $OUTWEBP"; exit 1; }
+REDIRECT=$(curl --silent --show-error --output /dev/null \
+    --write-out '%{redirect_url}' \
+    --form-string "uploader_password=$PW" \
+    -F "file=@${OUTWEBP};type=image/webp;filename=$(basename "$OUTWEBP")" \
+    "$MICROBIN_URL") || { note "Upload failed (curl $?); kept $OUTWEBP"; exit 1; }
+
+case "$REDIRECT" in
+    */upload/*)
+        URL=$(printf '%s' "$REDIRECT" | sed 's,/upload/,/file/,')
+        printf '%s' "$URL" | wl-copy
+        note "URL copied: $URL"
+        ;;
+    */incorrect)
+        note "Upload rejected — check $PASS_ENTRY"
+        exit 1
+        ;;
+    *)
+        note "Upload failed: ${REDIRECT:-empty}"
+        exit 1
+        ;;
+esac
