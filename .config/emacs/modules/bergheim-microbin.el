@@ -87,23 +87,7 @@ guesses).  Set the cdr to \"none\" to force plain text for a mode."
       "auto"))
 
 (defcustom bergheim/microbin-password-function nil
-  "Zero-arg function returning the uploader password as a string.
-
-Examples:
-
-  ;; password-store
-  (lambda () (password-store-get \"homelab/microbin/uploader\"))
-
-  ;; auth-source (works with ~/.authinfo.gpg or auth-source-pass)
-  (lambda ()
-    (let* ((e (car (auth-source-search :host \"share.glvortex.net\"
-                                       :user \"uploader\"
-                                       :require '(:secret) :max 1)))
-           (s (plist-get e :secret)))
-      (if (functionp s) (funcall s) s)))
-
-  ;; env var (for ephemeral containers etc.)
-  (lambda () (getenv \"MICROBIN_UPLOADER_PASSWORD\"))"
+  "Zero-arg function returning the uploader password as a string. "
   :type '(choice (const :tag "Not configured" nil) function))
 
 (defun bergheim/microbin--password ()
