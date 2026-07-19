@@ -292,8 +292,8 @@ bindsym $mod+Escape exec fancylocksway
 # Toggle dark mode
 bindsym $mod+F1 exec toggle-darkmode
 
-# Toggle redshift (or use gammastep for wayland)
-bindsym $mod+F2 exec (pkill gammastep && notify-send "Disabling color temperature") || (notify-send "Enabling color temperature" && gammastep)
+# Toggle gammastep (night light) via its user service
+bindsym $mod+F2 exec ~/.config/waybar/scripts/gammastep.sh toggle
 
 # Screenshots
 bindsym  Shift+Print exec share-screenshot active     # active window

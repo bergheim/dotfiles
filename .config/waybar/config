@@ -40,7 +40,7 @@
       // "pulseaudio",
       // "backlight",
       // "sway/language",
-      "custom/gammastep",
+      // "custom/gammastep",  // toggled via $mod+F2 instead
       "battery",
       "custom/tux-power",
       // "power-profiles-daemon",
