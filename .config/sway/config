@@ -569,14 +569,9 @@ exec mako
 exec kdeconnect-indicator
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec swayosd-server
-exec swayidle -w \
-    timeout 300 'fancylocksway' \
-    timeout 600 'swaymsg "output * power off"' \
-        resume 'swaymsg "output * power on"' \
-    timeout 1800 'systemctl suspend-then-hibernate' \
-    before-sleep 'fancylocksway' \
-    after-resume 'swaymsg "output * power on"' \
-    lock 'fancylocksway'
+# Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
+# your machine's `exec swayidle -w ...` line in the matching
+# ~/.config/sway/host-<hostname>.conf instead of here.
 exec kanshi
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
@@ -602,8 +597,9 @@ for_window [title="Picture-in-Picture"] floating enable, sticky enable
 
 output * bg ~/Pictures/wallpapers/active/light/primary.jpg fill
 
-output DP-1 scale 2 pos 0 0
-output DP-2 scale 2 transform 90 pos 1920 0 bg ~/Pictures/wallpapers/active/light/secondary.jpg fill
+# Geometry (scale/pos/transform) is set by kanshi profiles — see
+# ~/.config/kanshi/config. Only wallpapers stay here.
+output DP-2 bg ~/Pictures/wallpapers/active/light/secondary.jpg fill
 
 seat seat0 xcursor_theme default 20
 
