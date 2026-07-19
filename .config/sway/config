@@ -528,7 +528,7 @@ layer_effects "waybar" {
     blur_xray enable;
     blur_ignore_transparent enable;
     shadows enable;
-    corner_radius 0;
+    corner_radius 5;
 }
 
 corner_radius 5

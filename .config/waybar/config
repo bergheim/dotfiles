@@ -14,6 +14,11 @@
     "position": "top",
     "height": 30,
     "spacing": 4,
+    // float the bar to match window gaps — CSS margin is ignored, these
+    // become real gtk-layer-shell margins so the surface itself insets.
+    "margin-top": 0,
+    "margin-left": 0,
+    "margin-right": 0,
 
     "modules-left": [
       // "custom/misc_menu",

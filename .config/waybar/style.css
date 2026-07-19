@@ -3,8 +3,8 @@ window#waybar {
   background-color: @bg_primary;
   color: @fg_primary;
   padding-right: 10px;
-  /* border-radius: 5px; */
-  margin: 10px;
+  border-radius: 5px;   /* match SwayFX window corner_radius */
+  /* float/gap is set via margin-* in config (CSS margin is ignored here) */
 }
 
 #custom-misc_menu {
