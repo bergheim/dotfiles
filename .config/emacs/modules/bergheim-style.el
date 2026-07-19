@@ -316,7 +316,14 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
                       (font-spec :family "Noto Color Emoji") nil 'prepend)
     ;; additional unicode ranges (needed for trev)
     (set-fontset-font t '(#x1F000 . #x1FAFF)
-                      (font-spec :family "Noto Color Emoji") nil 'prepend)))
+                      (font-spec :family "Noto Color Emoji") nil 'prepend)
+    ;; Nerd Font glyphs (waybar config etc.) live in the private-use
+    ;; areas; the default mono font has no coverage there. nf-md-* icons
+    ;; (v3) sit in the supplementary PUA-A plane (#xF0000+).
+    (set-fontset-font t '(#xE000 . #xF8FF)
+                      (font-spec :family "Symbols Nerd Font Mono") nil 'prepend)
+    (set-fontset-font t '(#xF0000 . #xFFFFD)
+                      (font-spec :family "Symbols Nerd Font Mono") nil 'prepend)))
 
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
