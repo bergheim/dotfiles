@@ -352,7 +352,7 @@ assign [class="^discord$"] $ws2
 assign [class="Slack"] $ws2
 assign [class="^Element"] $ws2
 assign [class="^Chromium$"] $ws4
-assign [class="^steam"] $ws7
+# assign [class="^steam"] $ws7
 # }}}
 
 # {{{ automatically starting applications on i3 startup
