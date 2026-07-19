@@ -580,18 +580,18 @@ Returns list of plists (:id :title :keywords :path) sorted newest first."
     (insert-file-contents filepath)
     (buffer-string)))
 
-  (defun bergheim/agent-denote-list (dir &optional limit)
-    "List denote notes in DIR, newest first. Returns up to LIMIT entries (default 10).
+(defun bergheim/agent-denote-list (dir &optional limit)
+  "List denote notes in DIR, newest first. Returns up to LIMIT entries (default 10).
   Each entry is a plist with :id :title :keywords. To read or link, pass
   :id to the relevant helper, or call `bergheim/agent-denote-find' when
   you need :path."
-    (let* ((all (bergheim/agent-denote-find dir))
-           (n (or limit 10)))
-      (mapcar (lambda (note)
-                (list :id (plist-get note :id)
-                      :title (plist-get note :title)
-                      :keywords (plist-get note :keywords)))
-              (seq-take all n))))
+  (let* ((all (bergheim/agent-denote-find dir))
+         (n (or limit 10)))
+    (mapcar (lambda (note)
+              (list :id (plist-get note :id)
+                    :title (plist-get note :title)
+                    :keywords (plist-get note :keywords)))
+            (seq-take all n))))
 
 (defun bergheim/agent-denote-link (source-path target-paths)
   "Add denote links from SOURCE-PATH to each file in TARGET-PATHS.
@@ -645,6 +645,28 @@ Safe for emacsclient --eval."
              (format "note: link %d related" (length links-to-add))))
           (list :wrote (when links-to-add (list source-path))
                 :added (length links-to-add)))))))
+
+(defun bergheim/agent-denote-get-backlinks (filepath)
+  "Return the notes that link TO the denote note at FILEPATH.
+FILEPATH must be an absolute path to a denote note, not an identifier:
+denote's own `denote-get-backlinks' silently returns nil for a bare id
+\(see the stash gotcha note on this).
+
+Returns a list of plists (:id :title :keywords :path), one per linking
+note, newest first — the same shape as `bergheim/agent-denote-find'.
+Returns nil when nothing links to FILEPATH.
+
+Safe for emacsclient --eval."
+  (require 'denote)
+  (let ((abs (expand-file-name filepath)))
+    (unless (file-exists-p abs)
+      (error "Note not found: %s" abs))
+    (let* ((inhibit-message t)
+           (denote-directory (file-name-directory abs))
+           (files (denote-get-backlinks abs))
+           (parsed (delq nil (mapcar #'bergheim/agent-denote--parse-filename files))))
+      (sort parsed (lambda (a b)
+                     (string> (plist-get a :id) (plist-get b :id)))))))
 
 ;;; Autonomous dispatch selector/marker
 ;; Companion to `jolo autonomous'. Safe for `emacsclient --eval' — never
@@ -760,6 +782,122 @@ POSITION is no longer `:autonomous:' or is no longer eligible."
       (bergheim/agent-notes--maybe-commit
        org-file (format "dispatch: mark %s" timestamp)))
     marked))
+
+(defun bergheim/agent-org-add-todo (file heading &optional body tags state)
+  "Append a new entry HEADING to FILE as a top-level heading.
+
+STATE defaults to \"TODO\" and must be a keyword declared in FILE's `#+TODO:'.
+TAGS is a list of tag strings. BODY, when non-empty, is inserted under the
+heading. A stable `:ID:' is generated so the entry can later be addressed with
+`bergheim/agent-org-set-state-by-id'. Returns a plist (:wrote :id :heading
+:state)."
+  (let ((inhibit-message t)
+        (st (or state "TODO"))
+        (id nil))
+    ;; Validate inputs against Org syntax before touching the file: a heading is
+    ;; a single line, and tags accept only Org's tag character class.
+    (when (string-match-p "[[:cntrl:]]" heading)
+      (error "Heading must be a single line without control characters: %S" heading))
+    (dolist (tag tags)
+      (unless (string-match-p "\\`[[:alnum:]_@#%]+\\'" tag)
+        (error "Invalid Org tag %S (allowed: letters, digits, _ @ # %%)" tag)))
+    (bergheim/agent-org--with-file file
+      (unless (member st org-todo-keywords-1)
+        (error "Unknown TODO keyword %S (known: %s)" st
+               (mapconcat #'identity org-todo-keywords-1 " ")))
+      (goto-char (point-max))
+      (unless (bolp) (insert "\n"))
+      (unless (or (bobp)
+                  (looking-back "\n\n" (max (point-min) (- (point) 2))))
+        (insert "\n"))
+      (insert (format "* %s %s" st heading))
+      (when tags
+        (insert (format "  :%s:" (mapconcat #'identity tags ":"))))
+      (insert "\n")
+      (org-back-to-heading t)
+      (setq id (format "%s-%06x"
+                       (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t)
+                       (random #xFFFFFF)))
+      (org-entry-put nil "ID" id)
+      (when (and body (not (string-empty-p body)))
+        (org-end-of-meta-data t)
+        (insert (string-trim-right body) "\n")))
+    (bergheim/agent-notes--maybe-commit file (format "todo: add %s" heading))
+    (list :wrote (list (expand-file-name file)) :id id :heading heading :state st)))
+
+(defun bergheim/agent-org-list-todos (org-file)
+  "Return JSON array of every entry carrying a TODO keyword in ORG-FILE."
+  (let ((abs (expand-file-name org-file)) (items nil))
+    (bergheim/agent-org--with-quiet-buffer abs
+      (org-with-wide-buffer
+       (org-map-entries
+        (lambda ()
+          (let ((state (org-get-todo-state)))
+            (when state
+              (push `((position . ,(point))
+                      (state . ,(substring-no-properties state))
+                      (heading . ,(substring-no-properties (org-get-heading t t t t)))
+                      (tags . ,(bergheim/agent-org--strip-list (org-get-tags)))
+                      (autonomous . ,(and (member "autonomous" (org-get-tags))
+                                          (bergheim/agent-org--autonomous-eligible-p) t)))
+                    items))))
+        nil nil)))
+    (json-encode-array (nreverse items))))
+
+(defun bergheim/agent-org-get-entry (file locator &optional by-id)
+  "Return the entry matching LOCATOR in FILE as a JSON object.
+
+LOCATOR is a heading regexp, or an `:ID:' value when BY-ID is non-nil. Fields:
+`state', `heading', `tags' (inherited, always an array), `priority',
+`scheduled', `deadline', `properties' (drawer properties), and `body' (drawers
+removed). Errors if the locator does not match a unique entry."
+  (let ((abs (expand-file-name file))
+        (obj nil))
+    (bergheim/agent-org--with-quiet-buffer abs
+      (org-with-wide-buffer
+       (if by-id
+           (bergheim/agent-org--find-by-id locator)
+         (bergheim/agent-org--find-unique-heading locator))
+       (let (props)
+         (dolist (kv (org-entry-properties nil 'standard))
+           (push (cons (intern (car kv)) (cdr kv)) props))
+         ;; Absent scalars are left nil; `json-encode' renders nil as JSON null.
+         ;; `tags' stays a vector so it always encodes as an array.
+         (setq obj
+               `((state . ,(org-get-todo-state))
+                 (heading . ,(substring-no-properties (org-get-heading t t t t)))
+                 (tags . ,(vconcat (bergheim/agent-org--strip-list (org-get-tags))))
+                 (priority . ,(org-entry-get nil "PRIORITY"))
+                 (scheduled . ,(org-entry-get nil "SCHEDULED"))
+                 (deadline . ,(org-entry-get nil "DEADLINE"))
+                 (properties . ,(nreverse props))
+                 (body . ,(bergheim/agent-org--autonomous-body)))))))
+    (json-encode obj)))
+
+(defun bergheim/agent-worklog-recent (&optional n)
+  "Return the last N worklog entries (default 10) as a JSON array, oldest first.
+
+Each element has `time' (the inactive timestamp), `project', `transition', and
+`summary' (the full worklog heading). Returns \"[]\" when no worklog directory
+is configured or no worklog file exists yet."
+  (let* ((dir bergheim/agent-worklog-dir)
+         (path (and dir (expand-file-name "worklog.org" dir)))
+         (items nil))
+    (if (not (and path (file-exists-p path)))
+        "[]"
+      (bergheim/agent-org--with-quiet-buffer path
+        (org-with-wide-buffer
+         (org-map-entries
+          (lambda ()
+            (let ((h (substring-no-properties (org-get-heading t t t t))))
+              (push `((time . ,(when (string-match "\\[\\([^]]+\\)\\]" h)
+                                 (match-string 1 h)))
+                      (project . ,(org-entry-get nil "PROJECT"))
+                      (transition . ,(org-entry-get nil "TRANSITION"))
+                      (summary . ,h))
+                    items)))
+          nil nil)))
+      (json-encode-array (last (nreverse items) (or n 10))))))
 
 (provide 'bergheim-agent-helpers)
 ;;; bergheim-agent-helpers.el ends here
