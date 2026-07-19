@@ -36,16 +36,19 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/airy.conf" $QT6_THEME
     fi
+    ln -sf /usr/share/color-schemes/BreezeLight.colors ~/.config/kdeglobals
 
     ln -sf ~/.config/bat/themes/bergheim-light.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
     ln -sf ~/.config/alacritty/colors/bergheim-light.toml ~/.config/alacritty/colors/bergheim-theme.toml
     ln -sf ~/.config/tmux/bergheim-light.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
-    swaymsg reload
+    ln -sf ~/.config/mako/config-light ~/.config/mako/config
+    [ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
     if pgrep -x "dunst" >/dev/null; then
         dunstctl reload ~/.config/dunst/dunstrc &
     fi
+    pgrep -x mako >/dev/null && makoctl reload &
 else
     if [[ -n "$WAYLAND_DISPLAY" ]]; then
         swaymsg "exec swaybg -m fill -i ~/Pictures/wallpapers/active/dark/primary.jpg"
@@ -64,16 +67,19 @@ else
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/darker.conf" $QT6_THEME
     fi
+    ln -sf /usr/share/color-schemes/BreezeDark.colors ~/.config/kdeglobals
 
     ln -sf ~/.config/bat/themes/bergheim-dark.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
     ln -sf ~/.config/alacritty/colors/bergheim-dark.toml ~/.config/alacritty/colors/bergheim-theme.toml
     ln -sf ~/.config/tmux/bergheim-dark.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
-    swaymsg reload
+    ln -sf ~/.config/mako/config-dark ~/.config/mako/config
+    [ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
     if pgrep -x "dunst" >/dev/null; then
         dunstctl reload ~/.config/dunst/dunstrc_dark &
     fi
+    pgrep -x mako >/dev/null && makoctl reload &
 fi
 
 # update any running vim instances
@@ -88,4 +94,4 @@ xrdb -merge ~/.Xresources
 pkill -HUP xsettingsd &
 tmux source-file "$TMUXCONF" &
 pkill -USR1 polybar &
-pgrep i3 && i3 reload &
+pgrep -x i3 >/dev/null && i3-msg reload >/dev/null &

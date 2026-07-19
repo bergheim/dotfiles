@@ -1,0 +1,26 @@
+# Mako — DARK theme (mirrors waybar/style-dark.css palette).
+# See config-light for the theme-switching pattern notes.
+output=DP-1
+default-timeout=5000
+border-radius=6
+border-size=2
+padding=10
+margin=10
+font=JetBrains Mono 10
+
+background-color=#0a0f14e6
+text-color=#ecf0f1
+border-color=#ecf0f140
+progress-color=over #2c3e50
+
+[urgency=low]
+border-color=#2c3e50
+
+[urgency=normal]
+border-color=#ecf0f140
+
+[urgency=high]
+background-color=#8b0000e6
+text-color=#ecf0f1
+border-color=#8b0000
+default-timeout=0

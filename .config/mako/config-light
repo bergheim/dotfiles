@@ -1,0 +1,29 @@
+# Mako — LIGHT theme (mirrors waybar/style-light.css palette).
+# NOTE: mako has no @import mechanism, so this file must contain the
+# full config. The runtime `config` symlink points here or at
+# `config-dark` depending on current appearance (see toggle-darkmode).
+# `output=` is machine-specific — adjust per host.
+output=DP-1
+default-timeout=5000
+border-radius=6
+border-size=2
+padding=10
+margin=10
+font=JetBrains Mono 10
+
+background-color=#ebebdbe6
+text-color=#2c3e50
+border-color=#2c3e5040
+progress-color=over #98d1ce
+
+[urgency=low]
+border-color=#98d1ce
+
+[urgency=normal]
+border-color=#2c3e5040
+
+[urgency=high]
+background-color=#950f0fe6
+text-color=#ebebdb
+border-color=#950f0f
+default-timeout=0
