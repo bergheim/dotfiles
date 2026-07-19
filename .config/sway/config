@@ -563,7 +563,7 @@ assign [class="^Chromium$"] $ws4
 # {{{ automatically starting applications on sway startup
 # exec env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrd > /tmp/swayrd.log 2>&1
 exec swayrd
-exec wl-paste --watch cliphist store
+exec_always wl-paste --watch cliphist store
 exec waybar
 exec mako
 exec kdeconnect-indicator
