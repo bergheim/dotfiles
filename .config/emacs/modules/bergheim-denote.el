@@ -2,8 +2,11 @@
 
 (use-package denote
   :init
-  (setq denote-directory (list (expand-file-name "denote" org-directory)
-                               (expand-file-name "~/stash/notes/")))
+  (setq denote-directory
+        (if bergheim/container-mode-p
+            (list (expand-file-name "/workspaces/stash/notes/"))
+          (list (expand-file-name "denote" org-directory)
+                (expand-file-name "~/stash/notes/"))))
   :custom
   (denote-known-keywords '("emacs" "journal"))
   (denote-date-prompt-use-org-read-date t)
