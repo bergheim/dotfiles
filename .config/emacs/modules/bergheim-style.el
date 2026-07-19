@@ -739,15 +739,19 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   (dashboard-setup-startup-hook))
 
 
-(defun bergheim/dired-set-as-wallpaper ()
-  "Sets FILE to the current wallpaper"
-  (interactive)
+(defun bergheim/dired-set-as-wallpaper (&optional secondary)
+  "Sets FILE to the current wallpaper.
+
+With prefix argument, update secondary.jpg instead of primary.jpg."
+  (interactive "P")
 
   (if-let* ((file (dired-file-name-at-point))
             (swaysock (car (file-expand-wildcards "/run/user/*/sway-ipc.*.sock")))
+            (slot (if secondary "secondary.jpg" "primary.jpg"))
             (dest (expand-file-name
-                   (if (bergheim//system-dark-mode-enabled-p) "~/Pictures/wallpapers/active/dark/primary.jpg"
-                     "~/Pictures/wallpapers/active/light/primary.jpg"))))
+                   (if (bergheim//system-dark-mode-enabled-p)
+                       (concat "~/Pictures/wallpapers/active/dark/" slot)
+                     (concat "~/Pictures/wallpapers/active/light/" slot)))))
       (progn
         (copy-file file dest t)
         (when swaysock
@@ -758,6 +762,10 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
             (message "Wallpaper set to %s" dest)
             )))
     (warn "Unable to find a file")))
+
+(use-package pulsar
+  :config
+  (pulsar-global-mode))
 
 (provide 'bergheim-style)
 ;;; bergheim-style.el ends here
