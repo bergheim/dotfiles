@@ -572,7 +572,7 @@ exec swayosd-server
 # Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
 # your machine's `exec swayidle -w ...` line in the matching
 # ~/.config/sway/host-<hostname>.conf instead of here.
-exec kanshi
+exec_always kanshi
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
 # }}}

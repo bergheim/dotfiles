@@ -1,6 +1,6 @@
 profile berghome {
     output "LG Electronics 27GN950 012NTKF1P949" enable mode 3840x2160@144Hz scale 2 position 0,0
-    output "LG Electronics 27GL850 912NTRL0M742" enable mode 2560x1440@144Hz scale 2 transform 90 position 1920,0
+    output "LG Electronics 27GL850 912NTRL0M742" enable mode 2560x1440@144Hz scale 2 transform 270 position 1920,0
 }
 
 profile docked {
