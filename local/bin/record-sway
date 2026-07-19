@@ -1,21 +1,39 @@
-#!/bin/sh
-# Screencast recorder for sway/niri. Records via wf-recorder to mkv,
-# then transcodes to a looping webp for sharing.
+#!/usr/bin/env bash
+# record-sway — capture a screencast via wf-recorder, transcode to a
+# looping webp, then upload to MicroBin and copy the URL (mirrors the
+# flow in share-screenshot).  Also drops a copy in ~/stash/screencasts/.
 #
 # Usage:
-#   record-sway          # interactive region (slurp)
-#   record-sway window   # focused window rect (sway only;
-#                        # niri/unknown falls back to slurp)
+#   record-sway              # interactive region (slurp), upload + copy URL
+#   record-sway window       # focused window rect (sway only;
+#                            # niri/unknown falls back to slurp)
+#   record-sway --local      # skip upload — local file only
+#   record-sway --local window
 #
 # Stop the take with the bound key (pkill -INT wf-recorder).
 
-set -eu
+set -euo pipefail
 
-VIDDIR="$HOME/Videos/screencasts"
-mkdir -p "$VIDDIR"
-STAMP=$(date +%F_%H%M%S)
-TMPVID="$VIDDIR/screencast_$STAMP.mkv"
-OUTWEBP="$VIDDIR/screencast_$STAMP.webp"
+ARCHIVE_DIR="${RECORD_ARCHIVE_DIR:-$HOME/Videos/screencasts}"
+STASH_DIR="${RECORD_STASH_DIR:-$HOME/stash/screencasts}"
+MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
+PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
+
+SHARE=1
+MODE=region
+for arg in "$@"; do
+    case "$arg" in
+        --local|--no-share) SHARE=0 ;;
+        window)             MODE=window ;;
+        *) echo "Unknown arg: $arg" >&2; exit 1 ;;
+    esac
+done
+
+mkdir -p "$ARCHIVE_DIR" "$STASH_DIR"
+TS=$(date -u '+%Y%m%dT%H%M%S')
+STEM="${TS}--screencast-shared__"
+MKV="$ARCHIVE_DIR/${STEM}.mkv"
+WEBP="$STASH_DIR/${STEM}.webp"
 
 focused_rect_sway() {
     [ -n "${SWAYSOCK:-}" ] || return 0
@@ -25,7 +43,7 @@ focused_rect_sway() {
                  | "\(.x),\(.y) \(.width)x\(.height)"'
 }
 
-if [ "${1:-}" = window ]; then
+if [ "$MODE" = window ]; then
     RECT=$(focused_rect_sway)
     if [ -z "$RECT" ]; then
         notify-send "Wayland WebP Record" \
@@ -40,9 +58,43 @@ fi
 trap 'makoctl set-mode default 2>/dev/null || true' EXIT INT TERM
 makoctl set-mode do-not-disturb 2>/dev/null || true
 
-wf-recorder -g "$RECT" -f "$TMPVID"
+wf-recorder -g "$RECT" -f "$MKV"
 
 notify-send "Wayland WebP Record" "Converting to webp..."
-ffmpeg -y -i "$TMPVID" \
-    -vf "fps=10,scale=1280:-1:flags=lanczos" -loop 0 "$OUTWEBP"
-notify-send "Wayland WebP Record" "Done! Output: $OUTWEBP"
+ffmpeg -y -i "$MKV" \
+    -vf "fps=10,scale=1280:-1:flags=lanczos" -loop 0 "$WEBP"
+
+if [ "$SHARE" -eq 0 ]; then
+    notify-send "Wayland WebP Record" "Done (local): $WEBP"
+    exit 0
+fi
+
+notify-send "Screencast saved, uploading…" "$(basename "$WEBP")"
+
+PW=$(pass show "$PASS_ENTRY")
+
+REDIRECT=$(curl --silent --show-error \
+    --output /dev/null \
+    --write-out '%{redirect_url}' \
+    --form-string "uploader_password=$PW" \
+    -F "file=@${WEBP};type=image/webp;filename=${STEM}.webp" \
+    "$MICROBIN_URL") || {
+        notify-send "Upload failed" "curl exit $?"
+        exit 1
+}
+
+case "$REDIRECT" in
+    */upload/*)
+        URL="${REDIRECT/\/upload\//\/file\/}"
+        printf '%s' "$URL" | wl-copy
+        notify-send "URL copied" "$URL"
+        ;;
+    */incorrect)
+        notify-send "Upload rejected" "Check $PASS_ENTRY"
+        exit 1
+        ;;
+    *)
+        notify-send "Upload failed" "Unexpected: ${REDIRECT:-empty}"
+        exit 1
+        ;;
+esac
