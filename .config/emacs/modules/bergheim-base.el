@@ -268,4 +268,28 @@ controlling terminal."
 
 (use-package dotenv-mode)
 
+(use-package ewm
+  :config
+  (setopt ewm-gap 12)
+  :general
+  (general-define-key
+   :keymaps 'ewm-mode-map
+   ;; focus — vim hjkl
+   "s-h" 'ewm-focus-left
+   "s-j" 'ewm-focus-down
+   "s-k" 'ewm-focus-up
+   "s-l" 'ewm-focus-right
+   ;; swap frame (only left/right exist)
+   "s-H" 'ewm-frame-move-left
+   "s-L" 'ewm-frame-move-right
+   ;; strip navigation
+   "C-s-h" 'ewm-frame-left
+   "C-s-l" 'ewm-frame-right
+   ;; lifecycle / apps
+   "s-t" 'ewm-frame-new
+   "s-q" 'ewm-frame-close
+   "s-d" 'ewm-launch-app
+   "s-f" 'ewm-toggle-fullscreen
+   "s-x" 'ewm-lock-session))
+
 ;;; bergheim-base.el ends here
