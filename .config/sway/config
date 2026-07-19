@@ -35,6 +35,9 @@ set $ws13 "13"
 set $monitor1 DP-0
 set $monitor2 DP-2
 
+# Per-host overrides (e.g. berghome uses DP-1, not DP-0). Missing = no-op.
+include ~/.config/sway/host-*.conf
+
 # input "1:1:AT_Translated_Set_2_keyboard" {
 input "type:keyboard" {
     xkb_layout "us,no"
@@ -355,6 +358,8 @@ bindsym XF86AudioLowerVolume exec  swayosd-client --output-volume lower
 bindsym XF86AudioMute exec swayosd-client --output-volume mute-toggle
 # Source volume toggle mute
 bindsym XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
+# Toggle default output between speakers and headset
+bindsym $mod+Shift+a exec audio-toggle
 
 # Brightness raise
 bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise
@@ -590,5 +595,10 @@ for_window [title="emacs-float"] floating enable, resize set 800 600, move posit
 for_window [title="Picture-in-Picture"] floating enable, sticky enable
 
 output * bg ~/Pictures/wallpapers/active/light/primary.jpg fill
+
+output DP-1 scale 2 pos 0 0
+output DP-2 scale 2 transform 90 pos 1920 0 bg ~/Pictures/wallpapers/active/light/secondary.jpg fill
+
+seat seat0 xcursor_theme default 20
 
 bindsym $mod+F12 exec journalctl --user -u sway -n 100 > /tmp/sway-debug.log && notify-send "Sway log dumped"
