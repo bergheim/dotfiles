@@ -42,17 +42,19 @@
       // "memory",
       // "temperature",
       "custom/weather",
-      "pulseaudio",
+      "mpris",
       // "backlight",
       // "sway/language",
-      // "custom/gammastep",  // toggled via $mod+F2 instead
-      "battery",
+      "custom/gammastep",
+      "pulseaudio",
+      "custom/audio",
+      "custom/battery",
       "custom/tux-power",
       // "power-profiles-daemon",
       "clock",
       // "keyboard-state",
       "custom/keymap",
-      "network",
+      // "network",
       "tray"
     ],
 
@@ -276,8 +278,32 @@
         "tooltip": true,
         "interval": 10,
         "return-type": "json",
+        "exec-if": "systemctl is-active --quiet tccd",
         "exec": "~/.config/waybar/scripts/tux-power-status.sh",
-        "on-click": "tux-power-menu"
+        "on-click": "tux-power-menu",
+        "hide-empty-text": true
+    },
+
+    "custom/audio": {
+        "format": "{}",
+        "tooltip": true,
+        "interval": 5,
+        "return-type": "json",
+        "exec": "~/.config/waybar/scripts/audio-status.sh",
+        "on-click": "audio-toggle",
+        "on-click-right": "pavucontrol",
+        "hide-empty-text": true
+    },
+
+    "custom/battery": {
+        "format": "{}",
+        "tooltip": true,
+        "interval": 30,
+        "return-type": "json",
+        "exec-if": "test -d /sys/class/power_supply/BAT0",
+        "exec": "~/.config/waybar/scripts/battery-status.sh",
+        "on-click": "tux-power-menu",
+        "hide-empty-text": true
     },
 
     "power-profiles-daemon": {
@@ -308,7 +334,7 @@
     "network": {
       "interval": 30,
       "format-wifi": " ",
-      "format-ethernet": "{ipaddr}/{cidr} 󰈁 ",
+      "format-ethernet": "󰈁 ",
       "format-linked": "{ifname} (No IP) 󰈁 ",
       "format-disconnected": "Disconnected  ",
       "tooltip-format": "{essid}      {signalStrength}%, {bandwidthUpBytes} {bandwidthDownBytes}",
