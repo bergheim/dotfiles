@@ -104,15 +104,23 @@ input {
 // Hybrid model: only 1-6 are NAMED (persistent) — they carry identity,
 // app routing (see open-on-workspace rules), and stable waybar icons.
 // 7+ are dynamic: created on demand, hidden by waybar hide-empty when
-// empty (sway-like). No open-on-output pins — niri keeps workspaces
-// per-output on its own, and the pins were dead on the single-display
-// laptop anyway.
-workspace "1"   // browser (firefox)
-workspace "2"   // chat (Telegram/Discord/Slack/Element)
-workspace "3"   // music (Spotify)
-workspace "4"   // email (Chromium)
-workspace "5"   // emacs
-workspace "6"   // emacs
+// empty (sway-like).
+//
+// Docking (i3-style fixed split): the six main workspaces are pinned to the
+// external via open-on-output, keyed on the CONNECTOR "DP-2" (the office
+// dock port) rather than the monitor's make/model — so any monitor on that
+// port gets the layout, and it survives reboot (no manual re-arranging).
+// When DP-2 connects, niri moves 1-6 (and their windows) onto it; when it
+// disconnects they fall back to the only output (laptop eDP-1) and return on
+// reconnect. The number-key workspaces (4/5/6 -> dynamic 7/8/9) stay on the
+// laptop. niri also remembers any runtime move (move-workspace-to-monitor
+// updates a workspace's home output) for the rest of the session.
+workspace "1" { open-on-output "DP-2"; }   // browser (firefox)
+workspace "2" { open-on-output "DP-2"; }   // chat (Telegram/Discord/Slack/Element)
+workspace "3" { open-on-output "DP-2"; }   // music (Spotify)
+workspace "4" { open-on-output "DP-2"; }   // email (Chromium)
+workspace "5" { open-on-output "DP-2"; }   // emacs
+workspace "6" { open-on-output "DP-2"; }   // emacs
 
 layout {
     gaps 10
