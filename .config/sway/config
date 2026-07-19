@@ -399,10 +399,8 @@ bindsym $mod+ctrl+2 exec makoctl menu -- fuzzel -d -p 'Select action:'
 # bindsym $mod+Tab exec swaymsg -t get_tree | jq -r '.. | select(.type? == "con" and .app_id?) | "\(.id):\(.app_id) - \(.name)"' | fuzzel --dmenu | cut -d: -f1 | xargs -I{} swaymsg '[con_id={}] focus'
 
 bindsym $mod+Shift+c reload
-bindsym ctrl+$alt+Backspace exec swaynag -t warning -m 'Exit Sway?' -B 'Yes' 'swaymsg exit'
-
-# bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | bemenu -sb "#b89000" -i -p "Really exit Sway session?") = "YES" ] && reboot'
-bindsym ctrl+$alt+Delete exec sh -c '[ $(echo -e "NO\nYES" | fuzzel -d -p "Really restart system? ") = "YES" ] && restart-system'
+bindsym ctrl+$alt+Backspace exec sh -c '[ $(echo -e "NO\nYES" | fuzzel -d -p "Really exit sway? ") = "YES" ] && swaymsg exit'
+bindsym ctrl+$alt+Shift+Backspace exec sh -c '[ $(echo -e "NO\nYES" | fuzzel -d -p "Really restart system? ") = "YES" ] && reboot'
 
 # quit like a pro
 set $mode_system System: (l) lock, (e) logout, (s) suspend, (r) reboot, (S) shutdown, (R) UEFI
@@ -572,7 +570,7 @@ exec swayosd-server
 # Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
 # your machine's `exec swayidle -w ...` line in the matching
 # ~/.config/sway/host-<hostname>.conf instead of here.
-exec kanshi
+exec_always kanshi
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
 # }}}
