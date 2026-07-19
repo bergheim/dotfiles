@@ -4,12 +4,17 @@ CFG="$HOME/.config/picom.conf"
 FULL="$HOME/.config/picom-fx.conf"
 PLAIN="$HOME/.config/picom-plain.conf"
 
-if [ "$(readlink -f "$CFG")" = "$(readlink -f "$PLAIN")" ]; then
+if [ "$(readlink -f "$CFG")" = "$(readlink -f "$PLAIN")" ];
+then
     ln -sf "$FULL"  "$CFG"; msg="picom: translucency ON"
 else
     ln -sf "$PLAIN" "$CFG"; msg="picom: translucency OFF"
 fi
 
-pkill -x picom >/dev/null 2>&1 && \
-    pkill -USR1 picom || picom --config "$CFG" &
+if pgrep -x picom >/dev/null 2>&1; then
+    pkill -USR1 picom &
+else
+    picom --config "$CFG" & # not running -> start it
+fi
+
 dunstify "$msg" --icon=to-the-moon
