@@ -1,0 +1,41 @@
+#!/bin/sh
+# Toggle default audio sink between built-in speakers and Arctis 7 headset.
+# Moves existing streams to the new sink so playback follows.
+
+SPEAKERS="alsa_output.pci-0000_00_1f.3.analog-stereo"
+HEADSET="Arctis_Game"
+
+current=$(pactl get-default-sink)
+if [ "$current" = "$HEADSET" ]; then
+    target="$SPEAKERS"
+    label="Speakers 󰓃"
+    body="Built-in analog output"
+else
+    target="$HEADSET"
+    label="Headset 󰋎"
+    body="SteelSeries Arctis 7"
+fi
+
+pactl set-default-sink "$target" || exit 1
+
+pactl list short sink-inputs | awk '{print $1}' | while read -r id; do
+    pactl move-sink-input "$id" "$target" 2>/dev/null
+done
+
+# Report to stdout (waybar) and via desktop notification
+case "$1" in
+    --json)
+        printf '{"text":"%s","tooltip":"Audio → %s"}\n' "$label" "$target"
+        ;;
+    --status)
+        # Just print current sink label, no toggle (called by waybar interval)
+        # (This branch is unused unless called explicitly — actual status
+        # printing is in audio-status.)
+        printf '%s\n' "$label"
+        ;;
+    *)
+        command -v notify-send >/dev/null && \
+            notify-send -t 1500 -h string:x-canonical-private-synchronous:audio-toggle \
+                "Audio → $label" "$body"
+        ;;
+esac
