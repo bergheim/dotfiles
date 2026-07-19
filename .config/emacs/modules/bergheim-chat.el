@@ -464,6 +464,12 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (jabber-history-dir (expand-file-name "jabber-history" bergheim/cache-dir))
   (jabber-avatar-cache-directory (bergheim/get-and-ensure-data-dir "jabber/avatars"))
   (jabber-auto-reconnect t)
+  ;; Sleep/wake and NAT timeouts kill the socket silently; without
+  ;; these the FSM only notices on the next outbound stanza and
+  ;; usually drops itself from `jabber-connections' instead of
+  ;; reconnecting.  Whitespace pings keep the TCP/NAT path warm;
+  ;; XEP-0199 pings actively verify the server is still answering.
+  (jabber-keepalive-interval 300)
   (jabber-show-resources nil)
   (jabber-roster-show-title nil)
   ;; Drop the chat-window header line: it only carried a name/presence
@@ -885,7 +891,7 @@ each room keeps its own buffer."
 
   (define-advice jabber-muc--process-enter
       (:around (orig jc group nickname symbol status-codes x-muc actor reason our-nickname)
-               bergheim/hush-initial-joins)
+       bergheim/hush-initial-joins)
     "Mark initial-join occupant presences so their notice is suppressed.
 True only before our own self-presence has marked the room joined, and
 never for our own presence — so live joins still show."
@@ -1280,6 +1286,66 @@ an org quote block under a timestamped heading."
         (when (featurep 'evil)
           (evil-insert-state)))))
 
+;;;; Inline image: RET opens full-size in image-mode
+
+  (defun bergheim/jabber-image--at-point ()
+    "Return the loaded image spec at point, or nil if just a placeholder."
+    (let ((d (get-text-property (point) 'display)))
+      (and (consp d) (eq (car d) 'image) d)))
+
+  (defun bergheim/jabber-image-view-fullsize ()
+    "View the jabber image at point at native size in another window.
+Writes the image data to a temp file and opens it via `find-file',
+so all of `image-mode's affordances (zoom, fit-to-window, scroll)
+apply.  Errors politely if point isn't on a loaded image."
+    (interactive)
+    (let* ((image (bergheim/jabber-image--at-point))
+           (data  (and image (plist-get (cdr image) :data)))
+           (type  (and image (plist-get (cdr image) :type))))
+      (unless data
+        (user-error "No loaded jabber image at point"))
+      (let ((file (make-temp-file
+                   "jabber-image-" nil
+                   (concat "." (symbol-name (or type 'png))))))
+        (let ((coding-system-for-write 'binary))
+          (with-temp-file file (insert data)))
+        (find-file-other-window file))))
+
+  (defun bergheim/jabber-image-ret-action ()
+    "Dispatch RET on a jabber image link/placeholder.
+On a placeholder, load the image (jabber's default behaviour).
+On a loaded image, open it full-size via `image-mode'."
+    (interactive)
+    (if (bergheim/jabber-image--at-point)
+        (bergheim/jabber-image-view-fullsize)
+      (jabber-image-placeholder-click)))
+
+  (defun bergheim/jabber-chat-ret ()
+    "RET in a jabber chat buffer.
+On a loaded image, open it full-size in `image-mode'.  On an
+image placeholder, load the image (jabber's default).  Otherwise
+fall through to evil's normal-state default (move down a line)."
+    (interactive)
+    (cond
+     ((bergheim/jabber-image--at-point)
+      (bergheim/jabber-image-view-fullsize))
+     ((get-text-property (point) 'jabber-image-url)
+      (jabber-image-placeholder-click))
+     (t (forward-line 1))))
+
+  ;; Mouse-1 on the image still goes through the text-property keymap, so
+  ;; this binding remains useful even though evil shadows RET there.
+  (with-eval-after-load 'jabber-image
+    (define-key jabber-image-placeholder-keymap
+      (kbd "RET") #'bergheim/jabber-image-ret-action))
+
+  ;; Evil normal state lookups outrank text-property keymaps via
+  ;; `emulation-mode-map-alists', so the actual user-visible RET on
+  ;; images in chat buffers has to be bound here.
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal jabber-chat-mode-map
+      (kbd "RET") #'bergheim/jabber-chat-ret))
+
   (defun bergheim/jabber--chat-modeline-encryption ()
     "Splice a 🔒 / 🔓 indicator into `mode-line-misc-info'.
 Derived from `jabber-chat-encryption' directly so the modeline
@@ -1307,6 +1373,9 @@ but only on the active window."
       (:before (jc group &rest _) bergheim/precreate-room-buffer)
     "Ensure the chat buffer exists before MUC join presence is sent."
     (jabber-muc-create-buffer jc group))
+
+  (add-hook 'jabber-post-connect-hooks #'jabber-whitespace-ping-start)
+  (add-hook 'jabber-post-connect-hooks #'jabber-keepalive-start)
 
   (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
   (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
