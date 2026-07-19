@@ -563,7 +563,7 @@ assign [class="^Chromium$"] $ws4
 # {{{ automatically starting applications on sway startup
 # exec env RUST_BACKTRACE=1 RUST_LOG=swayr=debug swayrd > /tmp/swayrd.log 2>&1
 exec swayrd
-exec_always wl-paste --watch cliphist store
+exec wl-paste --watch cliphist store
 exec waybar
 exec mako
 exec kdeconnect-indicator
@@ -572,7 +572,7 @@ exec swayosd-server
 # Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
 # your machine's `exec swayidle -w ...` line in the matching
 # ~/.config/sway/host-<hostname>.conf instead of here.
-exec_always kanshi
+exec kanshi
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
 # }}}
