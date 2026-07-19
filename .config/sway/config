@@ -201,11 +201,11 @@ bindsym $mod+n focus output right
 bindsym $mod+shift+n move workspace to output right
 
 exec_always --no-startup-id i3-scratchterm-toggle &
-bindsym $mod+grave [title="i3termscratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; [title="i3termscratchpad"] resize set 1600 1000; [title="i3termscratchpad"] move position center
+bindsym $mod+grave [app_id="net.glvortex.scratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; [app_id="net.glvortex.scratchpad"] resize set 80 ppt 80 ppt; [app_id="net.glvortex.scratchpad"] move position center
 
-for_window [title="i3termscratchpad"] border none
-for_window [title="i3termscratchpad"] floating enable sticky disable
-for_window [title="i3termscratchpad"] move scratchpad
+for_window [app_id="net.glvortex.scratchpad"] border none
+for_window [app_id="net.glvortex.scratchpad"] floating enable sticky disable
+for_window [app_id="net.glvortex.scratchpad"] move scratchpad
 
 # used by sxhkd, and that handled it anyway
 # bindsym $mod+Shift+comma    move scratchpad
