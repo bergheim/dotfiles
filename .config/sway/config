@@ -5,6 +5,10 @@
 exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY
 exec systemctl --user start sway-session.target
 exec systemctl --user start emacs.service
+# Store this session's WAYLAND_DISPLAY as gpg-agent's fallback env, so
+# pinentry-qt pops up here even when the gpg client (e.g. the boot-started
+# Emacs daemon) has no display in its own environment.
+exec gpg-connect-agent updatestartuptty /bye
 
 # Feed XWayland clients (GTK3, Xt/lucid, etc.) the Xft antialias/hint
 # resources — without this, GTK3-X11 Emacs falls back to bare Xft and
@@ -38,7 +42,7 @@ set $ws13 "13"
 # FIXME: why does this not work? they _are_ set
 # set $monitor1 $MONITOR_PRIMARY
 # set $monitor2 $MONITOR_SECONDARY
-set $monitor1 DP-0
+set $monitor1 DP-1
 set $monitor2 DP-2
 
 # Per-host overrides (e.g. berghome uses DP-1, not DP-0). Missing = no-op.
@@ -201,10 +205,11 @@ bindsym $mod+n focus output right
 bindsym $mod+shift+n move workspace to output right
 
 exec_always --no-startup-id i3-scratchterm-toggle &
-bindsym $mod+grave [app_id="net.glvortex.scratchpad"] scratchpad show; move output $monitor1; focus output $monitor1; [app_id="net.glvortex.scratchpad"] resize set 80 ppt 80 ppt; [app_id="net.glvortex.scratchpad"] move position center
+bindsym --to-code $mod+grave [app_id="net.glvortex.scratchpad"] scratchpad show
 
 for_window [app_id="net.glvortex.scratchpad"] border none
 for_window [app_id="net.glvortex.scratchpad"] floating enable sticky disable
+for_window [app_id="net.glvortex.scratchpad"] resize set 90 ppt 85 ppt
 for_window [app_id="net.glvortex.scratchpad"] move scratchpad
 
 # used by sxhkd, and that handled it anyway
@@ -390,7 +395,7 @@ bindsym $mod+shift+e exec BEMOJI_PICKER_CMD="fuzzel -d" bemoji
 bindsym $mod+o exec emacsclient --eval '(thanos/type)' -F '((name . "floating"))'
 
 # Notifications (mako instead of dunst)
-bindsym $mod+ctrl+grave exec makoctl dismiss
+bindsym --to-code $mod+ctrl+grave exec makoctl dismiss
 bindsym $mod+ctrl+1 exec makoctl restore
 bindsym $mod+ctrl+3 exec makoctl dismiss --all
 bindsym $mod+ctrl+2 exec makoctl menu -- fuzzel -d -p 'Select action:'
