@@ -205,7 +205,7 @@ bindsym $mod+n focus output right
 bindsym $mod+shift+n move workspace to output right
 
 exec_always --no-startup-id i3-scratchterm-toggle &
-bindsym --to-code $mod+grave [app_id="net.glvortex.scratchpad"] scratchpad show
+bindsym --to-code $mod+grave exec sway-scratchpad-toggle
 
 for_window [app_id="net.glvortex.scratchpad"] border none
 for_window [app_id="net.glvortex.scratchpad"] floating enable sticky disable

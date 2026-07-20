@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+# Toggle the scratchpad terminal, always showing it on the primary output.
+#
+# Hide with `move scratchpad`, NOT `scratchpad show`: on a visible-but-
+# unfocused window `scratchpad show` only focuses it, so it would never
+# hide while you're working on the other monitor. `move scratchpad` hides
+# unconditionally. On show we place it on the primary output every time.
+
+APP=net.glvortex.scratchpad
+MON=DP-1
+
+visible=$(swaymsg -t get_tree \
+	| jq -r --arg app "$APP" \
+		'[recurse(.nodes[]?, .floating_nodes[]?) | select(.app_id == $app) | .visible] | first // false')
+
+if [ "$visible" = "true" ]; then
+	swaymsg "[app_id=\"$APP\"] move scratchpad" >/dev/null
+else
+	swaymsg "[app_id=\"$APP\"] scratchpad show, move output $MON, resize set 90 ppt 85 ppt, move position center" >/dev/null
+fi
