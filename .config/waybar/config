@@ -436,7 +436,6 @@
     "modules-right": [
       "custom/gpu",
       "custom/cpu",
-      "custom/uptime",
       "clock"
     ],
 
@@ -488,13 +487,6 @@
       "max-length": 80,
       "icon": true,
       "icon-size": 20,
-    },
-
-    "custom/uptime": {
-      "exec": "uptime -p | sed 's/^up //'",
-      "interval": 60,
-      "format": "󰅐 {}",
-      "tooltip": false
     },
 
     "clock": {
