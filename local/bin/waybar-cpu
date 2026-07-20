@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+# Waybar custom module (return-type json): CPU package temp + usage.
+# Usage = busy fraction between two /proc/stat samples 0.3s apart.
+# Temp = coretemp "Package id 0", falling back to the x86_pkg thermal zone.
+
+read -r _ u1 n1 s1 i1 w1 q1 sq1 _ </proc/stat
+sleep 0.3
+read -r _ u2 n2 s2 i2 w2 q2 sq2 _ </proc/stat
+
+total=$(( (u2+n2+s2+i2+w2+q2+sq2) - (u1+n1+s1+i1+w1+q1+sq1) ))
+idle=$(( i2 - i1 ))
+if [ "$total" -gt 0 ]; then
+	usage=$(( (100 * (total - idle) + total / 2) / total ))
+else
+	usage=0
+fi
+
+temp=$(sensors 2>/dev/null | awk '/Package id 0:/{v=$4; gsub(/[^0-9.]/,"",v); print int(v); exit}')
+[ -z "$temp" ] && temp=$(( $(cat /sys/class/thermal/thermal_zone1/temp 2>/dev/null || echo 0) / 1000 ))
+
+# i9-13900KF Tjmax is 100°C; it legitimately touches the low-90s under load,
+# so warn at 85 and go red at 95 (5° of headroom below throttle).
+if [ "$temp" -ge 95 ]; then
+	class=critical
+elif [ "$temp" -ge 85 ]; then
+	class=warning
+else
+	class=good
+fi
+
+printf '{"text":"󰍛 %s° %s%%","class":"%s","tooltip":"CPU  %s°C\\nUsage %s%%"}\n' \
+	"$temp" "$usage" "$class" "$temp" "$usage"

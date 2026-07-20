@@ -52,6 +52,23 @@ window#waybar {
   background-color: @alert_bg;
 }
 
+/* GPU/CPU temp widgets (secondary bar). thresholds live in the
+ * waybar-gpu / waybar-cpu scripts; .good keeps the default color. */
+#custom-gpu, #custom-cpu {
+  margin: 3px 3px;
+  padding: 0 3px;
+}
+
+#custom-gpu.warning, #custom-cpu.warning {
+  color: @accent_5;
+}
+
+#custom-gpu.critical, #custom-cpu.critical {
+  color: @alert_fg;
+  background-color: @alert_bg;
+  border-radius: 2px;
+}
+
 #custom-keymap {
     margin-right: 10px;
 }

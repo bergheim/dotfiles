@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+# Waybar custom module (return-type json): NVIDIA GPU temperature + load.
+# Text stays compact (temp° util%); the tooltip carries power draw and VRAM.
+
+set -- $(nvidia-smi \
+	--query-gpu=temperature.gpu,utilization.gpu,power.draw,memory.used,memory.total \
+	--format=csv,noheader,nounits | tr -d ',')
+
+temp=$1 util=$2 power=$3 memused=$4 memtotal=$5
+
+if [ -z "$temp" ]; then
+	printf '{"text":"󰢮 n/a","tooltip":"nvidia-smi unavailable"}\n'
+	exit 0
+fi
+
+# RTX 4090 targets/throttles ~84°C; warn early, red just below the throttle.
+if [ "$temp" -ge 82 ]; then
+	class=critical
+elif [ "$temp" -ge 72 ]; then
+	class=warning
+else
+	class=good
+fi
+
+printf '{"text":"󰢮 %s° %s%%","class":"%s","tooltip":"GPU  %s°C\\nLoad %s%%\\nPower %sW\\nVRAM %s / %s MiB"}\n' \
+	"$temp" "$util" "$class" "$temp" "$util" "$power" "$memused" "$memtotal"

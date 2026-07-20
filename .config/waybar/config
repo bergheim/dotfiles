@@ -434,9 +434,25 @@
       "sway/window"
       ],
     "modules-right": [
+      "custom/gpu",
+      "custom/cpu",
       "custom/uptime",
       "clock"
     ],
+
+    // GPU/CPU sit on this bar (not the primary) so the gaming display on
+    // DP-1 stays clean. temp° + load%, with details in the tooltip.
+    "custom/gpu": {
+      "exec": "waybar-gpu",
+      "return-type": "json",
+      "interval": 5
+    },
+
+    "custom/cpu": {
+      "exec": "waybar-cpu",
+      "return-type": "json",
+      "interval": 5
+    },
 
     // KEEP format-icons IN SYNC with the primary bar's workspace icons above.
     "niri/workspaces": {
