@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+# Fuzzy-switch to any open window via fuzzel, matching on app id + title.
+#
+# Each input line is "con_id<TAB>label"; fuzzel displays the label
+# (--with-nth 2) but returns the con_id (--accept-nth 1), so we can focus
+# the exact window with no index bookkeeping.
+
+entries=$(swaymsg -t get_tree | jq -r '
+	def windows($ws):
+		(if .type == "workspace" then .name else $ws end) as $curws
+		| ( select(
+				(.type == "con" or .type == "floating_con")
+				and .pid != null
+				and ((.app_id != null) or (.window_properties.class != null))
+				and (.app_id != "net.glvortex.scratchpad")
+			)
+			| "\(.id)\t[\($curws)] \(.app_id // .window_properties.class): \(.name // "(no title)")"
+		),
+		( (.nodes[]?, .floating_nodes[]?) | windows($curws) );
+	windows("")
+')
+
+[ -z "$entries" ] && exit 0
+
+# Narrow the picker on a rotated (portrait) focused output, like fuzzel-run.
+transform=$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .transform')
+case "$transform" in
+	90 | 270 | flipped-90 | flipped-270) width="--width 50" ;;
+	*) width="" ;;
+esac
+
+id=$(printf '%s\n' "$entries" \
+	| fuzzel --dmenu --with-nth 2 --accept-nth 1 --prompt "window ❯ " $width) || exit 0
+
+[ -n "$id" ] && swaymsg "[con_id=$id] focus"
