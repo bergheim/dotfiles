@@ -748,19 +748,24 @@ With prefix argument, update secondary.jpg instead of primary.jpg."
   (if-let* ((file (dired-file-name-at-point))
             (swaysock (car (file-expand-wildcards "/run/user/*/sway-ipc.*.sock")))
             (slot (if secondary "secondary.jpg" "primary.jpg"))
-            (dest (expand-file-name
-                   (if (bergheim//system-dark-mode-enabled-p)
-                       (concat "~/Pictures/wallpapers/active/dark/" slot)
-                     (concat "~/Pictures/wallpapers/active/light/" slot)))))
+            (dir (if bergheim/dark-mode-p
+                     "~/Pictures/wallpapers/active/dark/"
+                   "~/Pictures/wallpapers/active/light/"))
+            (dest (expand-file-name (concat dir slot)))
+            (secondary-dest (expand-file-name (concat dir "secondary.jpg")))
+            (secondary-output (or (getenv "MONITOR_SECONDARY") "DP-2")))
       (progn
-        (copy-file file dest t)
+        (make-symbolic-link (expand-file-name file) dest t)
         (when swaysock
           (let ((process-environment (cons (format "SWAYSOCK=%s" swaysock)
                                            process-environment)))
-            (call-process "swaymsg" nil nil nil
-                          (format "exec swaybg -m fill -i %s" dest))
-            (message "Wallpaper set to %s" dest)
-            )))
+            (dolist (target (if secondary
+                                (list (cons secondary-output dest))
+                              (list (cons "*" dest)
+                                    (cons secondary-output secondary-dest))))
+              (call-process "swaymsg" nil nil nil
+                            (format "output %s bg %s fill" (car target) (cdr target))))
+            (message "Wallpaper set to %s" dest))))
     (warn "Unable to find a file")))
 
 (use-package pulsar
