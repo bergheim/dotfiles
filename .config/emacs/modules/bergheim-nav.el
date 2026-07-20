@@ -283,6 +283,8 @@ the binary may not exist on the other side)."
     "s" '(dirvish-setup-menu :which-key "setup menu")
     "m" '(dirvish-mark-menu :which-key "mark menu")
     "w" '(bergheim/dired-set-as-wallpaper :which-key "wallpaper")
+    "W" `(,(bergheim/call-with-universal-arg #'bergheim/dired-set-as-wallpaper)
+          :which-key "Wallpaper")
     "o" `(,(lambda ()
              (interactive)
              (call-interactively 'bergheim/org-attach-dired-to-subtree))
