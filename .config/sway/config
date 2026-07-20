@@ -292,6 +292,9 @@ bindsym $mod+Return exec emacsclient -nc
 # Application launcher (replace rofi with wofi or fuzzel)
 bindsym $mod+r exec fuzzel-run
 
+# Window switcher: fuzzy-search all open windows by app/title and focus
+bindsym --to-code $mod+slash exec sway-window-switcher
+
 # Emacs integrations
 bindsym $mod+z exec emacsclient --eval "(emacs-everywhere)"
 bindsym $mod+c exec emacs-capture --eval '(bergheim/capture)'
@@ -384,7 +387,8 @@ bindsym $mod+p exec fuzzel-pass
 bindsym $mod+v exec fuzzel-cliphist
 
 # Window switcher (replace rofi)
-bindsym $alt+Tab exec swayr switch-window
+bindsym $alt+Tab exec sway-window-switcher
+# bindsym $alt+Tab exec swayr switch-window
 # bindsym $mod+Space exec swayr switch-window
 # bindsym $mod+Tab exec swayr switch-to-urgent-or-lru-window
 
@@ -598,11 +602,11 @@ for_window [title="emacs-float"] floating enable, resize set 800 600, move posit
 # firefox pop out videos should always show
 for_window [title="Picture-in-Picture"] floating enable, sticky enable
 
-output * bg ~/Pictures/wallpapers/active/light/primary.jpg fill
+output * bg ~/Pictures/wallpapers/active/current/primary.jpg fill
 
 # Geometry (scale/pos/transform) is set by kanshi profiles — see
 # ~/.config/kanshi/config. Only wallpapers stay here.
-output DP-2 bg ~/Pictures/wallpapers/active/light/secondary.jpg fill
+output $monitor2 bg ~/Pictures/wallpapers/active/current/secondary.jpg fill
 
 seat seat0 xcursor_theme default 20
 

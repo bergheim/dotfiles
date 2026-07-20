@@ -19,9 +19,8 @@ CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 pkill -USR1 -x foot
 
 if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
-    if [[ -n "$WAYLAND_DISPLAY" ]]; then
-        swaymsg "exec swaybg -m fill -i ~/Pictures/wallpapers/active/light/primary.jpg"
-    else
+    ln -sfn ~/Pictures/wallpapers/active/light ~/Pictures/wallpapers/active/current
+    if [[ -z "$WAYLAND_DISPLAY" ]]; then
         feh --bg-fill ~/Pictures/wallpapers/active/light/primary.jpg --bg-fill ~/Pictures/wallpapers/active/light/secondary.jpg &
     fi
     emacsclient -e '(bergheim/theme-light)' &
@@ -50,9 +49,8 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     fi
     pgrep -x mako >/dev/null && makoctl reload &
 else
-    if [[ -n "$WAYLAND_DISPLAY" ]]; then
-        swaymsg "exec swaybg -m fill -i ~/Pictures/wallpapers/active/dark/primary.jpg"
-    else
+    ln -sfn ~/Pictures/wallpapers/active/dark ~/Pictures/wallpapers/active/current
+    if [[ -z "$WAYLAND_DISPLAY" ]]; then
         feh --bg-fill ~/Pictures/wallpapers/active/dark/primary.jpg --bg-fill ~/Pictures/wallpapers/active/dark/secondary.jpg &
     fi
     emacsclient -e '(bergheim/theme-dark)' &

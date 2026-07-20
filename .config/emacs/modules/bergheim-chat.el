@@ -448,16 +448,9 @@ Searches from the bottom of the channel buffer backward for the exact text."
     "S" '(jabber-mam-sync-buffer :which-key "sync (MAM)"))
   :custom
   (jabber-chat-default-encryption 'plaintext)
-  ;; Password is NOT here — jabber.el pulls it from auth-source.
-  ;; You already use password-store; either add an ~/.authinfo(.gpg)
-  ;; line  `machine xmpp.glvortex.net login tsb password …`  or enable
-  ;; auth-source-pass so it reads your pass store.
-  (jabber-account-list
-   `(("tsb@xmpp.glvortex.net"
-      (:password . ,(password-store-get "apps/ejabberd/tsb"))
-      (:network-server . ,bergheim/irc-server)
-      (:port . 5222)
-      (:connection-type . starttls))))
+  ;; Populated lazily by `bergheim//jabber-populate-accounts' via advice on
+  ;; `jabber-connect-all' so package load does not trigger a GPG prompt.
+  (jabber-account-list nil)
   (jabber-history-enabled t)
   (jabber-use-global-history nil)
   (jabber-db-path (bergheim/get-and-ensure-data-dir "jabber" "jabber.db"))
@@ -487,6 +480,22 @@ Searches from the bottom of the channel buffer backward for the exact text."
 
   :config
   (setopt jabber-groupchat-buffer-format "*%b*")
+
+  (defun bergheim//jabber-populate-accounts (&rest _)
+    "Populate `jabber-account-list' lazily on first connect so package
+load does not trigger a GPG prompt."
+    (unless jabber-account-list
+      ;; A failed decrypt (broken pinentry, restarted gpg-agent) must not
+      ;; get cached — the `unless' would pin the nil password until the
+      ;; daemon restarts.
+      (when-let ((password (password-store-get "apps/ejabberd/tsb")))
+        (setq jabber-account-list
+              `(("tsb@xmpp.glvortex.net"
+                 (:password . ,password)
+                 (:network-server . ,bergheim/irc-server)
+                 (:port . 5222)
+                 (:connection-type . starttls)))))))
+  (advice-add 'jabber-connect-all :before #'bergheim//jabber-populate-accounts)
 ;;;; Drop the chat-window header line
   ;; `jabber-chat-header-line-format' is a plain defvar (the two MUC
   ;; variants are defcustoms set in `:custom').  nil it out so chat,
