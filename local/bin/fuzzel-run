@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+# Launch fuzzel, using a narrower layout on a rotated (portrait) output.
+#
+# fuzzel opens on the currently focused output. The config width=80 cols
+# nearly fills the portrait DP-2 (720px logical wide), so when the focused
+# output is rotated we shrink the window. Landscape keeps the config defaults.
+# (Same idea as ~/local/bin/ldpi: adapt to whichever screen it lands on.)
+
+transform=$(swaymsg -t get_outputs | jq -r '.[] | select(.focused) | .transform')
+
+case "$transform" in
+	90 | 270 | flipped-90 | flipped-270)
+		exec fuzzel --width 40 --lines 12
+		;;
+	*)
+		exec fuzzel
+		;;
+esac

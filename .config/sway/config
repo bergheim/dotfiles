@@ -290,7 +290,7 @@ bindsym $mod+Return exec emacsclient -nc
 # bindsym $mod+d exec dolphin
 
 # Application launcher (replace rofi with wofi or fuzzel)
-bindsym $mod+r exec fuzzel
+bindsym $mod+r exec fuzzel-run
 
 # Emacs integrations
 bindsym $mod+z exec emacsclient --eval "(emacs-everywhere)"
