@@ -6,10 +6,11 @@
  *            /___/
  */
 
-{
+[{
   /* Bar Settings */
 
     "id" : "bar",
+    "output": "DP-1",
     "layer": "top", // Waybar at top layer
     "position": "top",
     "height": 30,
@@ -26,8 +27,9 @@
       // dual sway+niri support. sway/scratchpad omitted (no niri equiv).
       "niri/workspaces",
       "sway/workspaces",
-      "sway/mode",
-      "mpris"
+      "sway/mode"
+      // mpris is also listed in modules-right below; leaving it here rendered
+      // two identical widgets on this bar.
     ],
 
     "modules-center": [
@@ -408,5 +410,80 @@
       "icon-size": 20,
       "spacing": 10,
     },
-}
+},
+
+/* ==========================================================================
+ * Secondary bar — DP-2 (27GL850). Minimal: workspaces, window title, clock.
+ * No mpris here: waybar's mpris is effectively singleton, so the only
+ * per-bar tweaks would end up affecting the primary bar too.
+ * Modules are re-declared because each array entry is an independent bar.
+ * ========================================================================== */
+{
+    "id": "bar-secondary",
+    "output": "DP-2",
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "spacing": 4,
+
+    "modules-left": [
+      "niri/workspaces",
+      "sway/workspaces"
+    ],
+    "modules-center": [
+      "sway/window"
+      ],
+    "modules-right": [
+      "custom/uptime",
+      "clock"
+    ],
+
+    // KEEP format-icons IN SYNC with the primary bar's workspace icons above.
+    "niri/workspaces": {
+      "all-outputs": false,
+      "hide-empty": true,
+      "format": "{icon}",
+      "format-icons": {
+          "1": "󰈹", "2": "󰭹", "3": "󰝚", "4": "󰇮",
+          "5": "λ", "6": "󰚀", "7": "󰊴",
+          "8": "󰧞", "9": "󰧞",
+          "10": "󰍹", "11": "󰍹", "12": "󰍹", "13": "󰍹",
+          "urgent": "󰀪",
+          "default": "󰧞"
+      }
+    },
+
+    "sway/workspaces": {
+      "disable-scroll": true,
+      "all-outputs": false,
+      "format": "{icon}",
+      "format-icons": {
+          "1": "󰈹", "2": "󰭹", "3": "󰝚", "4": "󰇮",
+          "5": "λ", "6": "󰚀", "7": "󰊴",
+          "8": "󰧞", "9": "󰧞",
+          "10": "󰍹", "11": "󰍹", "12": "󰍹", "13": "󰍹",
+          "urgent": "󰀪",
+          "default": "󰧞"
+      }
+    },
+
+    "sway/window": {
+      "format": "{title}",
+      "max-length": 80,
+      "icon": true,
+      "icon-size": 20,
+    },
+
+    "custom/uptime": {
+      "exec": "uptime -p | sed 's/^up //'",
+      "interval": 60,
+      "format": "󰅐 {}",
+      "tooltip": false
+    },
+
+    "clock": {
+      "timezone": "Europe/Oslo",
+      "format": "{:%a %b %e %H:%M}",
+    },
+}]
 
