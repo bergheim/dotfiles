@@ -428,10 +428,10 @@
 
     "modules-left": [
       "niri/workspaces",
-      "sway/workspaces"
+      "sway/workspaces",
+      "sway/window"
     ],
     "modules-center": [
-      "sway/window"
       ],
     "modules-right": [
       "custom/gpu",
