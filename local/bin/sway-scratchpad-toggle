@@ -16,5 +16,6 @@ visible=$(swaymsg -t get_tree \
 if [ "$visible" = "true" ]; then
 	swaymsg "[app_id=\"$APP\"] move scratchpad" >/dev/null
 else
+	swaymsg "focus output $MON" >/dev/null
 	swaymsg "[app_id=\"$APP\"] scratchpad show, move output $MON, resize set 90 ppt 85 ppt, move position center" >/dev/null
 fi
