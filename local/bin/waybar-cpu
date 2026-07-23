@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Waybar custom module (return-type json): CPU package temp + usage.
+# Waybar custom module (return-type json): CPU package temp.
 # Usage = busy fraction between two /proc/stat samples 0.3s apart.
 # Temp = coretemp "Package id 0", falling back to the x86_pkg thermal zone.
 
@@ -28,5 +28,5 @@ else
 	class=good
 fi
 
-printf '{"text":"󰍛 %s° %s%%","class":"%s","tooltip":"CPU  %s°C\\nUsage %s%%"}\n' \
-	"$temp" "$usage" "$class" "$temp" "$usage"
+printf '{"text":"󰍛 %s°","class":"%s","tooltip":"CPU  %s°C\\nUsage %s%%"}\n' \
+	"$temp" "$class" "$temp" "$usage"
