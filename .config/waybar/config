@@ -436,7 +436,8 @@
     "modules-right": [
       "custom/gpu",
       "custom/cpu",
-      "clock"
+      "clock",
+      "custom/keymap"
     ],
 
     // GPU/CPU sit on this bar (not the primary) so the gaming display on
@@ -451,6 +452,13 @@
       "exec": "waybar-cpu",
       "return-type": "json",
       "interval": 5
+    },
+
+    "custom/keymap": {
+        "format": "{}",
+        "exec": "~/.config/waybar/scripts/keymap.sh",
+        "interval": 2,
+        "on-click": "~/.config/waybar/scripts/keymap.sh toggle"
     },
 
     // KEEP format-icons IN SYNC with the primary bar's workspace icons above.
@@ -494,4 +502,3 @@
       "format": "{:%a %b %e %H:%M}",
     },
 }]
-
