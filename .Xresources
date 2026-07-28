@@ -1,4 +1,4 @@
-#include ".config/Xresources/bergheim-dark"
+#include ".config/Xresources/bergheim-light"
 
 ! make fonts nice
 Xft.lcdfilter: lcddefault
