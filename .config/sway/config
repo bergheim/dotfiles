@@ -2,9 +2,11 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
-exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY
-exec systemctl --user start sway-session.target
-exec systemctl --user start emacs.service
+# Import the compositor env into the systemd/dbus user session FIRST, then
+# start units — chained with && so services never race ahead of the import
+# and come up display-less (which breaks browse-url -> firefox, xdg-open, etc.).
+exec systemctl --user import-environment SWAYSOCK WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP && \
+    systemctl --user start sway-session.target emacs.service
 # Store this session's WAYLAND_DISPLAY as gpg-agent's fallback env, so
 # pinentry-qt pops up here even when the gpg client (e.g. the boot-started
 # Emacs daemon) has no display in its own environment.

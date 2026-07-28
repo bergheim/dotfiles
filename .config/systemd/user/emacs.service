@@ -1,6 +1,11 @@
 [Unit]
 Description=Emacs text editor
 Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+# Start only after the Sway session has imported WAYLAND_DISPLAY into the
+# systemd user env, otherwise the daemon comes up display-less and every GUI
+# app it spawns (browse-url -> firefox, xdg-open, pinentry) has no display.
+After=sway-session.target
+PartOf=sway-session.target
 
 [Service]
 # Type=notify
@@ -19,4 +24,4 @@ Environment=SSH_AUTH_SOCK=%t/keyring/ssh
 Restart=on-failure
 
 [Install]
-WantedBy=default.target
+WantedBy=sway-session.target
