@@ -56,7 +56,7 @@ export QT_QPA_PLATFORMTHEME=qt6ct
 
 # allow using the GnuPG agent as an SSH agent
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-export GPG_TTY=$(tty)
+[ -t 0 ] && export GPG_TTY=$(tty)
 
 export PAGER=bat
 export BROWSER=firefox
