@@ -339,9 +339,9 @@ bindsym $mod+Shift+w exec "record-sway window"
 bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"
 
 # Media keys
-# bindsym XF86AudioPrev exec playerctl previous  
-# bindsym XF86AudioNext exec playerctl next
-# bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPrev exec swayosd-client --playerctl prev
+bindsym XF86AudioNext exec swayosd-client --playerctl next
+bindsym XF86AudioPlay exec swayosd-client --playerctl play-pause
 # bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 # bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 # bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%

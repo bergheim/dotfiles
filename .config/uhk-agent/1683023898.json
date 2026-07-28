@@ -5596,7 +5596,8 @@
                   "keyActionType": "none"
                 },
                 {
-                  "keyActionType": "none"
+                  "keyActionType": "switchKeymap",
+                  "keymapAbbreviation": "VIM"
                 },
                 {
                   "keyActionType": "switchLayer",
@@ -5717,9 +5718,7 @@
                   "keyActionType": "none"
                 },
                 {
-                  "keyActionType": "switchLayer",
-                  "layer": "fn",
-                  "switchLayerMode": "hold"
+                  "keyActionType": "none"
                 },
                 {
                   "keyActionType": "none"
@@ -8626,7 +8625,7 @@
                 },
                 {
                   "keyActionType": "switchLayer",
-                  "layer": "fn",
+                  "layer": "mouse",
                   "switchLayerMode": "hold"
                 }
               ]
@@ -8771,9 +8770,9 @@
                   "modifierMask": 1
                 },
                 {
-                  "keyActionType": "keystroke",
-                  "type": "basic",
-                  "modifierMask": 8
+                  "keyActionType": "switchLayer",
+                  "layer": "mod",
+                  "switchLayerMode": "hold"
                 },
                 {
                   "keyActionType": "keystroke",
@@ -9098,9 +9097,9 @@
                   "modifierMask": 1
                 },
                 {
-                  "keyActionType": "keystroke",
-                  "type": "basic",
-                  "modifierMask": 8
+                  "keyActionType": "switchLayer",
+                  "layer": "mod",
+                  "switchLayerMode": "hold"
                 },
                 {
                   "keyActionType": "keystroke",
@@ -9113,9 +9112,8 @@
                   "modifierMask": 4
                 },
                 {
-                  "keyActionType": "keystroke",
-                  "type": "basic",
-                  "scancode": 44
+                  "keyActionType": "switchKeymap",
+                  "keymapAbbreviation": "PWN"
                 },
                 {
                   "keyActionType": "switchLayer",
@@ -9184,9 +9182,6 @@
                   "scancode": 130
                 },
                 {
-                  "keyActionType": "none"
-                },
-                {
                   "keyActionType": "keystroke",
                   "type": "media",
                   "scancode": 182
@@ -9195,6 +9190,11 @@
                   "keyActionType": "keystroke",
                   "type": "media",
                   "scancode": 234
+                },
+                {
+                  "keyActionType": "keystroke",
+                  "type": "media",
+                  "scancode": 233
                 },
                 {
                   "keyActionType": "keystroke",
@@ -9211,7 +9211,9 @@
                   "keyActionType": "none"
                 },
                 {
-                  "keyActionType": "none"
+                  "keyActionType": "keystroke",
+                  "type": "media",
+                  "scancode": 226
                 },
                 {
                   "keyActionType": "none"
@@ -9233,8 +9235,9 @@
                   "modifierMask": 32
                 },
                 {
-                  "keyActionType": "switchKeymap",
-                  "keymapAbbreviation": "PWN"
+                  "keyActionType": "keystroke",
+                  "type": "media",
+                  "scancode": 205
                 },
                 {
                   "keyActionType": "switchLayer",
@@ -9257,9 +9260,7 @@
                   "modifierMask": 16
                 },
                 {
-                  "keyActionType": "switchLayer",
-                  "layer": "fn",
-                  "switchLayerMode": "hold"
+                  "keyActionType": "none"
                 }
               ]
             },
@@ -9508,8 +9509,9 @@
                   "modifierMask": 16
                 },
                 {
-                  "keyActionType": "mouse",
-                  "mouseAction": "rightClick"
+                  "keyActionType": "switchLayer",
+                  "layer": "mouse",
+                  "switchLayerMode": "hold"
                 }
               ]
             },
