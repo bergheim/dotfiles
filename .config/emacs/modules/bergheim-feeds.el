@@ -95,10 +95,15 @@
   ;; miniflux / fever
   (setq elfeed-protocol-fever-update-unread-only nil)
   (setq elfeed-protocol-fever-fetch-category-as-tag nil)
-  (setq elfeed-protocol-feeds
-        `((,(concat "fever+" bergheim/elfeed-fever-url)
-           :api-url ,bergheim/elfeed-fever-api-url
-           :password ,(password-store-get bergheim/elfeed-fever-password-store-key))))
+  (defun bergheim//elfeed-ensure-protocols (&rest _)
+    "Populate `elfeed-protocol-feeds' lazily on first `elfeed' invocation
+so package load does not trigger a GPG prompt."
+    (unless elfeed-protocol-feeds
+      (setq elfeed-protocol-feeds
+            `((,(concat "fever+" bergheim/elfeed-fever-url)
+               :api-url ,bergheim/elfeed-fever-api-url
+               :password ,(password-store-get bergheim/elfeed-fever-password-store-key))))))
+  (advice-add 'elfeed :before #'bergheim//elfeed-ensure-protocols)
   (setq elfeed-protocol-enabled-protocols '(fever))
 
   ;; (defvar elfeed-protocol-orig-feeds nil

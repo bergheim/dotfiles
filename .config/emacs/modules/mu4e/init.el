@@ -50,7 +50,12 @@ Relies on the symlink dropped by `mu4e-build-mu' putting mu on PATH."
   (bergheim/load-file "modules/mu4e/actions.el")
   (bergheim/load-file "modules/mu4e/search.el")
 
-  (setq mml-secure-openpgp-signers '((password-store-get "email/sign")))
+  (defun bergheim//mu4e-ensure-signer ()
+    "Populate `mml-secure-openpgp-signers' lazily on first compose so
+package load does not trigger a GPG prompt."
+    (unless mml-secure-openpgp-signers
+      (setq mml-secure-openpgp-signers (list (password-store-get "email/sign")))))
+  (add-hook 'mu4e-compose-mode-hook #'bergheim//mu4e-ensure-signer)
   ;; (setq mm-verify-option 'always)
   ;; (setq mm-decrypt-option 'always)
   ;; (add-hook 'mu4e-compose-mode-hook 'mml-secure-message-sign)

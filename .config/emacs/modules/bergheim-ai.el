@@ -559,7 +559,8 @@ Prompts for session name if none provided. Inserts selected region text into cha
             (agent-shell-new-shell)
             (when (not (string-empty-p choice))
               (rename-buffer (format "*agent-shell %s*" choice) t)))))))
-  (setq acp-logging-enabled t)
+  ;; not sure anymore why I set this
+  ;; (setq acp-logging-enabled t)
 
   (defun bergheim/agent-shell-disable-tui-busy-indicator ()
     "Disable agent-shell's high-frequency animation in terminal frames."
