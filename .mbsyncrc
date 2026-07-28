@@ -18,8 +18,8 @@ Sync All # already global default
 IMAPAccount ntnu
     Host imap.alumni.ntnu.no
     Port 993
-    UserCmd "pass show email/alumini/username"
-    PassCmd "pass show email/alumini/pass"
+    UserCmd "secret-tool lookup service mbsync account ntnu role user"
+    PassCmd "secret-tool lookup service mbsync account ntnu role pass"
     TLSType IMAPS
 
 IMAPStore ntnu-remote
@@ -48,8 +48,8 @@ Channel ntnu-inbox
 # ----------------
 IMAPAccount mailbox
     Host imap.mailbox.org
-    UserCmd "pass show email/mailbox/address"
-    PassCmd "pass show email/mailbox/pass"
+    UserCmd "secret-tool lookup service mbsync account mailbox role user"
+    PassCmd "secret-tool lookup service mbsync account mailbox role pass"
     TLSType IMAPS
 
 IMAPStore mailbox-remote
@@ -85,8 +85,8 @@ Group mailbox
 # --------------
 IMAPAccount gmail
     Host imap.gmail.com
-    UserCmd "pass show email/gmail/address"
-    PassCmd "pass show email/gmail/mbsync"
+    UserCmd "secret-tool lookup service mbsync account gmail role user"
+    PassCmd "secret-tool lookup service mbsync account gmail role pass"
     AuthMechs LOGIN
     TLSType IMAPS
     CertificateFile /etc/ssl/certs/ca-certificates.crt
@@ -159,8 +159,8 @@ Group gmail-inbox
 # --------------
 IMAPAccount anthropic
     Host imap.gmail.com
-    UserCmd "pass show email/anthropic/address"
-    PassCmd "pass show email/anthropic/password"
+    UserCmd "secret-tool lookup service mbsync account anthropic role user"
+    PassCmd "secret-tool lookup service mbsync account anthropic role pass"
     AuthMechs LOGIN
     TLSType IMAPS
     CertificateFile /etc/ssl/certs/ca-certificates.crt
