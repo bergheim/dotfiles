@@ -30,14 +30,13 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
     sed -i "s/initial-color-theme=dark/initial-color-theme=light/" "$FOOT_CONF"
-    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES"
+    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES" "$BATCONF"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/airy.conf" $QT6_THEME
     fi
     ln -sf /usr/share/color-schemes/BreezeLight.colors ~/.config/kdeglobals
 
-    ln -sf ~/.config/bat/themes/bergheim-light.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
     ln -sf ~/.config/alacritty/colors/bergheim-light.toml ~/.config/alacritty/colors/bergheim-theme.toml
     ln -sf ~/.config/tmux/bergheim-light.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
@@ -67,7 +66,6 @@ else
     fi
     ln -sf /usr/share/color-schemes/BreezeDark.colors ~/.config/kdeglobals
 
-    ln -sf ~/.config/bat/themes/bergheim-dark.tmTheme ~/.config/bat/themes/bergheim-theme.tmTheme
     ln -sf ~/.config/alacritty/colors/bergheim-dark.toml ~/.config/alacritty/colors/bergheim-theme.toml
     ln -sf ~/.config/tmux/bergheim-dark.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
