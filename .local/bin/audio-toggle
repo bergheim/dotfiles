@@ -3,7 +3,9 @@
 # Moves existing streams to the new sink so playback follows.
 
 SPEAKERS="alsa_output.pci-0000_00_1f.3.analog-stereo"
-HEADSET="Arctis_Game"
+# Hardware game sink (the Arctis_Game virtual sink existed only while
+# arctis-manager's pw-loopback/sonar chain was running - disabled 2026-07)
+HEADSET="alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.stereo-game"
 
 current=$(pactl get-default-sink)
 if [ "$current" = "$HEADSET" ]; then

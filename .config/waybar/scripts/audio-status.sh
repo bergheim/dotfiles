@@ -2,7 +2,8 @@
 # Print current audio sink as waybar JSON.
 
 SPEAKERS="alsa_output.pci-0000_00_1f.3.analog-stereo"
-HEADSET="Arctis_Game"
+# Hardware game sink (virtual Arctis_Game sink gone since arctis-manager was disabled)
+HEADSET="alsa_output.usb-SteelSeries_SteelSeries_Arctis_7-00.stereo-game"
 
 current=$(pactl get-default-sink 2>/dev/null)
 
