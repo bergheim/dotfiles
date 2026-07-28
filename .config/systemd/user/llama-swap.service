@@ -1,0 +1,10 @@
+[Unit]
+Description=llama-swap model proxy
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/llama-swap --config %h/.config/llama-swap/config.yaml --listen 0.0.0.0:11434 --watch-config
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
