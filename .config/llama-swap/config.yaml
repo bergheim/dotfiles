@@ -11,6 +11,8 @@ groups:
     exclusive: false
     members:
       - bot-fast
+      - bot-fast-gemma
+      - bot-fast-gemma-hauhau
       - bot-thinking
       - uncensored
       - z-image
@@ -57,10 +59,28 @@ models:
     cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive:IQ4_XS --jinja --no-mmproj -c 32768 --cache-reuse 256 --n-cpu-moe 8 --cache-type-k q8_0 --cache-type-v q8_0 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     # cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive:Q4_K_P --jinja --no-mmproj -c 16384 -ngl 99 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     # cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-31B-it-GGUF:Q4_K_M --jinja -c 16384 --chat-template-kwargs '{"enable_thinking":false}'
+    # No ttl: tink's resident brain never idle-unloads — only a chat-group swap
+    # (z-image/uncensored/etc.) evicts it.
+
+  bot-fast-gemma:
+    # English/text-only tink A/B slot: smaller sparse Gemma 4 with QAT/heretic tuning.
+    # Keep this separate from bot-fast so Qwen stays the control for ~research/tool-heavy runs.
+    cmd: llama-server --port ${PORT} -hf SC117/gemma-4-26B-A4B-it-qat-heretic-GGUF:UD-Q4_K_XL --jinja --no-mmproj -c 32768 --cache-reuse 256 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 64 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
+    ttl: 1800
+
+  bot-fast-gemma-hauhau:
+    # A/B candidate #2 (research 2026-07-28): same finetuner as bot-fast (HauhauCS)
+    # on Gemma 4 QAT — holds the finetune constant so the A/B isolates architecture.
+    # Q4_K_M 16.8GB (QAT targets 4-bit; only quant offered), card-recommended samplers.
+    # MTP drafter (252MB, ~1.3x decode) needs the repo's mtp-*.gguf downloaded locally:
+    # add `-md /path/to/mtp-gemma-4-26B-A4B-it.gguf --spec-type draft-mtp` when wired.
+    cmd: llama-server --port ${PORT} -hf HauhauCS/Gemma4-26B-A4B-QAT-Uncensored-HauhauCS-Balanced-MTP:Q4_K_M --jinja --no-mmproj -c 32768 --cache-reuse 256 --cache-type-k q8_0 --cache-type-v q8_0 --temp 0.6 --top-p 0.9 --top-k 64 --min-p 0.05 --repeat-penalty 1.1 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     ttl: 1800
 
   bot-thinking:
-    cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M --jinja -c 16384 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on
+    # Same VRAM diet as bot-fast (see above); 32k because thinking traces are long,
+    # and q8 KV matters most here.
+    cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.6-35B-A3B-GGUF:IQ4_XS --jinja -c 32768 --n-cpu-moe 8 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on
     ttl: 1800
 
   qwen3.6-default:
@@ -78,7 +98,9 @@ models:
       - "qwen3-coder"
 
   uncensored:
-    cmd: llama-server --port ${PORT} -hf mradermacher/Qwen3.6-35B-A3B-uncensored-heretic-GGUF:Q4_K_M --jinja --no-mmproj -c 16384 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
+    # Same VRAM diet as bot-fast: IQ4_XS (17.4GB vs Q4_K_M's 19.7GB) + q8 KV +
+    # 8 expert layers on CPU — Q4_K_M + the ~5.3GB desktop was over the card total.
+    cmd: llama-server --port ${PORT} -hf mradermacher/Qwen3.6-35B-A3B-uncensored-heretic-GGUF:IQ4_XS --jinja --no-mmproj -c 32768 --cache-reuse 256 --n-cpu-moe 8 --cache-type-k q8_0 --cache-type-v q8_0 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     ttl: 1800
     aliases:
       - "abliterated"
@@ -90,7 +112,8 @@ models:
   bge-m3:
     # run this on the CPU so we don't evict the bot llm
     cmd: llama-server --port ${PORT} -hf gpustack/bge-m3-GGUF --embedding -ngl 0 --ubatch-size 2048 --batch-size 2048
-    ttl: 600
+    # CPU-only and evicts nothing — long ttl avoids reload latency on quiet channels.
+    ttl: 3600
     aliases:
       - "bge-m3:latest"
 
