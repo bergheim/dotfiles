@@ -314,8 +314,126 @@ fkill() {
   fi
 }
 
+# zreap() {
+#     local sig=${1:-TERM}
+#     local picks ppids
+
+#     picks=$(ps -eo pid=,ppid=,stat=,user=,comm= | awk '$3 ~ /Z/')
+#     if [ -z "$picks" ]; then
+#         echo "no zombies" >&2
+#         return 0
+#     fi
+
+#     ppids=$(printf '%s\n' "$picks" \
+#                 | fzf -m --header='pick zombie(s) — their PARENT gets signalled' \
+#                 | awk '{print $2}' | sort -u)
+#     [ -z "$ppids" ] && return 0
+
+#     echo "parents to signal:"
+#     echo "$ppids" | xargs -r ps -o pid=,user=,comm= -p
+
+#     # gentle nudge first; if the zombie's still there, rerun as: zreap KILL
+#     echo "$ppids" | xargs -r kill -CHLD
+#     echo "$ppids" | xargs -r kill -"$sig"
+# }
+  zreap() {
+    local sig=${1:-TERM}
+    local picks ppids
+
+    picks=$(ps -eo pid=,ppid=,stat=,user=,comm= | awk '$3 ~ /Z/')
+    if [ -z "$picks" ]; then
+      echo "no zombies" >&2
+      return 0
+    fi
+
+    ppids=$(printf '%s\n' "$picks" \
+      | fzf -m --header='pick zombie(s) — their PARENT gets signalled' \
+      | awk '{print $2}' | sort -u)
+    [ -z "$ppids" ] && return 0
+
+    echo "parents to signal:"
+    echo "$ppids" | xargs -r ps -o pid=,user=,comm= -p
+
+    echo "$ppids" | xargs -r kill -CHLD
+    echo "$ppids" | xargs -r kill -"$sig"
+  }
+
+  murder() {
+    local pids
+    if (( $# )); then
+      pids=$(pgrep "$@")
+    else
+      pids=$(ps -eo pid=,user=,stat=,comm= \
+        | fzf -m --header='KILL -9  (TAB to multi-select)' | awk '{print $1}')
+    fi
+    pids=$(printf '%s\n' "$pids" | grep -vx "$$")   # never kill this shell
+    [ -z "$pids" ] && { echo "no match" >&2; return 1; }
+
+    echo "killing:"
+    echo "$pids" | xargs -r ps -o pid=,ppid=,stat=,comm= -p 2>/dev/null
+    echo "$pids" | xargs -r kill -KILL
+  }
+  nuke() {
+    emulate -L zsh
+    local stem ans raw
+    if [ -n "$1" ]; then
+      stem=$1
+    else
+      local sel
+      sel=$(ps -eo pid=,stat=,comm= \
+            | fzf --header='pick a process — its whole name-family gets SIGKILLed') || return
+      [ -z "$sel" ] && return 0
+      stem=${${(z)sel}[3]}              # 3rd field = comm
+      stem=${stem%%[-_ .]*}            # "steam-runtime-l" -> "steam"
+    fi
+    [ -z "$stem" ] && return 0
+
+    local pids; pids=$(pgrep -i "$stem" | grep -vx $$)
+    [ -z "$pids" ] && { echo "nothing matches '$stem'" >&2; return 0; }
+
+    local -a kill_list stuck
+    local p st pp pst pcomm anc ast acomm nextpid
+    for p in ${(f)pids}; do
+      raw=$(ps -o stat= -p $p 2>/dev/null); st=${${(z)raw}[1]}
+      case "$st" in
+        Z*)
+          read -r pp           <<< "$(ps -o ppid= -p $p 2>/dev/null)"
+          read -r pst pcomm    <<< "$(ps -o stat=,comm= -p $pp 2>/dev/null)"
+          anc=$pp; ast=$pst                       # walk up past dead ancestors
+          while [ "${anc:-0}" -gt 1 ] 2>/dev/null && [[ "$ast" == Z* ]]; do
+            read -r nextpid    <<< "$(ps -o ppid= -p $anc 2>/dev/null)"
+            read -r ast acomm  <<< "$(ps -o stat=,comm= -p $nextpid 2>/dev/null)"
+            anc=$nextpid
+          done
+          if [ "${anc:-1}" -le 1 ] 2>/dev/null; then
+            stuck+="$p  Z  dead — parent $pp ($pcomm); chain ends at init(1) → reboot to clear"
+          elif [ "$anc" = "$pp" ]; then
+            stuck+="$p  Z  dead — parent $pp ($pcomm) is live → kill $pp to reap it"
+          else
+            stuck+="$p  Z  dead — parent $pp ($pcomm) is also dead; first LIVE ancestor $anc ($acomm) → kill $anc"
+          fi
+          ;;
+        D*) stuck+="$p  D  wedged in kernel I/O — unkillable; see /proc/$p/stack → reboot" ;;
+        *)  kill_list+=$p ;;
+      esac
+    done
+
+    (( ${#stuck} )) && { echo "unreapable (no signal can touch these):"; printf '  %s\n' "${stuck[@]}"; }
+    (( ${#kill_list} )) || { echo "nothing killable for '$stem'." >&2; return 0; }
+
+    echo "SIGKILL these (name '$stem'):"
+    print -l $kill_list | xargs -r ps -o pid=,stat=,comm= -p
+    printf 'proceed? [y/N] '
+    read -r ans
+    [[ "$ans" == [yY] ]] || { echo aborted; return 1; }
+    print -l $kill_list | xargs -r kill -9
+  }
+
+
+
+
 # c - browse chrome history
-hc() {
+histc() {
   local cols sep google_history open
   cols=$(( COLUMNS / 3 ))
   sep='{::}'
@@ -337,7 +455,7 @@ hc() {
 }
 
 # f - browse firefox history
-hf() {
+histf() {
   local cols sep firefox_history open filter
   cols=$(( COLUMNS / 3 ))
   sep='{::}'
@@ -539,12 +657,15 @@ export MOSH_ESCAPE_KEY=''
 
 
 export BERGHOME=berghome.ts.glvortex.net
+export BURIAL=burial.ts.glvortex.net
 export NTFY_SERVER=http://burial.ts.glvortex.net:9080
 export LLAMA_HOST=http://$BERGHOME:11434
 export OLLAMA_HOST=http://$BERGHOME:11434
 export PERF_HOST=http://$BERGHOME:8888
 export SHARE_BASE_URL=http://$BERGHOME:8080
 export PYROSCOPE_HOST=http://$BERGHOME:4040
+export LITELLM_HOST=http://$BERGHOME:8088
+export CRAWL4AI_URL=http://$BURIAL:11235
 
 [ -f ~/.zshrc.container ] && source ~/.zshrc.container
 
@@ -568,7 +689,6 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
 # pnpm end
-
 
 # Added by Antigravity CLI installer
 export PATH="/home/tsb/.local/bin:$PATH"
