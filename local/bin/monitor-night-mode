@@ -3,13 +3,19 @@
 # Night mode - dimmer, warmer, lower contrast
 
 # Display 1 (27GN950)
+# Reader picture mode (LG vendor code 0x15 == 0x01) locks gains/sharpness; switch to Custom.
+# Monitor reports Custom as 0x2d, so an unconditional write would warn DDCRC_VERIFY every run.
+if ddcutil --display 1 getvcp 15 2>/dev/null | grep -q "sl=0x01"; then
+    ddcutil --display 1 --permit-unknown-feature setvcp 15 0x0b 2>/dev/null
+fi
+ddcutil --display 1 setvcp 14 0x0b # User 1 preset first - fixed presets lock RGB gain writes
 ddcutil --display 1 setvcp 87 40 # lower sharpness for night (easier on eyes)
-ddcutil --display 1 setvcp 10 20 # brightness
+ddcutil --display 1 setvcp 10 00 # brightness
 ddcutil --display 1 setvcp 12 50 # contrast
 # Red tint for night
-ddcutil --display 1 setvcp 16 60 # red
+ddcutil --display 1 setvcp 16 40 # red
 ddcutil --display 1 setvcp 18 40 # green
-ddcutil --display 1 setvcp 1a 20 # blue
+ddcutil --display 1 setvcp 1a 10 # blue
 # Adjust black levels for warmer night look
 # ddcutil --display 1 setvcp 6c 45   # red black level (reduce)
 # ddcutil --display 1 setvcp 6e 50   # green black level (neutral)
@@ -17,6 +23,7 @@ ddcutil --display 1 setvcp 1a 20 # blue
 # ddcutil --display 1 setvcp 14 0x0b # User 1 preset 9300K?
 
 # Display 2 (27GL850)
+ddcutil --display 2 setvcp 14 0x0b # User 1 preset first - fixed presets lock RGB gain writes
 ddcutil --display 2 setvcp 87 40 # sharpness
 ddcutil --display 2 setvcp 10 0  # brightness
 ddcutil --display 2 setvcp 12 50 # contrast
@@ -32,4 +39,3 @@ ddcutil --display 2 setvcp 5d 45 # blue saturation (reduce)
 ddcutil --display 2 setvcp 6c 35   # red black level (reduce)
 ddcutil --display 2 setvcp 6e 40   # green black level (neutral)
 ddcutil --display 2 setvcp 70 45   # blue black level (increase for less blue in blacks)
-ddcutil --display 2 setvcp 14 0x05 # 6500K

@@ -44,7 +44,7 @@ export FCEDIT="$EDITOR"
 export VISUAL="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
 
-export MONITOR_PRIMARY="DP-0"
+export MONITOR_PRIMARY="DP-1"
 export MONITOR_SECONDARY="DP-2"
 
 # export GDK_SCALE=1.5
