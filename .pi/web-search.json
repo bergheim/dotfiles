@@ -1,0 +1,7 @@
+{
+  "provider": "searxng",
+  "searxngBaseUrl": "https://search.ts.glvortex.net",
+  "ssrf": {
+    "allowRanges": ["100.64.0.4/32"]
+  }
+}

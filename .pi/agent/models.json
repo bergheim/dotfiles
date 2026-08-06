@@ -1,0 +1,488 @@
+{
+  "providers": {
+    "gateway": {
+      "baseUrl": "http://berghome.ts.glvortex.net:8088/v1",
+      "api": "openai-completions",
+      "apiKey": "$LITELLM_VIRTUAL_KEY",
+      "models": [
+        {
+          "id": "gemini-3.1-pro",
+          "name": "gemini-3.1-pro (litellm)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 1000000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/anthropic/claude-opus-4.8",
+          "name": "claude-opus-4.8 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/anthropic/claude-sonnet-4.6",
+          "name": "claude-sonnet-4.6 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/openai/gpt-5.5",
+          "name": "gpt-5.5 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 400000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/openai/gpt-5.5-pro",
+          "name": "gpt-5.5-pro (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 400000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/google/gemini-3.5-flash",
+          "name": "gemini-3.5-flash (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 1000000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/x-ai/grok-4.3",
+          "name": "grok-4.3 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 256000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/z-ai/glm-5.2",
+          "name": "glm-5.2 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 200000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/deepseek/deepseek-v3.2",
+          "name": "deepseek-v3.2 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 128000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/qwen/qwen3.7-max",
+          "name": "qwen3.7-max (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 256000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/moonshotai/kimi-k2.5",
+          "name": "kimi-k2.5 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 256000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gpt-5.5",
+          "name": "gpt-5.5 (litellm)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 1000000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/openai/gpt-5.6",
+          "name": "gpt-5.6 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 400000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "openrouter/anthropic/claude-opus-5",
+          "name": "claude-opus-5 (openrouter)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 1000000,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 5,
+            "output": 25,
+            "cacheRead": 0.5,
+            "cacheWrite": 6.25
+          }
+        }
+      ]
+    },
+    "llama": {
+      "baseUrl": "http://berghome.ts.glvortex.net:11434/v1",
+      "api": "openai-completions",
+      "apiKey": "llama",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false,
+        "supportsUsageInStreaming": false,
+        "maxTokensField": "max_tokens"
+      },
+      "models": [
+        {
+          "id": "bot-fast",
+          "name": "bot-fast (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "bot-fast-gemma",
+          "name": "bot-fast-gemma (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "bot-fast-gemma-hauhau",
+          "name": "bot-fast-gemma-hauhau (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "bot-thinking",
+          "name": "bot-thinking (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gemma4",
+          "name": "gemma4 (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gemma4-dense",
+          "name": "gemma4-dense (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gemma4-vision",
+          "name": "gemma4-vision (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gemma4-voice",
+          "name": "gemma4-voice (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3-coder",
+          "name": "qwen3-coder (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6-default",
+          "name": "qwen3.6-default (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6-dense",
+          "name": "qwen3.6-dense (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6-small",
+          "name": "qwen3.6-small (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "uncensored",
+          "name": "uncensored (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "uncensored-image",
+          "name": "uncensored-image (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "z-image",
+          "name": "z-image (llama.cpp)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 8192,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    }
+  }
+}

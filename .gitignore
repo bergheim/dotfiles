@@ -1,0 +1,9 @@
+# yadm work-tree is $HOME. Safety net: these must never be committed even if
+# something does a broad `yadm add`.
+
+# pi: credentials and runtime state
+.pi/agent/auth.json
+.pi/agent/models-store.json
+.pi/agent/trust.json
+.pi/agent/run-history.jsonl
+.pi/logs/

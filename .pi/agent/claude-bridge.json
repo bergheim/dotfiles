@@ -1,0 +1,10 @@
+{
+  "askClaude": {
+    "enabled": false
+  },
+  "provider": {
+    "plan": "max",
+    "longContextExtraUsage": false,
+    "strictMcpConfig": true
+  }
+}

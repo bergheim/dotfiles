@@ -1,0 +1,24 @@
+{
+  "lastChangelogVersion": "0.83.0",
+  "theme": "crew-catppuccin-latte",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-sol",
+  "npmCommand": [
+    "pnpm"
+  ],
+  "packages": [
+    "npm:pi-downshift",
+    "npm:@juicesharp/rpiv-advisor",
+    "npm:pi-themes",
+    "npm:pi-web-access",
+    "npm:pi-vim",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-lens",
+    "npm:pi-system-prompt",
+    "npm:pi-claude-bridge",
+    "git:github.com/earendil-works/pi-review",
+    "git:github.com/earendil-works/pi-review-loop"
+  ],
+  "hideThinkingBlock": true,
+  "defaultThinkingLevel": "medium"
+}
