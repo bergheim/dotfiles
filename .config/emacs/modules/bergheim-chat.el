@@ -399,8 +399,6 @@ Searches from the bottom of the channel buffer backward for the exact text."
 
 (use-package jabber
   :ensure (jabber
-           :host codeberg
-           :repo "emacs-jabber/emacs-jabber"
            :files ("lisp/*.el" "lisp/*.so")
            :build (:before elpaca-build-link jabber-build-omemo))
 
