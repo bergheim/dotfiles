@@ -13,6 +13,8 @@ XRES="${HOME}/.Xresources"
 XSETTINGS="${HOME}/.config/xsettingsd/xsettingsd.conf"
 QT_THEME="${XDG_CONFIG_HOME}/qt5ct/qt5ct.conf"
 QT6_THEME="${XDG_CONFIG_HOME}/qt6ct/qt6ct.conf"
+GTK3_SETTINGS="${XDG_CONFIG_HOME}/gtk-3.0/settings.ini"
+GTK4_SETTINGS="${XDG_CONFIG_HOME}/gtk-4.0/settings.ini"
 
 CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 
@@ -26,6 +28,9 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     emacsclient -e '(bergheim/theme-light)' &
     gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
     gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
+    for GTK_SETTINGS in "$GTK3_SETTINGS" "$GTK4_SETTINGS"; do
+        [ -f "$GTK_SETTINGS" ] && sed -i 's/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=false/' "$GTK_SETTINGS"
+    done
     # gsettings set org.freedesktop.appearance color-scheme "prefer-light"
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
@@ -55,6 +60,9 @@ else
     emacsclient -e '(bergheim/theme-dark)' &
     gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
     gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+    for GTK_SETTINGS in "$GTK3_SETTINGS" "$GTK4_SETTINGS"; do
+        [ -f "$GTK_SETTINGS" ] && sed -i 's/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=true/' "$GTK_SETTINGS"
+    done
     # gsettings set org.freedesktop.appearance color-scheme "prefer-dark"
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
