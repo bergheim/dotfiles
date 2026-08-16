@@ -1,0 +1,11 @@
+[Unit]
+Description=OSD feedback for the laptop airplane-mode switch
+PartOf=sway-session.target
+After=sway-session.target
+
+[Service]
+ExecStart=%h/local/bin/radio-osd-monitor
+Restart=on-failure
+
+[Install]
+WantedBy=sway-session.target

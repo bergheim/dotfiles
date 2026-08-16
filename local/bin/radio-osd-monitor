@@ -1,0 +1,31 @@
+#!/bin/sh
+
+radio_blocked() {
+    rfkill --raw --noheadings --output SOFT,HARD list "$1" | grep -q blocked
+}
+
+if radio_blocked wifi; then
+    wifi=blocked
+else
+    wifi=unblocked
+fi
+
+rfkill event | while IFS= read -r event; do
+    sleep 0.2
+    if radio_blocked wifi; then
+        current=blocked
+    else
+        current=unblocked
+    fi
+
+    [ "$current" = "$wifi" ] && continue
+    wifi=$current
+
+    if [ "$wifi" = blocked ] && radio_blocked bluetooth; then
+        swayosd-client --custom-message "Airplane mode on" \
+            --custom-icon flightmode-on
+    else
+        swayosd-client --custom-message "Airplane mode off" \
+            --custom-icon flightmode-off
+    fi
+done
