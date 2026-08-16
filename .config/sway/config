@@ -569,6 +569,10 @@ layer_effects "waybar" {
 
 corner_radius 5
 for_window [class=".*"] opacity 0.8
+
+# animations (swayfx >= 0.6): open/close, resize/move, workspace switch
+# 0 disables, max 5000
+animation_duration_ms 250
 default_dim_inactive 0.1
 
 bindsym $alt+b border toggle
