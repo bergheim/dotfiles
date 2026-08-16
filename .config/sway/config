@@ -328,8 +328,8 @@ bindsym   Mod1+Print exec share-screenshot anything edit  # select, crop/redact 
 # WIFI
 bindsym $mod+F5 exec alacritty --class floating -e impala
 
-# reload the configuration file
-bindsym $mod+F6 reload
+# reload the configuration file (F6 alone collides with the TUXEDO profile key)
+bindsym $mod+Shift+F6 reload
 
 # Start screencast
 # region
@@ -362,9 +362,22 @@ bindsym XF86AudioPlay exec swayosd-client --playerctl play-pause
 # exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+ && wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
 # exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && (wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q MUTED && echo 0 > $WOBSOCK) || wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
 
+# TUXEDO Pulse 14 Gen4 function row
+# Fn+F3 is emitted by the TUXEDO driver as Super+Alt+F6 (evdev code 72).
+# Match its release from the TUXEDO input device so the synthetic chord is complete.
+bindcode --release --input-device=0:0:TUXEDO_Keyboard_Events Mod4+Mod1+72 exec laptop-key profile
+bindsym XF86Display exec laptop-key display
+# Fn+F10 emits F22 when enabling and F23 when disabling the touchpad.
+bindsym F22 exec laptop-key touchpad-on
+bindsym F23 exec laptop-key touchpad-off
+bindsym XF86RFKill exec laptop-key airplane
+bindsym XF86WLAN exec laptop-key airplane
+bindsym XF86Sleep exec laptop-key suspend
+
+# Keep the standard touchpad events useful for external keyboards.
 bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
-bindsym XF86TouchpadOn input type:touchpad events enabled
-bindsym XF86TouchpadOff input type:touchpad events disabled
+bindsym XF86TouchpadOn exec laptop-key touchpad-on
+bindsym XF86TouchpadOff exec laptop-key touchpad-off
 
 # Sink volume raise optionally with --device
 bindsym XF86AudioRaiseVolume exec swayosd-client --output-volume raise

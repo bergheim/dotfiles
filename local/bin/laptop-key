@@ -1,0 +1,72 @@
+#!/bin/sh
+
+tcc_service=com.tuxedocomputers.tccd
+tcc_path=/com/tuxedocomputers/tccd
+tcc_interface=com.tuxedocomputers.tccd
+
+case "$1" in
+    profile)
+        current=$(busctl --json=short --system call \
+            "$tcc_service" "$tcc_path" "$tcc_interface" GetActiveProfileJSON \
+            | jq -r '.data[0] | fromjson | .id')
+
+        case "$current" in
+            __legacy_powersave_extreme__)
+                next=__legacy_cool_and_breezy__
+                name="Cool and breezy"
+                icon=preferences-system-power-management
+                ;;
+            __legacy_cool_and_breezy__)
+                next=__legacy_default__
+                name="Default"
+                icon=battery-profile-performance
+                ;;
+            *)
+                next=__legacy_powersave_extreme__
+                name="Powersave extreme"
+                icon=battery-profile-powersave
+                ;;
+        esac
+
+        busctl --system call "$tcc_service" "$tcc_path" "$tcc_interface" \
+            SetTempProfileById s "$next" >/dev/null
+        swayosd-client --custom-message "$name" --custom-icon "$icon"
+        ;;
+    touchpad-on)
+        swaymsg input type:touchpad events enabled >/dev/null
+        swayosd-client --custom-message "Touchpad on" --custom-icon input-touchpad-on
+        ;;
+    touchpad-off)
+        swaymsg input type:touchpad events disabled >/dev/null
+        swayosd-client --custom-message "Touchpad off" --custom-icon input-touchpad-off
+        ;;
+    airplane)
+        if rfkill --raw --noheadings --output SOFT,HARD list wifi | grep -q blocked; then
+            rfkill unblock wifi
+            rfkill unblock bluetooth
+        else
+            rfkill block wifi
+            rfkill block bluetooth
+        fi
+        ;;
+    display)
+        power=$(swaymsg -t get_outputs -r \
+            | jq -r '.[] | select(.name == "eDP-1") | .power')
+        if [ "$power" = true ]; then
+            swayosd-client --custom-message "Internal display off" \
+                --custom-icon video-display
+            sleep 0.3
+            swaymsg output eDP-1 power off >/dev/null
+        else
+            swaymsg output eDP-1 power on >/dev/null
+            swayosd-client --custom-message "Internal display on" \
+                --custom-icon video-display
+        fi
+        ;;
+    suspend)
+        swayosd-client --custom-message "Suspending" --custom-icon system-suspend
+        fancylocksway &
+        sleep 0.5
+        systemctl suspend-then-hibernate
+        ;;
+esac
