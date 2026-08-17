@@ -161,6 +161,15 @@
         ("@life" . (:foreground "yellow1" :weight bold))))
 
 
+;; The container daemon has nobody at the keyboard: idle resolution and the
+;; resume-on-load question are blocking char prompts that no one answers, and
+;; every later `emacsclient --eval' waits behind them -- in every container
+;; sharing this daemon, not just the one that triggered it.
+(when bergheim/container-mode-p
+  (setq org-clock-idle-time nil
+        org-clock-persist nil
+        org-clock-persist-query-resume nil))
+
 (org-clock-persistence-insinuate)
 
 (add-to-list 'org-modules 'org-habit)

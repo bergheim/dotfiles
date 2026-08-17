@@ -3,7 +3,6 @@
 (require 'cl-lib)
 (require 'json)
 (require 'org)
-(require 'org-clock)
 (require 'org-id)
 
 ;; Declared special so the let-bindings below stay dynamic even when this
@@ -80,6 +79,45 @@ so the calling helper's already-completed org edit is not rolled back.
 ;; state, execute BODY, and save atomically. Concurrent modification during
 ;; BODY is detected via `verify-visited-file-modtime' and raised as an error
 ;; instead of clobbering the other process's writes.
+;;
+;; `ask-user-about-supersession-threat' is NOT y-or-n-p. It uses `read-event'
+;; for "changed on disk; really edit the buffer? (y, n, r)". An unanswered
+;; prompt holds the emacsclient socket, so every later -e piles up behind it
+;; — including evals from every other container sharing the daemon.
+
+(defun bergheim/agent--ask-supersession (fn)
+  "Non-interactive stand-in for `ask-user-about-supersession-threat'.
+Revert a clean buffer from disk. Error if the buffer has unsaved edits.
+Never prompt — emacsclient --eval cannot answer a minibuffer."
+  (cond
+   ((buffer-modified-p)
+    (error "Refusing to edit %s: changed on disk and buffer has unsaved edits" fn))
+   (t
+    (revert-buffer t t t)
+    nil)))
+
+(defmacro bergheim/agent--noninteractive (&rest body)
+  "Evaluate BODY with every prompt an agent could hit disabled.
+
+Prompts we can answer correctly get a non-interactive answer: supersession
+reverts a clean buffer or errors, locks are stolen, symlinks are followed.
+Every other minibuffer read signals `inhibited-interaction' instead of
+waiting — a hung emacsclient blocks the whole daemon, so a loud error is
+always the better failure and tells us what to fix here.
+
+Bound only for the dynamic extent of an agent call: interactive Emacs
+keeps its prompts."
+  (declare (indent 0) (debug t))
+  `(cl-letf (((symbol-function 'ask-user-about-supersession-threat)
+              #'bergheim/agent--ask-supersession)
+             ((symbol-function 'ask-user-about-lock)
+              (lambda (&rest _) t)))
+     (let ((inhibit-interaction t)
+           (vc-follow-symlinks t)
+           (create-lockfiles nil)
+           (large-file-warning-threshold nil)
+           (find-file-suppress-same-file-warnings t))
+       ,@body)))
 
 (defmacro bergheim/agent-org--with-file (file &rest body)
   "Visit FILE safely for an agent edit. If FILE is already open in an Emacs
@@ -89,21 +127,22 @@ modified the buffer. Errors on concurrent external modification before save."
   (declare (indent 1) (debug t))
   (let ((path (make-symbol "path"))
         (existing (make-symbol "existing")))
-    `(let* ((,path ,file)
-            (,existing (get-file-buffer ,path)))
-       (when (and ,existing (buffer-modified-p ,existing))
-         (error "Refusing to edit %s: buffer has unsaved changes" ,path))
-       (with-current-buffer (find-file-noselect ,path t)
-         (let ((auto-revert-mode nil)
-               (super-save-mode nil))
-           (revert-buffer t t)
-           (goto-char (point-min))
-           (prog1
-               (progn ,@body)
-             (when (buffer-modified-p)
-               (unless (verify-visited-file-modtime (current-buffer))
-                 (error "File modified externally while editing: %s" ,path))
-               (save-buffer))))))))
+    `(bergheim/agent--noninteractive
+       (let* ((,path ,file)
+              (,existing (get-file-buffer ,path)))
+         (when (and ,existing (buffer-modified-p ,existing))
+           (error "Refusing to edit %s: buffer has unsaved changes" ,path))
+         (with-current-buffer (find-file-noselect ,path t)
+           (let ((auto-revert-mode nil)
+                 (super-save-mode nil))
+             (revert-buffer t t)
+             (goto-char (point-min))
+             (prog1
+                 (progn ,@body)
+               (when (buffer-modified-p)
+                 (unless (verify-visited-file-modtime (current-buffer))
+                   (error "File modified externally while editing: %s" ,path))
+                 (save-buffer)))))))))
 
 ;;; Cross-project worklog
 ;;
@@ -228,38 +267,31 @@ last-writer-wins `:LAST_AGENT:' property; full history stays in LOGBOOK."
               (if session-id (concat " " session-id) "")
               " " (format-time-string "[%Y-%m-%d %a %H:%M]") "\n"))))
 
-(defun bergheim/agent-org--clock-in ()
-  "Clock in on the heading at point, non-interactively."
-  (let ((org-clock-in-resume nil)
-        (org-clock-persist nil))
-    (when (org-clocking-p)
-      (ignore-errors (org-clock-out nil t)))
-    (ignore-errors (org-clock-in))))
-
-(defun bergheim/agent-org--clocking-current-heading-p ()
-  "Non-nil when the active org clock is on the heading at point."
-  (and (org-clocking-p)
-       (markerp org-clock-hd-marker)
-       (marker-buffer org-clock-hd-marker)
-       (eq (current-buffer) (marker-buffer org-clock-hd-marker))
-       (save-excursion
-         (org-back-to-heading t)
-         (= (point) (marker-position org-clock-hd-marker)))))
-
-(defun bergheim/agent-org--clock-out ()
-  "Clock out only if the active clock is on the heading at point.
-Leaves clocks running on other headings alone."
-  (when (bergheim/agent-org--clocking-current-heading-p)
-    (ignore-errors (org-clock-out nil t))))
+;;; Durations
+;;
+;; Agents do not clock. `org-clock' keeps one marker per Emacs process, and
+;; every agent in a container shares one daemon, so clocking in on B first
+;; clocks out of A — writing A's closing timestamp into A's buffer, outside
+;; the `--with-file' that owns it. That buffer is then modified-but-unsaved
+;; and every later helper call on A fails with "buffer has unsaved changes".
+;; Not a race: emacsclient is single-threaded, so it reproduces every time.
+;; It is a side effect on a file the call never opened.
+;;
+;; The intervals survive anyway. `org-todo' logs a timestamped state line for
+;; every transition (INPROGRESS carries `!' in the host keyword set), so a
+;; heading's spans are last INPROGRESS -> next other state, and the same pairs
+;; land in the stash worklog for cross-project sums. Compute when asked; a
+;; heading abandoned at INPROGRESS then reads as open since T rather than
+;; being billed the whole gap, which is what writing a closing CLOCK line at
+;; exit time would do.
 
 (defun bergheim/agent-org--apply-state (new-state note agent session-id)
   "At point-on-heading, apply NEW-STATE. Optionally attach NOTE and, when
-AGENT is non-nil, a LOGBOOK session line plus `:LAST_AGENT:'. Always clocks
-in on INPROGRESS and out on DONE/BLOCKED/CANCELLED.
+AGENT is non-nil, a LOGBOOK session line plus `:LAST_AGENT:'.
 Notes always land in the :LOGBOOK: drawer regardless of user config.
 Returns the prior state (string or nil), so callers can log transitions."
   (when (and agent (not (stringp agent)))
-    (error "AGENT must be a string, got %S — the old ENSURE-SESSION-ID/CLOCK args are gone; clocking is now always on" agent))
+    (error "AGENT must be a string, got %S — the old ENSURE-SESSION-ID/CLOCK args are gone" agent))
   (when (and session-id (not (stringp session-id)))
     (error "SESSION-ID must be a string, got %S" session-id))
   (let ((old-state (bergheim/agent-org--strip (org-get-todo-state)))
@@ -269,11 +301,6 @@ Returns the prior state (string or nil), so callers can log transitions."
       (unless (equal actual-state new-state)
         (error "State change blocked: %s -> %s (got %s)"
                old-state new-state actual-state))
-      (cond
-       ((equal new-state "INPROGRESS")
-        (bergheim/agent-org--clock-in))
-       ((member new-state '("DONE" "BLOCKED" "CANCELLED"))
-        (bergheim/agent-org--clock-out)))
       (when agent
         (bergheim/agent-org--log-session-line agent session-id))
       ;; If a NOTE was requested but org-todo's state-change config did not
@@ -308,7 +335,6 @@ SIGNED-TAGS is a list like (\"+autonomous\" \"-blocked\")."
                                           &optional note agent session-id)
   "Transition the UNIQUE TODO matching HEADING-RE in FILE to NEW-STATE.
 Errors if HEADING-RE matches zero or multiple headings.
-Always clocks in on INPROGRESS and out on DONE/BLOCKED/CANCELLED.
 
 Optional args:
 - NOTE: attach a state-transition log note
@@ -640,43 +666,40 @@ Safe for emacsclient --eval."
   (require 'denote)
   (let ((inhibit-message t)
         (denote-directory (file-name-directory source-path))
-        (source-buf (find-file-noselect source-path t)))
-    (with-current-buffer source-buf
-      (let ((auto-revert-mode nil)
-            (super-save-mode nil))
-        (revert-buffer t t)
-        (let ((links-to-add
-               (delq nil
-                     (mapcar
-                      (lambda (target)
-                        (let* ((id (denote-retrieve-filename-identifier target))
-                               (title (denote-retrieve-front-matter-title-value target 'org))
-                               (link (denote-format-link target title 'org nil)))
-                          (save-excursion
-                            (goto-char (point-min))
-                            (unless (search-forward (concat "denote:" id) nil t)
-                              link))))
-                      target-paths))))
-          (when links-to-add
-            (goto-char (point-min))
-            (if (re-search-forward "^\\* Related notes" nil t)
-                (progn
-                  (if (re-search-forward "^\\*" nil t)
-                      (forward-line -1)
-                    (goto-char (point-max)))
-                  (unless (bolp) (insert "\n")))
-              (goto-char (point-max))
-              (unless (bolp) (insert "\n"))
-              (insert "\n* Related notes\n"))
-            (dolist (link links-to-add)
-              (insert "- " link "\n"))
-            (save-buffer))
-          (when links-to-add
-            (bergheim/agent-notes--maybe-commit
-             source-path
-             (format "note: link %d related" (length links-to-add))))
-          (list :wrote (when links-to-add (list source-path))
-                :added (length links-to-add)))))))
+        (added 0))
+    (bergheim/agent-org--with-file source-path
+      (let ((links-to-add
+             (delq nil
+                   (mapcar
+                    (lambda (target)
+                      (let* ((id (denote-retrieve-filename-identifier target))
+                             (title (denote-retrieve-front-matter-title-value target 'org))
+                             (link (denote-format-link target title 'org nil)))
+                        (save-excursion
+                          (goto-char (point-min))
+                          (unless (search-forward (concat "denote:" id) nil t)
+                            link))))
+                    target-paths))))
+        (when links-to-add
+          (goto-char (point-min))
+          (if (re-search-forward "^\\* Related notes" nil t)
+              (progn
+                (if (re-search-forward "^\\*" nil t)
+                    (forward-line -1)
+                  (goto-char (point-max)))
+                (unless (bolp) (insert "\n")))
+            (goto-char (point-max))
+            (unless (bolp) (insert "\n"))
+            (insert "\n* Related notes\n"))
+          (dolist (link links-to-add)
+            (insert "- " link "\n"))
+          (setq added (length links-to-add)))))
+    (when (> added 0)
+      (bergheim/agent-notes--maybe-commit
+       source-path
+       (format "note: link %d related" added)))
+    (list :wrote (when (> added 0) (list source-path))
+          :added added)))
 
 (defun bergheim/agent-denote-get-backlinks (filepath)
   "Return the notes that link TO the denote note at FILEPATH.
@@ -726,20 +749,19 @@ Safe for emacsclient --eval."
 (defmacro bergheim/agent-org--with-quiet-buffer (abs-file &rest body)
   "Visit ABS-FILE and run BODY without interactive prompts.
 
-Suppresses the \"File is read-only on disk; make buffer read-only too?\"
-prompt from `find-file-noselect-1', plus any other y/n or yes/no prompts
-that would block an autonomous call.
+NOWARN drops the read-only, large-file and reread questions
+`find-file-noselect' would otherwise ask; `--noninteractive' turns
+anything else into an error rather than a stalled socket.
 
 Also reverts the buffer from disk when safe (unmodified + stale modtime):
 if the host daemon already had this org file open from an earlier session,
 selection must reflect edits made outside Emacs (git checkout, other
-tooling) and marks must not save stale contents back over newer work."
+tooling) and marks must not save stale contents back over newer work.
+A stale buffer carrying unsaved edits errors instead."
   (declare (indent 1))
-  `(cl-letf (((symbol-function 'y-or-n-p) #'ignore)
-             ((symbol-function 'yes-or-no-p) #'ignore))
-     (let ((inhibit-message t)
-           (find-file-suppress-same-file-warnings t))
-       (with-current-buffer (find-file-noselect ,abs-file)
+  `(bergheim/agent--noninteractive
+     (let ((inhibit-message t))
+       (with-current-buffer (find-file-noselect ,abs-file t)
          (when (and (not (buffer-modified-p))
                     (not (verify-visited-file-modtime)))
            (revert-buffer t t t))
