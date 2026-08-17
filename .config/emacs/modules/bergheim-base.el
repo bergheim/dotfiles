@@ -38,25 +38,13 @@
 (use-package kkp
   :demand
   :config
-  (global-kkp-mode +1)
-
-  ;; hack to make shift-space etc work through tmux on csi-u
-  ;; see https://github.com/benotn/kkp/issues/12
-  (defun kkp-force-enable-on-tty (&rest _)
-    (let ((terminal (kkp--selected-terminal)))
-      (when (and (terminal-live-p terminal)
-                 (not (display-graphic-p terminal))
-                 (not (member terminal kkp--active-terminal-list)))
-        (push terminal kkp--active-terminal-list)
-        (kkp-setup-function-keys terminal)
-        (set-terminal-parameter terminal 'kkp--previous-normal-erase-is-backspace-val
-                                (terminal-parameter terminal 'normal-erase-is-backspace))
-        (normal-erase-is-backspace-mode 1)
-        (dolist (prefix kkp--key-prefixes)
-          (define-key input-decode-map (kkp--csi-escape (string prefix))
-            (lambda (_prompt) (kkp--process-keys prefix)))))))
-
-  (add-hook 'tty-setup-hook #'kkp-force-enable-on-tty))
+  ;; The old force-enable-on-tty hack for https://github.com/benotn/kkp/issues/12
+  ;; is gone: kkp now tracks terminals in a `kkp--state' terminal parameter, so
+  ;; the hack's `kkp--active-terminal-list' is void and every tty frame died on
+  ;; `tty-setup-hook' -- i.e. `emacsclient -nw' over SSH exited instantly.
+  ;; kkp's own `kkp-enable-in-terminal' covers this; bump the query timeout
+  ;; instead if a slow SSH link misses the terminal's reply.
+  (global-kkp-mode +1))
 
 (defun bergheim/terminal-clipboard-available-p ()
   "Return non-nil when Emacs should export kills with OSC 52."
