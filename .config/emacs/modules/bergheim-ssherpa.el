@@ -91,6 +91,19 @@ On macOS hosts, use \"open\" instead."
   "Return non-nil if the current frame is tagged for ssherpa routing."
   (frame-parameter nil 'ssherpa-connected))
 
+;;;###autoload
+(defun ssherpa-maybe-connect ()
+  "Tag a newly created client frame if its emacsclient ran over SSH.
+Lets the `em' wrapper just call `emacsclient -t FILE...' -- passing
+`--eval' instead puts emacsclient in eval mode, where every remaining
+argument is read as elisp and file names blow up as void variables."
+  (when (seq-some (lambda (var) (string-prefix-p "SSH_CONNECTION=" var))
+                  (frame-parameter nil 'environment))
+    (ssherpa-connect)))
+
+;;;###autoload
+(add-hook 'server-after-make-frame-hook #'ssherpa-maybe-connect)
+
 (defun ssherpa--run (program args label)
   "Run PROGRAM with ARGS synchronously; log non-zero exit under LABEL."
   (with-temp-buffer
