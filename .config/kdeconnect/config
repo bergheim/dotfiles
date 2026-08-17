@@ -1,0 +1,3 @@
+[General]
+customDevices=100.64.0.6, 100.64.0.2, 100.64.0.5
+keyAlgorithm=EC
