@@ -6,6 +6,12 @@
 (require 'org-clock)
 (require 'org-id)
 
+;; Declared special so the let-bindings below stay dynamic even when this
+;; file is byte- or native-compiled before autorevert/super-save/denote load.
+(defvar auto-revert-mode)
+(defvar super-save-mode)
+(defvar denote-directory)
+
 ;;; Notes auto-commit
 ;;
 ;; Public-notes mode: when a helper edits a file under a `docs/' directory
@@ -208,14 +214,19 @@ Error if not found. Returns point."
 
 ;;; State transition
 
-(defun bergheim/agent-org--ensure-session-id ()
-  "Ensure the heading at point has a :SESSION_ID: property. Returns the ID."
-  (or (org-entry-get nil "SESSION_ID")
-      (let ((id (format "%s-%06x"
-                        (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t)
-                        (random #xFFFFFF))))
-        (org-entry-put nil "SESSION_ID" id)
-        id)))
+(defun bergheim/agent-org--log-session-line (agent session-id)
+  "Append a session line to the LOGBOOK of the heading at point.
+AGENT identifies the tool and model (e.g. \"claude/claude-fable-5 (high)\");
+SESSION-ID is the vendor session id, omitted when nil. Also sets the
+last-writer-wins `:LAST_AGENT:' property; full history stays in LOGBOOK."
+  (save-excursion
+    (org-back-to-heading t)
+    (org-entry-put nil "LAST_AGENT" agent)
+    (let ((org-log-into-drawer "LOGBOOK"))
+      (goto-char (org-log-beginning t))
+      (insert "- Session " agent
+              (if session-id (concat " " session-id) "")
+              " " (format-time-string "[%Y-%m-%d %a %H:%M]") "\n"))))
 
 (defun bergheim/agent-org--clock-in ()
   "Clock in on the heading at point, non-interactively."
@@ -241,11 +252,16 @@ Leaves clocks running on other headings alone."
   (when (bergheim/agent-org--clocking-current-heading-p)
     (ignore-errors (org-clock-out nil t))))
 
-(defun bergheim/agent-org--apply-state (new-state note ensure-session-id clock)
-  "At point-on-heading, apply NEW-STATE. Optionally attach NOTE, assign
-SESSION_ID (on INPROGRESS), and clock in/out on the state transition.
+(defun bergheim/agent-org--apply-state (new-state note agent session-id)
+  "At point-on-heading, apply NEW-STATE. Optionally attach NOTE and, when
+AGENT is non-nil, a LOGBOOK session line plus `:LAST_AGENT:'. Always clocks
+in on INPROGRESS and out on DONE/BLOCKED/CANCELLED.
 Notes always land in the :LOGBOOK: drawer regardless of user config.
 Returns the prior state (string or nil), so callers can log transitions."
+  (when (and agent (not (stringp agent)))
+    (error "AGENT must be a string, got %S — the old ENSURE-SESSION-ID/CLOCK args are gone; clocking is now always on" agent))
+  (when (and session-id (not (stringp session-id)))
+    (error "SESSION-ID must be a string, got %S" session-id))
   (let ((old-state (bergheim/agent-org--strip (org-get-todo-state)))
         (org-log-into-drawer "LOGBOOK"))
     (org-todo new-state)
@@ -253,14 +269,13 @@ Returns the prior state (string or nil), so callers can log transitions."
       (unless (equal actual-state new-state)
         (error "State change blocked: %s -> %s (got %s)"
                old-state new-state actual-state))
-      (when (and ensure-session-id (equal new-state "INPROGRESS"))
-        (bergheim/agent-org--ensure-session-id))
-      (when clock
-        (cond
-         ((equal new-state "INPROGRESS")
-          (bergheim/agent-org--clock-in))
-         ((member new-state '("DONE" "BLOCKED" "CANCELLED"))
-          (bergheim/agent-org--clock-out))))
+      (cond
+       ((equal new-state "INPROGRESS")
+        (bergheim/agent-org--clock-in))
+       ((member new-state '("DONE" "BLOCKED" "CANCELLED"))
+        (bergheim/agent-org--clock-out)))
+      (when agent
+        (bergheim/agent-org--log-session-line agent session-id))
       ;; If a NOTE was requested but org-todo's state-change config did not
       ;; trigger the log-setup machinery, force one so the note is persisted.
       (when (and note
@@ -277,19 +292,30 @@ Returns the prior state (string or nil), so callers can log transitions."
           (org-store-log-note))))
     old-state))
 
+(defun bergheim/agent-org--log-tag-line (signed-tags)
+  "Append a LOGBOOK line recording a tag change on the heading at point.
+SIGNED-TAGS is a list like (\"+autonomous\" \"-blocked\")."
+  (save-excursion
+    (org-back-to-heading t)
+    (let ((org-log-into-drawer "LOGBOOK"))
+      (goto-char (org-log-beginning t))
+      (insert "- Tag \"" (mapconcat #'identity signed-tags " ") "\" "
+              (format-time-string "[%Y-%m-%d %a %H:%M]") "\n"))))
+
 ;;; Public API
 
 (defun bergheim/agent-org-set-state (file heading-re new-state
-                                          &optional note ensure-session-id clock)
+                                          &optional note agent session-id)
   "Transition the UNIQUE TODO matching HEADING-RE in FILE to NEW-STATE.
 Errors if HEADING-RE matches zero or multiple headings.
+Always clocks in on INPROGRESS and out on DONE/BLOCKED/CANCELLED.
 
 Optional args:
 - NOTE: attach a state-transition log note
-- ENSURE-SESSION-ID: when non-nil and NEW-STATE is INPROGRESS, add
-  :SESSION_ID: property if absent
-- CLOCK: when non-nil, `org-clock-in' on INPROGRESS and `org-clock-out'
-  on DONE/BLOCKED/CANCELLED
+- AGENT: tool/model doing the work, e.g. \"claude/claude-fable-5 (high)\" —
+  logged as a LOGBOOK session line and mirrored to `:LAST_AGENT:'.
+  Callers obtain it from the `agent-meta' script; never hand-type it.
+- SESSION-ID: the vendor session id accompanying AGENT
 
 Safe from `emacsclient --eval' — never prompts interactively.
 
@@ -309,7 +335,7 @@ Edit so the harness's mtime check does not fire."
       (setq heading (bergheim/agent-org--strip (org-get-heading t t t t)))
       (setq old-state
             (bergheim/agent-org--apply-state
-             new-state note ensure-session-id clock))
+             new-state note agent session-id))
       (setq dirty (buffer-modified-p)))
     (bergheim/agent-notes--maybe-commit
      file (format "state: → %s (%s)" new-state heading-re))
@@ -322,7 +348,7 @@ Edit so the harness's mtime check does not fire."
           :heading heading)))
 
 (defun bergheim/agent-org-set-state-by-id (file id new-state
-                                                &optional note ensure-session-id clock)
+                                                &optional note agent session-id)
   "Like `bergheim/agent-org-set-state' but selects the heading by its
 :ID: property. IDs are globally unique so ambiguity is not possible.
 
@@ -335,7 +361,7 @@ Returns the same plist shape as `bergheim/agent-org-set-state', plus
       (setq heading (bergheim/agent-org--strip (org-get-heading t t t t)))
       (setq old-state
             (bergheim/agent-org--apply-state
-             new-state note ensure-session-id clock))
+             new-state note agent session-id))
       (setq dirty (buffer-modified-p)))
     (bergheim/agent-notes--maybe-commit
      file (format "state: → %s (id %s)" new-state id))
@@ -421,7 +447,10 @@ Returns a plist:
                       :test #'string=)))
         (unless (equal (sort (copy-sequence current) #'string<)
                        (sort (copy-sequence merged) #'string<))
-          (org-set-tags merged))
+          (org-set-tags merged)
+          (bergheim/agent-org--log-tag-line
+           (mapcar (lambda (tg) (concat "+" tg))
+                   (cl-set-difference merged current :test #'string=))))
         (setq tags (bergheim/agent-org--strip-list (org-get-tags nil t))))
       (setq dirty (buffer-modified-p)))
     (bergheim/agent-notes--maybe-commit
@@ -447,7 +476,10 @@ Returns the same plist shape as `bergheim/agent-org-add-tag'."
              (current (org-get-tags nil t))
              (kept (cl-set-difference current drop-tags :test #'string=)))
         (unless (equal (length current) (length kept))
-          (org-set-tags kept))
+          (org-set-tags kept)
+          (bergheim/agent-org--log-tag-line
+           (mapcar (lambda (tg) (concat "-" tg))
+                   (cl-set-difference current kept :test #'string=))))
         (setq tags (bergheim/agent-org--strip-list (org-get-tags nil t))))
       (setq dirty (buffer-modified-p)))
     (bergheim/agent-notes--maybe-commit
@@ -819,6 +851,7 @@ heading. A stable `:ID:' is generated so the entry can later be addressed with
                        (format-time-string "%Y%m%dT%H%M%SZ" (current-time) t)
                        (random #xFFFFFF)))
       (org-entry-put nil "ID" id)
+      (org-entry-put nil "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))
       (when (and body (not (string-empty-p body)))
         (org-end-of-meta-data t)
         (insert (string-trim-right body) "\n")))
