@@ -1,0 +1,15 @@
+{
+	"enabledPlugins": {
+		"pyright-lsp@claude-plugins-official": true,
+		"typescript-lsp@claude-plugins-official": true,
+		"superpowers@claude-plugins-official": false
+	},
+	"skipDangerousModePermissionPrompt": true,
+	"theme": "auto",
+	"contextFiles": ["AGENTS.md"],
+	"contextPaths": ["AGENTS.md"],
+	"statusLine": {
+		"type": "command",
+		"command": "~/.claude/statusline.sh"
+	}
+}
