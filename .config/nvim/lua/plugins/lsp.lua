@@ -212,6 +212,11 @@ return {
             })
 
             require("mason-lspconfig").setup({
+                -- stylua is installed as a *formatter* (see conform, format.lua), but
+                -- mason-lspconfig also auto-enables it as an LSP because lspconfig ships
+                -- an `lsp/stylua.lua` (`stylua --lsp`). Mason's stylua 0.20.0 has no
+                -- --lsp flag, so it starts, dies with exit code 2 and logs noise.
+                automatic_enable = { exclude = { "stylua" } },
                 handlers = {
                     function(server_name)
                         local server = servers[server_name] or {}
