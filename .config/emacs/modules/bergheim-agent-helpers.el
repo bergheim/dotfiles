@@ -880,16 +880,27 @@ heading. A stable `:ID:' is generated so the entry can later be addressed with
     (bergheim/agent-notes--maybe-commit file (format "todo: add %s" heading))
     (list :wrote (list (expand-file-name file)) :id id :heading heading :state st)))
 
-(defun bergheim/agent-org-list-todos (org-file)
-  "Return JSON array of every entry carrying a TODO keyword in ORG-FILE."
+(defun bergheim/agent-org-list-todos (org-file &optional states)
+  "Write a JSON array of every entry carrying a TODO keyword in ORG-FILE
+to a temp file; return a plist (:wrote (PATH) :path PATH :count N).
+
+Each array element has `line' (1-based heading line in ORG-FILE, ready for
+sed/Read), `state', `heading', `tags', and `autonomous'. STATES, when
+non-nil, is a list of keyword strings to keep — e.g. (list \"TODO\"
+\"INPROGRESS\") — so callers of a long log can skip the DONE bulk.
+
+The JSON travels through a file, not the reply: emacsclient corrupts
+replies beyond a few KB (server.el chunks at `server-msg-size' and the
+client mis-reassembles, splicing \"*ERROR*: Unknown message\" into
+stdout). The plist stays small enough to be safe."
   (let ((abs (expand-file-name org-file)) (items nil))
     (bergheim/agent-org--with-quiet-buffer abs
       (org-with-wide-buffer
        (org-map-entries
         (lambda ()
           (let ((state (org-get-todo-state)))
-            (when state
-              (push `((position . ,(point))
+            (when (and state (or (null states) (member state states)))
+              (push `((line . ,(line-number-at-pos (point)))
                       (state . ,(substring-no-properties state))
                       (heading . ,(substring-no-properties (org-get-heading t t t t)))
                       (tags . ,(bergheim/agent-org--strip-list (org-get-tags)))
@@ -897,7 +908,10 @@ heading. A stable `:ID:' is generated so the entry can later be addressed with
                                           (bergheim/agent-org--autonomous-eligible-p) t)))
                     items))))
         nil nil)))
-    (json-encode-array (nreverse items))))
+    (let ((path (make-temp-file "agent-org-todos-" nil ".json"))
+          (arr (nreverse items)))
+      (write-region (json-encode-array arr) nil path nil 'silent)
+      (list :wrote (list path) :path path :count (length arr)))))
 
 (defun bergheim/agent-org-get-entry (file locator &optional by-id)
   "Return the entry matching LOCATOR in FILE as a JSON object.
