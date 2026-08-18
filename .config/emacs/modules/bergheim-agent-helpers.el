@@ -452,6 +452,59 @@ Returns a plist with `:wrote' (list of modified paths) and `:heading'."
                                  worklog-path))
           :heading heading)))
 
+(defun bergheim/agent-org-link-note (org-file locator note-path &optional by-id)
+  "Insert a denote link to NOTE-PATH into the ORG-FILE entry at LOCATOR.
+LOCATOR is a heading regexp, or an `:ID:' when BY-ID is non-nil.
+The link is one body line after the heading's metadata:
+  - [[denote:ID][title]]
+Existing `denote:ID' is searched in that subtree only, so two TODOs
+may cite the same note. Does not modify the note. Does not create a
+Related notes section. Idempotent.
+
+`denote-directory' for the call is the note's directory — ORG-FILE is
+not treated as a denote file.
+
+Returns a plist:
+  :wrote   list of modified paths — empty on idempotent call
+  :added   1 or 0
+  :id      the note's denote identifier
+  :heading the matched heading text"
+  (require 'denote)
+  (let* ((inhibit-message t)
+         (note-abs (expand-file-name note-path))
+         (denote-directory (file-name-directory note-abs))
+         added id heading dirty)
+    (unless (file-regular-p note-abs)
+      (error "Note not found: %s" note-abs))
+    (setq id (denote-retrieve-filename-identifier note-abs))
+    (unless id
+      (error "Not a denote note: %s" note-abs))
+    (let* ((title (or (denote-retrieve-front-matter-title-value note-abs 'org)
+                      id))
+           (link (denote-format-link note-abs title 'org nil)))
+      (bergheim/agent-org--with-file org-file
+        (if by-id
+            (bergheim/agent-org--find-by-id locator)
+          (bergheim/agent-org--find-unique-heading locator))
+        (setq heading (bergheim/agent-org--strip (org-get-heading t t t t)))
+        (let ((end (save-excursion (org-end-of-subtree t t) (point))))
+          (if (save-excursion
+                (re-search-forward (concat "denote:" (regexp-quote id))
+                                   end t))
+              (setq added 0)
+            (org-end-of-meta-data t)
+            (unless (bolp) (insert "\n"))
+            (insert "- " link "\n")
+            (setq added 1)))
+        (setq dirty (buffer-modified-p))))
+    (when (> added 0)
+      (bergheim/agent-notes--maybe-commit
+       org-file (format "link: note %s (%s)" id heading)))
+    (list :wrote (when dirty (list (expand-file-name org-file)))
+          :added added
+          :id id
+          :heading heading)))
+
 (defun bergheim/agent-org-add-tag (file heading-re tag)
   "Add TAG (string or list of strings) to the unique heading matching
 HEADING-RE in FILE. Idempotent: when the tag is already present, the
@@ -880,12 +933,27 @@ heading. A stable `:ID:' is generated so the entry can later be addressed with
     (bergheim/agent-notes--maybe-commit file (format "todo: add %s" heading))
     (list :wrote (list (expand-file-name file)) :id id :heading heading :state st)))
 
+(defun bergheim/agent-org--denote-ids-in-entry ()
+  "Return denote ids linked from the heading at point, in file order.
+Heading-search suffixes (`denote:ID::#custom') are stripped. Duplicates
+are dropped."
+  (save-excursion
+    (org-back-to-heading t)
+    (let ((end (save-excursion (org-end-of-subtree t t) (point)))
+          ids)
+      (while (re-search-forward "\\[\\[denote:\\([^]:]+\\)" end t)
+        (let ((id (match-string-no-properties 1)))
+          (unless (member id ids)
+            (push id ids))))
+      (nreverse ids))))
+
 (defun bergheim/agent-org-list-todos (org-file &optional states)
   "Write a JSON array of every entry carrying a TODO keyword in ORG-FILE
 to a temp file; return a plist (:wrote (PATH) :path PATH :count N).
 
 Each array element has `line' (1-based heading line in ORG-FILE, ready for
-sed/Read), `state', `heading', `tags', and `autonomous'. STATES, when
+sed/Read), `state', `heading', `tags', `notes' (denote ids linked from
+that entry, always an array), and `autonomous'. STATES, when
 non-nil, is a list of keyword strings to keep — e.g. (list \"TODO\"
 \"INPROGRESS\") — so callers of a long log can skip the DONE bulk.
 
@@ -904,6 +972,7 @@ stdout). The plist stays small enough to be safe."
                       (state . ,(substring-no-properties state))
                       (heading . ,(substring-no-properties (org-get-heading t t t t)))
                       (tags . ,(bergheim/agent-org--strip-list (org-get-tags)))
+                      (notes . ,(vconcat (bergheim/agent-org--denote-ids-in-entry)))
                       (autonomous . ,(and (member "autonomous" (org-get-tags))
                                           (bergheim/agent-org--autonomous-eligible-p) t)))
                     items))))
