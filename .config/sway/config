@@ -560,6 +560,9 @@ shadow_offset 0 5                        # x_offset y_offset
 shadow_blur_radius 10
 shadow_inactive_color #00000060          # Optional: different color for inactive windows
 
+focus_on_window_activation smart
+# focus_follows_mouse no
+
 layer_effects "rofi" blur enable; shadows enable
 
 layer_effects "waybar" {
