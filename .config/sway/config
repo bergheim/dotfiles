@@ -55,14 +55,14 @@ input "type:keyboard" {
     xkb_layout "us,no"
     # xkb_variant ","
     xkb_variant "altgr-intl"
-    xkb_options "grp:ctrls_toggle,caps:escape"
+    xkb_options "grp:win_space_toggle,caps:escape"
     repeat_rate 50
     repeat_delay 180
 }
 
 # input type:keyboard {
 #     xkb_layout us,no
-#     xkb_options grp:ctrls_toggle,caps:escape
+#     xkb_options grp:win_space_toggle,caps:escape
 #     # xkb_variant ",nodeadkeys"  # optional: removes dead keys from Norwegian
 #     repeat_rate 50
 #     repeat_delay 180

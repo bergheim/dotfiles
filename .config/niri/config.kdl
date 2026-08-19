@@ -59,14 +59,14 @@
 //   Mod+Comma/Period      consume/expel-window-into-column (single-window variant)
 //   Mod+M                 inline fuzzel window switcher + app icons (swayr LRU)
 //   Alt+Tab               toggle-overview
-//   Ctrl+Ctrl             xkb grp:ctrls_toggle (us<->no)
+//   Super+Space           xkb grp:win_space_toggle (us<->no)
 
 input {
     keyboard {
         xkb {
             layout "us,no"
             variant "altgr-intl"
-            options "grp:ctrls_toggle,caps:escape"
+            options "grp:win_space_toggle,caps:escape"
         }
         repeat-rate 50
         repeat-delay 180
@@ -303,8 +303,7 @@ binds {
     Mod+F12                { spawn-sh "journalctl --user -u niri -n 100 > /tmp/niri-debug.log && notify-send 'Niri log dumped'"; }
 
     // sway 367–368 (swayr LRU switcher). Layout switching is handled by
-    // xkb grp:ctrls_toggle (both Ctrl keys) so Mod+Space is free for normal
-    // compositor binds. Window switcher
+    // xkb grp:win_space_toggle (Super+Space). Window switcher
     // is Mod+M — INLINE on purpose: no external script / host-install
     // dependency (a script broke once because it wasn't on PATH). fuzzel
     // + app icons via the NUL icon protocol built with printf; the id
