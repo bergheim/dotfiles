@@ -1,62 +1,85 @@
 ;;; autoloads.el --- Mail-search shortcuts available without loading mu4e -*- lexical-binding: t; -*-
+;;
+;; ;;;###autoload must sit on real defuns. site-lisp copies the next form
+;; verbatim; a (define-mu4e-search-fn ...) call blows up when mu4e/init
+;; never ran (tty/container) because the macro is not defined.
 
 ;;;###autoload
-(defmacro define-mu4e-search-fn (name docstring bookmark-string)
-  "Generate a mu4e search function."
-  `(defun ,name ()
-     ,docstring
-     (interactive)
-     (unless (featurep 'mu4e)
-       (require 'mu4e))
-     (mu4e-search-bookmark ,bookmark-string)))
-
-;;;###autoload
-(define-mu4e-search-fn bergheim/email-today
+(defun bergheim/email-today ()
   "Opens the inbox with unread and today's email."
-  "maildir:/Inbox/ AND date:1y..now")
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Inbox/ AND date:1y..now"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-inbox
-  "Opens the entire inbox"
-  "maildir:/Inbox/")
+(defun bergheim/email-inbox ()
+  "Opens the entire inbox."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Inbox/"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-important
-  "Important email"
-  "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)")
+(defun bergheim/email-important ()
+  "Important email."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "flag:flagged OR (maildir:/Inbox/ AND flag:unread AND date:1w..now)"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-inbox-work
-  "Work email"
-  "maildir:/neptune/Inbox/")
+(defun bergheim/email-inbox-work ()
+  "Work email."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/neptune/Inbox/"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-inbox-personal
-  "Personal email"
-  "(maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox) AND (flag:unread OR date:1w..now)")
+(defun bergheim/email-inbox-personal ()
+  "Personal email."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "(maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox) AND (flag:unread OR date:1w..now)"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-today-or-unread
-  "Opens the inbox with unread and today's email"
-  "maildir:/Inbox/ AND (flag:unread OR date:2d..now)")
+(defun bergheim/email-today-or-unread ()
+  "Opens the inbox with unread and today's email."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Inbox/ AND (flag:unread OR date:2d..now)"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-week
-  "Opens the inbox with unread and this weeks email"
-  "maildir:/Inbox/ AND date:1w..now")
+(defun bergheim/email-week ()
+  "Opens the inbox with unread and this weeks email."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Inbox/ AND date:1w..now"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-sent
-  "Sent email"
-  "maildir:/Sent/")
+(defun bergheim/email-sent ()
+  "Sent email."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Sent/"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-trash
-  "Trash"
-  "maildir:/Trash/ OR flag:trashed")
+(defun bergheim/email-trash ()
+  "Trash."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Trash/ OR flag:trashed"))
 
 ;;;###autoload
-(define-mu4e-search-fn bergheim/email-junk
-  "Show the junk mail from all accounts"
-  "maildir:/Spam/")
-
+(defun bergheim/email-junk ()
+  "Show the junk mail from all accounts."
+  (interactive)
+  (unless (featurep 'mu4e)
+    (require 'mu4e))
+  (mu4e-search-bookmark "maildir:/Spam/"))
