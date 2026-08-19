@@ -99,6 +99,15 @@ _u_: User Playlists      _r_  : Repeat            _d_: Device
 ;;   )
 
 (use-package keymap-popup
-  :ensure (keymap-popup :host github :repo "emacs-straight/keymap-popup"))
+  :ensure (keymap-popup :host github :repo "emacs-straight/keymap-popup")
+  :config
+  ;; keymap-popup 0.4.1 nils out popup metadata when the last entry is
+  ;; removed; jabber-keymap.el's bootstrap (define C-g, remove it, then
+  ;; add entries) relies on it surviving.  Re-seed empty metadata.
+  (define-advice keymap-popup-add-entry (:before (keymap &rest _) bergheim/reseed)
+    (unless (keymap-popup--meta keymap 'descriptions)
+      (setf (keymap-popup--meta keymap 'descriptions)
+            (list (list (keymap-popup--group nil nil)))))))
+
 
 ;;; bergheim-apps.el ends here
