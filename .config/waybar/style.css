@@ -40,7 +40,7 @@ window#waybar {
 }
 
 #disk, #temperature, #cpu, #memory,
-#network, #pulseaudio, #backlight, #battery,
+#network, #pulseaudio, #backlight, #battery, #custom-battery,
 #idle_inhibitor, #power-profiles-daemon, #clock, #custom-tux-power {
   margin: 3px 3px;
   padding: 0 3px;
@@ -78,16 +78,22 @@ window#waybar {
   background-color: @alert_bg;
 }
 
-#battery {
+#battery, #custom-battery {
   /* color: @accent_4; */
 }
 
-#battery.charging {
+#battery.charging, #custom-battery.charging {
   color: @accent_1;
 }
 
-#battery.critical:not(.charging) {
-  color: @alert_bg;
+#battery.warning:not(.charging), #custom-battery.warning {
+  color: @accent_5;
+}
+
+#battery.critical:not(.charging), #custom-battery.critical {
+  color: @alert_fg;
+  background-color: @alert_bg;
+  border-radius: 2px;
 }
 
 #mpris {

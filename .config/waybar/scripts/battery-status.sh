@@ -6,18 +6,21 @@ cap=$(cat "$BAT/capacity" 2>/dev/null)
 status=$(cat "$BAT/status" 2>/dev/null)
 
 icons=" 󰁻 󰁽 󰁿 󰂁 󰂃 "
-idx=$(( cap / 20 ))
+idx=$((cap / 20))
 [ "$idx" -gt 5 ] && idx=5
 icon=$(printf '%s' "$icons" | awk -v i="$idx" '{print $(i+1)}')
 
 case "$status" in
-    Charging|Full) icon="󰃨" ;;
-    *) : ;;
+Charging | Full) icon="󰃨" ;;
+*) : ;;
 esac
 
 class=""
 [ "$cap" -le 30 ] && class="warning"
 [ "$cap" -le 15 ] && class="critical"
+case "$status" in
+Charging | Full) class="charging" ;;
+esac
 
 printf '{"text":"%s %s%%","tooltip":"Battery: %s%% (%s)","class":"%s"}\n' \
-    "$icon" "$cap" "$cap" "$status" "$class"
+	"$icon" "$cap" "$cap" "$status" "$class"
