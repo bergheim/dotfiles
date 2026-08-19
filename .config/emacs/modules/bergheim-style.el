@@ -327,7 +327,7 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
 
 (defun bergheim/frame-setup (&optional frame)
   (with-selected-frame (or frame (selected-frame))
-    (scroll-bar-mode -1)
+    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
     (bergheim/setup-emoji-fonts)
     (if (bergheim//system-dark-mode-enabled-p)
         (load-theme bergheim/theme-dark t)
@@ -492,9 +492,9 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   (interactive)
   (if menu-bar-mode
       (progn (menu-bar-mode -1)
-             (scroll-bar-mode -1))
+             (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1)))
     (menu-bar-mode 1)
-    (scroll-bar-mode 1)))
+    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode 1))))
 
 (use-package emacs
   :ensure nil

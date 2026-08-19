@@ -1,0 +1,29 @@
+#!/bin/sh
+# Adjust the internal panel backlight without going through a GPU client.
+#
+# Stands in for `swayosd-client --brightness` while swayosd is disabled as a
+# test for the amdgpu/TTM LRU hardlock (see denote 20260601T112404): every
+# captured fatal fault so far had swayosd-server as the faulting task,
+# rendering its OSD surface via amdgpu_cs_ioctl.
+#
+# Uses logind's SetBrightness, so it needs no video-group membership, no udev
+# rule and no root -- and it never allocates a GPU buffer.
+set -eu
+
+dev=${BACKLIGHT_DEVICE:-amdgpu_bl1}
+sys=/sys/class/backlight/$dev
+max=$(cat "$sys/max_brightness")
+cur=$(cat "$sys/brightness")
+step=$((max / 20))          # 5% of the range
+
+case ${1:-} in
+    up)   new=$((cur + step)) ;;
+    down) new=$((cur - step)) ;;
+    *)    echo "usage: ${0##*/} up|down" >&2; exit 2 ;;
+esac
+
+if [ "$new" -gt "$max" ]; then new=$max; fi
+if [ "$new" -lt 1 ];    then new=1;   fi   # never blank the panel completely
+
+exec busctl call org.freedesktop.login1 /org/freedesktop/login1/session/auto \
+    org.freedesktop.login1.Session SetBrightness ssu backlight "$dev" "$new"

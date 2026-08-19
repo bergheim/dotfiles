@@ -74,8 +74,8 @@
 (setq frame-resize-pixelwise t)
 ;; disable this early to avoid flashing it
 (menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)                      ; All these tools are in the menu-bar anyway
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1)) ; void on tty-only builds
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (setq default-frame-alist '((fullscreen . maximized)
                             (ns-transparent-titlebar . t)))
 
