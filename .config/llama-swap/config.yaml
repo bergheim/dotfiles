@@ -45,6 +45,12 @@ models:
     cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-E4B-it-GGUF:Q4_K_M -c 8192 --jinja
     ttl: 120
 
+  muse-glimmer:
+    cmd: llama-server --port ${PORT}
+      -hf meta-models/Muse-Glimmer-30B-GGUF:kquant-17gb
+      --jinja --no-mmproj -c 16384 --cache-reuse 256
+      --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on
+
   qwen3.6-dense:
     cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.6-27B-GGUF:Q4_K_M --jinja
     ttl: 300
