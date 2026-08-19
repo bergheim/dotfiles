@@ -185,9 +185,14 @@ controlling terminal."
 (use-package exec-path-from-shell
   :demand
   :config
-  (when (or (memq window-system '(mac ns x))
-            (daemonp))
-    (exec-path-from-shell-initialize)))
+  (when (or (memq window-system '(mac ns x pgtk))
+            (daemonp)
+            (display-graphic-p))
+    (exec-path-from-shell-initialize))
+  (let ((pnpm-bin (expand-file-name "~/.local/share/pnpm/bin")))
+    (when (file-directory-p pnpm-bin)
+      (add-to-list 'exec-path pnpm-bin)
+      (setenv "PATH" (concat pnpm-bin path-separator (getenv "PATH"))))))
 
 (defun bergheim/toggle-big-font-mode (&optional level)
   "Toggle big font mode."
