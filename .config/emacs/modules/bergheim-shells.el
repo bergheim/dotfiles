@@ -27,6 +27,24 @@
   ;; don't ask for history confirmation on quit
   (remove-hook 'kill-buffer-query-functions #'multishell-kill-buffer-query-function))
 
+(defun bergheim/comint-send-input-or-complete ()
+  "Accept the corfu completion while the popup is up, else send the input.
+With nothing explicitly selected, take the first candidate.  Uses
+`corfu-complete' rather than `corfu-insert' so completion continues when
+the candidate can be completed further, e.g. a directory."
+  (interactive)
+  (if (and (bound-and-true-p completion-in-region-mode)
+           (bound-and-true-p corfu--candidates))
+      (progn
+        (corfu--update)
+        (when (< corfu--index 0)
+          (corfu--goto 0))
+        (corfu-complete))
+    (comint-send-input)))
+
+(with-eval-after-load 'corfu
+  (add-to-list 'corfu-continue-commands #'bergheim/comint-send-input-or-complete))
+
 (use-package shell
   :ensure nil
   :general
@@ -68,8 +86,8 @@
                   (evil-ret))))
   (:states 'insert
    :keymaps 'shell-mode-map
-   "RET" #'comint-send-input
-   "<return>" #'comint-send-input
+   "RET" #'bergheim/comint-send-input-or-complete
+   "<return>" #'bergheim/comint-send-input-or-complete
    "C-r" (lambda ()
            (interactive)
            (let ((input (comint-get-old-input-default)))
