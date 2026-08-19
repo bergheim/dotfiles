@@ -53,6 +53,7 @@
   ;; (setq evil-respect-visual-line-mode t)
   (setq evil-want-fine-undo t
         evil-want-C-u-scroll t
+        evil-want-C-u-delete t
         evil-want-Y-yank-to-eol t)
   :config
   (evil-set-initial-state 'compilation-mode 'normal)
