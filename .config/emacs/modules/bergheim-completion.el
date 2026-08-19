@@ -132,6 +132,7 @@
   :config
   (setopt consult-fd-args '((if (executable-find "fdfind" 'remote) "fdfind" "fd")
                             "--full-path --color=never --hidden"))
+  (setopt consult-ripgrep-args (concat consult-ripgrep-args " --hidden -g=!.git"))
   ;; Narrowing lets you restrict results to certain groups of candidates
   (setq consult-narrow-key "<")
   (setq consult-preview-key 'any)
