@@ -489,8 +489,27 @@ Prompts for session name if none provided. Inserts selected region text into cha
   :general
   (general-define-key
    :keymaps 'agent-shell-mode-map
+   :states 'normal
+   "C-k" 'comint-previous-prompt
+   "C-j" 'comint-next-prompt)
+  (general-define-key
+   :keymaps 'agent-shell-mode-map
    :states 'insert
-   "RET" 'newline)
+   "RET" 'newline
+   ;; Match shell-mode: always history from the live prompt.
+   "M-p" (lambda ()
+           (interactive)
+           (goto-char (point-max))
+           (call-interactively #'comint-previous-input))
+   "M-n" (lambda ()
+           (interactive)
+           (goto-char (point-max))
+           (call-interactively #'comint-next-input)))
+  (general-define-key
+   :keymaps 'agent-shell-viewport-edit-mode-map
+   :states 'insert
+   "C-k" 'agent-shell-viewport-previous-history
+   "C-j" 'agent-shell-viewport-next-history)
   (general-define-key
    :keymaps 'agent-shell-mode-map
    :states '(normal insert visual motion emacs)
