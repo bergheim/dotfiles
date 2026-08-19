@@ -341,10 +341,13 @@ bindsym $mod+Shift+r exec "record-sway"
 bindsym $mod+Shift+w exec "record-sway window"
 bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"
 
+# swayosd disabled 2026-08-18: test for the amdgpu/TTM LRU hardlock
+# (denote 20260601T112404) -- swayosd-server was the faulting task in
+# all 10 captured oopses. Revert by restoring the swayosd-client lines.
 # Media keys
-bindsym XF86AudioPrev exec swayosd-client --playerctl prev
-bindsym XF86AudioNext exec swayosd-client --playerctl next
-bindsym XF86AudioPlay exec swayosd-client --playerctl play-pause
+bindsym XF86AudioPrev exec playerctl previous
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPlay exec playerctl play-pause
 # bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 # bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 # bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -383,20 +386,20 @@ bindsym XF86TouchpadOn exec laptop-key touchpad-on
 bindsym XF86TouchpadOff exec laptop-key touchpad-off
 
 # Sink volume raise optionally with --device
-bindsym XF86AudioRaiseVolume exec swayosd-client --output-volume raise
+bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
 # Sink volume lower optionally with --device
-bindsym XF86AudioLowerVolume exec  swayosd-client --output-volume lower
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
 # Sink volume toggle mute
-bindsym XF86AudioMute exec swayosd-client --output-volume mute-toggle
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 # Source volume toggle mute
-bindsym XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
+bindsym XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 # Toggle default output between speakers and headset
 bindsym $mod+Shift+a exec audio-toggle
 
 # Brightness raise
-bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise
+bindsym XF86MonBrightnessUp exec backlight-step up
 # Brightness lower
-bindsym XF86MonBrightnessDown exec swayosd-client --brightness lower
+bindsym XF86MonBrightnessDown exec backlight-step down
 
 # Password manager (replace rofi-pass with wofi equivalent)
 bindsym $mod+p exec fuzzel-pass
@@ -598,7 +601,7 @@ exec mako
 exec kdeconnect-indicator
 exec blueman-manager
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-exec swayosd-server
+# exec swayosd-server
 # Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
 # your machine's `exec swayidle -w ...` line in the matching
 # ~/.config/sway/host-<hostname>.conf instead of here.

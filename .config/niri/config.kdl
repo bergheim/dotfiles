@@ -264,7 +264,8 @@ spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLA
 spawn-at-startup "systemctl" "--user" "start" "emacs.service"
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
-spawn-at-startup "swayosd-server"
+// swayosd disabled 2026-08-18: amdgpu/TTM LRU hardlock test (denote 20260601T112404)
+// spawn-at-startup "swayosd-server"
 spawn-at-startup "kanshi"
 spawn-at-startup "swaybg" "-i" "/home/tsb/Pictures/wallpapers/active/light/primary.jpg" "-m" "fill"
 spawn-sh-at-startup "wl-paste --watch cliphist store"
@@ -435,13 +436,13 @@ binds {
     Mod+Shift+Q       { spawn-sh "ACT=$(printf 'lock\\nlogout\\nsuspend\\nreboot\\nshutdown\\nuefi' | fuzzel -d -p 'system: '); case \"$ACT\" in lock) fancylocksway;; logout) niri msg action quit;; suspend) systemctl suspend;; reboot) systemctl reboot;; shutdown) systemctl poweroff -i;; uefi) systemctl reboot --firmware-setup;; esac"; }
     Ctrl+Alt+Delete   { spawn-sh "[ \"$(printf 'NO\\nYES' | fuzzel -d -p 'Really restart system? ')\" = YES ] && restart-system"; }
 
-    // -- Audio / brightness, swayosd-client (sway lines 347–358) --
-    XF86AudioRaiseVolume   allow-when-locked=true { spawn "swayosd-client" "--output-volume" "raise"; }
-    XF86AudioLowerVolume   allow-when-locked=true { spawn "swayosd-client" "--output-volume" "lower"; }
-    XF86AudioMute          allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle"; }
-    XF86AudioMicMute       allow-when-locked=true { spawn "swayosd-client" "--input-volume" "mute-toggle"; }
-    XF86MonBrightnessUp    allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
-    XF86MonBrightnessDown  allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
+    // -- Audio / brightness (swayosd replaced, see sway config note) --
+    XF86AudioRaiseVolume   allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
+    XF86AudioLowerVolume   allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
+    XF86AudioMute          allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMicMute       allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+    XF86MonBrightnessUp    allow-when-locked=true { spawn "backlight-step" "up"; }
+    XF86MonBrightnessDown  allow-when-locked=true { spawn "backlight-step" "down"; }
 
     // niri convention: hotkey overlay.
     Mod+Shift+Slash { show-hotkey-overlay; }
