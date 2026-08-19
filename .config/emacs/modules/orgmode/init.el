@@ -377,10 +377,16 @@ With universal arg ARG, search all .org files under `org-directory`."
         org-noter-always-create-property-drawer t
         org-noter-insert-note-no-questions t
         org-noter-separate-notes-from-heading t
-        org-noter-auto-save-last-location t)
+        org-noter-auto-save-last-location t
+        org-noter-highlight-selected-text t)
+  (advice-add 'org-noter-insert-note :after
+              (lambda (&rest _)
+                (when-let ((notes-win (org-noter--get-notes-window)))
+                  (select-window notes-win)
+                  (evil-insert))))
   :general
   (general-define-key
-   :states 'normal
+   :states '(normal visual)
    :keymaps 'pdf-view-mode-map
    "i" 'org-noter-insert-note
    "I" 'org-noter-insert-precise-note
