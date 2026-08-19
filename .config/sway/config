@@ -596,6 +596,7 @@ exec wl-paste --watch cliphist store
 exec waybar
 exec mako
 exec kdeconnect-indicator
+exec blueman-manager
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 exec swayosd-server
 # Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
