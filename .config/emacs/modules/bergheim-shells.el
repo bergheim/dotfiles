@@ -45,6 +45,16 @@ the candidate can be completed further, e.g. a directory."
 (with-eval-after-load 'corfu
   (add-to-list 'corfu-continue-commands #'bergheim/comint-send-input-or-complete))
 
+(defun bergheim/comint-history ()
+  "Insert a command from `comint-input-ring', most recent first.
+`consult-history' passes :sort nil, so the completion UI shows the
+ring in order instead of re-sorting it, and duplicates are dropped
+keeping the newest -- i.e. plain MRU.  The current input becomes the
+initial minibuffer contents and is replaced by the selection."
+  (interactive)
+  (goto-char (point-max))
+  (consult-history))
+
 (use-package shell
   :ensure nil
   :general
@@ -69,11 +79,7 @@ the candidate can be completed further, e.g. a directory."
            (if (comint-after-pmark-p)
                (comint-send-eof)
              (evil-scroll-down nil)))
-   "C-r" (lambda ()
-           (interactive)
-           (goto-char (point-max))
-           (comint-kill-input)
-           (consult-history))
+   "C-r" #'bergheim/comint-history
    "RET" (lambda ()
            (interactive)
            (if (comint-after-pmark-p)
@@ -88,12 +94,7 @@ the candidate can be completed further, e.g. a directory."
    :keymaps 'shell-mode-map
    "RET" #'bergheim/comint-send-input-or-complete
    "<return>" #'bergheim/comint-send-input-or-complete
-   "C-r" (lambda ()
-           (interactive)
-           (let ((input (comint-get-old-input-default)))
-             (comint-kill-input)
-             (insert (completing-read "History: " (ring-elements comint-input-ring) 
-                                      nil nil input))))
+   "C-r" #'bergheim/comint-history
    "C-d" 'comint-send-eof
    "C-a" #'comint-bol
    "C-e" #'end-of-line
