@@ -374,8 +374,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 (use-package corfu-info
   :ensure nil
   :after corfu
-  :unless (display-graphic-p)
-  :after corfu
   :general
   (corfu-map
    "C-h" 'corfu-info-documentation))
@@ -384,9 +382,13 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 (use-package corfu-terminal
   :if (< emacs-major-version 31)
   :unless (featurep 'tty-child-frames)
-  :unless (display-graphic-p)
   :hook
-  (corfu-mode-hook . corfu-terminal-mode))
+  (corfu-mode . bergheim/corfu-terminal-maybe-enable)
+  :config
+  (defun bergheim/corfu-terminal-maybe-enable ()
+    "Enable `corfu-terminal-mode' only on non-graphical frames."
+    (unless (display-graphic-p)
+      (corfu-terminal-mode 1))))
 
 ;; (use-package corfu-doc-terminal
 ;;   :after corfu-terminal
@@ -487,8 +489,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
 
 ;; Pretty icons for corfu
 (use-package kind-icon
-  :if (display-graphic-p)
+  :ensure t
   :after corfu
+  :demand t
   :config
   (setq kind-icon-default-style
         '(:padding -1 :stroke 0 :margin 0 :radius 0 :height 0.5 :scale 1.0))
