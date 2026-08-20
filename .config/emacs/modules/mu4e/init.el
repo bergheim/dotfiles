@@ -1,5 +1,10 @@
 ;;; init.el --- mu4e mail config orchestrator -*- lexical-binding: t; -*-
 
+(defvar bergheim/mu-binary (expand-file-name "~/.local/bin/mu")
+  "Path to the `mu' binary built by `mu4e-build-mu'.
+Its last build step keeps this symlink pointed at the binary matching the
+checked out mu4e elisp, so mu4e never talks to a stale mu server.")
+
 (elpaca-defscript mu4e-build-mu (:type system :dir source)
   ("meson" "setup" "build" "-Dtests=disabled" "--reconfigure")
   ("ninja" "-C" "build")
@@ -8,7 +13,7 @@
 
 (defun mu4e-init-and-index (e)
   "Ensure mu DB exists and refresh the index. Idempotent on rebuild.
-Relies on the symlink dropped by `mu4e-build-mu' putting mu on PATH."
+Runs `bergheim/mu-binary', the symlink dropped by `mu4e-build-mu'."
   (let ((maildir (expand-file-name "~/.mail"))
         (xapian  (expand-file-name "mu/xapian"
                                    (or (getenv "XDG_CACHE_HOME")
@@ -22,11 +27,18 @@ Relies on the symlink dropped by `mu4e-build-mu' putting mu on PATH."
                          bergheim/glvortex/email-spam
                          bergheim/glvortex/email-me)))
     (make-directory maildir t)
-    (unless (file-directory-p xapian)
-      (apply #'call-process "mu" nil "*mu init*" nil
-             "init" "--quiet" "--maildir" maildir
-             (mapcar (lambda (a) (concat "--my-address=" a)) addresses)))
-    (call-process "mu" nil "*mu index*" nil "index" "--quiet"))
+    ;; Never wedge the build over indexing: a locked Xapian DB (mu server still
+    ;; running from a live mu4e session) or a missing binary is not a reason to
+    ;; leave the package unbuilt.
+    (condition-case err
+        (progn
+          (unless (file-directory-p xapian)
+            (apply #'call-process bergheim/mu-binary nil "*mu init*" nil
+                   "init" "--quiet" "--maildir" maildir
+                   (mapcar (lambda (a) (concat "--my-address=" a)) addresses)))
+          (call-process bergheim/mu-binary nil "*mu index*" nil "index" "--quiet"))
+      (error (elpaca-note e (format "mu init/index skipped: %s"
+                                    (error-message-string err))))))
   (elpaca-continue e))
 
 (use-package mu4e
