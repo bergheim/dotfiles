@@ -26,11 +26,24 @@
 #   for i in "${__node_commands[@]}"; do alias $i='__init_nvm && '$i; done
 # fi
 
-# typeset -U path
-# path=(~/local/bin $path[@])
+# keep PATH/fpath deduplicated -- .zshrc prepends to PATH, so without this every
+# nested interactive shell (tmux inside emacs, etc) re-adds the same entries
+typeset -U path fpath
+
 export GOBIN="$HOME/.local/bin"
-export PATH=$GOBIN:~/bin:$PATH
-export PATH=~/local/bin:~/.local/bin:~/.cargo/bin:$PATH
+export BUN_INSTALL="$HOME/.bun"
+
+# NB: array assignment, not `export PATH=...:$PATH`. typeset -U only uniquifies
+# on *array* assignment; scalar PATH= assignments slip duplicates straight past
+# it. Directories that don't exist on a given machine are harmless.
+path=(
+  "$BUN_INSTALL/bin"
+  ~/local/bin
+  ~/.local/bin          # == $GOBIN
+  ~/.cargo/bin
+  ~/bin
+  $path
+)
 
 export RANGER_LOAD_DEFAULT_RC=FALSE
 export PANEL_FIFO="/tmp/panel-fifo"
@@ -59,6 +72,10 @@ export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 [ -t 0 ] && export GPG_TTY=$(tty)
 
 export PAGER=bat
+# zim's utility module sets this only if unset, so we win from .zshenv.
+# Same as its default minus --no-init (-X), which breaks mouse-wheel
+# scrolling and is only needed for less older than 530.
+export LESS='--ignore-case --jump-target=4 --LONG-PROMPT --quit-if-one-screen --RAW-CONTROL-CHARS'
 export BROWSER=firefox
 
 # Set temporary files locations
