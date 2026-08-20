@@ -1,0 +1,156 @@
+#!/usr/bin/env sh
+# Display arrangement for sway: mirror / extend / one screen only.
+#
+#   display-mode              interactive fuzzel picker
+#   display-mode <mode>       mirror | extend | internal | external | auto
+#   display-mode arrange      reposition enabled outputs, nothing else
+#
+# Two things make this less trivial than it looks:
+#
+#   sway has no mirroring -- there is no `mirror` in sway-output(5) and
+#   none in wlr-randr. Mirror is wl-mirror copying the internal panel
+#   onto the external via screencopy.
+#
+#   kanshi reapplies a profile whenever an output global appears or
+#   disappears, and `output <name> disable` destroys that global. So a
+#   manual arrangement gets stomped the moment it is applied unless
+#   kanshi is stopped first. Every manual mode stops it; "auto" hands
+#   control back.
+#
+# `arrange` is the exception: it is what kanshi profiles call, so it must
+# NOT kill kanshi or it would kill its own parent.
+
+set -eu
+
+[ -n "${SWAYSOCK:-}" ] || exit 0   # not a sway session (e.g. niri); no-op
+
+internal=$(swaymsg -t get_outputs -r \
+	| jq -r '.[] | select(.name | startswith("eDP")) | .name' | head -1)
+externals=$(swaymsg -t get_outputs -r \
+	| jq -r '.[] | select(.name | startswith("eDP") | not) | .name')
+
+toast() { swayosd-client --custom-message "$1" --custom-icon video-display 2>/dev/null || true; }
+
+# Scaled width: how much room this output takes in the layout. Only
+# meaningful once it is enabled and its mode has settled.
+scaled_width() {
+	swaymsg -t get_outputs -r | jq -r --arg n "$1" '
+		.[] | select(.name == $n)
+		| ((.current_mode.width // 0) / (.scale // 1)) | floor'
+}
+
+stop_helpers() {
+	pkill -x kanshi 2>/dev/null || true
+	pkill -x wl-mirror 2>/dev/null || true
+}
+
+enable_all() {
+	for o in $externals $internal; do
+		[ -n "$o" ] && swaymsg output "$o" enable >/dev/null
+	done
+}
+
+# Lay the named outputs left to right, using their real logical widths.
+# No offset is hardcoded, so this is correct for any monitor.
+tile() {
+	x=0
+	for o in "$@"; do
+		[ -n "$o" ] || continue
+		swaymsg output "$o" position "$x" 0 >/dev/null
+		x=$((x + $(scaled_width "$o")))
+	done
+}
+
+# Externals first, internal on the right.
+tile_all() { tile $externals $internal; }
+
+settle() { sleep 0.4; }   # modes/scales land asynchronously
+
+need_external() {
+	[ -n "$externals" ] || { toast "No external display"; exit 0; }
+}
+
+mode_mirror() {
+	need_external
+	stop_helpers
+	enable_all
+	settle
+	tile_all
+	target=$(printf '%s\n' $externals | head -1)
+	# --fullscreen-output implies --fullscreen. Do not reach for -f as a
+	# short form: in wl-mirror 0.18 -f is --freeze, -F is --fullscreen.
+	setsid wl-mirror --fullscreen-output "$target" "$internal" >/dev/null 2>&1 &
+	toast "Mirroring to $target"
+}
+
+mode_extend() {
+	need_external
+	stop_helpers
+	enable_all
+	settle
+	tile_all
+	toast "Extended"
+}
+
+mode_internal() {
+	stop_helpers
+	swaymsg output "$internal" enable >/dev/null
+	for o in $externals; do swaymsg output "$o" disable >/dev/null; done
+	settle
+	tile "$internal"
+	toast "Internal only"
+}
+
+mode_external() {
+	need_external
+	stop_helpers
+	for o in $externals; do swaymsg output "$o" enable >/dev/null; done
+	swaymsg output "$internal" disable >/dev/null
+	settle
+	tile $externals
+	toast "External only"
+}
+
+mode_auto() {
+	stop_helpers
+	enable_all
+	setsid kanshi >/dev/null 2>&1 &
+	toast "Auto (kanshi)"
+}
+
+# Called from kanshi profiles: position whatever kanshi just enabled.
+# Deliberately does not touch kanshi or wl-mirror.
+mode_arrange() {
+	settle
+	tile_all
+}
+
+menu() {
+	# Narrow the picker on a rotated (portrait) focused output, like fuzzel-run.
+	transform=$(swaymsg -t get_outputs -r | jq -r '.[] | select(.focused) | .transform')
+	case "$transform" in
+		90 | 270 | flipped-90 | flipped-270) width="--width 30" ;;
+		*) width="" ;;
+	esac
+	printf '%s\n' "Mirror" "Extend" "Internal only" "External only" "Auto (kanshi)" \
+		| fuzzel --dmenu --prompt "display ❯ " $width
+}
+
+case "${1:-}" in
+	mirror)   mode_mirror ;;
+	extend)   mode_extend ;;
+	internal) mode_internal ;;
+	external) mode_external ;;
+	auto)     mode_auto ;;
+	arrange)  mode_arrange ;;
+	"")
+		case "$(menu || true)" in
+			"Mirror")        mode_mirror ;;
+			"Extend")        mode_extend ;;
+			"Internal only") mode_internal ;;
+			"External only") mode_external ;;
+			"Auto (kanshi)") mode_auto ;;
+		esac
+		;;
+	*) echo "usage: display-mode [mirror|extend|internal|external|auto|arrange]" >&2; exit 1 ;;
+esac

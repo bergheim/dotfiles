@@ -404,6 +404,10 @@ bindsym XF86MonBrightnessDown exec backlight-step down
 # Password manager (replace rofi-pass with wofi equivalent)
 bindsym $mod+p exec fuzzel-pass
 
+# Display arrangement picker (mirror / extend / internal / external / auto).
+# $mod+p is taken by fuzzel-pass above.
+bindsym $mod+shift+p exec display-mode
+
 # Clipboard (replace clipmenu with wl-clipboard)
 bindsym $mod+v exec fuzzel-cliphist
 
@@ -605,10 +609,8 @@ exec kdeconnect-indicator
 exec blueman-manager
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # exec swayosd-server
-# Idle/lock is per-host (desktop shouldn't lock, laptop should). Put
-# your machine's `exec swayidle -w ...` line in the matching
-# ~/.config/sway/host-<hostname>.conf instead of here.
-exec_always kanshi
+# kanshi never exits, so make sure we kill current
+exec_always 'pkill -x kanshi; exec kanshi'
 
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
 # }}}

@@ -1,23 +1,21 @@
-profile berghome {
-    output "LG Electronics 27GN950 012NTKF1P949" enable mode 3840x2160@144Hz scale 2 position 0,0
-    output "LG Electronics 27GL850 912NTRL0M742" enable mode 2560x1440@144Hz scale 2 transform 270 position 1920,0
+profile mobile {
+    output eDP-1 enable mode preferred scale 2
+}
+
+profile hdmi {
+    output HDMI-A-1 enable mode preferred
+    output eDP-1 enable mode preferred scale 2
+    exec $HOME/local/bin/display-mode arrange
 }
 
 profile docked {
-    output "Dell Inc. DELL P2721Q FHN4MJ3" enable mode preferred scale 2 position 0,0
-    output "Tianma Microelectronics Ltd. TL140ADXP24-0 Unknown" enable mode preferred scale 2 position 3840,0
-    exec ~/.config/kanshi/docked.sh
+    output DP-2 enable mode preferred scale 2
+    output eDP-1 enable mode preferred scale 2
+    exec $HOME/local/bin/display-mode arrange
+    exec $HOME/.config/kanshi/docked.sh
 }
 
-profile mobile {
-    output "Tianma Microelectronics Ltd. TL140ADXP24-0 Unknown" enable mode preferred scale 2 position 0,0
-}
-
-profile mirror-hdmi {
-    output eDP-1 enable mode 1920x1080 position 0,0
-    output HDMI-A-1 enable mode 1920x1080 position 1920,0
-    exec wl-present mirror eDP-1 --fullscreen-output HDMI-A-1 --fullscreen
-
-    # alternatively, for wl-mirror < 0.16.4
-    # exec wl-present mirror eDP-1 & sleep .5; wl-present fullscreen-output HDMI-A-1; wl-present fullscreen
+profile berghome {
+    output DP-1 enable mode preferred scale 2 position 0,0
+    output DP-2 enable mode preferred scale 2 transform 270 position 1920,0
 }
