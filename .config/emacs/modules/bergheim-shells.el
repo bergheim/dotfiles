@@ -28,22 +28,46 @@
   (remove-hook 'kill-buffer-query-functions #'multishell-kill-buffer-query-function))
 
 (defun bergheim/comint-send-input-or-complete ()
-  "Accept the corfu completion while the popup is up, else send the input.
-With nothing explicitly selected, take the first candidate.  Uses
-`corfu-complete' rather than `corfu-insert' so completion continues when
-the candidate can be completed further, e.g. a directory."
+  "Accept a selected corfu candidate, else RET as this mode wants it.
+Popup with no selection: quit the popup, do nothing else.
+No popup: agent-shell newline (M-RET sends), shell sends."
   (interactive)
-  (if (and (bound-and-true-p completion-in-region-mode)
-           (bound-and-true-p corfu--candidates))
-      (progn
-        (corfu--update)
-        (when (< corfu--index 0)
-          (corfu--goto 0))
-        (corfu-complete))
-    (comint-send-input)))
+  (cond
+   ((and (bound-and-true-p completion-in-region-mode)
+         (bound-and-true-p corfu--candidates)
+         (>= corfu--index 0))
+    (corfu--update)
+    (corfu-complete))
+   ((and (bound-and-true-p completion-in-region-mode)
+         (bound-and-true-p corfu--candidates))
+    (corfu-quit))
+   ((derived-mode-p 'agent-shell-mode)
+    (newline))
+   (t (comint-send-input))))
+
+(defun bergheim/comint-tab ()
+  "Insert completion-preview if shown, else cycle corfu, else complete at point."
+  (interactive)
+  (cond
+   ((bound-and-true-p completion-preview-active-mode)
+    (completion-preview-insert))
+   ((and (bound-and-true-p completion-in-region-mode)
+         (bound-and-true-p corfu--candidates))
+    (corfu-next 1))
+   (t (completion-at-point))))
+
+(defun bergheim/comint-slash ()
+  "Zsh-like /: accept the visible preview, then ensure exactly one trailing slash."
+  (interactive)
+  (when (bound-and-true-p completion-preview-active-mode)
+    (completion-preview-insert))
+  (unless (eq (char-before) ?/)
+    (insert "/")))
 
 (with-eval-after-load 'corfu
-  (add-to-list 'corfu-continue-commands #'bergheim/comint-send-input-or-complete))
+  (add-to-list 'corfu-continue-commands #'bergheim/comint-send-input-or-complete)
+  (add-to-list 'corfu-continue-commands #'bergheim/comint-tab)
+  (add-to-list 'corfu-continue-commands #'bergheim/comint-slash))
 
 (defun bergheim/comint-history ()
   "Insert a command from the shell history, most recent first."
@@ -90,6 +114,8 @@ the candidate can be completed further, e.g. a directory."
    :keymaps 'shell-mode-map
    "RET" #'bergheim/comint-send-input-or-complete
    "<return>" #'bergheim/comint-send-input-or-complete
+   "TAB" #'bergheim/comint-tab
+   "/" #'bergheim/comint-slash
    "C-r" #'bergheim/comint-history
    "C-d" 'comint-send-eof
    "C-a" #'comint-bol
@@ -146,14 +172,15 @@ the candidate can be completed further, e.g. a directory."
 
     ;; stop duplicate input from appearing
     (setq-local comint-process-echoes t)
+    (setq-local corfu-preselect 'prompt)
     (compilation-shell-minor-mode 1)
     (completion-preview-mode 1)
 
     ;; match the prompt so history works
     (setq-local comint-prompt-regexp "^[^λ]+λ ")
 
-    ;; Don't add space after file completions (helps with directory traversal)
-    (setq comint-completion-addsuffix nil)
+    ;; Dir complete adds /; files add nothing (no space). / itself will not double.
+    (setq-local comint-completion-addsuffix '("/" . ""))
 
     ;; Better file completion settings
     (setq comint-completion-autolist t)

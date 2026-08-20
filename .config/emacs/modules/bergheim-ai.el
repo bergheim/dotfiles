@@ -495,7 +495,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (general-define-key
    :keymaps 'agent-shell-mode-map
    :states 'insert
-   "RET" 'newline
+   "RET" 'bergheim/comint-send-input-or-complete
    ;; Match shell-mode: always history from the live prompt.
    "M-p" (lambda ()
            (interactive)
@@ -627,7 +627,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
   (add-hook 'agent-shell-diff-mode-hook
             #'bergheim/agent-shell-diff-evil-bindings)
 
-  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'bergheim/comint-send-input-or-complete)
   (evil-define-key 'normal agent-shell-mode-map
     (kbd "RET") #'bergheim/agent-shell-toggle-fragment-at-point
     (kbd "<return>") #'bergheim/agent-shell-toggle-fragment-at-point
