@@ -749,20 +749,36 @@ Decides what goes to PROPERTIES vs VCARD."
                                (shell-quote-argument relative-path)
                                name))))))
 
+(defvar bergheim/contactor--completion-cache nil
+  "(mtime . contacts) for `bergheim/contactor-completion-at-point'.")
+
+(defun bergheim/contactor--contacts-for-completion ()
+  "Contact names with `contact-id' text property. Cached per file mtime.
+Never creates IDs — a capf must not mutate contacts.org."
+  (let* ((file bergheim/contactor-file)
+         (mtime (file-attribute-modification-time (file-attributes file)))
+         (cache bergheim/contactor--completion-cache))
+    (if (and cache (equal mtime (car cache)))
+        (cdr cache)
+      (let ((contacts
+             (with-current-buffer (find-file-noselect file)
+               (unless (derived-mode-p 'org-mode) (org-mode))
+               (org-map-entries
+                (lambda ()
+                  (when-let* ((name (org-get-heading t t t t))
+                              (id (org-entry-get nil "ID")))
+                    (propertize name 'contact-id id)))
+                nil nil))))
+        (setq bergheim/contactor--completion-cache (cons mtime contacts))
+        contacts))))
+
 (defun bergheim/contactor-completion-at-point ()
   "Completion-at-point function for contacts."
   (when (and (derived-mode-p 'org-mode)
              (looking-back "@\\([a-zA-Z0-9-]*\\)" (line-beginning-position)))
     (let* ((bounds (cons (match-beginning 1) (match-end 1)))
-           (contacts (with-current-buffer (find-file-noselect bergheim/contactor-file)
-                       (org-map-entries 
-                        (lambda () 
-                          (when-let* ((name (org-get-heading t t t t))
-                                      (id (or (org-entry-get nil "ID")
-                                              (org-id-get-create))))
-                            (propertize name 'contact-id id)))
-                        nil nil))))
-      (list (car bounds) 
+           (contacts (bergheim/contactor--contacts-for-completion)))
+      (list (car bounds)
             (cdr bounds)
             contacts
             :exit-function
