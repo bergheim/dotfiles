@@ -1,7 +1,7 @@
 ;;; init.el --- mu4e mail config orchestrator -*- lexical-binding: t; -*-
 
 (elpaca-defscript mu4e-build-mu (:type system :dir source)
-  ("meson" "setup" "build" "-Dtests=disabled")
+  ("meson" "setup" "build" "-Dtests=disabled" "--reconfigure")
   ("ninja" "-C" "build")
   ("sh" "-c"
    "mkdir -p \"$HOME/.local/bin\" && ln -sf \"$PWD/build/mu/mu\" \"$HOME/.local/bin/mu\""))
