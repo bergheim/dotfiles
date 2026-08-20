@@ -27,7 +27,7 @@ Relies on the symlink dropped by `mu4e-build-mu' putting mu on PATH."
              "init" "--quiet" "--maildir" maildir
              (mapcar (lambda (a) (concat "--my-address=" a)) addresses)))
     (call-process "mu" nil "*mu index*" nil "index" "--quiet"))
-  (elpaca--continue-build e))
+  (elpaca-continue e))
 
 (use-package mu4e
   :ensure `(mu4e :host github
