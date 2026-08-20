@@ -473,7 +473,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (completion-styles '(orderless basic))
   ;; this has a bunch of other things set up.. so just set everything from orderless
   (completion-category-defaults nil)
-  (completion-category-overrides '(file (styles basic partial-completion)))
+  (completion-category-overrides '((file (styles basic partial-completion))))
   ;; don't add rarely used things here, use dispatchers instead
   (orderless-matching-styles '(orderless-literal orderless-prefixes orderless-regexp)))
 
