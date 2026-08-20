@@ -1,58 +1,8 @@
 ;;; init.el --- mu4e mail config orchestrator -*- lexical-binding: t; -*-
 
-(defvar bergheim/mu-binary (expand-file-name "~/.local/bin/mu")
-  "Path to the `mu' binary built by `mu4e-build-mu'.
-Its last build step keeps this symlink pointed at the binary matching the
-checked out mu4e elisp, so mu4e never talks to a stale mu server.")
-
-(elpaca-defscript mu4e-build-mu (:type system :dir source)
-  ("meson" "setup" "build" "-Dtests=disabled" "--reconfigure")
-  ("ninja" "-C" "build")
-  ("sh" "-c"
-   "mkdir -p \"$HOME/.local/bin\" && ln -sf \"$PWD/build/mu/mu\" \"$HOME/.local/bin/mu\""))
-
-(defun mu4e-init-and-index (e)
-  "Ensure mu DB exists and refresh the index. Idempotent on rebuild.
-Runs `bergheim/mu-binary', the symlink dropped by `mu4e-build-mu'."
-  (let ((maildir (expand-file-name "~/.mail"))
-        (xapian  (expand-file-name "mu/xapian"
-                                   (or (getenv "XDG_CACHE_HOME")
-                                       (expand-file-name "~/.cache"))))
-        (addresses (list bergheim/gmail/email
-                         bergheim/anthropic/email
-                         bergheim/ntnu/email
-                         bergheim/personal/email
-                         bergheim/mailbox/email
-                         bergheim/glvortex/email
-                         bergheim/glvortex/email-spam
-                         bergheim/glvortex/email-me)))
-    (make-directory maildir t)
-    ;; Never wedge the build over indexing: a locked Xapian DB (mu server still
-    ;; running from a live mu4e session) or a missing binary is not a reason to
-    ;; leave the package unbuilt.
-    (condition-case err
-        (progn
-          (unless (file-directory-p xapian)
-            (apply #'call-process bergheim/mu-binary nil "*mu init*" nil
-                   "init" "--quiet" "--maildir" maildir
-                   (mapcar (lambda (a) (concat "--my-address=" a)) addresses)))
-          (call-process bergheim/mu-binary nil "*mu index*" nil "index" "--quiet"))
-      (error (elpaca-note e (format "mu init/index skipped: %s"
-                                    (error-message-string err))))))
-  (elpaca-continue e))
-
 (use-package mu4e
-  :ensure `(mu4e :host github
-                 :repo "djcb/mu"
-                 :depth nil
-                 :files ("mu4e/*.el"
-                         "build/mu4e/mu4e-config.el"
-                         "build/mu4e/mu4e.info")
-                 :main "mu4e/mu4e.el"
-                 :build ((:not elpaca-build-docs)
-                         (:before elpaca-build-link mu4e-build-mu)
-                         (:after  elpaca-activate   mu4e-init-and-index)))
-  :custom (mu4e-mu-binary bergheim/mu-binary)
+  :ensure nil
+  :load-path "/usr/share/emacs/site-lisp/mu4e"
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
