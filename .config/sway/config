@@ -606,7 +606,7 @@ exec wl-paste --watch cliphist store
 exec waybar
 exec mako
 exec kdeconnect-indicator
-exec blueman-manager
+exec blueman-applet
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # exec swayosd-server
 # kanshi never exits, so make sure we kill current
