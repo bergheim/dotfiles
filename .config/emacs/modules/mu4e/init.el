@@ -52,6 +52,7 @@ Runs `bergheim/mu-binary', the symlink dropped by `mu4e-build-mu'."
                  :build ((:not elpaca-build-docs)
                          (:before elpaca-build-link mu4e-build-mu)
                          (:after  elpaca-activate   mu4e-init-and-index)))
+  :custom (mu4e-mu-binary bergheim/mu-binary)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :config
