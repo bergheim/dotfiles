@@ -418,7 +418,7 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   ;; add buffer local defaults
   (add-hook 'completion-at-point-functions #'cape-file)
   ;; (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
-  (dolist (hook '(text-mode-hook prog-mode-hook erc-mode-hook))
+  (dolist (hook '(text-mode-hook prog-mode-hook erc-mode-hook jabber-chat-mode-hook))
     (add-hook hook
               (lambda ()
                 (add-hook 'completion-at-point-functions #'cape-emoji 80 t))))
