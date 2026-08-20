@@ -9,6 +9,7 @@
 
   ;; LOL @this loading
   :config
+  (require 'org-tempo) ;; <q TAB quote, <s TAB src, etc.
   (bergheim/load-file "modules/orgmode/babel.el")
   (bergheim/load-file "modules/orgmode/base.el")
   (bergheim/load-file "modules/orgmode/helpers.el")
