@@ -1,10 +1,14 @@
 {
-  "lastChangelogVersion": "0.83.0",
+  "lastChangelogVersion": "0.84.2",
   "theme": "crew-catppuccin-latte",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
+  "defaultProvider": "xai",
+  "defaultModel": "grok-4.6",
   "npmCommand": [
-    "pnpm"
+    "pnpm",
+    "--config.node-linker=hoisted",
+    "--config.strict-dep-builds=false",
+    "--config.auto-install-peers=false",
+    "--config.strict-peer-dependencies=false"
   ],
   "packages": [
     "npm:pi-downshift",
@@ -17,8 +21,9 @@
     "npm:pi-system-prompt",
     "npm:pi-claude-bridge",
     "git:github.com/earendil-works/pi-review",
-    "git:github.com/earendil-works/pi-review-loop"
+    "git:github.com/earendil-works/pi-review-loop",
+    "git:github.com/DietrichGebert/ponytail"
   ],
-  "hideThinkingBlock": true,
+  "hideThinkingBlock": false,
   "defaultThinkingLevel": "medium"
 }
