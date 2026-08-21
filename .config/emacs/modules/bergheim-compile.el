@@ -126,13 +126,14 @@ With COMINT non-nil, use `comint-mode'."
 
     (if (and existing-buffer
              (with-current-buffer existing-buffer
-               (and (derived-mode-p 'compilation-mode 'comint-mode)
+               (and (derived-mode-p 'compilation-mode 'comint-mode 'ghostel-mode)
                     (get-buffer-process existing-buffer))))
         (with-current-buffer existing-buffer
-          (if (derived-mode-p 'comint-mode)
+          (if (or (derived-mode-p 'comint-mode)
+                  (bound-and-true-p ghostel-compile--interactive))
               (progn
                 (pop-to-buffer existing-buffer)
-                (message "Already running in comint mode. Switch to buffer."))
+                (message "Already running interactively. Switch to buffer."))
             (recompile)))
       (compile command comint))))
 
