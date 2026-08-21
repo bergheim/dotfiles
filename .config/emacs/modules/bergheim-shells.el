@@ -338,13 +338,6 @@ No popup: agent-shell newline (M-RET sends), shell sends."
           (switch-to-buffer buffer-name)
           (message "Attaching to tmux pane %s" pane-target))))))
 
-;; Keep until ghostel-comint proves it covers coterm's job (cursor-ish
-;; sequences in *shell*). Drop this if *shell* looks right without it.
-(use-package coterm
-  :after shell
-  :init
-  (coterm-mode 1))
-
 (use-package eshell
   :ensure nil
   :general
