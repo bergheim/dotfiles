@@ -1,4 +1,4 @@
-;;; bergheim-shells.el --- Shell, eshell, eat, vterm, and compilation config -*- lexical-binding: t; -*-
+;;; bergheim-shells.el --- Shell, eshell, eat, vterm, ghostel, and compilation config -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2026 Thomas Bergheim
 ;;
@@ -227,7 +227,7 @@ No popup: agent-shell newline (M-RET sends), shell sends."
     (interactive)
     (if-let ((shell-buffers (seq-filter (lambda (buf)
                                           (with-current-buffer buf
-                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'vterm-mode)))
+                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'vterm-mode 'ghostel-mode)))
                                         (buffer-list))))
         (let* ((candidates (mapcar (lambda (buf)
                                      (cons (format "%s (%s)"
@@ -657,6 +657,29 @@ Open `dired` in the resolved directory of the current command."
             (lambda ()
               (setq-local evil-insert-state-cursor 'box)
               (evil-insert-state))))
+
+(use-package ghostel
+  :commands (ghostel ghostel-project)
+  :custom
+  (ghostel-shell (or (executable-find "zsh") "/bin/zsh"))
+  (ghostel-kill-buffer-on-exit t)
+  :general
+  (bergheim/global-menu-keys
+    "atg" '(ghostel :which-key "ghostel")
+    "atG" '(ghostel-project :which-key "ghostel project"))
+  (:keymaps 'ghostel-semi-char-mode-map
+   :states 'insert
+   "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
+   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
+  :config
+  (require 'evil-ghostel)
+  (add-hook 'ghostel-mode-hook #'evil-ghostel-mode)
+  (require 'ghostel-eshell)
+  (add-hook 'eshell-load-hook #'ghostel-eshell-visual-command-mode))
+
+(use-package evil-ghostel
+  :after ghostel
+  :defer t)
 
 (use-package term-keys
   :ensure (:host github :repo "CyberShadow/term-keys")
