@@ -338,6 +338,8 @@ No popup: agent-shell newline (M-RET sends), shell sends."
           (switch-to-buffer buffer-name)
           (message "Attaching to tmux pane %s" pane-target))))))
 
+;; Keep until ghostel-comint proves it covers coterm's job (cursor-ish
+;; sequences in *shell*). Drop this if *shell* looks right without it.
 (use-package coterm
   :after shell
   :init
@@ -615,6 +617,12 @@ Open `dired` in the resolved directory of the current command."
 (use-package evil-ghostel
   :after ghostel
   :defer t)
+
+;; Shell-mode only, not global — agent-shell is comint too.
+(use-package ghostel-comint
+  :after ghostel
+  :ensure nil
+  :hook (shell-mode . ghostel-comint-mode))
 
 (use-package term-keys
   :ensure (:host github :repo "CyberShadow/term-keys")
