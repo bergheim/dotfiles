@@ -29,8 +29,8 @@
    "A"     #'mu4e-view-mime-part-action
    "R"     #'bergheim/mu4e-reply-email
    "C"     #'bergheim/mu4e-compose-email
-   ;; "C-h"   #'mu4e-search-prev
-   ;; "C-l"   #'mu4e-search-next
+   "C-h"   #'mu4e-search-prev
+   "C-l"   #'mu4e-search-next
    "C-S-h" #'helpful-key
    "t"     #'mu4e-search-toggle-property
    "T"     #'mu4e-view-mark-thread))
