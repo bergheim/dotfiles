@@ -17,7 +17,8 @@
    "M"     #'mu4e-headers-mark-for-move
    "m"     #'mu4e-headers-mark-for-something
    "t"     #'mu4e-search-toggle-property
-   "T"     #'mu4e-headers-mark-thread))
+   "T"     #'mu4e-headers-mark-thread
+   "M-RET" #'bergheim/mu4e-toggle-fullscreen))
 
 (defun bergheim//mu4e-view-setup ()
   (setq-local display-line-numbers nil)
@@ -33,7 +34,8 @@
    "C-l"   #'mu4e-search-next
    "C-S-h" #'helpful-key
    "t"     #'mu4e-search-toggle-property
-   "T"     #'mu4e-view-mark-thread))
+   "T"     #'mu4e-view-mark-thread
+   "M-RET" #'bergheim/mu4e-toggle-fullscreen))
 
 (bergheim/global-menu-keys
   "e" '(:ignore t :which-key "E-mail")

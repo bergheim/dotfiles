@@ -2,6 +2,22 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defun bergheim/mu4e-toggle-fullscreen ()
+  "Toggle between the split overview and fullscreen message reading.
+Flips `mu4e-split-view' so moving between messages keeps the current
+layout instead of rebuilding the split around every open."
+  (interactive)
+  (if (eq mu4e-split-view 'single-window)
+      (progn
+        (setq mu4e-split-view 'horizontal)
+        (mu4e-display-buffer (mu4e-get-headers-buffer) t)
+        (mu4e-headers-view-message))
+    (setq mu4e-split-view 'single-window)
+    (when-let* ((buf (get-buffer mu4e-view-buffer-name))
+                (win (get-buffer-window buf)))
+      (select-window win))
+    (delete-other-windows)))
+
 (defun bergheim/mu4e--msg-get-account (msg)
   "Retrieve the top-level directory (account) from the :maildir field of MSG."
   (let* ((maildir (mu4e-message-field msg :maildir))
