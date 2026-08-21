@@ -8,9 +8,23 @@
   (defun bergheim/ghostel-compile-open-reference ()
     "Open a Ghostel file link or the compilation error at point."
     (interactive)
-    (if (get-text-property (point) 'ghostel-link-id)
-        (ghostel-open-link-at-point)
-      (compile-goto-error)))
+    (let ((id (get-text-property (point) 'ghostel-link-id))
+          link-pos match)
+      (when id
+        (save-excursion
+          (goto-char (point-min))
+          (while (and (not link-pos)
+                      (setq match
+                            (text-property-search-forward
+                             'ghostel-link-id id t)))
+            (let ((pos (prop-match-beginning match)))
+              (when (eq (get-text-property pos 'keymap) ghostel-link-map)
+                (setq link-pos pos))))))
+      (if link-pos
+          (save-excursion
+            (goto-char link-pos)
+            (ghostel-open-link-at-point))
+        (compile-goto-error))))
 
   (keymap-set ghostel-compile-view-mode-map "RET"
               #'bergheim/ghostel-compile-open-reference)
