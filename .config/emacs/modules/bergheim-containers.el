@@ -13,6 +13,13 @@
 
 (use-package docker-compose-mode)
 
+(defun bergheim/ghostel-command (command)
+  "Run shell COMMAND in a new Ghostel terminal."
+  (require 'ghostel)
+  (let ((buffer (generate-new-buffer "*devcontainer*")))
+    (pop-to-buffer buffer)
+    (ghostel-exec buffer shell-file-name (list shell-command-switch command))))
+
 (use-package devcontainer
   :demand
   :ensure (:host github :repo "johannes-mueller/devcontainer.el")
@@ -29,7 +36,7 @@
   (add-to-list 'devcontainer-execute-outside-container "podman")
   (setq devcontainer-engine 'podman
         devcontainer-term-shell "zsh"
-        devcontainer-term-function #'ghostel)
+        devcontainer-term-function #'bergheim/ghostel-command)
   (devcontainer-mode 1))
 
 ;;; bergheim-containers.el ends here
