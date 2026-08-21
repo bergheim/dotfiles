@@ -1,5 +1,12 @@
 ;;; bergheim-compile.el --- Compilation buffer and project compile commands -*- lexical-binding: t; -*-
 
+(use-package ghostel-compile
+  :after compile
+  :ensure nil
+  :demand t
+  :config
+  (ghostel-compile-global-mode 1))
+
 (use-package compile
   :ensure nil
   :hook
