@@ -5,6 +5,24 @@
   :load-path "/usr/share/emacs/site-lisp/mu4e"
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
+  :general
+  ;; mu4e's own action list stays the source of truth for per-message
+  ;; commands, so wrap it instead of re-listing actions.el here.
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps '(mu4e-headers-mode-map mu4e-view-mode-map)
+    "f" '(bergheim/mu4e-toggle-fullscreen :which-key "fullscreen")
+    "s" '(mu4e-search :which-key "search")
+    "b" '(mu4e-search-bookmark :which-key "bookmark")
+    "u" '(mu4e-update-mail-and-index :which-key "update mail"))
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'mu4e-headers-mode-map
+    "a" '(mu4e-headers-action :which-key "actions"))
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'mu4e-view-mode-map
+    "a" '(mu4e-view-action :which-key "actions"))
   :config
   (bergheim/load-file "modules/mu4e/settings.el")
   (bergheim/load-file "modules/mu4e/helpers.el")
