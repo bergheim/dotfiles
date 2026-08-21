@@ -34,8 +34,12 @@
    "C-l"   #'mu4e-search-next
    "C-S-h" #'helpful-key
    "t"     #'mu4e-search-toggle-property
-   "T"     #'mu4e-view-mark-thread
-   "M-RET" #'bergheim/mu4e-toggle-fullscreen))
+   "T"     #'mu4e-headers-mark-thread
+   "M-RET" #'bergheim/mu4e-toggle-fullscreen
+   ;; evil-collection still binds the aliases obsoleted in mu4e 1.14.0
+   "d"     #'mu4e-headers-mark-for-trash
+   "u"     #'mu4e-headers-mark-for-unmark
+   "r"     #'mu4e-headers-mark-for-refile))
 
 (bergheim/global-menu-keys
   "e" '(:ignore t :which-key "E-mail")
