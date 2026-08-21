@@ -52,15 +52,15 @@
                  "\\([^[:space:]:\n]+\\.[a-zA-Z0-9]+\\):\\([0-9]+\\):\\([0-9]+\\)"
                  1 2 3))
   (add-to-list 'compilation-error-regexp-alist 'file-line-col)
+  (add-to-list 'compilation-error-regexp-alist-alist
+               '(typescript-stack
+                 "(\\([^):\n]+\\):\\([0-9]+\\):\\([0-9]+\\))"
+                 1 2 3))
+  ;; Prefer the delimiter-aware stack matcher over the generic matcher.
+  (add-to-list 'compilation-error-regexp-alist 'typescript-stack)
 
   (defun +typescript-compiler-h ()
     (setq-local compile-command "npm run dev")
-    ;; Register the TS stack-trace matcher globally (idempotent) and
-    ;; prefer it for this buffer's compilations — don't clobber others.
-    (add-to-list 'compilation-error-regexp-alist-alist
-                 '(typescript-stack
-                   "(\\([^):\n]+\\):\\([0-9]+\\):\\([0-9]+\\))"
-                   1 2 3))
     (setq-local compilation-error-regexp-alist
                 '(typescript-stack file-line-col)))
 
