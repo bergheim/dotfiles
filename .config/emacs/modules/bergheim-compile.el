@@ -5,6 +5,17 @@
   :ensure nil
   :demand t
   :config
+  (defun bergheim/ghostel-compile-open-reference ()
+    "Open a Ghostel file link or the compilation error at point."
+    (interactive)
+    (if (get-text-property (point) 'ghostel-link-id)
+        (ghostel-open-link-at-point)
+      (compile-goto-error)))
+
+  (keymap-set ghostel-compile-view-mode-map "RET"
+              #'bergheim/ghostel-compile-open-reference)
+  (keymap-set ghostel-compile-view-mode-map "<return>"
+              #'bergheim/ghostel-compile-open-reference)
   (ghostel-compile-global-mode 1))
 
 (use-package compile
@@ -63,8 +74,8 @@
     (let ((curwin (selected-window)))
       (save-buffer)
       (if (or arg (not (get-buffer (funcall project-compilation-buffer-name-function default-directory))))
-          ;; New compilation with comint mode
-          (let ((current-prefix-arg '(4)))
+          ;; Ghostel supplies the PTY; keep compilation-style navigation.
+          (let ((current-prefix-arg nil))
             (call-interactively #'project-compile))
         (let ((buffer-name (funcall project-compilation-buffer-name-function default-directory)))
           (pop-to-buffer buffer-name)
