@@ -1,4 +1,4 @@
-;;; bergheim-shells.el --- Shell, eshell, eat, ghostel, and compilation config -*- lexical-binding: t; -*-
+;;; bergheim-shells.el --- Shell, eshell, ghostel, and compilation config -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2026 Thomas Bergheim
 ;;
@@ -592,57 +592,6 @@ Open `dired` in the resolved directory of the current command."
                                 (define-key eshell-mode-map (kbd "C-c f") 'eshell/find-file-with-consult)
                                 (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult)
                                 (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
-
-(use-package eat
-  :commands eat
-  :config
-  (defun bergheim/eat-ctrl-r ()
-    "Enhanced C-r for eat mode that handles fzf properly."
-    (interactive)
-    (if (derived-mode-p 'eat-mode)
-        (progn
-          (eat-char-mode)
-          (eat-self-input 1 ?\C-r)
-          ;; Monitor for return to prompt
-          (add-hook 'eat-exec-hook #'bergheim/maybe-restore-line-mode nil t))
-      (call-interactively 'isearch-backward)))
-
-  (defun bergheim/maybe-restore-line-mode ()
-    "Restore line mode if we're at a shell prompt."
-    (when (and (derived-mode-p 'eat-mode)
-               eat-enable-auto-line-mode)
-      (eat-line-mode)
-      (remove-hook 'eat-exec-hook #'bergheim/maybe-restore-line-mode t)))
-
-  ;; Bind in eat-mode
-  (add-hook 'eat-mode-hook
-            (lambda ()
-              (evil-define-key 'insert eat-mode-map (kbd "C-r") 'bergheim/eat-ctrl-r)))
-  :custom
-  (eat-shell (or (executable-find "zsh") "/bin/zsh"))
-  ;; works pretty well with vi mode.. except for fzf
-  (eat-enable-auto-line-mode t)
-  (eat-kill-buffer-on-exit t)
-  :general
-  (bergheim/global-menu-keys
-    "atE" '(eat :which-key "Eat"))
-  :config
-  (add-hook 'eat-mode-hook
-            (lambda ()
-              (setq-local comint-input-ring-file-name "~/.histfile")
-              (setq-local comint-input-ring (make-ring 1000))
-              ;; Set up the filter to strip zsh extended history format
-              (setq-local comint-input-ring-separator "\n")
-              (setq-local comint-input-ring-file-prefix ": [0-9]+:[0-9]+;")
-              (comint-read-input-ring 'silent)))
-
-  ;; Add eat-mode to consult's mode histories
-  (with-eval-after-load 'consult
-    (add-to-list 'consult-mode-histories
-                 '(eat-mode comint-input-ring comint-input-ring-index comint-bol)))
-  :hook
-  (eshell-first-time-mode . eat-eshell-mode)
-  (eshell-first-time-mode . eat-eshell-visual-command-mode))
 
 (use-package ghostel
   :commands (ghostel ghostel-project)

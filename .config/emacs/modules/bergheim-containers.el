@@ -29,7 +29,7 @@
   (add-to-list 'devcontainer-execute-outside-container "podman")
   (setq devcontainer-engine 'podman
         devcontainer-term-shell "zsh"
-        devcontainer-term-function #'eat)
+        devcontainer-term-function #'ghostel)
   (devcontainer-mode 1))
 
 ;;; bergheim-containers.el ends here
