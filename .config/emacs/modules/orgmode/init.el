@@ -71,13 +71,9 @@
     "di" 'org-time-stamp-inactive
     "e" 'org-edit-special
     "l" '(:ignore t :which-key "Links")
-    "ld" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
-    "li" '(org-insert-link :which-key "insert manually")
-    "ll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
-    "lP" '((lambda () (interactive) (let ((org-super-links-related-into-drawer nil)) (org-super-links-insert-link))) :which-key "paste here")
-    "lp" '(org-super-links-insert-link :which-key "paste to drawer")
-    "ls" '(org-super-links-quick-insert-inline-link :which-key "inline search")
-    "ly" '(org-super-links-store-link :which-key "copy")
+    "li" '(org-insert-link :which-key "insert")
+    "ly" '(org-store-link :which-key "copy")
+    "lY" '(bergheim/org-capture-copy-link :which-key "copy last capture")
     "i" 'org-toggle-item
     "n" 'bergheim/org-roam-create-node
     "h" 'org-toggle-heading
@@ -362,13 +358,6 @@ With universal arg ARG, search all .org files under `org-directory`."
 (use-package org-contrib
   :after org
   :demand)
-
-(use-package org-super-links
-  :ensure ( :host github :repo "toshism/org-super-links" :branch "develop")
-  :after org
-  :config
-  (setq org-super-links-related-into-drawer t)
-  (advice-add 'org-capture :before #'org-super-links-store-link))
 
 (use-package org-noter
   :after pdf-tools

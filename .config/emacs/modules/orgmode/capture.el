@@ -26,6 +26,17 @@
   :config
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
 
+  (defun bergheim/org-capture-copy-link ()
+    "Copy a link to the most recently captured entry to the kill ring."
+    (interactive)
+    (unless org-note-abort
+      (org-with-point-at org-capture-last-stored-marker
+        (let ((link (apply #'org-link-make-string (org-store-link nil t))))
+          (kill-new link)
+          (message "Copied %s" link)))))
+
+  (add-hook 'org-capture-after-finalize-hook #'bergheim/org-capture-copy-link)
+
   (setq org-capture-custom-template-directory (expand-file-name "templates/capture/" user-emacs-directory)
         +org-capture-contacts-file (expand-file-name "contacts.org" org-directory)
         +org-capture-habits-file (expand-file-name "habits.org" org-directory)

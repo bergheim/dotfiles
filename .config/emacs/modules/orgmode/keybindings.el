@@ -44,13 +44,9 @@
 
   "ol" '(:ignore t :which-key "Links")
   "olc" '(org-cliplink :which-key "cliplink")
-  "old" '(org-super-links-quick-insert-drawer-link :which-key "drawer search")
-  "oli" '(org-insert-link :which-key "insert manually")
-  "oll" '(org-super-links-quick-insert-inline-link :which-key "inline search")
-  "olP" '((lambda () (interactive) (let ((org-super-links-related-into-drawer nil)) (org-super-links-insert-link))) :which-key "paste here")
-  "olp" '(org-super-links-insert-link :which-key "paste to drawer")
-  "ols" '(org-super-links-quick-insert-inline-link :which-key "inline search")
-  "oly" '(org-super-links-store-link :which-key "copy")
+  "oli" '(org-insert-link :which-key "insert")
+  "oly" '(org-store-link :which-key "copy")
+  "olY" '(bergheim/org-capture-copy-link :which-key "copy last capture")
 
   "oj" '(:ignore t :which-key "journal")
   "ojj" '(org-journal-new-entry :which-key "New entry")
