@@ -589,6 +589,7 @@ Open `dired` in the resolved directory of the current command."
                                 (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
 
 (use-package ghostel
+  :ensure (:wait t)
   :commands (ghostel ghostel-project)
   :custom
   (ghostel-shell (or (executable-find "zsh") "/bin/zsh"))
@@ -600,20 +601,18 @@ Open `dired` in the resolved directory of the current command."
   (:keymaps 'ghostel-semi-char-mode-map
    :states 'insert
    "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
-   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl")))
-  :config
-  (require 'evil-ghostel)
-  (add-hook 'ghostel-mode-hook #'evil-ghostel-mode)
-  (require 'ghostel-eshell)
-  (add-hook 'eshell-load-hook #'ghostel-eshell-visual-command-mode))
+   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
 
 (use-package evil-ghostel
-  :after ghostel
-  :defer t)
+  :after (ghostel evil)
+  :hook (ghostel-mode . evil-ghostel-mode))
+
+(use-package ghostel-eshell
+  :ensure nil
+  :hook (eshell-load . ghostel-eshell-visual-command-mode))
 
 ;; Shell-mode only, not global — agent-shell is comint too.
 (use-package ghostel-comint
-  :after ghostel
   :ensure nil
   :hook (shell-mode . ghostel-comint-mode))
 
