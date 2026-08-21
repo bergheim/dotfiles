@@ -1,4 +1,4 @@
-;;; bergheim-shells.el --- Shell, eshell, eat, vterm, ghostel, and compilation config -*- lexical-binding: t; -*-
+;;; bergheim-shells.el --- Shell, eshell, eat, ghostel, and compilation config -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2026 Thomas Bergheim
 ;;
@@ -227,7 +227,7 @@ No popup: agent-shell newline (M-RET sends), shell sends."
     (interactive)
     (if-let ((shell-buffers (seq-filter (lambda (buf)
                                           (with-current-buffer buf
-                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'vterm-mode 'ghostel-mode)))
+                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'ghostel-mode)))
                                         (buffer-list))))
         (let* ((candidates (mapcar (lambda (buf)
                                      (cons (format "%s (%s)"
@@ -643,20 +643,6 @@ Open `dired` in the resolved directory of the current command."
   :hook
   (eshell-first-time-mode . eat-eshell-mode)
   (eshell-first-time-mode . eat-eshell-visual-command-mode))
-
-(use-package vterm
-  :commands vterm
-  :general
-  (bergheim/global-menu-keys
-    "atv" '(vterm :which-key "vterm"))
-  :config
-  (setq vterm-shell (or (executable-find "zsh") "/usr/bin/zsh"))
-  (setq vterm-max-scrollback 10000)
-  (setq vterm-set-bold-hightbright t)
-  (add-hook 'vterm-mode-hook
-            (lambda ()
-              (setq-local evil-insert-state-cursor 'box)
-              (evil-insert-state))))
 
 (use-package ghostel
   :commands (ghostel ghostel-project)
