@@ -21,6 +21,7 @@
 
 (defun bergheim//mu4e-view-setup ()
   (setq-local display-line-numbers nil)
+  (visual-line-mode 1)
   (message-goto-body)
   (general-define-key
    :keymaps 'mu4e-view-mode-map
