@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# sway-headless - manage the virtual sway output that Sunshine captures from.
+#
+# berghome is a desktop and normally drives two DisplayPort monitors. While it
+# runs with nothing attached (travelling, remote play), every DRM connector
+# reads disconnected, sway has zero outputs, and wlgrab has nothing to capture
+# - Sunshine then serves a dead stream. This adds a virtual output to capture
+# from, and removes it again when you are back at the desk.
+#
+# Deliberately NOT in the sway config: berghome has real monitors most of the
+# time, and an unconditional create_output would spawn a phantom output on
+# every login.
+#
+# Setting the mode is the entire point. Bare `swaymsg create_output` lands on
+# sway's default 1280x720, and Sunshine will capture that and upscale it to
+# whatever the client asked for without warning anyone. That went unnoticed
+# for 51 sessions.
+#
+# sway does not reuse headless names within a session, so after off/on you get
+# HEADLESS-2, -3, ... Everything here matches on the HEADLESS- prefix, and
+# Sunshine takes monitor 0, so the number never matters.
+
+set -euo pipefail
+
+MODE=${SWAY_HEADLESS_MODE:-1920x1080@60Hz}
+
+die() { printf 'sway-headless: %s\n' "$*" >&2; exit 1; }
+
+: "${SWAYSOCK:=$(find "/run/user/$(id -u)" -maxdepth 1 -name 'sway-ipc.*.sock' 2>/dev/null | head -n1)}"
+export SWAYSOCK
+[ -S "${SWAYSOCK:-}" ] || die "no sway IPC socket; is sway running as this user?"
+
+names() {
+    swaymsg -t get_outputs |
+        jq -r '.[] | select(.name | startswith("HEADLESS-")) | .name'
+}
+
+show() {
+    swaymsg -t get_outputs |
+        jq -r '.[] | select(.name | startswith("HEADLESS-"))
+               | "\(.name)  \(.current_mode.width)x\(.current_mode.height)"
+                 + "@\(.current_mode.refresh / 1000)Hz  scale \(.scale)"'
+}
+
+case "${1:-on}" in
+on)
+    all=$(names)
+    name=${all%%$'\n'*}
+    if [ -z "$name" ]; then
+        swaymsg -q create_output
+        all=$(names)
+        name=${all%%$'\n'*}
+        [ -n "$name" ] || die "create_output produced no headless output"
+    fi
+    swaymsg -q output "$name" mode "$MODE"
+    show
+    ;;
+off)
+    all=$(names)
+    [ -n "$all" ] || { echo "no headless outputs"; exit 0; }
+    while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        swaymsg -q output "$name" unplug
+        echo "removed $name"
+    done <<<"$all"
+    ;;
+status)
+    if [ -n "$(names)" ]; then show; else echo "no headless outputs"; fi
+    ;;
+*)
+    die "usage: sway-headless [on|off|status]"
+    ;;
+esac
