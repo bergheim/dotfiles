@@ -591,9 +591,6 @@ Open `dired` in the resolved directory of the current command."
 (use-package ghostel
   :ensure (:wait t)
   :commands (ghostel ghostel-project)
-  :custom
-  (ghostel-shell (or (executable-find "zsh") "/bin/zsh"))
-  (ghostel-kill-buffer-on-exit t)
   :general
   (bergheim/global-menu-keys
     "atg" '(ghostel :which-key "ghostel")
