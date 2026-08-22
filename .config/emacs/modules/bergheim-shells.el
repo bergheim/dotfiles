@@ -1,4 +1,4 @@
-;;; bergheim-shells.el --- Shell, eshell, eat, vterm, and compilation config -*- lexical-binding: t; -*-
+;;; bergheim-shells.el --- Shell, eshell, ghostel, and compilation config -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2026 Thomas Bergheim
 ;;
@@ -227,7 +227,7 @@ No popup: agent-shell newline (M-RET sends), shell sends."
     (interactive)
     (if-let ((shell-buffers (seq-filter (lambda (buf)
                                           (with-current-buffer buf
-                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'vterm-mode)))
+                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'ghostel-mode)))
                                         (buffer-list))))
         (let* ((candidates (mapcar (lambda (buf)
                                      (cons (format "%s (%s)"
@@ -337,11 +337,6 @@ No popup: agent-shell newline (M-RET sends), shell sends."
             (comint-send-input))
           (switch-to-buffer buffer-name)
           (message "Attaching to tmux pane %s" pane-target))))))
-
-(use-package coterm
-  :after shell
-  :init
-  (coterm-mode 1))
 
 (use-package eshell
   :ensure nil
@@ -593,70 +588,30 @@ Open `dired` in the resolved directory of the current command."
                                 (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult)
                                 (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
 
-(use-package eat
-  :commands eat
-  :config
-  (defun bergheim/eat-ctrl-r ()
-    "Enhanced C-r for eat mode that handles fzf properly."
-    (interactive)
-    (if (derived-mode-p 'eat-mode)
-        (progn
-          (eat-char-mode)
-          (eat-self-input 1 ?\C-r)
-          ;; Monitor for return to prompt
-          (add-hook 'eat-exec-hook #'bergheim/maybe-restore-line-mode nil t))
-      (call-interactively 'isearch-backward)))
-
-  (defun bergheim/maybe-restore-line-mode ()
-    "Restore line mode if we're at a shell prompt."
-    (when (and (derived-mode-p 'eat-mode)
-               eat-enable-auto-line-mode)
-      (eat-line-mode)
-      (remove-hook 'eat-exec-hook #'bergheim/maybe-restore-line-mode t)))
-
-  ;; Bind in eat-mode
-  (add-hook 'eat-mode-hook
-            (lambda ()
-              (evil-define-key 'insert eat-mode-map (kbd "C-r") 'bergheim/eat-ctrl-r)))
-  :custom
-  (eat-shell (or (executable-find "zsh") "/bin/zsh"))
-  ;; works pretty well with vi mode.. except for fzf
-  (eat-enable-auto-line-mode t)
-  (eat-kill-buffer-on-exit t)
+(use-package ghostel
+  :ensure (:wait t)
+  :commands (ghostel ghostel-project)
   :general
   (bergheim/global-menu-keys
-    "atE" '(eat :which-key "Eat"))
-  :config
-  (add-hook 'eat-mode-hook
-            (lambda ()
-              (setq-local comint-input-ring-file-name "~/.histfile")
-              (setq-local comint-input-ring (make-ring 1000))
-              ;; Set up the filter to strip zsh extended history format
-              (setq-local comint-input-ring-separator "\n")
-              (setq-local comint-input-ring-file-prefix ": [0-9]+:[0-9]+;")
-              (comint-read-input-ring 'silent)))
+    "atg" '(ghostel :which-key "ghostel")
+    "atG" '(ghostel-project :which-key "ghostel project"))
+  (:keymaps 'ghostel-semi-char-mode-map
+   :states 'insert
+   "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
+   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
 
-  ;; Add eat-mode to consult's mode histories
-  (with-eval-after-load 'consult
-    (add-to-list 'consult-mode-histories
-                 '(eat-mode comint-input-ring comint-input-ring-index comint-bol)))
-  :hook
-  (eshell-first-time-mode . eat-eshell-mode)
-  (eshell-first-time-mode . eat-eshell-visual-command-mode))
+(use-package evil-ghostel
+  :after (ghostel evil)
+  :hook (ghostel-mode . evil-ghostel-mode))
 
-(use-package vterm
-  :commands vterm
-  :general
-  (bergheim/global-menu-keys
-    "atv" '(vterm :which-key "vterm"))
-  :config
-  (setq vterm-shell (or (executable-find "zsh") "/usr/bin/zsh"))
-  (setq vterm-max-scrollback 10000)
-  (setq vterm-set-bold-hightbright t)
-  (add-hook 'vterm-mode-hook
-            (lambda ()
-              (setq-local evil-insert-state-cursor 'box)
-              (evil-insert-state))))
+(use-package ghostel-eshell
+  :ensure nil
+  :hook (eshell-load . ghostel-eshell-visual-command-mode))
+
+;; Shell-mode only, not global — agent-shell is comint too.
+(use-package ghostel-comint
+  :ensure nil
+  :hook (shell-mode . ghostel-comint-mode))
 
 (use-package term-keys
   :ensure (:host github :repo "CyberShadow/term-keys")
