@@ -47,6 +47,7 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
     ln -sf ~/.config/mako/config-light ~/.config/mako/config
+    ln -sf ~/.config/avizo/config-light.ini ~/.config/avizo/config.ini
     [ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
     if pgrep -x "dunst" >/dev/null; then
         dunstctl reload ~/.config/dunst/dunstrc &
@@ -79,6 +80,7 @@ else
     ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
     ln -sf ~/.config/mako/config-dark ~/.config/mako/config
+    ln -sf ~/.config/avizo/config-dark.ini ~/.config/avizo/config.ini
     [ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
     if pgrep -x "dunst" >/dev/null; then
         dunstctl reload ~/.config/dunst/dunstrc_dark &

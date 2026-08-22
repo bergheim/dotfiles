@@ -385,21 +385,17 @@ bindsym XF86TouchpadToggle input type:touchpad events toggle enabled disabled
 bindsym XF86TouchpadOn exec laptop-key touchpad-on
 bindsym XF86TouchpadOff exec laptop-key touchpad-off
 
-# Sink volume raise optionally with --device
-bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
-# Sink volume lower optionally with --device
-bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-# Sink volume toggle mute
-bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-# Source volume toggle mute
-bindsym XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+# Sink / source + avizo OSD (volumectl-osd adds -d in dark mode)
+bindsym XF86AudioRaiseVolume exec volumectl-osd -u up
+bindsym XF86AudioLowerVolume exec volumectl-osd down
+bindsym XF86AudioMute exec volumectl-osd toggle-mute
+bindsym XF86AudioMicMute exec volumectl-osd -m toggle-mute
 # Toggle default output between speakers and headset
 bindsym $mod+Shift+a exec audio-toggle
 
-# Brightness raise
-bindsym XF86MonBrightnessUp exec backlight-step up
-# Brightness lower
-bindsym XF86MonBrightnessDown exec backlight-step down
+# Brightness + avizo OSD (lightctl-osd adds -d in dark mode)
+bindsym XF86MonBrightnessUp exec lightctl-osd up
+bindsym XF86MonBrightnessDown exec lightctl-osd down
 
 # Password manager (replace rofi-pass with wofi equivalent)
 bindsym $mod+p exec fuzzel-pass
@@ -609,6 +605,7 @@ exec kdeconnect-indicator
 exec blueman-applet
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # exec swayosd-server
+exec avizo-service
 # kanshi never exits, so make sure we kill current
 exec_always 'pkill -x kanshi; exec kanshi'
 

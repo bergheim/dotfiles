@@ -1,0 +1,5 @@
+#!/bin/sh
+# volumectl + avizo -d when the session is dark (light-colored icons).
+extra=
+[ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] && extra=-d
+exec volumectl $extra "$@"
