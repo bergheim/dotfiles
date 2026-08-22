@@ -1,37 +1,5 @@
 ;;; bergheim-compile.el --- Compilation buffer and project compile commands -*- lexical-binding: t; -*-
 
-(use-package ghostel-compile
-  :after compile
-  :ensure nil
-  :demand t
-  :config
-  (defun bergheim/ghostel-compile-open-reference ()
-    "Open a Ghostel file link or the compilation error at point."
-    (interactive)
-    (let ((id (get-text-property (point) 'ghostel-link-id))
-          link-pos match)
-      (when id
-        (save-excursion
-          (goto-char (point-min))
-          (while (and (not link-pos)
-                      (setq match
-                            (text-property-search-forward
-                             'ghostel-link-id id t)))
-            (let ((pos (prop-match-beginning match)))
-              (when (eq (get-text-property pos 'keymap) ghostel-link-map)
-                (setq link-pos pos))))))
-      (if link-pos
-          (save-excursion
-            (goto-char link-pos)
-            (ghostel-open-link-at-point))
-        (compile-goto-error))))
-
-  (keymap-set ghostel-compile-view-mode-map "RET"
-              #'bergheim/ghostel-compile-open-reference)
-  (keymap-set ghostel-compile-view-mode-map "<return>"
-              #'bergheim/ghostel-compile-open-reference)
-  (ghostel-compile-global-mode 1))
-
 (use-package compile
   :ensure nil
   :hook
@@ -88,7 +56,7 @@
     (let ((curwin (selected-window)))
       (save-buffer)
       (if (or arg (not (get-buffer (funcall project-compilation-buffer-name-function default-directory))))
-          ;; Ghostel supplies the PTY; keep compilation-style navigation.
+          ;; Prefix means force a new command, not interactive comint mode.
           (let ((current-prefix-arg nil))
             (call-interactively #'project-compile))
         (let ((buffer-name (funcall project-compilation-buffer-name-function default-directory)))
@@ -151,14 +119,13 @@ With COMINT non-nil, use `comint-mode'."
 
     (if (and existing-buffer
              (with-current-buffer existing-buffer
-               (and (derived-mode-p 'compilation-mode 'comint-mode 'ghostel-mode)
+               (and (derived-mode-p 'compilation-mode 'comint-mode)
                     (get-buffer-process existing-buffer))))
         (with-current-buffer existing-buffer
-          (if (or (derived-mode-p 'comint-mode)
-                  (bound-and-true-p ghostel-compile--interactive))
+          (if (derived-mode-p 'comint-mode)
               (progn
                 (pop-to-buffer existing-buffer)
-                (message "Already running interactively. Switch to buffer."))
+                (message "Already running in comint mode. Switch to buffer."))
             (recompile)))
       (compile command comint))))
 
