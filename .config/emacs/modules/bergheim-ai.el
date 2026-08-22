@@ -546,7 +546,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "o" '(agent-shell-set-session-config-option :wk "config option")
     ;; interaction
     "c" '(agent-shell-prompt-compose :wk "compose")
-    "q" '(agent-shell-queue-request :wk "queue request")
+    "q" '(agent-shell-prompt-queue :wk "queue request")
     "x" '(agent-shell-interrupt :wk "interrupt")
     ;; pending permissions
     "p" '(:ignore t :wk "permission")
