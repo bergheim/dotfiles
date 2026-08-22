@@ -601,6 +601,7 @@ exec swayrd
 exec wl-paste --watch cliphist store
 exec waybar
 exec mako
+exec swaykbdd
 exec kdeconnect-indicator
 exec blueman-applet
 exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
