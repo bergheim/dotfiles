@@ -622,10 +622,7 @@ if [[ "$INSIDE_EMACS" == *"comint"* ]]; then
   unsetopt AUTO_MENU
 fi
 
-if command -v podman >/dev/null; then
-  export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
-  alias docker=podman
-fi
+command -v podman >/dev/null 2>&1 && alias docker=podman
 
 git_prompt_info() {
     # Make sure we're actually in a git working directory
@@ -672,21 +669,6 @@ PROMPT=$PROMPT'%{$(vterm_printf)%}'
 # bun completions ($BUN_INSTALL and its PATH entry live in .zshenv)
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# resurrect C-^!
-export MOSH_ESCAPE_KEY=''
-
-
-export BERGHOME=berghome.ts.glvortex.net
-export BURIAL=burial.ts.glvortex.net
-export NTFY_SERVER=http://burial.ts.glvortex.net:9080
-export LLAMA_HOST=http://$BERGHOME:11434
-export OLLAMA_HOST=http://$BERGHOME:11434
-export PERF_HOST=http://$BERGHOME:8888
-export SHARE_BASE_URL=http://$BERGHOME:8080
-export PYROSCOPE_HOST=http://$BERGHOME:4040
-export LITELLM_HOST=http://$BERGHOME:8088
-export CRAWL4AI_URL=http://$BURIAL:11235
-
 [ -f ~/.zshrc.container ] && source ~/.zshrc.container
 
 share() {
@@ -701,19 +683,3 @@ share() {
         ssh laptop "xdg-open ~/share-inbox/$base"
     fi
 }
-
-# pnpm
-export PNPM_HOME="/home/tsb/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME/bin:"*) ;;
-  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
-esac
-# pnpm end
-
-# Added by Antigravity CLI installer -- ~/.local/bin is already on PATH via .zshenv
-
-# Keep this last. `typeset -U path` (set in .zshenv) only uniquifies on array
-# assignment, so any `export PATH=...:$PATH` line above -- including ones future
-# installers append here -- can still smuggle in duplicates. Reassigning the
-# array collapses them, keeping the first occurrence of each.
-path=($path)
