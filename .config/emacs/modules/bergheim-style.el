@@ -564,7 +564,7 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   (pixel-scroll-precision-mode 1)) ;; Enable smooth pixel scrolling
 
 ;; Nice line wrapping when working with text
-(add-hook 'text-mode-hook 'visual-line-mode)
+(add-hook 'text-mode-hook #'turn-on-visual-line-mode)
 ;; Indent wrapped lines so they line up
 (when (>= emacs-major-version 30)
   (add-hook 'text-mode-hook 'visual-wrap-prefix-mode))

@@ -232,8 +232,7 @@
 (use-package yaml-mode)
 
 (use-package markdown-mode
-  :hook ((markdown-mode . visual-line-mode)
-         (markdown-mode . flyspell-mode))
+  :hook (markdown-mode . flyspell-mode)
   :init
   ;; (setq markdown-command "pandoc -f markdown -t html")
   (setq markdown-command "markdown"))
