@@ -43,7 +43,10 @@ setopt hist_ignore_all_dups   # delete old recorded entry if new entry is a dupl
 #
 
 # Set editor default keymap to emacs (`-e`) or vi (`-v`)
-bindkey -e
+# NOTE: must be vi *here*, before the history-substring-search bindings below.
+# Calling `bindkey -v` later swaps out the main keymap and silently discards
+# everything bound in between.
+bindkey -v
 
 # Prompt for spelling correction of commands.
 #setopt CORRECT
@@ -182,8 +185,7 @@ alias lt='eza --tree --long'
 alias ll='eza -l'
 alias llh='ls -lh'
 
-alias ff='zi'
-alias f='z'
+# f/ff are defined next to the zoxide init below, so they only exist if it does
 
 alias pacup='sudo pacman -Syu'
 alias pacin='sudo pacman -S'
@@ -192,7 +194,8 @@ alias pacwhat='pacman -Si'
 alias pacfiles='pacman -Ql'
 alias pacwho='pkgfile'
 
-alias diff='diff --color=always'
+# auto, not always: --color=always corrupts redirected output (diff a b > patch)
+alias diff='diff --color=auto'
 
 alias shakemacs="pkill -USR2 emacs"
 alias tmux='tmux -2'
@@ -214,31 +217,26 @@ vi() {
     fi
 }
 
-# enable zsh help. run with alt+h or esc+h FIXME does not work
-autoload -Uz run-help
+# zsh help. `unalias` is load-bearing: zsh ships `alias run-help=man`, and the
+# alias shadows the autoloaded function, so `help git commit` was just running
+# `man git commit`. Bound to K in vicmd (like vim) because alt+h can't work in
+# vi mode -- ESC is vi-cmd-mode, so ESC-h becomes vicmd `h` = backward-char.
+unalias run-help 2>/dev/null
+autoload -Uz run-help run-help-git run-help-ip run-help-sudo
 alias help=run-help
+bindkey -M vicmd 'K' run-help
 
 setopt no_beep
 
-# vim settings
-bindkey -v
-bindkey -M viins jj vi-cmd-mode
-bindkey -M viins jk vi-cmd-mode
-bindkey '^P' history-search-backward
-bindkey '^N' history-search-forward
-bindkey '^R' history-incremental-search-backward
-bindkey '^S' history-incremental-search-forward
-bindkey '^O' autosuggest-accept
-bindkey '^A' beginning-of-line
-bindkey '^E' end-of-line
+# Keymap lives in one block near the end of this file, after fzf and atuin have
+# had their turn -- otherwise they silently steal keys back.
 
-bindkey '^[[H' beginning-of-line
-bindkey '^[[F' end-of-line
-
-# Edit command line with editor
+# Edit command line with editor (bound to ^X^E below)
 autoload -Uz edit-command-line
 zle -N edit-command-line
-bindkey '^E' edit-command-line
+
+# ^S is history-incremental-search-forward, but XOFF flow control eats it first
+[[ -t 0 ]] && stty -ixon 2>/dev/null
 
 # rehash executables after something is installed in $PATH
 zstyle ':completion:*' rehash true
@@ -265,13 +263,14 @@ zle -N                 cdParentKey
 zle -N                 cdUndoKey
 bindkey '^[[1;3A'      cdParentKey
 bindkey '^[[1;3D'      cdUndoKey
-bindkey '^H'      cdParentKey
-bindkey '^U'      cdUndoKey
 
 # fzf things
-export FZF_COMPLETION_TRIGGER="''"
+# FZF_COMPLETION_TRIGGER is deliberately unset: the default ** keeps normal zsh
+# completion on TAB and makes fzf opt-in (vim **<TAB>). Setting it to '' routes
+# every TAB through fzf, sidelining the zim completion module.
 
-if [ -f ~/.fzf.zsh ]; then
+# test the binary, not ~/.fzf.zsh: `fzf --zsh` needs fzf >= 0.48
+if command -v fzf >/dev/null 2>&1 && fzf --zsh >/dev/null 2>&1; then
     source <(fzf --zsh)
 elif [ -d /usr/share/fzf ]; then
     source /usr/share/fzf/key-bindings.zsh
@@ -314,28 +313,6 @@ fkill() {
   fi
 }
 
-# zreap() {
-#     local sig=${1:-TERM}
-#     local picks ppids
-
-#     picks=$(ps -eo pid=,ppid=,stat=,user=,comm= | awk '$3 ~ /Z/')
-#     if [ -z "$picks" ]; then
-#         echo "no zombies" >&2
-#         return 0
-#     fi
-
-#     ppids=$(printf '%s\n' "$picks" \
-#                 | fzf -m --header='pick zombie(s) — their PARENT gets signalled' \
-#                 | awk '{print $2}' | sort -u)
-#     [ -z "$ppids" ] && return 0
-
-#     echo "parents to signal:"
-#     echo "$ppids" | xargs -r ps -o pid=,user=,comm= -p
-
-#     # gentle nudge first; if the zombie's still there, rerun as: zreap KILL
-#     echo "$ppids" | xargs -r kill -CHLD
-#     echo "$ppids" | xargs -r kill -"$sig"
-# }
   zreap() {
     local sig=${1:-TERM}
     local picks ppids
@@ -432,9 +409,9 @@ fkill() {
 
 
 
-# c - browse chrome history
+# histc - browse chrome history
 histc() {
-  local cols sep google_history open
+  local cols sep google_history open dbcopy
   cols=$(( COLUMNS / 3 ))
   sep='{::}'
 
@@ -445,21 +422,22 @@ histc() {
     google_history="$HOME/.config/chromium/Default/History"
     open=xdg-open
   fi
-  # TODO use mktemp
-  cp -f "$google_history" /tmp/h
-  sqlite3 -separator $sep /tmp/h \
+  dbcopy=$(mktemp) || return 1
+  cp -f "$google_history" "$dbcopy"
+  sqlite3 -separator $sep "$dbcopy" \
     "select substr(title, 1, $cols), url
      from urls order by last_visit_time desc" |
   awk -F $sep '{printf "%-'$cols's  \x1b[36m%s\x1b[m\n", $1, $2}' |
   fzf --ansi --multi | sed 's#.*\(https*://\)#\1#' | xargs $open > /dev/null 2> /dev/null
+  rm -f "$dbcopy"
 }
 
-# f - browse firefox history
+# histf - browse firefox history
 histf() {
-  local cols sep firefox_history open filter
+  local cols sep firefox_history open filter dbcopy query
   cols=$(( COLUMNS / 3 ))
   sep='{::}'
-  dbcopy="$HOME/tmp/f"
+  dbcopy=$(mktemp) || return 1
   filter=$@
 
   query="select p.title, p.url
@@ -518,13 +496,15 @@ tp() {
     | xargs -I{} tmux switch-client -t {} \; select-pane -t {}
 }
 
-bindkey -M viins -r 'fj'
 alias fj=tp
 
-
-# bind Ctrl-6 / Ctrl-^ in both vi insert and command mode
-bindkey -M viins $'\x1e' tp
-bindkey -M vicmd $'\x1e' tp
+# bind Ctrl-6 / Ctrl-^ in both vi insert and command mode.
+# tp is a function, not a widget -- run it as a command so its output and the
+# tmux switch-client behave normally. push-input keeps any half-typed line.
+tp-widget() { zle push-input; BUFFER="tp"; zle accept-line }
+zle -N tp-widget
+bindkey -M viins $'\x1e' tp-widget
+bindkey -M vicmd $'\x1e' tp-widget
 
 # attach and disconenct any current users (this enables resizing unlike tmux -A)
 # if it does not exist, create it
@@ -555,10 +535,14 @@ function killfzf() {
 }
 
 zle -N killfzf
-bindkey '^X' killfzf
+# ^X is a prefix now (^X^E = edit-command-line), so killfzf moves to ^X k
+bindkey -M viins '^Xk' killfzf
 
 
-eval "$(zoxide init zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
+    alias f='z' ff='zi'
+fi
 if command -v mise >/dev/null 2>&1; then
     eval "$(mise activate zsh)"
 fi
@@ -568,6 +552,44 @@ fi
 
 if command -v atuin >/dev/null 2>&1; then
     eval "$(atuin init zsh --disable-up-arrow)"
+fi
+
+# ---------------------------------------------------------------------------
+# Keymap: vi, with emacs editing keys inside insert mode.
+# Deliberately last -- fzf and atuin rebind keys when they load, so anything
+# set before them can be silently overridden. ^R stays theirs.
+# ---------------------------------------------------------------------------
+
+bindkey -M viins jj vi-cmd-mode
+bindkey -M viins jk vi-cmd-mode
+
+# real backspace: vi-backward-delete-char refuses to delete past the point
+# where insert mode started, which is never what you want
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^U' backward-kill-line   # bash's unix-line-discard
+bindkey -M viins '^K' kill-line
+bindkey -M viins '^Y' yank
+
+bindkey -M viins '^[[H' beginning-of-line
+bindkey -M viins '^[[F' end-of-line
+
+bindkey -M viins '^X^E' edit-command-line  # readline convention
+
+# these depend on zim modules that may not have installed yet on a fresh box
+if (( ${+widgets[autosuggest-accept]} )); then
+    bindkey -M viins '^O' autosuggest-accept
+fi
+if (( ${+widgets[history-substring-search-up]} )); then
+    bindkey -M viins '^P' history-substring-search-up
+    bindkey -M viins '^N' history-substring-search-down
+else
+    bindkey -M viins '^P' history-search-backward
+    bindkey -M viins '^N' history-search-forward
 fi
 
 # Import colorscheme from 'wal' asynchronously
@@ -600,8 +622,10 @@ if [[ "$INSIDE_EMACS" == *"comint"* ]]; then
   unsetopt AUTO_MENU
 fi
 
-export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
-alias docker=podman
+if command -v podman >/dev/null; then
+  export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+  alias docker=podman
+fi
 
 git_prompt_info() {
     # Make sure we're actually in a git working directory
@@ -645,12 +669,8 @@ vterm_printf() {
 
 PROMPT=$PROMPT'%{$(vterm_printf)%}'
 
-# bun completions
-[ -s "/home/tsb/.bun/_bun" ] && source "/home/tsb/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# bun completions ($BUN_INSTALL and its PATH entry live in .zshenv)
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # resurrect C-^!
 export MOSH_ESCAPE_KEY=''
@@ -690,5 +710,10 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# Added by Antigravity CLI installer
-export PATH="/home/tsb/.local/bin:$PATH"
+# Added by Antigravity CLI installer -- ~/.local/bin is already on PATH via .zshenv
+
+# Keep this last. `typeset -U path` (set in .zshenv) only uniquifies on array
+# assignment, so any `export PATH=...:$PATH` line above -- including ones future
+# installers append here -- can still smuggle in duplicates. Reassigning the
+# array collapses them, keeping the first occurrence of each.
+path=($path)
