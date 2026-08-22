@@ -325,6 +325,7 @@
     "sS" '(consult-line-multi :which-key "open buffers")
 
     "t" '(:ignore t :which-key "Toggle")
+    "t d" '(dirvish-override-dired-mode :which-key "Dirvish")
     "t f" '(apheleia-global-mode :which-key "Toggle formatting")
     "t i" '(bergheim/eglot-inlay-hints-toggle :which-key "Toggle inlay hints")
     "t L" '(jinx-languages :which-key "Languages")

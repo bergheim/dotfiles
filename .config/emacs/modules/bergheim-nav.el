@@ -205,11 +205,26 @@ the binary may not exist on the other side)."
    "M-<return>" #'dired-find-file-other-window
    "C-M-<return>" #'bergheim/dired-leave-for-shell
    "."   #'dired-omit-mode
+   "("   #'dired-hide-details-mode
    "h"   #'dired-up-directory
    "l"   #'dired-find-file)
   (bergheim/localleader-keys
     :keymaps 'dired-mode-map
-    "."   #'dired-omit-mode))
+    "." '(dired-omit-mode :which-key "omit")
+    "c" '(dired-do-copy :which-key "copy")
+    "r" '(dired-do-rename :which-key "rename/move")
+    "d" '(dired-do-delete :which-key "delete")
+    "s" '(dired-do-symlink :which-key "symlink")
+    "S" '(dired-do-relsymlink :which-key "relative symlink")
+    "h" '(dired-do-hardlink :which-key "hardlink")
+    "m" '(dired-do-chmod :which-key "chmod")
+    "f" '(dired-create-empty-file :which-key "new file")
+    "+" '(dired-create-directory :which-key "new directory")
+    "e" '(wdired-change-to-wdired-mode :which-key "wdired")
+    "w" '(dired-copy-filename-as-kill :which-key "yank name")
+    "!" '(dired-do-shell-command :which-key "shell")
+    "z" '(dired-do-compress :which-key "compress")
+    "v" '(dired-hide-details-mode :which-key "simple view")))
 
 (use-package dirvish
   :after dired
