@@ -10,6 +10,9 @@
 (defvar auto-revert-mode)
 (defvar super-save-mode)
 (defvar denote-directory)
+(defvar denote-kill-buffers)
+(defvar denote-rename-confirmations)
+(defvar denote-save-buffers)
 
 ;;; Notes auto-commit
 ;;
@@ -331,7 +334,7 @@ SIGNED-TAGS is a list like (\"+autonomous\" \"-blocked\")."
 
 ;;; Public API
 
-(defun bergheim/agent-org-set-state (file heading-re new-state
+(defun bergheim/agent-org-task-set-state (file heading-re new-state
                                           &optional note agent session-id)
   "Transition the UNIQUE TODO matching HEADING-RE in FILE to NEW-STATE.
 Errors if HEADING-RE matches zero or multiple headings.
@@ -373,12 +376,12 @@ Edit so the harness's mtime check does not fire."
           :state-from old-state
           :heading heading)))
 
-(defun bergheim/agent-org-set-state-by-id (file id new-state
+(defun bergheim/agent-org-task-set-state-by-id (file id new-state
                                                 &optional note agent session-id)
-  "Like `bergheim/agent-org-set-state' but selects the heading by its
+  "Like `bergheim/agent-org-task-set-state' but selects the heading by its
 :ID: property. IDs are globally unique so ambiguity is not possible.
 
-Returns the same plist shape as `bergheim/agent-org-set-state', plus
+Returns the same plist shape as `bergheim/agent-org-task-set-state', plus
 `:id' echoing the input ID for caller convenience."
   (let ((inhibit-message t)
         old-state heading dirty worklog-path)
@@ -400,7 +403,51 @@ Returns the same plist shape as `bergheim/agent-org-set-state', plus
           :heading heading
           :id id)))
 
-(defun bergheim/agent-org-ensure-id (file heading-re)
+(defun bergheim/agent-org-task--set-planning
+    (file locator date by-id kind)
+  "Set or clear planning KIND on one task and return its current planning."
+  (unless (or (null date)
+              (and (stringp date)
+                   (not (string-empty-p (string-trim date)))))
+    (error "DATE must be a non-empty Org date string or nil"))
+  (let ((inhibit-message t)
+        heading scheduled deadline dirty)
+    (bergheim/agent-org--with-file file
+      (if by-id
+          (bergheim/agent-org--find-by-id locator)
+        (bergheim/agent-org--find-unique-heading locator))
+      (unless (org-get-todo-state)
+        (error "Not a task (heading has no TODO keyword): %s" locator))
+      (setq heading (bergheim/agent-org--strip (org-get-heading t t t t)))
+      (funcall (if (eq kind 'scheduled) #'org-schedule #'org-deadline)
+               (when (null date) '(4)) date)
+      (setq scheduled (org-entry-get nil "SCHEDULED")
+            deadline (org-entry-get nil "DEADLINE")
+            dirty (buffer-modified-p)))
+    (when dirty
+      (bergheim/agent-notes--maybe-commit
+       file (format "%s: %s (%s)"
+                    kind (or date "clear") locator)))
+    (list :wrote (when dirty (list (expand-file-name file)))
+          :heading heading
+          :scheduled scheduled
+          :deadline deadline)))
+
+(defun bergheim/agent-org-task-schedule (file locator date &optional by-id)
+  "Set task LOCATOR's schedule to DATE, or clear it when DATE is nil.
+LOCATOR is a unique heading regexp, or an :ID: when BY-ID is non-nil.
+Returns a plist with `:wrote', `:heading', `:scheduled', and `:deadline'."
+  (bergheim/agent-org-task--set-planning
+   file locator date by-id 'scheduled))
+
+(defun bergheim/agent-org-task-deadline (file locator date &optional by-id)
+  "Set task LOCATOR's deadline to DATE, or clear it when DATE is nil.
+LOCATOR is a unique heading regexp, or an :ID: when BY-ID is non-nil.
+Returns a plist with `:wrote', `:heading', `:scheduled', and `:deadline'."
+  (bergheim/agent-org-task--set-planning
+   file locator date by-id 'deadline))
+
+(defun bergheim/agent-org-entry-ensure-id (file heading-re)
   "Ensure the unique heading matching HEADING-RE in FILE carries an :ID:.
 Uses `org-id-get-create'. Idempotent — when the heading already has an
 ID, the buffer is not modified.
@@ -423,15 +470,17 @@ Returns a plist:
           :id id
           :heading heading)))
 
-(defun bergheim/agent-org-add-note (file heading-re note)
-  "Append NOTE to the :LOGBOOK: of the unique heading matching HEADING-RE
-in FILE, without changing the TODO state.
+(defun bergheim/agent-org-task-add-log (file heading-re note)
+  "Append NOTE to the :LOGBOOK: of the unique task matching HEADING-RE.
+The heading must carry a TODO keyword. Its state is not changed.
 
 Returns a plist with `:wrote' (list of modified paths) and `:heading'."
   (let ((inhibit-message t)
         heading dirty worklog-path)
     (bergheim/agent-org--with-file file
       (bergheim/agent-org--find-unique-heading heading-re)
+      (unless (org-get-todo-state)
+        (error "Not a task (heading has no TODO keyword): %s" heading-re))
       (setq heading (bergheim/agent-org--strip (org-get-heading t t t t)))
       (let ((org-log-into-drawer "LOGBOOK"))
         (org-add-log-setup 'note nil nil 'findpos)
@@ -452,7 +501,7 @@ Returns a plist with `:wrote' (list of modified paths) and `:heading'."
                                  worklog-path))
           :heading heading)))
 
-(defun bergheim/agent-org-link-note (org-file locator note-path &optional by-id)
+(defun bergheim/agent-org-entry-link-note (org-file locator note-path &optional by-id)
   "Insert a denote link to NOTE-PATH into the ORG-FILE entry at LOCATOR.
 LOCATOR is a heading regexp, or an `:ID:' when BY-ID is non-nil.
 The link is one body line after the heading's metadata:
@@ -505,7 +554,7 @@ Returns a plist:
           :id id
           :heading heading)))
 
-(defun bergheim/agent-org-add-tag (file heading-re tag)
+(defun bergheim/agent-org-entry-add-tag (file heading-re tag)
   "Add TAG (string or list of strings) to the unique heading matching
 HEADING-RE in FILE. Idempotent: when the tag is already present, the
 buffer is not modified.
@@ -540,12 +589,12 @@ Returns a plist:
           :tags tags
           :heading heading)))
 
-(defun bergheim/agent-org-remove-tag (file heading-re tag)
+(defun bergheim/agent-org-entry-remove-tag (file heading-re tag)
   "Remove TAG (string or list of strings) from the unique heading matching
 HEADING-RE in FILE. Idempotent: when the tag is absent, the buffer is
 not modified.
 
-Returns the same plist shape as `bergheim/agent-org-add-tag'."
+Returns the same plist shape as `bergheim/agent-org-entry-add-tag'."
   (let ((inhibit-message t)
         heading tags dirty)
     (bergheim/agent-org--with-file file
@@ -570,8 +619,8 @@ Returns the same plist shape as `bergheim/agent-org-add-tag'."
           :heading heading)))
 
 ;;; Denote-compatible agent helpers
-;; Create/find/list/read follow denote's filename convention without requiring
-;; denote.el. Linking requires denote.el for proper [[denote:ID]] links.
+;; Create/find/get/list follow denote's filename convention without requiring
+;; denote.el. Update and linking require denote.el for metadata and links.
 
 (defun bergheim/agent-denote--slugify (title)
   "Convert TITLE to a denote-compatible filename slug."
@@ -631,31 +680,28 @@ Safe for emacsclient --eval."
       (setq slug "untitled"))
     (unless (file-directory-p dir)
       (make-directory dir t))
-    (setq final-id id
-          filename (concat final-id "--" slug kw-part ".org")
-          filepath (expand-file-name filename dir))
     (let ((counter 0)
-          (content (concat (format "#+title:      %s\n" title)
-                           (format "#+date:       %s\n" date-str)
-                           (format "#+filetags:   %s\n" tags-str)
-                           (format "#+identifier: %s\n" id)
-                           "\n"
-                           (if body (concat body "\n") "")))
           (written nil))
       (while (not written)
-        (condition-case nil
-            (progn
-              (write-region content nil filepath nil nil nil 'excl)
-              (setq written t))
-          (file-already-exists
-           (setq counter (1+ counter)
-                 final-id (format "%s-%d" id counter)
-                 filename (concat final-id "--" slug kw-part ".org")
-                 filepath (expand-file-name filename dir)
-                 content (replace-regexp-in-string
-                          "^#\\+identifier:.*$"
-                          (format "#+identifier: %s" final-id)
-                          content)))))
+        (setq final-id (if (zerop counter) id (format "%s-%d" id counter))
+              filename (concat final-id "--" slug kw-part ".org")
+              filepath (expand-file-name filename dir))
+        (if (directory-files
+             dir nil (concat "\\`" (regexp-quote final-id) "--") t)
+            (setq counter (1+ counter))
+          (let ((content
+                 (concat (format "#+title:      %s\n" title)
+                         (format "#+date:       %s\n" date-str)
+                         (format "#+filetags:   %s\n" tags-str)
+                         (format "#+identifier: %s\n" final-id)
+                         "\n"
+                         (if body (concat body "\n") ""))))
+            (condition-case nil
+                (progn
+                  (write-region content nil filepath nil nil nil 'excl)
+                  (setq written t))
+              (file-already-exists
+               (setq counter (1+ counter)))))))
       (bergheim/agent-notes--maybe-commit filepath (format "note: %s" title))
       (list :wrote (list filepath)
             :path filepath
@@ -683,13 +729,124 @@ Returns list of plists (:id :title :keywords :path) sorted newest first."
     (sort filtered (lambda (a b)
                      (string> (plist-get a :id) (plist-get b :id))))))
 
-(defun bergheim/agent-denote-read (filepath)
-  "Read denote note at FILEPATH. Returns content as string."
+(defun bergheim/agent-denote-get (filepath)
+  "Return the complete content of the denote note at FILEPATH."
   (unless (file-exists-p filepath)
     (error "Note not found: %s" filepath))
   (with-temp-buffer
     (insert-file-contents filepath)
     (buffer-string)))
+
+(defun bergheim/agent-denote-update (filepath &rest changes)
+  "Update a denote note's :title, :keywords, and/or :body.
+
+CHANGES is a plist. Omitted keys stay unchanged; :keywords nil clears tags
+and :body \"\" clears the body. The identifier, date, unknown front matter,
+and top-level `Related notes' section are preserved. Returns a plist with
+`:wrote', `:path', `:old-path', `:id', `:title', and `:keywords'."
+  (require 'denote)
+  (unless (zerop (% (length changes) 2))
+    (error "CHANGES must contain keyword/value pairs: %S" changes))
+  (let ((tail changes)
+        seen)
+    (while tail
+      (let ((key (pop tail)))
+        (pop tail)
+        (unless (memq key '(:title :keywords :body))
+          (error "Unknown denote update key: %S" key))
+        (when (memq key seen)
+          (error "Duplicate denote update key: %S" key))
+        (push key seen))))
+  (let* ((abs (expand-file-name filepath))
+         (title-p (plist-member changes :title))
+         (keywords-p (plist-member changes :keywords))
+         (body-p (plist-member changes :body))
+         (requested-title (plist-get changes :title))
+         (requested-keywords (plist-get changes :keywords))
+         (requested-body (plist-get changes :body)))
+    (unless (file-regular-p abs)
+      (error "Note not found: %s" abs))
+    (unless (string-equal (file-name-extension abs) "org")
+      (error "Only Org denote notes can be updated: %s" abs))
+    (when (and title-p
+               (not (and (stringp requested-title)
+                         (not (string-empty-p requested-title)))))
+      (error ":title must be a non-empty string"))
+    (when (and keywords-p
+               (not (and (listp requested-keywords)
+                         (seq-every-p #'stringp requested-keywords))))
+      (error ":keywords must be a list of strings or nil"))
+    (when (and body-p (not (stringp requested-body)))
+      (error ":body must be a string"))
+    ;; Validate/revert the visiting buffer even for metadata-only updates.
+    (bergheim/agent-org--with-file abs nil)
+    (let* ((id (denote-retrieve-filename-identifier abs))
+           (old-title (or (denote-retrieve-front-matter-title-value abs 'org)
+                          (denote-retrieve-filename-title abs)
+                          ""))
+           (old-keywords (denote-retrieve-filename-keywords-as-list abs))
+           (title (if title-p requested-title old-title))
+           (keywords
+            (if keywords-p
+                (cl-remove-duplicates
+                 (seq-filter
+                  (lambda (s) (not (string-empty-p s)))
+                  (mapcar #'bergheim/agent-denote--sanitize-keyword
+                          requested-keywords))
+                 :test #'string=)
+              old-keywords))
+           (metadata-dirty (or (not (equal title old-title))
+                               (not (equal keywords old-keywords))))
+           (body-dirty nil)
+           (final-path abs))
+      (unless id
+        (error "Not a denote note: %s" abs))
+      (when body-p
+        (bergheim/agent-org--with-file abs
+          (goto-char (point-min))
+          (while (looking-at "^#\\+[[:alnum:]_-]+:.*$")
+            (forward-line 1))
+          (while (and (< (point) (point-max))
+                      (looking-at "^[[:space:]]*$"))
+            (forward-line 1))
+          (let* ((start (point))
+                 (end (or (save-excursion
+                            (when (re-search-forward
+                                   "^\\* Related notes[[:space:]]*$" nil t)
+                              (line-beginning-position)))
+                          (point-max)))
+                 (current (string-trim-right
+                           (buffer-substring-no-properties start end)))
+                 (body (string-trim-right requested-body)))
+            (unless (equal current body)
+              (delete-region start end)
+              (unless (string-empty-p body)
+                (insert body "\n"
+                        (if (< (point) (point-max)) "\n" "")))
+              (setq body-dirty t)))))
+      (when metadata-dirty
+        (let ((denote-directory (file-name-directory abs))
+              (denote-rename-confirmations nil)
+              (denote-save-buffers t)
+              (denote-kill-buffers nil))
+          (setq final-path
+                (bergheim/agent--noninteractive
+                  (denote-rename-file abs title keywords
+                                      'keep-current 'keep-current id)))
+          (setq title (or (denote-retrieve-front-matter-title-value
+                           final-path 'org)
+                          title)
+                keywords (denote-retrieve-filename-keywords-as-list
+                          final-path))))
+      (when (or body-dirty metadata-dirty)
+        (bergheim/agent-notes--maybe-commit
+         final-path (format "note: update %s" title)))
+      (list :wrote (when (or body-dirty metadata-dirty) (list final-path))
+            :path final-path
+            :old-path (unless (equal final-path abs) abs)
+            :id id
+            :title title
+            :keywords keywords))))
 
 (defun bergheim/agent-denote-list (dir &optional limit)
   "List denote notes in DIR, newest first. Returns up to LIMIT entries (default 10).
@@ -754,7 +911,7 @@ Safe for emacsclient --eval."
     (list :wrote (when (> added 0) (list source-path))
           :added added)))
 
-(defun bergheim/agent-denote-get-backlinks (filepath)
+(defun bergheim/agent-denote-backlinks (filepath)
   "Return the notes that link TO the denote note at FILEPATH.
 FILEPATH must be an absolute path to a denote note, not an identifier:
 denote's own `denote-get-backlinks' silently returns nil for a bare id
@@ -781,7 +938,7 @@ Safe for emacsclient --eval."
 ;; prompts, refreshes stale buffers when possible, and marks by opaque
 ;; buffer position instead of heading text.
 ;;
-;;   (bergheim/agent-org-autonomous-select ORG-FILE)
+;;   (bergheim/agent-org-task-autonomous-select ORG-FILE)
 ;;     Returns a JSON array string. Each element is an object with
 ;;       position — buffer (point) of the heading, used as stable identity
 ;;       heading  — title with TODO keyword / tags / priority stripped
@@ -791,7 +948,7 @@ Safe for emacsclient --eval."
 ;;       - tags include :autonomous:
 ;;       - no :DISPATCHED: property (idempotency guard)
 ;;
-;;   (bergheim/agent-org-autonomous-mark-dispatched ORG-FILE POSITION TS)
+;;   (bergheim/agent-org-task-autonomous-mark-dispatched ORG-FILE POSITION TS)
 ;;     Sets :DISPATCHED: TS on the entry at POSITION. POSITION is the
 ;;     opaque buffer offset returned by -select above. Returns non-nil
 ;;     on success, nil if the entry is no longer eligible.
@@ -843,7 +1000,7 @@ A stale buffer carrying unsaved edits errors instead."
        (member (org-get-todo-state)
                bergheim/agent-org--autonomous-dispatchable-states)))
 
-(defun bergheim/agent-org-autonomous-select (org-file)
+(defun bergheim/agent-org-task-autonomous-select (org-file)
   "Return JSON array of :autonomous: entries without :DISPATCHED: in ORG-FILE.
 
 Each element has three fields: `position' (buffer character offset of the
@@ -867,36 +1024,37 @@ heading text), and `body' (body with drawers removed)."
     ;; case round-trips as JSON "[]".
     (json-encode-array (nreverse items))))
 
-(defun bergheim/agent-org-autonomous-mark-dispatched (org-file position timestamp)
-  "Set :DISPATCHED: TIMESTAMP on the entry at POSITION in ORG-FILE.
+(defun bergheim/agent-org-task-autonomous-mark-dispatched (org-file position timestamp)
+  "Set :DISPATCHED: TIMESTAMP on the task at POSITION in ORG-FILE.
 
-POSITION is the `(point)' value returned by `-select'. Using the buffer
-position instead of heading text avoids mis-marking duplicate-titled
-entries. Returns non-nil if the mark was applied, nil if the entry at
-POSITION is no longer `:autonomous:' or is no longer eligible."
+POSITION is the exact heading position returned by `-select'. Returns nil
+rather than searching backward when intervening edits made it stale."
   (let ((abs (expand-file-name org-file))
         (marked nil))
     (bergheim/agent-org--with-quiet-buffer abs
       (org-with-wide-buffer
-       (goto-char position)
-       (when (and (ignore-errors (org-back-to-heading t) t)
-                  (member "autonomous" (org-get-tags))
-                  (bergheim/agent-org--autonomous-eligible-p))
-         (org-entry-put nil "DISPATCHED" timestamp)
-         (setq marked t)))
+       (when (and (integerp position)
+                  (<= (point-min) position)
+                  (<= position (point-max)))
+         (goto-char position)
+         (when (and (org-at-heading-p)
+                    (member "autonomous" (org-get-tags))
+                    (bergheim/agent-org--autonomous-eligible-p))
+           (org-entry-put nil "DISPATCHED" timestamp)
+           (setq marked t))))
       (when marked (save-buffer)))
     (when marked
       (bergheim/agent-notes--maybe-commit
        org-file (format "dispatch: mark %s" timestamp)))
     marked))
 
-(defun bergheim/agent-org-add-todo (file heading &optional body tags state)
+(defun bergheim/agent-org-task-create (file heading &optional body tags state)
   "Append a new entry HEADING to FILE as a top-level heading.
 
 STATE defaults to \"TODO\" and must be a keyword declared in FILE's `#+TODO:'.
 TAGS is a list of tag strings. BODY, when non-empty, is inserted under the
 heading. A stable `:ID:' is generated so the entry can later be addressed with
-`bergheim/agent-org-set-state-by-id'. Returns a plist (:wrote :id :heading
+`bergheim/agent-org-task-set-state-by-id'. Returns a plist (:wrote :id :heading
 :state)."
   (let ((inhibit-message t)
         (st (or state "TODO"))
@@ -947,20 +1105,12 @@ are dropped."
             (push id ids))))
       (nreverse ids))))
 
-(defun bergheim/agent-org-list-todos (org-file &optional states)
-  "Write a JSON array of every entry carrying a TODO keyword in ORG-FILE
-to a temp file; return a plist (:wrote (PATH) :path PATH :count N).
+(defun bergheim/agent-org-task-list (org-file &optional states)
+  "Return a JSON array of every task in ORG-FILE.
 
-Each array element has `line' (1-based heading line in ORG-FILE, ready for
-sed/Read), `state', `heading', `tags', `notes' (denote ids linked from
-that entry, always an array), and `autonomous'. STATES, when
-non-nil, is a list of keyword strings to keep — e.g. (list \"TODO\"
-\"INPROGRESS\") — so callers of a long log can skip the DONE bulk.
-
-The JSON travels through a file, not the reply: emacsclient corrupts
-replies beyond a few KB (server.el chunks at `server-msg-size' and the
-client mis-reassembles, splicing \"*ERROR*: Unknown message\" into
-stdout). The plist stays small enough to be safe."
+Each element has `line' (1-based heading line), `state', `heading', `tags',
+`notes' (linked denote ids), and `autonomous'. STATES, when non-nil, filters
+by TODO keyword. Emacs 31.1 transports large emacsclient replies reliably."
   (let ((abs (expand-file-name org-file)) (items nil))
     (bergheim/agent-org--with-quiet-buffer abs
       (org-with-wide-buffer
@@ -971,18 +1121,19 @@ stdout). The plist stays small enough to be safe."
               (push `((line . ,(line-number-at-pos (point)))
                       (state . ,(substring-no-properties state))
                       (heading . ,(substring-no-properties (org-get-heading t t t t)))
-                      (tags . ,(bergheim/agent-org--strip-list (org-get-tags)))
+                      (scheduled . ,(org-entry-get nil "SCHEDULED"))
+                      (deadline . ,(org-entry-get nil "DEADLINE"))
+                      (tags . ,(vconcat
+                                (bergheim/agent-org--strip-list
+                                 (org-get-tags))))
                       (notes . ,(vconcat (bergheim/agent-org--denote-ids-in-entry)))
                       (autonomous . ,(and (member "autonomous" (org-get-tags))
                                           (bergheim/agent-org--autonomous-eligible-p) t)))
                     items))))
         nil nil)))
-    (let ((path (make-temp-file "agent-org-todos-" nil ".json"))
-          (arr (nreverse items)))
-      (write-region (json-encode-array arr) nil path nil 'silent)
-      (list :wrote (list path) :path path :count (length arr)))))
+    (json-encode-array (nreverse items))))
 
-(defun bergheim/agent-org-get-entry (file locator &optional by-id)
+(defun bergheim/agent-org-entry-get (file locator &optional by-id)
   "Return the entry matching LOCATOR in FILE as a JSON object.
 
 LOCATOR is a heading regexp, or an `:ID:' value when BY-ID is non-nil. Fields:
