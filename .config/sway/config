@@ -48,7 +48,7 @@ set $monitor1 DP-1
 set $monitor2 DP-2
 
 # Per-host overrides (e.g. berghome uses DP-1, not DP-0). Missing = no-op.
-include ~/.config/sway/host-*.conf
+include ~/.config/sway/host-$(hostname).conf
 
 # input "1:1:AT_Translated_Set_2_keyboard" {
 input "type:keyboard" {
