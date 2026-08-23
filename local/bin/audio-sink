@@ -1,0 +1,57 @@
+#!/bin/sh
+# Pick the default audio sink, and drag what is already playing onto it.
+#
+# set-default-sink only affects *new* streams, so without the move loop
+# the music keeps coming out of the old device and the switch looks
+# broken. Replaces the old audio-toggle, which hardcoded two sink names
+# that no longer exist on this machine.
+#
+# Selection rides on --index rather than parsing the label back, since
+# sink descriptions are free text and can contain anything.
+
+set -eu
+
+current=$(pactl get-default-sink)
+sinks=$(pactl -f json list sinks)
+
+# Mute rides in the same list as the sinks, at index 0. It gets a sentinel
+# in $names so the index still lines up with the sink array below.
+if [ "$(pactl get-sink-mute @DEFAULT_SINK@)" = "Mute: yes" ]; then
+	mute_label=unmute
+	mute_icon=audio-volume-muted
+else
+	mute_label=mute
+	mute_icon=audio-volume-high
+fi
+names=$(printf '__mute__\n%s' "$(printf '%s' "$sinks" | jq -r '.[].name')")
+
+# label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
+index=$( { printf '%s\0icon\037%s\n' "$mute_label" "$mute_icon"
+	printf '%s' "$sinks" | jq -j --arg cur "$current" '
+	.[]
+	| (if .name == $cur then "* " else "  " end) + .description
+	+ "\u0000icon\u001f"
+	+ (if (.name | startswith("bluez")) then "audio-headphones" else "audio-speakers" end)
+	+ "\n"
+'
+} | fuzzel --dmenu --index --prompt 'audio ') || exit 0
+
+# fuzzel prints -1 when the typed text matched no entry.
+[ "$index" -ge 0 ] 2>/dev/null || exit 0
+
+target=$(printf '%s\n' "$names" | sed -n "$((index + 1))p")
+[ -n "$target" ] || exit 0
+
+# volumectl-osd already toggles and draws the avizo OSD; it is what the
+# XF86AudioMute key runs.
+[ "$target" = __mute__ ] && exec volumectl-osd toggle-mute
+
+pactl set-default-sink "$target"
+pactl list short sink-inputs | cut -f1 | while read -r stream; do
+	pactl move-sink-input "$stream" "$target" || true
+done
+
+# Device names are free text, so mako rather than the icon-only osd.
+notify-send -a audio-sink -i audio-speakers \
+	"$(printf '%s' "$sinks" | jq -r --arg n "$target" \
+		'.[] | select(.name == $n) | .description')"

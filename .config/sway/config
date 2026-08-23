@@ -400,11 +400,16 @@ bindsym XF86AudioLowerVolume exec volumectl-osd down
 bindsym XF86AudioMute exec volumectl-osd toggle-mute
 bindsym XF86AudioMicMute exec volumectl-osd -m toggle-mute
 # Toggle default output between speakers and headset
-bindsym $mod+Shift+a exec audio-toggle
+bindsym $mod+Shift+a exec audio-sink
 
 # Brightness + avizo OSD (lightctl-osd adds -d in dark mode)
 bindsym XF86MonBrightnessUp exec lightctl-osd up
 bindsym XF86MonBrightnessDown exec lightctl-osd down
+
+# One popup for every system action -- audio, bluetooth, display, power
+# profile, wifi, night light, theme, lock/suspend/reboot/shutdown. The
+# scattered $mod+F* chords still work; they get retired once this sticks.
+bindsym --to-code $mod+comma exec sysmenu
 
 # Password manager (replace rofi-pass with wofi equivalent)
 bindsym $mod+p exec fuzzel-pass

@@ -1,0 +1,37 @@
+#!/bin/sh
+# One popup for every system action, so none of them needs its own
+# hard-to-remember chord. fuzzel prefix-matches, so this is leader plus
+# one letter plus Enter in practice.
+#
+# A script rather than a sway `mode` because niri has no submaps -- the
+# same binding has to work on both compositors.
+#
+# Every leaf shells out to the script that already owns that job; this
+# file only routes.
+
+set -eu
+
+# label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
+entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
+
+menu() {
+	entry 'audio output'    audio-speakers
+	entry 'bluetooth'       preferences-system-bluetooth
+	entry 'display'         video-display
+	entry 'wifi'            network-wireless
+	entry 'night light'     weather-clear-night
+	entry 'toggle darkmode' preferences-desktop-theme
+	entry 'cpu profile'     battery-profile-balanced
+	entry 'power'           system-shutdown
+}
+
+case "$(menu | fuzzel --dmenu --prompt 'system ')" in
+	'audio output')    audio-sink ;;
+	bluetooth)         toggle-bluetooth ;;
+	display)           display-mode ;;
+	wifi)              alacritty --class floating -e impala ;;
+	'night light')     ~/.config/waybar/scripts/gammastep.sh toggle ;;
+	'toggle darkmode') toggle-darkmode ;;
+	'cpu profile')     tux-power-menu ;;
+	power)             power-menu ;;
+esac

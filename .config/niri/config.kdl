@@ -297,6 +297,10 @@ binds {
     Mod+T                  { spawn "emacs-clock-in"; }
     Mod+O                  { spawn "emacsclient" "--eval" "(thanos/type)" "-F" "((name . \"floating\"))"; }
     Mod+Escape             { spawn "fancylocksway"; }
+    // One popup for every system action. A script, not a submap, so sway
+    // and niri share it -- niri has no modes.
+    Mod+Comma              { spawn "sysmenu"; }
+
     Mod+F1                 { spawn "toggle-darkmode"; }
     Mod+F2                 { spawn-sh "(pkill gammastep && notify-send 'Disabling color temperature') || (notify-send 'Enabling color temperature' && gammastep)"; }
     Mod+F5                 { spawn "alacritty" "--class" "floating" "-e" "impala"; }
@@ -328,7 +332,7 @@ binds {
     // niri-essential column manipulation (no sway equivalent — see header).
     Mod+BracketLeft        { consume-or-expel-window-left; }
     Mod+BracketRight       { consume-or-expel-window-right; }
-    Mod+Comma              { consume-window-into-column; }
+    Mod+Shift+Comma        { consume-window-into-column; }
     Mod+Period             { expel-window-from-column; }
 
     // -- Focus, hjkl + arrows (sway lines 118–127) --

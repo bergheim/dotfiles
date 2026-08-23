@@ -1,0 +1,37 @@
+#!/bin/sh
+# Session and power actions in one picker, so they are not seven separate
+# entries cluttering sysmenu. Reachable on its own as well as from there.
+
+set -eu
+
+# label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
+entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
+
+menu() {
+	entry 'lock'      system-lock-screen
+	entry 'suspend'   system-suspend
+	entry 'hibernate' system-suspend-hibernate
+	entry 'logout'    system-log-out
+	entry 'reboot'    system-reboot
+	entry 'shutdown'  system-shutdown
+	entry 'uefi'      computer
+}
+
+# A stray Enter in a list is far easier than a stray chord, so everything
+# that loses the session asks first.
+confirm() {
+	[ "$(printf 'no\nyes\n' | fuzzel --dmenu --prompt "$1 ")" = yes ]
+}
+
+case "$(menu | fuzzel --dmenu --prompt 'power ')" in
+	lock)      fancylocksway ;;
+	suspend)   laptop-key suspend ;;
+	hibernate) confirm 'hibernate?' && systemctl hibernate ;;
+	reboot)    confirm 'reboot?'    && systemctl reboot ;;
+	shutdown)  confirm 'shutdown?'  && systemctl poweroff ;;
+	uefi)      confirm 'uefi?'      && systemctl reboot --firmware-setup ;;
+	logout)
+		confirm 'log out?' || exit 0
+		if [ -n "${SWAYSOCK:-}" ]; then swaymsg exit; else niri msg action quit -s; fi
+		;;
+esac

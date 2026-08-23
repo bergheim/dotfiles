@@ -1,0 +1,4 @@
+#!/bin/sh
+# profile=$(tux-power list | fuzzel --dmenu --prompt "power " | awk '{print $1}')
+profile=$(tux-power list | fuzzel --dmenu --prompt "power ")
+[ -n "$profile" ] && tux-power set "$profile"

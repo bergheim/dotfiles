@@ -292,7 +292,7 @@
         "interval": 5,
         "return-type": "json",
         "exec": "~/.config/waybar/scripts/audio-status.sh",
-        "on-click": "audio-toggle",
+        "on-click": "audio-sink",
         "on-click-right": "pavucontrol",
         "hide-empty-text": true
     },
