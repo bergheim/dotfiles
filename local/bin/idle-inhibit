@@ -1,0 +1,27 @@
+#!/bin/sh
+# Keep the screen awake by pausing the idle daemon, rather than holding a
+# Wayland inhibitor: no extra package, and it is exactly reversible.
+#
+# swayidle is what locks, blanks and finally suspends this machine, so
+# SIGSTOP on it stops all three at once and SIGCONT resumes the timers.
+#
+# -x, never -f: pkill -f would match this script's own shell.
+
+set -eu
+
+pid=$(pgrep -x swayidle) || {
+	notify-send -a idle-inhibit -u critical 'No idle daemon running' \
+		'swayidle is not started in this session'
+	exit 1
+}
+
+case "$(ps -o stat= -p "$pid")" in
+	*T*)
+		kill -CONT "$pid"
+		osd preferences/22/preferences-desktop-screensaver 1.0   # idle timers back on
+		;;
+	*)
+		kill -STOP "$pid"
+		osd actions/24/view-visible 0                            # staying awake
+		;;
+esac

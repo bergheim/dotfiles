@@ -7,7 +7,18 @@ set -eu
 # label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
 entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
 
+# Reflect the current state, the way audio-sink does for mute: the entry
+# that stops the machine sleeping belongs beside the ones that make it.
+idle_label='stay awake'
+idle_icon=view-visible
+idle_pid=$(pgrep -x swayidle) || idle_pid=
+if [ -n "$idle_pid" ] && ps -o stat= -p "$idle_pid" | grep -q T; then
+	idle_label='allow sleep'
+	idle_icon=preferences-desktop-screensaver
+fi
+
 menu() {
+	entry "$idle_label" "$idle_icon"
 	entry 'lock'      system-lock-screen
 	entry 'suspend'   system-suspend
 	entry 'hibernate' system-suspend-hibernate
@@ -24,6 +35,7 @@ confirm() {
 }
 
 case "$(menu | fuzzel --dmenu --prompt 'power ')" in
+	'stay awake'|'allow sleep') idle-inhibit ;;
 	lock)      fancylocksway ;;
 	suspend)   laptop-key suspend ;;
 	hibernate) confirm 'hibernate?' && systemctl hibernate ;;

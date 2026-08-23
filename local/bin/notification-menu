@@ -1,0 +1,22 @@
+#!/bin/sh
+# mako actions in one picker, so dismiss/restore/dismiss-all do not each
+# need their own $mod+Ctrl chord.
+
+set -eu
+
+# label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
+entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
+
+menu() {
+	entry 'dismiss'     edit-delete
+	entry 'dismiss all' mail-mark-read
+	entry 'restore'     edit-undo
+	entry 'actions'     dialog-messages
+}
+
+case "$(menu | fuzzel --dmenu --prompt 'notifications ')" in
+	dismiss)       makoctl dismiss ;;
+	'dismiss all') makoctl dismiss --all ;;
+	restore)       makoctl restore ;;
+	actions)       makoctl menu -- fuzzel --dmenu --prompt 'action ' ;;
+esac

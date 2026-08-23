@@ -1,0 +1,89 @@
+#!/bin/sh
+# Pick a wifi network without opening a terminal. iwd is the stack here
+# (NetworkManager is inactive), so this drives iwctl.
+#
+# iwctl is a human-facing tool: it colours its output and lays it out in
+# fixed columns. Strip the escapes, then match on the known security
+# tokens so SSIDs containing spaces survive.
+#
+# Selection rides on --index because SSIDs are free text.
+
+set -eu
+
+strip() { sed 's/\x1b\[[0-9;]*m//g'; }
+
+station=$(iwctl station list | strip | awk 'NR>4 && NF {print $1; exit}')
+[ -n "$station" ] || { notify-send -a wifi-menu "No wifi station"; exit 1; }
+
+# Refresh in the background: a scan takes seconds, and the cached list is
+# good enough to act on immediately.
+iwctl station "$station" scan >/dev/null 2>&1 &
+
+# marker, ssid, signal -- tab separated.
+networks=$(iwctl station "$station" get-networks | strip \
+	| sed -n 's/^\(..\)\(.\)\s\+\(.*\S\)\s\s\+\(psk\|open\|8021x\|wep\)\s\s\+\(\*\+\)\s*$/\2\t\3\t\5/p')
+[ -n "$networks" ] || { notify-send -a wifi-menu "No networks found"; exit 0; }
+
+known=$(iwctl known-networks list | strip \
+	| sed -n 's/^\s\+\(.*\S\)\s\s\+\(psk\|open\|8021x\|wep\)\s\s\+.*$/\1/p')
+
+# Sentinel shares the index space with the networks.
+ssids=$(printf '__disconnect__\n__rescan__\n%s' "$(printf '%s\n' "$networks" | cut -f2)")
+
+index=$( {
+	printf 'disconnect\0icon\037network-wireless-disconnected\n'
+	printf 'rescan\0icon\037view-refresh\n'
+	printf '%s\n' "$networks" | while IFS="$(printf '\t')" read -r mark ssid signal; do
+		case "$signal" in
+			\*)    icon=network-wireless-20 ;;
+			\*\*)   icon=network-wireless-40 ;;
+			\*\*\*)  icon=network-wireless-60 ;;
+			*)     icon=network-wireless-100 ;;
+		esac
+		[ "$mark" = ">" ] && prefix='* ' || prefix='  '
+		printf '%s%s\0icon\037%s\n' "$prefix" "$ssid" "$icon"
+	done
+} | fuzzel --dmenu --index --prompt 'wifi ') || exit 0
+
+[ "$index" -ge 0 ] 2>/dev/null || exit 0
+
+target=$(printf '%s\n' "$ssids" | sed -n "$((index + 1))p")
+[ -n "$target" ] || exit 0
+
+# fuzzel reads its list once at startup, so the background scan above only
+# helps the *next* open. This row waits for a scan and reopens the menu.
+if [ "$target" = __rescan__ ]; then
+	iwctl station "$station" scan >/dev/null 2>&1 || true
+	waited=0
+	while [ "$waited" -lt 150 ] \
+		&& iwctl station "$station" show | strip | grep -q 'Scanning *yes'; do
+		sleep 0.1
+		waited=$((waited + 1))
+	done
+	exec wifi-menu
+fi
+
+if [ "$target" = __disconnect__ ]; then
+	iwctl station "$station" disconnect >/dev/null
+	notify-send -a wifi-menu -i network-wireless-disconnected 'Wifi disconnected'
+	exit 0
+fi
+
+# An unknown network needs a passphrase up front: iwctl would otherwise
+# prompt on a terminal that does not exist here and hang.
+if printf '%s\n' "$known" | grep -qxF "$target"; then
+	iwctl station "$station" connect "$target" >/dev/null 2>&1 || status=failed
+else
+	passphrase=$(: | fuzzel --dmenu --password --prompt "$target ") || exit 0
+	[ -n "$passphrase" ] || exit 0
+	iwctl --passphrase="$passphrase" station "$station" connect "$target" \
+		>/dev/null 2>&1 || status=failed
+fi
+
+# SSIDs are free text, so mako rather than the icon-only osd.
+if [ "${status:-}" = failed ]; then
+	notify-send -a wifi-menu -u critical -i network-wireless-disconnected \
+		"$target" 'Connection failed'
+else
+	notify-send -a wifi-menu -i network-wireless-100 "$target" 'Connected'
+fi

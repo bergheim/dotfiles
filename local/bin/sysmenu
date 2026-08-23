@@ -21,17 +21,19 @@ menu() {
 	entry 'wifi'            network-wireless
 	entry 'night light'     weather-clear-night
 	entry 'toggle darkmode' preferences-desktop-theme
+	entry 'notifications'   preferences-desktop-notification
 	entry 'cpu profile'     battery-profile-balanced
 	entry 'power'           system-shutdown
 }
 
 case "$(menu | fuzzel --dmenu --prompt 'system ')" in
 	'audio output')    audio-sink ;;
-	bluetooth)         toggle-bluetooth ;;
+	bluetooth)         bluetooth-menu ;;
 	display)           display-mode ;;
-	wifi)              alacritty --class floating -e impala ;;
+	wifi)              wifi-menu ;;
 	'night light')     ~/.config/waybar/scripts/gammastep.sh toggle ;;
 	'toggle darkmode') toggle-darkmode ;;
+	notifications)     notification-menu ;;
 	'cpu profile')     tux-power-menu ;;
 	power)             power-menu ;;
 esac

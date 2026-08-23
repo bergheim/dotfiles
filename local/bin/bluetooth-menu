@@ -1,0 +1,52 @@
+#!/bin/sh
+# Connect or disconnect a known bluetooth device, rather than just
+# flipping the radio. Pairs with audio-sink: connect the speaker here,
+# then send audio to it there.
+#
+# Selection rides on --index because device names are free text.
+
+set -eu
+
+# The radio being off is not an error worth a menu -- offer to turn it on.
+if [ "$(rfkill --raw --noheadings --output SOFT list bluetooth)" = blocked ]; then
+	toggle-bluetooth
+	exit 0
+fi
+
+devices=$(bluetoothctl devices | sed 's/^Device //')
+connected=$(bluetoothctl devices Connected | sed 's/^Device //' | cut -d" " -f1)
+
+# Sentinel rows share the index space with the devices, so $macs has one
+# line per menu row and the index maps straight onto it.
+macs=$(printf '__radio__\n%s' "$(printf '%s\n' "$devices" | cut -d" " -f1)")
+
+index=$( {
+	printf 'turn bluetooth off\0icon\037preferences-system-bluetooth-inactive-symbolic\n'
+	printf '%s\n' "$devices" | while read -r mac name; do
+		if printf '%s\n' "$connected" | grep -qx "$mac"; then
+			printf '* %s\0icon\037preferences-system-bluetooth-activated-symbolic\n' "$name"
+		else
+			printf '  %s\0icon\037preferences-system-bluetooth\n' "$name"
+		fi
+	done
+} | fuzzel --dmenu --index --prompt 'bluetooth ') || exit 0
+
+[ "$index" -ge 0 ] 2>/dev/null || exit 0
+
+target=$(printf '%s\n' "$macs" | sed -n "$((index + 1))p")
+[ -n "$target" ] || exit 0
+
+[ "$target" = __radio__ ] && exec toggle-bluetooth
+
+name=$(printf '%s\n' "$devices" | grep "^$target " | cut -d" " -f2-)
+
+if printf '%s\n' "$connected" | grep -qx "$target"; then
+	bluetoothctl --timeout 10 disconnect "$target" >/dev/null 2>&1
+	state=disconnected
+else
+	bluetoothctl --timeout 20 connect "$target" >/dev/null 2>&1
+	state=connected
+fi
+
+# Device names are free text, so mako rather than the icon-only osd.
+notify-send -a bluetooth-menu -i preferences-system-bluetooth "$name" "$state"
