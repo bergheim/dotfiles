@@ -381,7 +381,8 @@ bindsym XF86AudioPlay exec playerctl play-pause
 # Bare Super/Alt still reach clients; harmless, nothing looks them up alone.
 bindcode Mod4+Mod1+72 exec laptop-key profile
 bindsym XF86Display exec laptop-key display
-# Fn+F10 emits F22 when enabling and F23 when disabling the touchpad.
+# Fn+F9 emits F22 when enabling and F23 when disabling the touchpad.
+# (Fn+F10 is the display key -- XF86Display, bound above.)
 bindsym F22 exec laptop-key touchpad-on
 bindsym F23 exec laptop-key touchpad-off
 bindsym XF86RFKill exec laptop-key airplane
