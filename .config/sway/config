@@ -369,9 +369,17 @@ bindsym XF86AudioPlay exec playerctl play-pause
 # exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && (wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -q MUTED && echo 0 > $WOBSOCK) || wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed 's/[^0-9]//g' > $WOBSOCK
 
 # TUXEDO Pulse 14 Gen4 function row
-# Fn+F3 is emitted by the TUXEDO driver as Super+Alt+F6 (evdev code 72).
-# Match its release from the TUXEDO input device so the synthetic chord is complete.
-bindcode --release --input-device=0:0:TUXEDO_Keyboard_Events Mod4+Mod1+72 exec laptop-key profile
+# Fn+F3 is emitted by the TUXEDO driver as a synthetic Super+Alt+F6 chord
+# (keycode 72) on its virtual input device -- see report_gauge_key_combo() in
+# tuxedo_nb05_keyboard.c.
+#
+# Two gotchas, both verified with wev:
+#   --release leaves the press unclaimed, so the chord falls through to the
+#   focused window (Emacs: "M-s-<F6> is undefined").
+#   --input-device matches on release but NOT on press, so a device-scoped
+#   press binding silently never fires. Hence plain bindcode on the press.
+# Bare Super/Alt still reach clients; harmless, nothing looks them up alone.
+bindcode Mod4+Mod1+72 exec laptop-key profile
 bindsym XF86Display exec laptop-key display
 # Fn+F10 emits F22 when enabling and F23 when disabling the touchpad.
 bindsym F22 exec laptop-key touchpad-on
