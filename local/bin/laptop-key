@@ -4,32 +4,6 @@ tcc_service=com.tuxedocomputers.tccd
 tcc_path=/com/tuxedocomputers/tccd
 tcc_interface=com.tuxedocomputers.tccd
 
-# avizo OSD, same visual language as volume/brightness. avizo has no text,
-# so the icon plus the progress bar carry the meaning. breeze-dark ships the
-# light-ink variant (#fcfcfc), breeze the dark-ink one (#232629).
-osd() {
-    theme=breeze-dark
-    [ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] \
-        || theme=breeze
-    # avizo draws images at their intrinsic size and its own are 96px, so the
-    # 24px theme icons come out tiny. Cache an upscaled copy; the viewBox
-    # makes it lossless.
-    img="$HOME/.local/share/avizo/$theme/$1.svg"
-    [ -f "$img" ] || {
-        mkdir -p "${img%/*}"
-        sed 's/width="24" height="24"/width="96" height="96"/' \
-            "/usr/share/icons/$theme/status/24/$1.svg" > "$img"
-    }
-    avizo-client --image-path="$img" --progress="$2" --time=2
-}
-
-# Binary on/off states: a progress bar would be meaningless, so these use
-# mako. Replace-in-place so repeated presses don't stack.
-note() {
-    notify-send -t 1500 -i "$2" \
-        -h string:x-canonical-private-synchronous:laptop-key "$1"
-}
-
 case "$1" in
     profile)
         current=$(busctl --json=short --system call \
@@ -43,17 +17,17 @@ case "$1" in
         case "$current" in
             __legacy_powersave_extreme__)
                 next=__legacy_cool_and_breezy__
-                icon=battery-profile-balanced
+                icon=status/24/battery-profile-balanced
                 progress=0.66
                 ;;
             __legacy_cool_and_breezy__)
                 next=__legacy_default__
-                icon=battery-profile-performance
+                icon=status/24/battery-profile-performance
                 progress=1.0
                 ;;
             *)
                 next=__legacy_powersave_extreme__
-                icon=battery-profile-powersave
+                icon=status/24/battery-profile-powersave
                 progress=0.33
                 ;;
         esac
@@ -64,11 +38,11 @@ case "$1" in
         ;;
     touchpad-on)
         swaymsg input type:touchpad events enabled >/dev/null
-        note "Touchpad on" input-touchpad
+        osd devices/24/input-touchpad 1.0
         ;;
     touchpad-off)
         swaymsg input type:touchpad events disabled >/dev/null
-        note "Touchpad off" input-touchpad
+        osd status/24/input-touchpad-off 0
         ;;
     airplane)
         if rfkill --raw --noheadings --output SOFT,HARD list wifi | grep -q blocked; then
@@ -83,16 +57,16 @@ case "$1" in
         power=$(swaymsg -t get_outputs -r \
             | jq -r '.[] | select(.name == "eDP-1") | .power')
         if [ "$power" = true ]; then
-            note "Internal display off" video-display
+            osd devices/64/video-display 0
             sleep 0.3
             swaymsg output eDP-1 power off >/dev/null
         else
             swaymsg output eDP-1 power on >/dev/null
-            note "Internal display on" video-display
+            osd devices/64/video-display 1.0
         fi
         ;;
     suspend)
-        note "Suspending" system-suspend
+        osd actions/32/system-suspend 1.0
         fancylocksway &
         sleep 0.5
         systemctl suspend-then-hibernate

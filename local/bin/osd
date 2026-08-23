@@ -1,0 +1,33 @@
+#!/bin/sh
+# Icon-only OSD, shared by every system key and by sysmenu, so the whole
+# desktop speaks one visual language.
+#
+# avizo has no text: the icon says what, the progress bar says which or
+# whether. Anything carrying variable text (an output name, a device name)
+# belongs in mako via notify-send instead -- avizo cannot show it.
+#
+# avizo draws images at their intrinsic size while its own built-ins are
+# 96x96, so theme icons must be rasterised: they range 16-64px, and some
+# ship without a viewBox while others ship without width/height, which
+# rules out rewriting the SVG. Cache one 96px PNG per icon.
+#
+#   osd <theme-relative icon path, no .svg> [progress 0..1, default 1]
+#   osd status/24/flightmode-on
+#   osd status/24/battery-profile-balanced 0.66
+
+set -eu
+
+icon=$1
+progress=${2:-1.0}
+
+theme=breeze-dark
+[ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] \
+	|| theme=breeze
+
+img="$HOME/.local/share/avizo/$theme/${icon##*/}.png"
+[ -f "$img" ] || {
+	mkdir -p "${img%/*}"
+	rsvg-convert -w 96 -h 96 -o "$img" "/usr/share/icons/$theme/$icon.svg"
+}
+
+exec avizo-client --image-path="$img" --progress="$progress" --time=2

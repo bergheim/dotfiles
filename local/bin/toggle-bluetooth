@@ -4,7 +4,7 @@ devices_file="${XDG_RUNTIME_DIR:-/tmp}/toggle-bluetooth.devices"
 
 if [ "$(rfkill --raw --noheadings --output SOFT list bluetooth)" = blocked ]; then
     rfkill unblock bluetooth
-    swayosd-client --custom-message "Bluetooth on" --custom-icon bluetooth-active
+    osd preferences/24/preferences-system-bluetooth-activated-symbolic
     attempts=0
     while ! busctl --system get-property org.bluez /org/bluez/hci0 org.bluez.Adapter1 Powered 2>/dev/null | grep -q true \
         && [ "$attempts" -lt 25 ]; do
@@ -19,5 +19,5 @@ if [ "$(rfkill --raw --noheadings --output SOFT list bluetooth)" = blocked ]; th
 else
     bluetoothctl --timeout 2 devices Connected | awk '{print $2}' > "$devices_file"
     rfkill block bluetooth
-    swayosd-client --custom-message "Bluetooth off" --custom-icon bluetooth-disabled
+    osd preferences/24/preferences-system-bluetooth-inactive-symbolic 0
 fi

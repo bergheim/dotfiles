@@ -22,10 +22,8 @@ rfkill event | while IFS= read -r event; do
     wifi=$current
 
     if [ "$wifi" = blocked ] && radio_blocked bluetooth; then
-        swayosd-client --custom-message "Airplane mode on" \
-            --custom-icon flightmode-on
+        osd status/24/flightmode-on
     else
-        swayosd-client --custom-message "Airplane mode off" \
-            --custom-icon flightmode-off
+        osd status/24/flightmode-off 0
     fi
 done

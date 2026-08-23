@@ -29,7 +29,8 @@ internal=$(swaymsg -t get_outputs -r \
 externals=$(swaymsg -t get_outputs -r \
 	| jq -r '.[] | select(.name | startswith("eDP") | not) | .name')
 
-toast() { swayosd-client --custom-message "$1" --custom-icon video-display 2>/dev/null || true; }
+# Variable text (output names), so mako rather than the icon-only osd.
+toast() { notify-send -a display-mode -i video-display "$1"; }
 
 # Scaled width: how much room this output takes in the layout. Only
 # meaningful once it is enabled and its mode has settled.
