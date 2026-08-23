@@ -1,0 +1,26 @@
+#!/bin/sh
+# The Print chords stay -- Print plus a modifier is already a good
+# mnemonic. This exists so the modes are discoverable rather than
+# remembered.
+
+set -eu
+
+# label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
+entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
+
+menu() {
+	entry 'selection'      edit-select
+	entry 'active window'  window
+	entry 'this monitor'   video-display
+	entry 'selection, edit' applets-screenshooter
+}
+
+# fuzzel is still on screen when grimshot fires, so let it close first.
+shoot() { sleep 0.2; share-screenshot "$@"; }
+
+case "$(menu | fuzzel --dmenu --prompt 'screenshot ')" in
+	selection)        shoot anything ;;
+	'active window')  shoot active ;;
+	'this monitor')   shoot output ;;
+	'selection, edit') shoot anything edit ;;
+esac

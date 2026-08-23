@@ -7,21 +7,43 @@
 # same binding has to work on both compositors.
 #
 # Every leaf shells out to the script that already owns that job; this
-# file only routes.
+# file only routes. Existing chords are left alone: this is for
+# discovering an action, not the fast path once you know it.
 
 set -eu
 
 # label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
 entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
 
+# laptop-key drives the touchpad and panel through swaymsg, so those two
+# rows only exist in a sway session. The label reflects current state.
+if [ -n "${SWAYSOCK:-}" ]; then
+	if swaymsg -t get_inputs -r \
+		| jq -e 'any(.[]; .type == "touchpad" and .libinput.send_events == "enabled")' \
+		>/dev/null; then
+		touchpad_label='touchpad off'
+		touchpad_icon=input-touchpad
+	else
+		touchpad_label='touchpad on'
+		touchpad_icon=input-touchpad
+	fi
+fi
+
 menu() {
 	entry 'audio output'    audio-speakers
 	entry 'bluetooth'       preferences-system-bluetooth
-	entry 'display'         video-display
 	entry 'wifi'            network-wireless
+	entry 'airplane mode'   transport-mode-flight
+	entry 'display'         preferences-desktop-display-randr
+	if [ -n "${SWAYSOCK:-}" ]; then
+		entry 'screen off'      osd-shutd-screen
+		entry "$touchpad_label" "$touchpad_icon"
+	fi
 	entry 'night light'     weather-clear-night
 	entry 'toggle darkmode' preferences-desktop-theme
 	entry 'notifications'   preferences-desktop-notification
+	entry 'screenshot'      applets-screenshooter
+	entry 'record'          media-record
 	entry 'cpu profile'     battery-profile-balanced
 	entry 'power'           system-shutdown
 }
@@ -29,11 +51,17 @@ menu() {
 case "$(menu | fuzzel --dmenu --prompt 'system ')" in
 	'audio output')    audio-sink ;;
 	bluetooth)         bluetooth-menu ;;
-	display)           display-mode ;;
 	wifi)              wifi-menu ;;
+	'airplane mode')   laptop-key airplane ;;
+	display)           display-mode ;;
+	'screen off')      laptop-key display ;;
+	'touchpad off')    laptop-key touchpad-off ;;
+	'touchpad on')     laptop-key touchpad-on ;;
 	'night light')     ~/.config/waybar/scripts/gammastep.sh toggle ;;
 	'toggle darkmode') toggle-darkmode ;;
 	notifications)     notification-menu ;;
+	screenshot)        screenshot-menu ;;
+	record)            record-menu ;;
 	'cpu profile')     tux-power-menu ;;
 	power)             power-menu ;;
 esac

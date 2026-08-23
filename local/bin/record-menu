@@ -1,0 +1,37 @@
+#!/bin/sh
+# Screen recording. While a take is running the only sensible action is
+# to end it, so that is all the menu offers.
+
+set -eu
+
+# label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
+entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
+
+if pgrep -x wf-recorder >/dev/null; then
+	case "$(entry 'stop recording' media-playback-stop \
+		| fuzzel --dmenu --prompt 'recording ')" in
+		'stop recording')
+			pkill -INT -x wf-recorder
+			notify-send -a record-menu -i media-playback-stop \
+				'Recording stopped' 'Transcoding and uploading'
+			;;
+	esac
+	exit 0
+fi
+
+menu() {
+	entry 'region'        media-record
+	entry 'window'        camera-video
+	entry 'region, local' media-record
+	entry 'window, local' camera-video
+}
+
+# fuzzel is still on screen when slurp starts, so let it close first.
+rec() { sleep 0.2; record-sway "$@"; }
+
+case "$(menu | fuzzel --dmenu --prompt 'record ')" in
+	region)         rec ;;
+	window)         rec window ;;
+	'region, local') rec --local ;;
+	'window, local') rec --local window ;;
+esac
