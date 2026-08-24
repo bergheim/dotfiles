@@ -1332,7 +1332,7 @@ On a loaded image, open it full-size via `image-mode'."
     (interactive)
     (if (bergheim/jabber-image--at-point)
         (bergheim/jabber-image-view-fullsize)
-      (jabber-image-placeholder-click)))
+      (jabber-chat-url-action-at-point)))
 
   (defun bergheim/jabber-chat-ret ()
     "RET in a jabber chat buffer.
@@ -1343,14 +1343,14 @@ fall through to evil's normal-state default (move down a line)."
     (cond
      ((bergheim/jabber-image--at-point)
       (bergheim/jabber-image-view-fullsize))
-     ((get-text-property (point) 'jabber-image-url)
-      (jabber-image-placeholder-click))
+     ((get-text-property (point) 'jabber-chat-image-url)
+      (jabber-chat-url-action-at-point))
      (t (forward-line 1))))
 
   ;; Mouse-1 on the image still goes through the text-property keymap, so
   ;; this binding remains useful even though evil shadows RET there.
-  (with-eval-after-load 'jabber-image
-    (define-key jabber-image-placeholder-keymap
+  (with-eval-after-load 'jabber-chat
+    (define-key jabber-chat-url-keymap
       (kbd "RET") #'bergheim/jabber-image-ret-action))
 
   ;; Evil normal state lookups outrank text-property keymaps via
