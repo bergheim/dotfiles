@@ -205,5 +205,39 @@ Syntax highlighting is inferred from the buffer's major mode via
    (bergheim/microbin--curl (list "-F" (concat "file=@" (expand-file-name file))))
    'file))
 
+(defun bergheim/microbin--html-head ()
+  "Stylesheets hosted on the MicroBin origin."
+  (format "<link rel=\"stylesheet\" href=\"%s/static/water.css\">
+<link rel=\"stylesheet\" href=\"%s/css/org.css\">"
+          bergheim/microbin-host bergheim/microbin-host))
+
+;;;###autoload
+(defun bergheim/microbin-upload-html (&optional subtree)
+  "Upload a rendered HTML page and copy the /file/<id> URL.
+Org-mode: export (C-u: subtree at point) to a temp .html, then upload.
+`html-mode'/`mhtml-mode'/`web-mode': upload the buffer as .html.
+Anything else: error.  Does not write a sibling export next to the note."
+  (interactive "P")
+  (let ((tmp (make-temp-file "microbin-" nil ".html")))
+    (unwind-protect
+        (progn
+          (cond
+           ((derived-mode-p 'org-mode)
+            (require 'ox-html)
+            (let ((org-html-head-include-default-style nil)
+                  (org-html-head-include-scripts nil)
+                  (org-html-postamble nil)
+                  (org-html-validation-link nil)
+                  (org-html-doctype "html5")
+                  (org-html-html5-fancy t)
+                  (org-html-head (bergheim/microbin--html-head)))
+              (write-region (org-export-as 'html nil (and subtree t))
+                            nil tmp nil 'quiet)))
+           ((derived-mode-p 'html-mode 'mhtml-mode 'web-mode)
+            (write-region (point-min) (point-max) tmp nil 'quiet))
+           (t (user-error "Need org-mode or html-mode")))
+          (bergheim/microbin-upload-file tmp))
+      (ignore-errors (delete-file tmp)))))
+
 (provide 'bergheim-microbin)
 ;;; bergheim-microbin.el ends here

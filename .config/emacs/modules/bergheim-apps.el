@@ -45,7 +45,8 @@
     "ysB" '(bergheim/microbin-upload-buffer-pretty :which-key "Buffer (pretty)")
     "ysr" '(bergheim/microbin-upload-region        :which-key "Region (raw)")
     "ysR" '(bergheim/microbin-upload-region-pretty :which-key "Region (pretty)")
-    "ysf" '(bergheim/microbin-upload-file          :which-key "File")))
+    "ysf" '(bergheim/microbin-upload-file          :which-key "File")
+    "ysh" '(bergheim/microbin-upload-html          :which-key "HTML page")))
 
 (use-package smudge
   :unless bergheim/container-mode-p
