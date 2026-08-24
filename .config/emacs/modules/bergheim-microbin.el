@@ -11,13 +11,10 @@
   :type 'string)
 
 (defcustom bergheim/microbin-default-view 'raw
-  "Which URL form to copy / message after a successful upload.
+  "Which URL form to copy after a text-pasta upload.
 `raw'    — /raw/<id>     (raw bytes; the 0x0 replacement)
 `pretty' — /upload/<id>  (the syntax-highlighted browser view)
-
-MicroBin only exposes those two routes for a pasta.  Earlier
-versions of this file also mentioned a `/url/<id>' route — that
-path returns a 404-body page; it does not exist."
+File uploads always copy /file/<id> and ignore this."
   :type '(choice (const raw) (const pretty)))
 
 (defcustom bergheim/microbin-mode-syntax-alist
@@ -100,11 +97,10 @@ guesses).  Set the cdr to \"none\" to force plain text for a mode."
     pw))
 
 (defun bergheim/microbin--view-url (pasta-url view)
-  "Rewrite a /upload/<id> URL into the requested VIEW form.
-`pasta-url' is the redirect target from MicroBin and is already
-the `pretty' (highlighted-HTML) view; only `raw' needs rewriting."
+  "Rewrite a /upload/<id> URL into the requested VIEW form."
   (pcase view
     ('raw    (replace-regexp-in-string "/upload/" "/raw/" pasta-url t t))
+    ('file   (replace-regexp-in-string "/upload/" "/file/" pasta-url t t))
     ('pretty pasta-url)
     (_       pasta-url)))
 
@@ -202,13 +198,12 @@ Syntax highlighting is inferred from the buffer's major mode via
     (bergheim/microbin-upload-region start end prefix-arg)))
 
 ;;;###autoload
-(defun bergheim/microbin-upload-file (file &optional prefix-arg)
-  "Upload FILE as a binary attachment (lands at /file/<id>).
-No syntax_highlight applied — attachments use a different view."
+(defun bergheim/microbin-upload-file (file &optional _prefix-arg)
+  "Upload FILE as a binary attachment and copy the /file/<id> URL."
   (interactive "fFile to upload: \nP")
   (bergheim/microbin--finish
    (bergheim/microbin--curl (list "-F" (concat "file=@" (expand-file-name file))))
-   (bergheim/microbin--view-for prefix-arg)))
+   'file))
 
 (provide 'bergheim-microbin)
 ;;; bergheim-microbin.el ends here
