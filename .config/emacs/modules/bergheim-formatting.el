@@ -6,6 +6,7 @@
   :custom
   (apheleia-remote-algorithm 'local)
   :config
+  (setq-default json-ts-mode-indent-offset 4)
   (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
   (setf (alist-get 'heex-ts-mode apheleia-mode-alist) 'mix-format)

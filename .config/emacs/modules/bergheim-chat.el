@@ -1,4 +1,123 @@
-;;; bergheim-chat.el --- IRC (erc) and XMPP (jabber) -*- lexical-binding: t; -*-
+;;; bergheim-chat.el --- IRC (erc/clatter) and XMPP (jabber) -*- lexical-binding: t; -*-
+
+(use-package clatter
+  :ensure (:host github :repo "parenworks/clatter.el")
+  :after consult
+  :commands (clatter clatter-status clatter-disconnect
+                     clatter-track-switch clatter-track-list
+                     clatter-nicklist-toggle clatter-chathistory-request)
+  :functions (cape-emoji clatter-dcc-setup)
+  :defines (clatter-networks)
+  :hook
+  (clatter-mode . (lambda ()
+                    (setq-local orderless-matching-styles
+                                '(orderless-literal-prefix)
+                                confirm-kill-processes nil)
+                    (when (featurep 'jinx)
+                      (jinx-mode 1))
+                    (add-hook 'completion-at-point-functions #'cape-emoji nil t)
+                    (display-line-numbers-mode 0)))
+  :custom
+  (clatter-quit-on-exit nil)
+  (clatter-track-in-buffer-mode-line t)
+  (clatter-track-muted-channels '("*server*"))
+  (clatter-url-preview-enable t)
+  (clatter-message-order 'oldest-first)
+  (clatter-nick-column-width 14)
+  (clatter-chathistory-limit 100)
+  :general
+  (bergheim/global-menu-keys
+    "ac" '(:ignore t :which-key "Clatter")
+    "acc" '(bergheim/clatter-connect :which-key "Connect")
+    "acq" '(clatter-disconnect :which-key "Disconnect")
+    "acs" '(clatter-status :which-key "Status")
+    "acb" '(bergheim/consult-clatter-buffer :which-key "Channels")
+    "act" '(clatter-track-switch :which-key "Next tracked")
+    "acl" '(clatter-track-list :which-key "Tracked buffers"))
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'clatter-mode-map
+    "b" '(bergheim/consult-clatter-buffer :which-key "channels")
+    "h" '(clatter-chathistory-request :which-key "history")
+    "n" '(clatter-nicklist-toggle :which-key "nicklist")
+    "u" '(clatter-track-switch :which-key "next tracked")
+    "t" '(clatter-track-list :which-key "tracked buffers"))
+  (:states 'normal
+   :keymaps 'clatter-mode-map
+   "A" (lambda ()
+         (interactive)
+         (goto-char (1- clatter--messages-marker))
+         (evil-insert-state)))
+  (:states 'insert
+   :keymaps 'clatter-mode-map
+   "C-k" #'clatter-set-prev-input
+   "C-j" #'clatter-set-next-input
+   "C-u" #'evil-change-whole-line
+   "M-h" #'evil-window-left
+   "M-l" #'evil-window-right)
+  :config
+  (evil-set-initial-state 'clatter-mode 'normal)
+
+  ;; Clatter hardcodes its prompt at the top, including in its
+  ;; "traditional" oldest-first mode.  Insert each message immediately
+  ;; before the prompt instead, allowing the prompt markers to follow it.
+  ;; ponytail: this uses Clatter internals; remove it if upstream gains a
+  ;; supported bottom-prompt option.
+  (defun bergheim/clatter--insert-before-prompt (orig buffer &rest args)
+    "Call ORIG so oldest-first messages appear before the input prompt."
+    (with-current-buffer buffer
+      (if (and (eq clatter-message-order 'oldest-first)
+               (markerp clatter--prompt-marker))
+          (let ((clatter-message-order 'newest-first)
+                (clatter--messages-marker clatter--prompt-marker))
+            (set-marker-insertion-type clatter--prompt-marker t)
+            (unwind-protect
+                (apply orig buffer args)
+              (set-marker-insertion-type clatter--prompt-marker nil)))
+        (apply orig buffer args))))
+
+  (advice-add 'clatter--insert-message :around
+              #'bergheim/clatter--insert-before-prompt)
+
+  (defun bergheim/clatter-connect ()
+    "Connect Clatter to the configured Soju bouncer."
+    (interactive)
+    (clatter "soju"))
+
+  (defun bergheim/consult-clatter-buffer ()
+    "Select any live Clatter channel with Consult."
+    (interactive)
+    (let ((channels
+           (mapcar #'buffer-name
+                   (seq-filter
+                    (lambda (buffer)
+                      (with-current-buffer buffer
+                        (and (derived-mode-p 'clatter-mode)
+                             (eq (bound-and-true-p clatter--buffer-type)
+                                 'channel))))
+                    (buffer-list)))))
+      (unless channels
+        (user-error "No Clatter channels"))
+      (switch-to-buffer
+       (consult--read channels
+                      :prompt "Clatter channel: "
+                      :category 'buffer
+                      :require-match t
+                      :sort nil))))
+
+  (setopt clatter-networks
+          `(("soju"
+             :server ,bergheim/irc-server
+             :port 6667
+             :tls nil
+             :bouncer t
+             :nick ,bergheim/irc-nick
+             :username ,bergheim/irc-username
+             :realname ,user-full-name
+             :password ,(password-store-get "apps/soju"))))
+
+  (require 'clatter-dcc)
+  (clatter-dcc-setup))
 
 (use-package erc
   :after consult
