@@ -1,14 +1,17 @@
 #!/usr/bin/env sh
 
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_CONNECTION" ] || [ -n "$SSH_TTY" ]; then
-    # SSH session - use terminal. The frame is tagged for ssherpa routing by
-    # `ssherpa-maybe-connect' on server-after-make-frame-hook; doing it here
-    # with --eval would put emacsclient in eval mode and read "$@" as elisp.
-    emacsclient -a "" -t "$@"
+	# SSH session - use terminal. The frame is tagged for ssherpa routing by
+	# `ssherpa-maybe-connect' on server-after-make-frame-hook; doing it here
+	# with --eval would put emacsclient in eval mode and read "$@" as elisp.
+	emacsclient -a "" -t "$@"
 elif [ -n "$WAYLAND_DISPLAY" ] || [ -n "$DISPLAY" ]; then
-    # GUI available (Sway, i3, or other)
-    emacsclient -a "" -nc "$@"
+	if [ "$#" -eq 0 ]; then
+		emacsclient -a "" -nc
+	else
+		emacsclient -a "" -c "$@"
+	fi
 else
-    # Fallback to terminal (local tty)
-    emacsclient -a "" -t "$@"
+	# Fallback to terminal (local tty)
+	emacsclient -a "" -t "$@"
 fi
