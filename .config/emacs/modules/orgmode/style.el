@@ -34,7 +34,10 @@ Lisp programs can force the template by setting KEYS to a string."
       (org-mks org-capture-templates
                "Select a capture template\n━━━━━━━━━━━━━━━━━━━━━━━━━"
                "Template key: "
-               `(("q" ,(concat (nerd-icons-octicon "nf-oct-stop" :face `nerd-icons-red :v-adjust 0.01) "\tAbort")))))))
+               `(("q" ,(concat (if (fboundp 'nerd-icons-octicon)
+                                    (nerd-icons-octicon "nf-oct-stop" :face 'nerd-icons-red :v-adjust 0.01)
+                                  "")
+                                "\tAbort")))))))
 
 (advice-add 'org-capture-select-template :override #'org-capture-select-template-prettier)
 
@@ -63,7 +66,9 @@ Lisp programs can force the template by setting KEYS to a string."
         (set  (intern (concat "nerd-icons-" (plist-get declaration :set))))
         (face (intern (concat "nerd-icons-" (plist-get declaration :color))))
         (v-adjust (or (plist-get declaration :v-adjust) 0.01)))
-    (apply set `(,name :face ,face :v-adjust ,v-adjust))))
+    (if (fboundp set)
+        (apply set `(,name :face ,face :v-adjust ,v-adjust))
+      name)))
 
 (defun +doct-iconify-capture-templates (groups)
   "Add declaration's :icon to each template group in GROUPS."
