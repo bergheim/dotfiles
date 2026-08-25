@@ -752,10 +752,13 @@ With prefix argument, update secondary.jpg instead of primary.jpg."
                      "~/Pictures/wallpapers/active/dark/"
                    "~/Pictures/wallpapers/active/light/"))
             (dest (expand-file-name (concat dir slot)))
+            (current-dest (expand-file-name
+                           (concat "~/Pictures/wallpapers/active/current/" slot)))
             (secondary-dest (expand-file-name (concat dir "secondary.jpg")))
             (secondary-output (or (getenv "MONITOR_SECONDARY") "DP-2")))
       (progn
         (make-symbolic-link (expand-file-name file) dest t)
+        (make-symbolic-link dest current-dest t)
         (when swaysock
           (let ((process-environment (cons (format "SWAYSOCK=%s" swaysock)
                                            process-environment)))
