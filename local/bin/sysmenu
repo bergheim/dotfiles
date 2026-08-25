@@ -29,22 +29,42 @@ if [ -n "${SWAYSOCK:-}" ]; then
 	fi
 fi
 
+if systemctl --user is-active --quiet gammastep; then
+	night_label='night light off'
+else
+	night_label='night light on'
+fi
+
+if [ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ]; then
+	dark_label='darkmode off'
+else
+	dark_label='darkmode on'
+fi
+
+if rfkill --raw --noheadings --output SOFT,HARD list wifi | grep -qw blocked; then
+	airplane_label='airplane mode off'
+else
+	airplane_label='airplane mode on'
+fi
+
 menu() {
 	entry 'audio output'    audio-speakers
 	entry 'bluetooth'       preferences-system-bluetooth
 	entry 'wifi'            network-wireless
-	entry 'airplane mode'   transport-mode-flight
+	entry "$airplane_label"  transport-mode-flight
 	entry 'display'         preferences-desktop-display-randr
+	entry 'brightness min'  brightness-low
+	entry 'brightness max'  brightness-high
 	if [ -n "${SWAYSOCK:-}" ]; then
 		entry 'screen off'      osd-shutd-screen
 		entry "$touchpad_label" "$touchpad_icon"
 	fi
-	entry 'night light'     weather-clear-night
-	entry 'toggle darkmode' preferences-desktop-theme
+	entry "$night_label"     weather-clear-night
+	entry "$dark_label"      preferences-desktop-theme
 	entry 'notifications'   preferences-desktop-notification
 	entry 'screenshot'      applets-screenshooter
 	entry 'record'          media-record
-	entry 'cpu profile'     battery-profile-balanced
+	entry 'battery profile' battery-profile-balanced
 	entry 'power'           system-shutdown
 }
 
@@ -52,16 +72,18 @@ case "$(menu | fuzzel --dmenu --prompt 'system ')" in
 	'audio output')    audio-sink ;;
 	bluetooth)         bluetooth-menu ;;
 	wifi)              wifi-menu ;;
-	'airplane mode')   laptop-key airplane ;;
+	'airplane mode off'|'airplane mode on') laptop-key airplane ;;
 	display)           display-mode ;;
+	'brightness min')  lightctl-osd set 1 ;;
+	'brightness max')  lightctl-osd set 100 ;;
 	'screen off')      laptop-key display ;;
 	'touchpad off')    laptop-key touchpad-off ;;
 	'touchpad on')     laptop-key touchpad-on ;;
-	'night light')     ~/.config/waybar/scripts/gammastep.sh toggle ;;
-	'toggle darkmode') toggle-darkmode ;;
+	'night light off'|'night light on') ~/.config/waybar/scripts/gammastep.sh toggle ;;
+	'darkmode off'|'darkmode on') toggle-darkmode ;;
 	notifications)     notification-menu ;;
 	screenshot)        screenshot-menu ;;
 	record)            record-menu ;;
-	'cpu profile')     tux-power-menu ;;
+	'battery profile') tux-power-menu ;;
 	power)             power-menu ;;
 esac

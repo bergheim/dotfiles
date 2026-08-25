@@ -1,4 +1,18 @@
 #!/bin/sh
-# profile=$(tux-power list | fuzzel --dmenu --prompt "power " | awk '{print $1}')
-profile=$(tux-power list | fuzzel --dmenu --prompt "power ")
+# TCC power/fan profiles. Current one is starred, same as audio-sink.
+
+set -eu
+
+current=$(busctl --json=short --system call \
+	com.tuxedocomputers.tccd /com/tuxedocomputers/tccd \
+	com.tuxedocomputers.tccd GetActiveProfileJSON \
+	| jq -r '.data[0] | fromjson | .name')
+
+profile=$(tux-power list | awk -v cur="$current" '{
+	if ($0 == cur) print "* " $0
+	else print "  " $0
+}' | fuzzel --dmenu --prompt 'battery ') || exit 0
+
+profile=${profile#\* }
+profile=${profile#  }
 [ -n "$profile" ] && tux-power set "$profile"
