@@ -294,7 +294,8 @@ binds {
     Mod+Return             { spawn "emacsclient" "-nc"; }
     Mod+R                  { spawn "fuzzel"; }
     Mod+Ctrl+R             { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/apps-start)"; }
-    Mod+P                  { spawn "fuzzel-pass"; }
+    Mod+P                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/pass-start)"; }
+    Mod+Ctrl+P             { spawn "fuzzel-pass"; }
     Mod+V                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/cliphist-start)"; }
     Mod+Shift+V            { spawn "fuzzel-cliphist"; }
     Mod+Shift+E            { spawn-sh "BEMOJI_PICKER_CMD='fuzzel -d' bemoji"; }

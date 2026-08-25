@@ -13,6 +13,7 @@ entries=$(swaymsg -t get_tree | jq -r '
 				and .pid != null
 				and ((.app_id != null) or (.window_properties.class != null))
 				and (.app_id != "net.glvortex.scratchpad")
+				and (.name != "emacs-runner")
 			)
 			| "\(.id)\t[\($curws)] \(.app_id // .window_properties.class): \(.name // "(no title)")"
 		),

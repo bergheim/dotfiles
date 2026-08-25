@@ -412,7 +412,8 @@ bindsym XF86MonBrightnessDown exec lightctl-osd down
 bindsym --to-code $mod+comma exec sysmenu
 
 # Password manager (replace rofi-pass with wofi equivalent)
-bindsym $mod+p exec fuzzel-pass
+bindsym $mod+p exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/pass-start)'
+bindsym $mod+ctrl+p exec fuzzel-pass
 
 # Display arrangement picker (mirror / extend / internal / external / auto).
 # $mod+p is taken by fuzzel-pass above.
