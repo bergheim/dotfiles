@@ -4,10 +4,11 @@
   :ensure (:host github :repo "parenworks/clatter.el")
   :after consult
   :commands (clatter clatter-status clatter-disconnect
-                     clatter-track-switch clatter-track-list
-                     clatter-nicklist-toggle clatter-chathistory-request)
-  :functions (cape-emoji clatter-dcc-setup)
-  :defines (clatter-networks)
+                     clatter-track-switch clatter-track-clear-all
+                     clatter-track-list clatter-nicklist-toggle
+                     clatter-toggle-fools clatter-chathistory-request)
+  :functions (cape-emoji clatter-dcc-setup clatter-setup)
+  :defines (clatter-fools clatter-networks)
   :hook
   (clatter-mode . (lambda ()
                     (setq-local orderless-matching-styles
@@ -19,12 +20,28 @@
                     (display-line-numbers-mode 0)))
   :custom
   (clatter-quit-on-exit nil)
+  (clatter-track-count-style 'none)
   (clatter-track-in-buffer-mode-line t)
-  (clatter-track-muted-channels '("*server*"))
+  (clatter-track-exclude-targets '("*server*"))
+  (clatter-track-indicators
+   '((mention . nil)
+     (dm . "✉")
+     (activity . nil)))
   (clatter-url-preview-enable t)
+  (clatter-buffer-name-style 'channel)
+  (clatter-compact-system-messages 'compact)
+  (clatter-display-on-join nil)
+  (clatter-display-on-welcome nil)
+  (clatter-self-echo-mode 'optimistic)
   (clatter-message-order 'oldest-first)
   (clatter-nick-column-width 14)
+  (clatter-timestamp-side 'left)
+  (clatter-timestamp-only-if-changed t)
+  (clatter-prompt-format "%n: ")
+  (clatter-prompt-alignment 'right)
+  (clatter-header-line-preset 'context)
   (clatter-chathistory-limit 100)
+  (clatter-typing-indicator-location 'input-separator)
   :general
   (bergheim/global-menu-keys
     "ac" '(:ignore t :which-key "Clatter")
@@ -38,6 +55,8 @@
     :states '(normal visual)
     :keymaps 'clatter-mode-map
     "b" '(bergheim/consult-clatter-buffer :which-key "channels")
+    "f" '(clatter-toggle-fools :which-key "toggle fools")
+    "g" '(clatter-track-clear-all :which-key "clear tracking")
     "h" '(clatter-chathistory-request :which-key "history")
     "n" '(clatter-nicklist-toggle :which-key "nicklist")
     "u" '(clatter-track-switch :which-key "next tracked")
@@ -46,7 +65,7 @@
    :keymaps 'clatter-mode-map
    "A" (lambda ()
          (interactive)
-         (goto-char (1- clatter--messages-marker))
+         (goto-char (clatter--input-end))
          (evil-insert-state)))
   (:states 'insert
    :keymaps 'clatter-mode-map
@@ -57,27 +76,6 @@
    "M-l" #'evil-window-right)
   :config
   (evil-set-initial-state 'clatter-mode 'normal)
-
-  ;; Clatter hardcodes its prompt at the top, including in its
-  ;; "traditional" oldest-first mode.  Insert each message immediately
-  ;; before the prompt instead, allowing the prompt markers to follow it.
-  ;; ponytail: this uses Clatter internals; remove it if upstream gains a
-  ;; supported bottom-prompt option.
-  (defun bergheim/clatter--insert-before-prompt (orig buffer &rest args)
-    "Call ORIG so oldest-first messages appear before the input prompt."
-    (with-current-buffer buffer
-      (if (and (eq clatter-message-order 'oldest-first)
-               (markerp clatter--prompt-marker))
-          (let ((clatter-message-order 'newest-first)
-                (clatter--messages-marker clatter--prompt-marker))
-            (set-marker-insertion-type clatter--prompt-marker t)
-            (unwind-protect
-                (apply orig buffer args)
-              (set-marker-insertion-type clatter--prompt-marker nil)))
-        (apply orig buffer args))))
-
-  (advice-add 'clatter--insert-message :around
-              #'bergheim/clatter--insert-before-prompt)
 
   (defun bergheim/clatter-connect ()
     "Connect Clatter to the configured Soju bouncer."
@@ -114,10 +112,35 @@
              :nick ,bergheim/irc-nick
              :username ,bergheim/irc-username
              :realname ,user-full-name
-             :password ,(password-store-get "apps/soju"))))
+             :password ,(password-store-get "apps/soju")))
+          clatter-fools bergheim/irc-fools)
 
   (require 'clatter-dcc)
-  (clatter-dcc-setup))
+  (clatter-dcc-setup)
+  (clatter-setup)
+
+  ;; Clatter only inherits 12 font-lock faces (no hue generator, no
+  ;; contrast pass). Muted themes make every nick look the same. Spread
+  ;; 12 hues at a lightness that contrasts with the current background,
+  ;; and rebuild after load-theme.
+  (defun bergheim/clatter-apply-nick-colors (&rest _)
+    (require 'color)
+    (let* ((dark (eq (frame-parameter nil 'background-mode) 'dark))
+           (sat 0.55)
+           (light (if dark 0.64 0.42)))
+      (dotimes (i 12)
+        (let ((face (intern (format "clatter-nick-color-%d" i)))
+              (hex (apply #'color-rgb-to-hex
+                          (append (color-hsl-to-rgb (/ i 12.0) sat light)
+                                  '(2)))))
+          (when (facep face)
+            (set-face-attribute face nil
+                                :foreground hex
+                                :inherit nil
+                                :weight 'bold
+                                :slant 'normal))))))
+  (bergheim/clatter-apply-nick-colors)
+  (add-hook 'after-load-theme-hook #'bergheim/clatter-apply-nick-colors))
 
 (use-package erc
   :after consult
