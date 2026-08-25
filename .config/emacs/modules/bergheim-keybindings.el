@@ -90,6 +90,15 @@
     "gx" 'elpaca-ui-browse-package
     "gd" 'elpaca-log-view-diff)
 
+  (defun bergheim/emoji-search (&optional choose-variant)
+    "Insert the base emoji, or prompt for a variant with a prefix argument."
+    (interactive "P")
+    (require 'emoji)
+    (barf-if-buffer-read-only)
+    (emoji--init)
+    (pcase-let ((`(,glyph . ,variants) (emoji--read-emoji)))
+      (emoji-search glyph (and choose-variant variants))))
+
   (bergheim/global-menu-keys
     "/" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "'" '(vertico-repeat :which-key "Repeat search")
@@ -273,8 +282,8 @@
 
     "i" '(:ignore t :which-key "Insert")
     "ir" '(consult-register :which-key "Register")
-    "ie" '(emoji-search :which-key "Emojiii")
-    "iE" '(emoji-insert :which-key "Emojiii")
+    "ie" '(bergheim/emoji-search :which-key "Emoji")
+    "iE" '(emoji-insert :which-key "Emoji insert")
     "ik" '(karakeep-dwim :which-key "Send to Karakeep")
     "iK" `(,(bergheim/call-with-universal-arg  #'karakeep-dwim) :which-key "Send to Karakeep list")
     "iu" '(insert-char :which-key "Unicode")
