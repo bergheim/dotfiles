@@ -3,7 +3,7 @@ profile mobile {
 }
 
 profile hdmi {
-    output HDMI-A-1 enable mode preferred
+    output HDMI-A-1 enable mode 3840x2160@60Hz scale 2
     output eDP-1 enable mode preferred scale 2
     exec $HOME/local/bin/display-mode arrange
 }
