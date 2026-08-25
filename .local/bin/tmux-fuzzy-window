@@ -1,0 +1,33 @@
+#!/bin/sh
+# Fuzzy-switch to any window in any session. Bound to prefix C-f.
+# Lives in a script rather than inline in .tmux.conf because display-popup
+# format-expands its command string, so every #{...} would need escaping.
+#
+# Rows are "target<TAB>display"; fzf shows only the display column. Note that
+# --with-nth narrows what fzf SEARCHES as well as what it shows, so the
+# session name has to stay in the display or "runner zsh" matches nothing.
+# It is printed dim on the right: quiet to read, still matchable.
+
+tab=$(printf '\t')
+fmt="#{session_name}${tab}#{window_index}${tab}#{window_name}${tab}#{pane_current_command}"
+
+target=$(
+    tmux list-windows -a -F "$fmt" \
+    | awk -F"$tab" -v OFS="$tab" '
+        $1 != prev { printf "%s%s\033[1m%s\033[0m\n", $1, OFS, $1; prev = $1 }
+        {
+            label = sprintf("%s (%s)", $3, $4)
+            printf "%s:%s%s  %-3s %-34s\033[90m%s\033[0m\n", $1, $2, OFS, $2, label, $1
+        }
+      ' \
+    | fzf --ansi --reverse --no-sort --delimiter="$tab" --with-nth=2.. \
+          --preview 'tmux capture-pane -ep -t {1}' \
+          --preview-window=down:60% \
+    | cut -f1
+)
+
+[ -n "$target" ] || exit 0
+tmux switch-client -t "${target%%:*}"
+case $target in
+    *:*) tmux select-window -t "$target" ;;
+esac

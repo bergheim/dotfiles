@@ -1,0 +1,31 @@
+#!/bin/sh
+# Fuzzy search across every pane's scrollback, with context preview.
+# Bound to prefix f, replacing find-window, which is glob-only and sees
+# just the visible screen -- not history.
+#
+# Rows are "pane_id<TAB>lineno<TAB>target<TAB>display". fzf shows only the
+# display column; the first three carry enough to preview the hit in
+# context and then jump to the exact pane.
+
+tab=$(printf '\t')
+
+hit=$(
+    tmux list-panes -a -F "#{pane_id}${tab}#{session_name}:#{window_index}.#{pane_index}" \
+    | while IFS="$tab" read -r pane target; do
+          tmux capture-pane -p -S - -t "$pane" \
+          | tr '\t' ' ' \
+          | awk -v pane="$pane" -v target="$target" -v OFS="$tab" '
+              NF { printf "%s%s%s%s%s%s\033[90m%s\033[0m %s\n",
+                          pane, OFS, NR, OFS, target, OFS, target, $0 }'
+      done \
+    | fzf --ansi --reverse --delimiter="$tab" --with-nth=4.. \
+          --preview 'tmux capture-pane -p -S - -t {1} \
+                     | awk -v n={2} "NR>=n-10 && NR<=n+10 {printf \"%s%s\n\", (NR==n?\"> \":\"  \"), \$0}"' \
+          --preview-window=down:60%
+)
+
+[ -n "$hit" ] || exit 0
+target=$(printf '%s' "$hit" | cut -f3)
+tmux switch-client -t "${target%%:*}"
+tmux select-window -t "${target%.*}"
+tmux select-pane -t "$target"
