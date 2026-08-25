@@ -1,0 +1,24 @@
+#!/bin/sh
+# KDE Connect telephony Search action.
+# args: number contactName event(ringing|missedCall)
+number=$1
+n=$(printf %s "$number" | tr -cd '0-9')
+case $n in
+47????????) n=${n#47} ;;
+esac
+[ ${#n} -ge 8 ] || exit 0
+
+url1="https://www.1881.no/?query=$n"
+url2="https://www.180.no/search/all?w=$n"
+url3="https://www.tlf.no/?q=$n"
+url4="https://hvemder.no/$n"
+
+if [ -n "$TELEPHONY_SEARCH_PRINT" ]; then
+	printf '%s\n' "$url1" "$url2" "$url3" "$url4"
+	exit 0
+fi
+
+xdg-open "$url1" &
+xdg-open "$url2" &
+xdg-open "$url3" &
+xdg-open "$url4" &

@@ -5,6 +5,8 @@
 # `output=` is machine-specific — adjust per host.
 output=DP-1
 default-timeout=8000
+max-visible=-1
+max-history=50
 width=500
 height=250
 border-radius=6
@@ -29,3 +31,13 @@ background-color=#950f0fe6
 text-color=#ebebdb
 border-color=#950f0f
 default-timeout=0
+
+# Android Phone app mirror — telephony plugin owns call actions.
+[app-name="KDE Connect" summary="Phone"]
+invisible=1
+
+[app-icon=call-start]
+border-size=3
+border-color=#c45c26
+default-timeout=0
+on-button-left=exec mako-actions "$id"

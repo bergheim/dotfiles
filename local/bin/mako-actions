@@ -1,0 +1,24 @@
+#!/bin/sh
+# Desktop-meaningful actions on a mako notification.
+# Drops Android "open the app on the phone" verbs. Everything else stays.
+id=$1
+json=$(makoctl list -j) || exit 0
+if [ -z "$id" ]; then
+	id=$(printf '%s' "$json" | jq -r '.[0].id // empty')
+fi
+[ -n "$id" ] || exit 0
+
+choices=$(printf '%s' "$json" | jq -r --arg id "$id" '
+	.[] | select((.id | tostring) == $id)
+	| (.actions // {})
+	| to_entries[]
+	| select(.value | test("^(view|open|open app|show|vis|åpne)$"; "i") | not)
+	| "\(.key)\t\(.value)"
+')
+[ -n "$choices" ] || exit 0
+
+label=$(printf '%s\n' "$choices" | cut -f2 | fuzzel -d -p 'Action:') || exit 0
+[ -n "$label" ] || exit 0
+key=$(printf '%s\n' "$choices" | awk -F'\t' -v l="$label" '$2==l { print $1; exit }')
+[ -n "$key" ] || exit 0
+exec makoctl invoke -n "$id" "$key"

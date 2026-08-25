@@ -293,6 +293,7 @@ bindsym $mod+Return exec emacsclient -nc
 
 # Application launcher (replace rofi with wofi or fuzzel)
 bindsym $mod+r exec fuzzel-run
+bindsym $mod+ctrl+r exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/apps-start)'
 
 # Window switcher: fuzzy-search all open windows by app/title and focus
 bindsym --to-code $mod+slash exec sway-window-switcher
@@ -344,10 +345,11 @@ bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Wayland WebP R
 # swayosd disabled 2026-08-18: test for the amdgpu/TTM LRU hardlock
 # (denote 20260601T112404) -- swayosd-server was the faulting task in
 # all 10 captured oopses. Revert by restoring the swayosd-client lines.
-# Media keys
-bindsym XF86AudioPrev exec playerctl previous
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPlay exec playerctl play-pause
+# Media keys (Fn+` / 1 / 2 → XF86AudioPlay/Prev/Next)
+bindsym XF86AudioPrev exec laptop-key prev
+bindsym XF86AudioNext exec laptop-key next
+bindsym XF86AudioPlay exec laptop-key play-pause
+bindsym XF86AudioPause exec laptop-key play-pause
 # bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 # bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
 # bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -399,8 +401,6 @@ bindsym XF86AudioRaiseVolume exec volumectl-osd -u up
 bindsym XF86AudioLowerVolume exec volumectl-osd down
 bindsym XF86AudioMute exec volumectl-osd toggle-mute
 bindsym XF86AudioMicMute exec volumectl-osd -m toggle-mute
-# Toggle default output between speakers and headset
-bindsym $mod+Shift+a exec audio-sink
 
 # Brightness + avizo OSD (lightctl-osd adds -d in dark mode)
 bindsym XF86MonBrightnessUp exec lightctl-osd up
@@ -438,7 +438,7 @@ bindsym $mod+o exec emacsclient --eval '(thanos/type)' -F '((name . "floating"))
 bindsym --to-code $mod+ctrl+grave exec makoctl dismiss
 bindsym $mod+ctrl+1 exec makoctl restore
 bindsym $mod+ctrl+3 exec makoctl dismiss --all
-bindsym $mod+ctrl+2 exec makoctl menu -- fuzzel -d -p 'Select action:'
+bindsym $mod+Shift+a exec mako-actions
 
 # application switcher
 # bindsym $mod+Tab exec swaymsg -t get_tree | jq -r '.. | select(.type? == "con" and .app_id?) | "\(.id):\(.app_id) - \(.name)"' | fuzzel --dmenu | cut -d: -f1 | xargs -I{} swaymsg '[con_id={}] focus'
@@ -553,48 +553,50 @@ client.background       $bg
 
 
 # swayfx
-blur enable
-# <integer value 0 - 10>
-blur_passes 5
-# <integer value 0 - 10>
-blur_radius 5
-# <float value 0 - 1>
-blur_noise  0.4
-# <float value 0 - 2>
-blur_brightness 1
-# <float value 0 - 2>
-blur_contrast   1
-# <float value 0 - 2>
-blur_saturation 1
+# blur enable
+# # <integer value 0 - 10>
+# blur_passes 5
+# # <integer value 0 - 10>
+# blur_radius 5
+# # <float value 0 - 1>
+# blur_noise  0.4
+# # <float value 0 - 2>
+# blur_brightness 1
+# # <float value 0 - 2>
+# blur_contrast   1
+# # <float value 0 - 2>
+# blur_saturation 1
 
-shadows enable
-shadows_on_csd enable                    # Optional: shadows on client-side decorations
-shadow_color #00000080                   # Hex color with alpha
-shadow_offset 0 5                        # x_offset y_offset
-# Nice soft shadows
-shadow_blur_radius 10
-shadow_inactive_color #00000060          # Optional: different color for inactive windows
+# shadows enable
+# shadows_on_csd enable                    # Optional: shadows on client-side decorations
+# shadow_color #00000080                   # Hex color with alpha
+# shadow_offset 0 5                        # x_offset y_offset
+# # Nice soft shadows
+# shadow_blur_radius 10
+# shadow_inactive_color #00000060          # Optional: different color for inactive windows
+
+# layer_effects "rofi" blur enable; shadows enable
+
+# layer_effects "waybar" {
+#     blur enable;
+#     blur_xray enable;
+#     blur_ignore_transparent enable;
+#     shadows enable;
+#     corner_radius 5;
+# }
+
+# corner_radius 5
+
+# animations (swayfx >= 0.6): open/close, resize/move, workspace switch
+# 0 disables, max 5000
+# animation_duration_ms 250
+# default_dim_inactive 0.1
+# /swayfx
 
 focus_on_window_activation smart
 # focus_follows_mouse no
 
-layer_effects "rofi" blur enable; shadows enable
-
-layer_effects "waybar" {
-    blur enable;
-    blur_xray enable;
-    blur_ignore_transparent enable;
-    shadows enable;
-    corner_radius 5;
-}
-
-corner_radius 5
-for_window [class=".*"] opacity 0.8
-
-# animations (swayfx >= 0.6): open/close, resize/move, workspace switch
-# 0 disables, max 5000
-animation_duration_ms 250
-default_dim_inactive 0.1
+for_window [class=".*"] opacity 0.95
 
 bindsym $alt+b border toggle
 
@@ -642,7 +644,7 @@ for_window [title="floating"] floating enable, resize set 100ppt 90ppt, move cen
 for_window [app_id="Emacs" title="emacs-everywhere"] floating enable
 for_window [app_id="gnome-calendar"] floating enable
 for_window [title="emacs-float"] floating enable, resize set 800 600, move position center
-for_window [title="emacs-runner"] floating enable, move position center, move scratchpad
+for_window [title="^emacs-runner"] floating enable, move position center, move scratchpad
 
 # firefox pop out videos should always show
 for_window [title="Picture-in-Picture"] floating enable, sticky enable

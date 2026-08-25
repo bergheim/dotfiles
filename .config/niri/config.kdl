@@ -216,7 +216,7 @@ window-rule {
     default-column-width { fixed 800; }
 }
 window-rule {
-    match title="^emacs-runner$"
+    match title="^emacs-runner"
     open-floating true
 }
 window-rule {
@@ -293,6 +293,7 @@ binds {
     Mod+Shift+Return       { spawn "ghostty"; }
     Mod+Return             { spawn "emacsclient" "-nc"; }
     Mod+R                  { spawn "fuzzel"; }
+    Mod+Ctrl+R             { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/apps-start)"; }
     Mod+P                  { spawn "fuzzel-pass"; }
     Mod+V                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/cliphist-start)"; }
     Mod+Shift+V            { spawn "fuzzel-cliphist"; }
@@ -324,7 +325,7 @@ binds {
     Mod+Ctrl+Grave         { spawn "makoctl" "dismiss"; }
     Mod+Ctrl+1             { spawn "makoctl" "restore"; }
     Mod+Ctrl+3             { spawn "makoctl" "dismiss" "--all"; }
-    Mod+Ctrl+2             { spawn-sh "makoctl menu -- fuzzel -d -p 'Select action:'"; }
+    Mod+Shift+A            { spawn "mako-actions"; }
 
     // -- Window management (sway lines 108, 142, 145, 162, 176, 286) --
     Mod+BackSpace          { close-window; }
