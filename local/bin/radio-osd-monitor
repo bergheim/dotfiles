@@ -1,7 +1,7 @@
 #!/bin/sh
 
 radio_blocked() {
-    rfkill --raw --noheadings --output SOFT,HARD list "$1" | grep -q blocked
+    rfkill --raw --noheadings --output SOFT,HARD list "$1" | grep -qw blocked
 }
 
 if radio_blocked wifi; then
@@ -24,6 +24,6 @@ rfkill event | while IFS= read -r event; do
     if [ "$wifi" = blocked ] && radio_blocked bluetooth; then
         osd status/24/flightmode-on
     else
-        osd status/24/flightmode-off 0
+        osd status/24/flightmode-off
     fi
 done

@@ -11,14 +11,14 @@
 # ship without a viewBox while others ship without width/height, which
 # rules out rewriting the SVG. Cache one 96px PNG per icon.
 #
-#   osd <theme-relative icon path, no .svg> [progress 0..1, default 1]
-#   osd status/24/flightmode-on
+#   osd <theme-relative icon path, no .svg> [progress 0..1]
+#   osd status/24/flightmode-on          # icon only
 #   osd status/24/battery-profile-balanced 0.66
 
 set -eu
 
 icon=$1
-progress=${2:-1.0}
+progress=${2-}
 
 theme=breeze-dark
 [ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] \
@@ -30,4 +30,9 @@ img="$HOME/.local/share/avizo/$theme/${icon##*/}.png"
 	rsvg-convert -w 96 -h 96 -o "$img" "/usr/share/icons/$theme/$icon.svg"
 }
 
-exec avizo-client --image-path="$img" --progress="$progress" --time=2
+if [ -n "$progress" ]; then
+	exec avizo-client --image-path="$img" --progress="$progress" --time=2
+else
+	# avizo always paints a bar; 0 height is the only hide
+	exec avizo-client --image-path="$img" --block-height=0 --time=2
+fi

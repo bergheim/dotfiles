@@ -18,10 +18,10 @@ pid=$(pgrep -x swayidle) || {
 case "$(ps -o stat= -p "$pid")" in
 	*T*)
 		kill -CONT "$pid"
-		osd preferences/22/preferences-desktop-screensaver 1.0   # idle timers back on
+		osd preferences/22/preferences-desktop-screensaver   # idle timers back on
 		;;
 	*)
 		kill -STOP "$pid"
-		osd actions/24/view-visible 0                            # staying awake
+		osd actions/24/view-visible                            # staying awake
 		;;
 esac

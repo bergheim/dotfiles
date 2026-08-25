@@ -38,14 +38,14 @@ case "$1" in
         ;;
     touchpad-on)
         swaymsg input type:touchpad events enabled >/dev/null
-        osd devices/24/input-touchpad 1.0
+        osd devices/24/input-touchpad
         ;;
     touchpad-off)
         swaymsg input type:touchpad events disabled >/dev/null
-        osd status/24/input-touchpad-off 0
+        osd status/24/input-touchpad-off
         ;;
     airplane)
-        if rfkill --raw --noheadings --output SOFT,HARD list wifi | grep -q blocked; then
+        if rfkill --raw --noheadings --output SOFT,HARD list wifi | grep -qw blocked; then
             rfkill unblock wifi
             rfkill unblock bluetooth
         else
@@ -57,13 +57,28 @@ case "$1" in
         power=$(swaymsg -t get_outputs -r \
             | jq -r '.[] | select(.name == "eDP-1") | .power')
         if [ "$power" = true ]; then
-            osd devices/64/video-display 0
+            osd devices/64/video-display
             sleep 0.3
             swaymsg output eDP-1 power off >/dev/null
         else
             swaymsg output eDP-1 power on >/dev/null
-            osd devices/64/video-display 1.0
+            osd devices/64/video-display
         fi
+        ;;
+    play-pause)
+        playerctl play-pause >/dev/null 2>&1 || true
+        case "$(playerctl status 2>/dev/null || true)" in
+            Playing) osd actions/24/media-playback-start ;;
+            *) osd actions/24/media-playback-pause ;;
+        esac
+        ;;
+    next)
+        playerctl next >/dev/null 2>&1 || true
+        osd actions/24/media-skip-forward
+        ;;
+    prev)
+        playerctl previous >/dev/null 2>&1 || true
+        osd actions/24/media-skip-backward
         ;;
     suspend)
         osd actions/32/system-suspend 1.0

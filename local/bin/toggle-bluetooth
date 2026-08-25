@@ -19,5 +19,5 @@ if [ "$(rfkill --raw --noheadings --output SOFT list bluetooth)" = blocked ]; th
 else
     bluetoothctl --timeout 2 devices Connected | awk '{print $2}' > "$devices_file"
     rfkill block bluetooth
-    osd preferences/24/preferences-system-bluetooth-inactive-symbolic 0
+    osd preferences/24/preferences-system-bluetooth-inactive-symbolic
 fi
