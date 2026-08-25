@@ -4,6 +4,10 @@
   (getenv "EMACS_CONTAINER")
   "Non-nil when running in container/development mode")
 
+(defvar bergheim/runner-mode-p
+  (getenv "EMACS_RUNNER")
+  "Non-nil in the isolated desktop runner daemon.")
+
 (defun bergheim/call-with-universal-arg (fn)
   (lambda ()
     (interactive)
@@ -114,63 +118,69 @@
 (with-eval-after-load 'package
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
 
-;; In your .emacs or init.el or whatever your main configuration file is
-(let ((private-file (expand-file-name "private.el" bergheim/config-dir)))
-  (when (file-exists-p private-file)
-    (load private-file)))
+;; Runner daemons deliberately skip private and persisted interactive state.
+(unless bergheim/runner-mode-p
+  (let ((private-file (expand-file-name "private.el" bergheim/config-dir)))
+    (when (file-exists-p private-file)
+      (load private-file)))
 
-(setq custom-file (bergheim/get-and-ensure-data-dir "etc/" "custom.el"))
-(when (file-exists-p custom-file)
-  (load custom-file))
+  (setq custom-file (bergheim/get-and-ensure-data-dir "etc/" "custom.el"))
+  (when (file-exists-p custom-file)
+    (load custom-file)))
 
 (let ((module-dir (expand-file-name "modules/" bergheim/config-dir))
       (modules
-       '("bergheim-evil"
-         "bergheim-base"
-         "bergheim-tramp"
-         "bergheim-style"
-         "bergheim-vcs"
-         "bergheim-formatting"
-         "bergheim-nav"
-         "bergheim-keybindings"
-         "bergheim-diagnostics"
-         "bergheim-programming"
-         "bergheim-completion"
-         ;; "bergheim-lsp"
-         "bergheim-eglot"
-         ;; I for one come our new AI overlords
-         "bergheim-ai"
-         "bergheim-ssherpa"
-         "bergheim-session"
-         "bergheim-utils"
-         "bergheim-writing"
-         "bergheim-containers"
-         "bergheim-workspace"
-         "bergheim-shells"
-         "bergheim-compile"
-         "bergheim-viewers"
-		 "orgmode/init"
-         "bergheim-denote"
-         "bergheim-agent-helpers"
-         )))
+       (if bergheim/runner-mode-p
+           '("bergheim-evil"
+             "bergheim-style"
+             "bergheim-completion"
+             "bergheim-runners")
+         '("bergheim-evil"
+           "bergheim-base"
+           "bergheim-tramp"
+           "bergheim-style"
+           "bergheim-vcs"
+           "bergheim-formatting"
+           "bergheim-nav"
+           "bergheim-keybindings"
+           "bergheim-diagnostics"
+           "bergheim-programming"
+           "bergheim-completion"
+           ;; "bergheim-lsp"
+           "bergheim-eglot"
+           ;; I for one come our new AI overlords
+           "bergheim-ai"
+           "bergheim-ssherpa"
+           "bergheim-session"
+           "bergheim-utils"
+           "bergheim-writing"
+           "bergheim-containers"
+           "bergheim-workspace"
+           "bergheim-shells"
+           "bergheim-compile"
+           "bergheim-viewers"
+           "orgmode/init"
+           "bergheim-denote"
+           "bergheim-agent-helpers"))))
 
-  (unless bergheim/container-mode-p
+  (unless (or bergheim/runner-mode-p bergheim/container-mode-p)
     (setq modules (append modules
-                          '( "bergheim-karakeep"
-                             "mu4e/init"
-                             "bergheim-browser"
-                             "bergheim-feeds"
-                             "bergheim-chat"
-                             "bergheim-apps"))))
+                          '("bergheim-karakeep"
+                            "mu4e/init"
+                            "bergheim-browser"
+                            "bergheim-feeds"
+                            "bergheim-chat"
+                            "bergheim-apps"))))
   (dolist (file modules)
     (load-file (expand-file-name (format "%s.el" file) module-dir))))
 
-(use-package site-lisp
-  :demand t
-  :config
-  ;; (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
-  (setq site-lisp-directory (expand-file-name "modules" bergheim/config-dir))
-  (site-lisp-initialise))
+(unless bergheim/runner-mode-p
+  (use-package site-lisp
+    :demand t
+    :config
+    ;; (setq site-lisp-directory (expand-file-name "autoloads" bergheim/config-dir))
+    (setq site-lisp-directory (expand-file-name "modules" bergheim/config-dir))
+    (site-lisp-initialise)))
 
 (defun display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."

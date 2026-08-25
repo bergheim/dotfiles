@@ -1,0 +1,15 @@
+[Unit]
+Description=Isolated Emacs desktop runners
+After=sway-session.target
+PartOf=sway-session.target
+
+[Service]
+Type=simple
+Environment=EMACS_RUNNER=1
+ExecStart=%h/local/bin/emacs --fg-daemon=runners --init-directory=%h/.config/emacs
+SuccessExitStatus=15
+TimeoutStopSec=3s
+Restart=on-failure
+
+[Install]
+WantedBy=sway-session.target

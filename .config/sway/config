@@ -418,8 +418,9 @@ bindsym $mod+p exec fuzzel-pass
 # $mod+p is taken by fuzzel-pass above.
 bindsym $mod+shift+p exec display-mode
 
-# Clipboard (replace clipmenu with wl-clipboard)
-bindsym $mod+v exec fuzzel-cliphist
+# Clipboard history via Emacs; keep fuzzel available while test-driving it
+bindsym $mod+v exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/cliphist-start)'
+bindsym $mod+shift+v exec fuzzel-cliphist
 
 # Window switcher (replace rofi)
 bindsym $alt+Tab exec sway-window-switcher
@@ -641,6 +642,7 @@ for_window [title="floating"] floating enable, resize set 100ppt 90ppt, move cen
 for_window [app_id="Emacs" title="emacs-everywhere"] floating enable
 for_window [app_id="gnome-calendar"] floating enable
 for_window [title="emacs-float"] floating enable, resize set 800 600, move position center
+for_window [title="emacs-runner"] floating enable, resize set 800 600, move position center, move scratchpad
 
 # firefox pop out videos should always show
 for_window [title="Picture-in-Picture"] floating enable, sticky enable

@@ -283,20 +283,24 @@ Skipped on TUI frames and in container mode where fonts come from the host."
              :tab-bar-height .9))))
 
 
-  ;; we need a GUI frame to check the fonts - a new daemon will not have one
+  ;; GUI frame needed to check fonts — daemon has none at init.
   (if (daemonp)
-      (add-hook 'server-after-make-frame-hook
-                (lambda ()
-                  (bergheim/set-font-size-based-on-frame-resolution)
-                  (bergheim/generate-fontaine-presets)
-                  (bergheim/check-available-fonts fontaine-presets)
-                  (fontaine-mode 1)
-                  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))))
-    (bergheim/set-font-size-based-on-frame-resolution)
-    (bergheim/generate-fontaine-presets)
-    (bergheim/check-available-fonts fontaine-presets)
-    (fontaine-mode 1)
-    (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))))
+      (add-hook 'server-after-make-frame-hook #'bergheim/fontaine-on-frame)
+    (bergheim/fontaine-on-frame)))
+
+(defvar bergheim/--fontaine-display nil)
+
+(defun bergheim/fontaine-on-frame ()
+  "Init fontaine on the first GUI frame per display class."
+  (when (display-graphic-p)
+    (let ((prev bergheim/--fontaine-display))
+      (bergheim/set-font-size-based-on-frame-resolution)
+      (unless (eq prev bergheim/display)
+        (bergheim/generate-fontaine-presets)
+        (bergheim/check-available-fonts fontaine-presets)
+        (fontaine-mode 1)
+        (fontaine-set-preset (or (fontaine-restore-latest-preset) 'medium))
+        (setq bergheim/--fontaine-display bergheim/display)))))
 
 (defun bergheim//system-dark-mode-enabled-p ()
   "Check if system dark mode is enabled.
@@ -329,9 +333,12 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   (with-selected-frame (or frame (selected-frame))
     (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
     (bergheim/setup-emoji-fonts)
-    (if (bergheim//system-dark-mode-enabled-p)
-        (load-theme bergheim/theme-dark t)
-      (load-theme bergheim/theme-light t))))
+    (let ((want (if (bergheim//system-dark-mode-enabled-p)
+                    bergheim/theme-dark
+                  bergheim/theme-light)))
+      (unless (eq want (car custom-enabled-themes))
+        (mapc #'disable-theme custom-enabled-themes)
+        (load-theme want t)))))
 
 (if (daemonp)
     (add-hook 'server-after-make-frame-hook #'bergheim/frame-setup)
@@ -481,10 +488,19 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   ;; face bgs from the daemon's hidden F1 frame, whose default
   ;; :background is `unspecified-bg', producing 24 "Unable to load
   ;; color" messages.
+  ;; The hook also runs for `emacsclient -e' connections, where the
+  ;; selected frame can be the daemon's hidden TTY frame F1.  spacious-
+  ;; padding reads its colors from the selected frame, and F1's background
+  ;; is `unspecified-bg', so it falls back to literal "white" for the
+  ;; fringe, vertical-border and window-divider faces.
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook
-                (lambda ()
-                  (unless spacious-padding-mode (spacious-padding-mode))))
+                #'bergheim/spacious-padding-on-frame)
+    (spacious-padding-mode)))
+
+(defun bergheim/spacious-padding-on-frame ()
+  "Enable `spacious-padding-mode' on the first graphical client frame."
+  (when (and (display-graphic-p) (not spacious-padding-mode))
     (spacious-padding-mode)))
 
 (defun bergheim/toggle-visual-fluff ()
@@ -501,7 +517,7 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   :custom
   (fill-column 79)
   (show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
-  (indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
+  ;; (indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin. bitmap, so looks fugly
   (indent-tabs-mode nil)
   (tab-width 4)
   (display-line-numbers nil)

@@ -216,6 +216,11 @@ window-rule {
     default-column-width { fixed 800; }
 }
 window-rule {
+    match title="^emacs-runner$"
+    open-floating true
+    default-column-width { fixed 800; }
+}
+window-rule {
     match app-id=r#"^floating"#
     open-floating true
 }
@@ -261,7 +266,7 @@ layer-rule {
 
 spawn-sh-at-startup "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 spawn-sh-at-startup "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=niri"
-spawn-at-startup "systemctl" "--user" "start" "emacs.service"
+spawn-at-startup "systemctl" "--user" "start" "emacs.service" "emacs-runners.service"
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
 // swayosd disabled 2026-08-18: amdgpu/TTM LRU hardlock test (denote 20260601T112404)
@@ -290,7 +295,8 @@ binds {
     Mod+Return             { spawn "emacsclient" "-nc"; }
     Mod+R                  { spawn "fuzzel"; }
     Mod+P                  { spawn "fuzzel-pass"; }
-    Mod+V                  { spawn-sh "cliphist list | fuzzel -d | cliphist decode | wl-copy"; }
+    Mod+V                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/cliphist-start)"; }
+    Mod+Shift+V            { spawn "fuzzel-cliphist"; }
     Mod+Shift+E            { spawn-sh "BEMOJI_PICKER_CMD='fuzzel -d' bemoji"; }
     Mod+Z                  { spawn "emacsclient" "--eval" "(emacs-everywhere)"; }
     Mod+C                  { spawn "emacs-capture" "--eval" "(bergheim/capture)"; }
