@@ -218,7 +218,6 @@ window-rule {
 window-rule {
     match title="^emacs-runner$"
     open-floating true
-    default-column-width { fixed 800; }
 }
 window-rule {
     match app-id=r#"^floating"#

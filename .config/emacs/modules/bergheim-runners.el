@@ -1,6 +1,7 @@
 ;;; bergheim-runners.el --- Isolated desktop runner commands -*- lexical-binding: t; -*-
 
 (elpaca-wait)
+(require 'nerd-icons)
 (require 'vertico-buffer)
 (require 'savehist)
 
@@ -19,6 +20,10 @@
             t)
 
 (defvar bergheim/runner-frame nil)
+
+(defvar bergheim/runner-frame-fraction 0.6
+  "Runner frame size, as a fraction of its monitor's work area.")
+
 (defvar bergheim/cliphist-history nil)
 
 (defun bergheim/runner-on-sway-p ()
@@ -38,9 +43,16 @@
              (undecorated . t)
              (tab-bar-lines . 0)
              (vertical-scroll-bars . nil)
-             (horizontal-scroll-bars . nil)
-             (width . (text-pixels . 784))
-             (height . (text-pixels . 600))))))
+             (horizontal-scroll-bars . nil))))
+    ;; `workarea' is in device pixels, `set-frame-size' in logical ones.
+    (let* ((monitor (frame-monitor-attributes bergheim/runner-frame))
+           (scale (or (cdr (assq 'scale-factor monitor)) 1))
+           (fraction (/ bergheim/runner-frame-fraction scale)))
+      (pcase-let ((`(,_x ,_y ,width ,height) (cdr (assq 'workarea monitor))))
+        (set-frame-size bergheim/runner-frame
+                        (round (* fraction width))
+                        (round (* fraction height))
+                        t))))
   bergheim/runner-frame)
 
 (bergheim/runner-frame)
@@ -86,7 +98,13 @@ rebuilds `fontaine-presets'."
                               '(metadata (display-sort-function . identity)
                                          (cycle-sort-function . identity))
                             (complete-with-action action choices str pred))))
-                 (choice (completing-read "Clipboard: " table nil t nil
+                 ;; Vertico's count overlay sits on the prompt's first
+                 ;; character and picks up its face, so keep the icon off
+                 ;; that spot or the digits render in the icon font.
+                 (prompt (concat " "
+                                 (nerd-icons-mdicon "nf-md-clipboard_clock_outline")
+                                 "  Clipboard: "))
+                 (choice (completing-read prompt table nil t nil
                                           'bergheim/cliphist-history))
                  (entry (cdr (assoc-string choice choices))))
             (unless entry
