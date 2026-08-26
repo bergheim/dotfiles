@@ -307,9 +307,11 @@ Skipped on TUI frames and in container mode where fonts come from the host."
 (defun bergheim//system-dark-mode-enabled-p ()
   "Check if system dark mode is enabled.
 Defaults to dark when gsettings is unavailable."
-  (let ((result (string-trim (shell-command-to-string
-                              "gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null"))))
-    (not (string= result "'prefer-light'"))))
+  (with-temp-buffer
+    (not (and (executable-find "gsettings")
+              (eq 0 (call-process "gsettings" nil t nil
+                                 "get" "org.gnome.desktop.interface" "color-scheme"))
+              (string-match-p "prefer-light" (buffer-string))))))
 
 (defun bergheim/setup-emoji-fonts ()
   "Point the emoji/symbol fontset at Noto Color Emoji.
