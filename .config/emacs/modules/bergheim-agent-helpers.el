@@ -147,6 +147,78 @@ modified the buffer. Errors on concurrent external modification before save."
                    (error "File modified externally while editing: %s" ,path))
                  (save-buffer)))))))))
 
+;;; Prose unfilling
+;;
+;; Agents hard-wrap prose at ~80 columns out of habit. Notes are read with
+;; `visual-line-mode', so those breaks buy nothing and cost real edits: a
+;; reworded sentence reflows every following line into the diff. Bodies are
+;; unfilled on the way in, so no agent can persist a wrapped paragraph.
+;;
+;; Conservative by construction: when a line is not plainly prose, its newline
+;; is kept. Only a continuation of a paragraph or a list item folds upward.
+
+(defconst bergheim/agent-notes--list-item-re
+  "\\`[ \t]*\\(?:[-+][ \t]\\|[ \t]\\*[ \t]\\|[0-9]+[.)][ \t]\\)"
+  "List items. Keep the newline, but fold their wrapped continuations in.
+A `*' bullet must be indented; at column zero it is a heading.")
+
+(defconst bergheim/agent-notes--structural-re
+  "\\`\\(?:\\*+[ \t]\\|[ \t]*[:|#]\\)"
+  "Headings, drawers, property and fixed-width lines, tables, keywords.
+These keep their newline and nothing folds into them.")
+
+(defun bergheim/agent-notes--block-name (line prefix)
+  "Return the block name when LINE opens or closes with PREFIX, else nil."
+  (let ((s (downcase (string-trim-left line))))
+    (when (string-prefix-p prefix s)
+      (or (car (split-string (substring s (length prefix)))) ""))))
+
+(defun bergheim/agent-notes--open-link-p (s)
+  "Non-nil when S ends inside an unclosed Org link, where a space would corrupt."
+  (let ((opens 0) (closes 0) (i 0))
+    (while (setq i (string-search "[[" s i)) (setq opens (1+ opens) i (+ i 2)))
+    (setq i 0)
+    (while (setq i (string-search "]]" s i)) (setq closes (1+ closes) i (+ i 2)))
+    (> opens closes)))
+
+(defun bergheim/agent-notes-unfill (text)
+  "Join hard-wrapped prose lines in TEXT, leaving Org structure intact.
+Paragraphs and list items collapse to one line each. Blank lines, headings,
+tables, drawers, fixed-width lines, `#+' keywords, explicit `\\\\' breaks and
+everything inside a `#+begin_'/`#+end_' block are passed through untouched."
+  (if (not (stringp text))
+      text
+    (let ((blocks nil) (out nil) (joinable nil))
+      (dolist (line (split-string (string-replace "\r" "" text) "\n"))
+        (let ((trimmed (string-trim-left line))
+              (name nil))
+          (cond
+           (blocks
+            (push line out)
+            (cond
+             ((setq name (bergheim/agent-notes--block-name line "#+begin_"))
+              (push name blocks))
+             ((equal (car blocks) (bergheim/agent-notes--block-name line "#+end_"))
+              (pop blocks))))
+           ((setq name (bergheim/agent-notes--block-name line "#+begin_"))
+            (push name blocks) (push line out) (setq joinable nil))
+           ((string-empty-p trimmed)
+            (push line out) (setq joinable nil))
+           ((string-match-p bergheim/agent-notes--list-item-re line)
+            (push line out) (setq joinable t))
+           ((string-match-p bergheim/agent-notes--structural-re line)
+            (push line out) (setq joinable nil))
+           (joinable
+            (let ((prev (string-trim-right (car out))))
+              (setcar out (concat prev
+                                  (if (bergheim/agent-notes--open-link-p prev) "" " ")
+                                  trimmed))))
+           (t (push line out) (setq joinable t)))
+          ;; An explicit Org line break ends the paragraph as far as we care.
+          (when (string-suffix-p "\\\\" (string-trim-right line))
+            (setq joinable nil))))
+      (string-join (nreverse out) "\n"))))
+
 ;;; Cross-project worklog
 ;;
 ;; Every successful state transition or note-add appends a single org
@@ -490,7 +562,7 @@ Returns a plist with `:wrote' (list of modified paths) and `:heading'."
         (when (get-buffer "*Org Note*")
           (with-current-buffer "*Org Note*"
             (goto-char (point-max))
-            (insert note)
+            (insert (bergheim/agent-notes-unfill note))
             (org-store-log-note))))
       (setq dirty (buffer-modified-p)))
     (bergheim/agent-notes--maybe-commit
@@ -695,7 +767,7 @@ Safe for emacsclient --eval."
                          (format "#+filetags:   %s\n" tags-str)
                          (format "#+identifier: %s\n" final-id)
                          "\n"
-                         (if body (concat body "\n") ""))))
+                         (if body (concat (bergheim/agent-notes-unfill body) "\n") ""))))
             (condition-case nil
                 (progn
                   (write-region content nil filepath nil nil nil 'excl)
@@ -817,7 +889,8 @@ and top-level `Related notes' section are preserved. Returns a plist with
                           (point-max)))
                  (current (string-trim-right
                            (buffer-substring-no-properties start end)))
-                 (body (string-trim-right requested-body)))
+                 (body (string-trim-right
+                        (bergheim/agent-notes-unfill requested-body))))
             (unless (equal current body)
               (delete-region start end)
               (unless (string-empty-p body)
@@ -1087,7 +1160,7 @@ heading. A stable `:ID:' is generated so the entry can later be addressed with
       (org-entry-put nil "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))
       (when (and body (not (string-empty-p body)))
         (org-end-of-meta-data t)
-        (insert (string-trim-right body) "\n")))
+        (insert (string-trim-right (bergheim/agent-notes-unfill body)) "\n")))
     (bergheim/agent-notes--maybe-commit file (format "todo: add %s" heading))
     (list :wrote (list (expand-file-name file)) :id id :heading heading :state st)))
 

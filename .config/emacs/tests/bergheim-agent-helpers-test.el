@@ -130,5 +130,37 @@
                           (insert-file-contents file)
                           (buffer-string))))))))
 
+(ert-deftest bergheim/agent-notes-unfill-joins-prose-preserves-structure ()
+  "Wrapped prose joins to one line; Org structure stays intact."
+  (should (equal
+           "First paragraph joins here on one line.
+
+* Heading stays separate
+
+- List item with continuation.
+
+#+begin_src
+source block
+  preserved
+#+end_src
+
+Another paragraph stays one line."
+           (bergheim/agent-notes-unfill
+            "First paragraph joins
+here on one line.
+
+* Heading stays separate
+
+- List item
+  with continuation.
+
+#+begin_src
+source block
+  preserved
+#+end_src
+
+Another paragraph
+stays one line."))))
+
 (provide 'bergheim-agent-helpers-test)
 ;;; bergheim-agent-helpers-test.el ends here
