@@ -604,7 +604,7 @@ bindsym $alt+b border toggle
 # {{{ automatically put clients on specific workspaces
 # assign [class="^Firefox$"] $ws1
 assign [class="^TelegramDesktop$"] $ws2
-for_window [class="Spotify"] move to workspace $ws3
+assign [app_id="^spotify$"] $ws3
 assign [class="^Microsoft Teams - Preview$"] $ws2
 assign [class="^discord$"] $ws2
 assign [class="Slack"] $ws2

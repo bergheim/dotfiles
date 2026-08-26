@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Spotify
+Comment=Spotify Web in an isolated Firefox profile
+Exec=firefox --name=spotify -P media -no-remote -new-instance https://open.spotify.com/
+Icon=firefox
+Terminal=false
+Categories=AudioVideo;Audio;Network;
+StartupNotify=true
