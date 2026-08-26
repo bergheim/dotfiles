@@ -21,6 +21,8 @@
 
 (defvar bergheim/theme-light 'ef-cyprus)
 (defvar bergheim/theme-dark 'ef-deuteranopia-dark)
+(defvar bergheim/dark-mode-p nil
+  "Is dark mode enabled?")
 
 (defvar bergheim/screen-margin 0 "Margin to subtract from screen height.")
 (defvar bergheim/display 'medium)
@@ -329,19 +331,25 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
     (set-fontset-font t '(#xF0000 . #xFFFFD)
                       (font-spec :family "Symbols Nerd Font Mono") nil 'prepend)))
 
-(defun bergheim/frame-setup (&optional frame)
-  (with-selected-frame (or frame (selected-frame))
-    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-    (bergheim/setup-emoji-fonts)
-    (let ((want (if (bergheim//system-dark-mode-enabled-p)
-                    bergheim/theme-dark
-                  bergheim/theme-light)))
+(defun bergheim/apply-system-theme ()
+  "Load the light/dark theme from gsettings, like Ghostty and toggle-darkmode."
+  (let ((darkp (bergheim//system-dark-mode-enabled-p)))
+    (setq bergheim/dark-mode-p darkp)
+    (let ((want (if darkp bergheim/theme-dark bergheim/theme-light)))
       (unless (eq want (car custom-enabled-themes))
         (mapc #'disable-theme custom-enabled-themes)
         (load-theme want t)))))
 
+(defun bergheim/frame-setup (&optional frame)
+  (with-selected-frame (or frame (selected-frame))
+    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+    (bergheim/setup-emoji-fonts)
+    (bergheim/apply-system-theme)))
+
 (if (daemonp)
-    (add-hook 'server-after-make-frame-hook #'bergheim/frame-setup)
+    (progn
+      (add-hook 'elpaca-after-init-hook #'bergheim/apply-system-theme)
+      (add-hook 'server-after-make-frame-hook #'bergheim/frame-setup))
   (add-hook 'emacs-startup-hook #'bergheim/frame-setup))
 
 (defun bergheim/zoom-window ()
@@ -372,9 +380,6 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   )
 
 (use-package doric-themes)
-
-(defvar bergheim/dark-mode-p nil
-  "Is dark mode enabled?")
 
 (defun bergheim/theme-dark ()
   (interactive)
