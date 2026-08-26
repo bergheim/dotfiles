@@ -23,10 +23,11 @@ else
 	mute_label=mute
 	mute_icon=audio-volume-high
 fi
-names=$(printf '__mute__\n%s' "$(printf '%s' "$sinks" | jq -r '.[].name')")
+names=$(printf '__mute__\n__mixer__\n%s' "$(printf '%s' "$sinks" | jq -r '.[].name')")
 
 # label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
 index=$( { printf '%s\0icon\037%s\n' "$mute_label" "$mute_icon"
+	printf '%s\0icon\037%s\n' pavucontrol org.pulseaudio.pavucontrol
 	printf '%s' "$sinks" | jq -j --arg cur "$current" '
 	.[]
 	| (if .name == $cur then "* " else "  " end) + .description
@@ -45,6 +46,7 @@ target=$(printf '%s\n' "$names" | sed -n "$((index + 1))p")
 # volumectl-osd already toggles and draws the avizo OSD; it is what the
 # XF86AudioMute key runs.
 [ "$target" = __mute__ ] && exec volumectl-osd toggle-mute
+[ "$target" = __mixer__ ] && exec pavucontrol
 
 pactl set-default-sink "$target"
 pactl list short sink-inputs | cut -f1 | while read -r stream; do

@@ -18,10 +18,11 @@ connected=$(bluetoothctl devices Connected | sed 's/^Device //' | cut -d" " -f1)
 
 # Sentinel rows share the index space with the devices, so $macs has one
 # line per menu row and the index maps straight onto it.
-macs=$(printf '__radio__\n%s' "$(printf '%s\n' "$devices" | cut -d" " -f1)")
+macs=$(printf '__radio__\n__manager__\n%s' "$(printf '%s\n' "$devices" | cut -d" " -f1)")
 
 index=$( {
 	printf 'turn bluetooth off\0icon\037preferences-system-bluetooth-inactive-symbolic\n'
+	printf 'bluetooth manager\0icon\037blueman\n'
 	printf '%s\n' "$devices" | while read -r mac name; do
 		if printf '%s\n' "$connected" | grep -qx "$mac"; then
 			printf '* %s\0icon\037preferences-system-bluetooth-activated-symbolic\n' "$name"
@@ -37,6 +38,7 @@ target=$(printf '%s\n' "$macs" | sed -n "$((index + 1))p")
 [ -n "$target" ] || exit 0
 
 [ "$target" = __radio__ ] && exec toggle-bluetooth
+[ "$target" = __manager__ ] && exec blueman-manager
 
 name=$(printf '%s\n' "$devices" | grep "^$target " | cut -d" " -f2-)
 
