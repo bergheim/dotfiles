@@ -2,9 +2,11 @@
 
 (use-package pdf-tools
   :unless bergheim/container-mode-p
-  :defer t
   :config
-  (pdf-tools-install :no-query))
+  (if (and (stringp pdf-info-epdfinfo-program)
+           (file-executable-p pdf-info-epdfinfo-program))
+      (pdf-tools-install-noverify)
+    (pdf-tools-install :no-query)))
 
 (use-package systemd
   :unless bergheim/container-mode-p
