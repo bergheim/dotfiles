@@ -393,7 +393,10 @@ With universal arg ARG, search all .org files under `org-directory`."
    "q" 'org-noter-kill-session))
 
 (use-package org-pdftools
-  :hook (org-mode . org-pdftools-setup-link))
+  :after org
+  :if (executable-find "epdfinfo")
+  :config
+  (org-pdftools-setup-link))
 
 (use-package org-noter-pdftools
   :after org-noter
