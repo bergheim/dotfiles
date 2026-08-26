@@ -6,7 +6,6 @@ THEME_LIGHT="bergheim-light"
 THEME_DARK="bergheim-dark"
 ALACRITTYCONF="${XDG_CONFIG_HOME}/alacritty/alacritty.toml"
 FOOT_CONF="${XDG_CONFIG_HOME}/foot/foot.ini"
-BATCONF="${XDG_CONFIG_HOME}/bat/config"
 TMUXCONF="${HOME}/.tmux.conf"
 WAYBARCONF="${XDG_CONFIG_HOME}/waybar/config"
 XRES="${HOME}/.Xresources"
@@ -35,7 +34,7 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
     sed -i "s/initial-color-theme=dark/initial-color-theme=light/" "$FOOT_CONF"
-    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES" "$BATCONF"
+    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/airy.conf" $QT6_THEME
@@ -43,7 +42,6 @@ if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
     ln -sf /usr/share/color-schemes/BreezeLight.colors ~/.config/kdeglobals
 
     ln -sf ~/.config/alacritty/colors/bergheim-light.toml ~/.config/alacritty/colors/bergheim-theme.toml
-    ln -sf ~/.config/tmux/bergheim-light.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
     ln -sf ~/.config/mako/config-light ~/.config/mako/config
@@ -68,7 +66,7 @@ else
 
     sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
     sed -i "s/initial-color-theme=light/initial-color-theme=dark/" "$FOOT_CONF"
-    sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$XRES" "$BATCONF"
+    sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$XRES"
     if [ -f "$QT_THEME" ]; then
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
         sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/darker.conf" $QT6_THEME
@@ -76,7 +74,6 @@ else
     ln -sf /usr/share/color-schemes/BreezeDark.colors ~/.config/kdeglobals
 
     ln -sf ~/.config/alacritty/colors/bergheim-dark.toml ~/.config/alacritty/colors/bergheim-theme.toml
-    ln -sf ~/.config/tmux/bergheim-dark.conf ~/.config/tmux/bergheim-theme.conf
     ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
     ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
     ln -sf ~/.config/mako/config-dark ~/.config/mako/config

@@ -284,6 +284,7 @@ fi
 # --follow: Follow symlinks
 # --glob: Additional conditions for search
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!{.git,node_modules}/*" 2> /dev/null'
+export FZF_DEFAULT_OPTS='--color=base16,fg+:-1:reverse,bg+:-1,hl+:green'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # preview
 export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :500 {}'"
