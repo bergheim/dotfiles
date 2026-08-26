@@ -1,0 +1,35 @@
+#!/bin/sh
+# prefix u opens a URL from this pane's scrollback; prefix U copies it (OSC52).
+# Pane id comes from run-shell (display-popup does not expand #{pane_id}).
+
+extract() {
+    grep -oE 'https?://[^[:space:]<>"'\'')]+' \
+    | sed 's/[].,;:!?)]*$//' \
+    | tac \
+    | awk 'NF && !seen[$0]++'
+}
+
+if [ "$1" = --self-test ]; then
+    got=$(printf 'x https://glvortex.net/a.\nhttps://glvortex.net/a\nhttps://b.example/c)\n' | extract)
+    want=$(printf '%s\n' 'https://b.example/c' 'https://glvortex.net/a')
+    [ "$got" = "$want" ] || { printf 'got:\n%s\n' "$got"; exit 1; }
+    exit 0
+fi
+
+copy=0
+[ "$1" = --copy ] && { copy=1; shift; }
+
+pane=$1
+[ -n "$pane" ] || exit 1
+
+list=$(tmux capture-pane -p -S - -t "$pane" | extract)
+[ -n "$list" ] || { tmux display-message 'no urls'; exit 0; }
+
+url=$(printf '%s\n' "$list" | fzf --reverse --no-sort) || exit 0
+[ -n "$url" ] || exit 0
+if [ "$copy" -eq 1 ]; then
+    tmux set-buffer -w "$url"
+    tmux display-message "copied $url"
+else
+    setsid xdg-open "$url" >/dev/null 2>&1
+fi
