@@ -8,6 +8,10 @@
   (getenv "EMACS_RUNNER")
   "Non-nil in the isolated desktop runner daemon.")
 
+(defvar bergheim/server-host-p
+  (string-prefix-p "burial" (system-name))
+  "Non-nil on the homelab server. Skip mail/org/chat.")
+
 (defun bergheim/call-with-universal-arg (fn)
   (lambda ()
     (interactive)
@@ -159,18 +163,21 @@
            "bergheim-shells"
            "bergheim-compile"
            "bergheim-viewers"
-           "orgmode/init"
-           "bergheim-denote"
            "bergheim-agent-helpers"))))
+
+  (unless (or bergheim/runner-mode-p bergheim/server-host-p)
+    (setq modules (append modules '("orgmode/init" "bergheim-denote"))))
 
   (unless (or bergheim/runner-mode-p bergheim/container-mode-p)
     (setq modules (append modules
-                          '("bergheim-karakeep"
-                            "mu4e/init"
-                            "bergheim-browser"
-                            "bergheim-feeds"
-                            "bergheim-chat"
-                            "bergheim-apps"))))
+                          (if bergheim/server-host-p
+                              '("bergheim-apps")
+                            '("bergheim-karakeep"
+                              "mu4e/init"
+                              "bergheim-browser"
+                              "bergheim-feeds"
+                              "bergheim-chat"
+                              "bergheim-apps")))))
   (dolist (file modules)
     (load-file (expand-file-name (format "%s.el" file) module-dir))))
 
