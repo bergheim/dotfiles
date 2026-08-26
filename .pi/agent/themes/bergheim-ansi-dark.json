@@ -23,7 +23,7 @@
 		"text": "",
 		"thinkingText": "gray",
 
-		"selectedBg": "gray",
+		"selectedBg": 238,
 		"scrollbarThumb": "gray",
 		"searchMatchBg": "gray",
 		"searchMatchText": "",
