@@ -390,11 +390,26 @@
 
     "y" '(:ignore t :which-key "Yanking"))
 
+  (defun bergheim/m-hjkl (dir n)
+    "On an Org timestamp, shift it; otherwise move evil windows.
+DIR is `left' `down' `up' `right'. Override map, so org-mode-map cannot win."
+    (if (and (derived-mode-p 'org-mode) (org-at-timestamp-p 'lax))
+        (pcase dir
+          ('left  (org-timestamp-down-day n))
+          ('down  (org-timestamp-down n))
+          ('up    (org-timestamp-up n))
+          ('right (org-timestamp-up-day n)))
+      (pcase dir
+        ('left  (evil-window-left n))
+        ('down  (evil-window-down n))
+        ('up    (evil-window-up n))
+        ('right (evil-window-right n)))))
+
   (bergheim/global-evil-keys
-    "M-h" #'evil-window-left
-    "M-j" #'evil-window-down
-    "M-k" #'evil-window-up
-    "M-l" #'evil-window-right
+    "M-h" (lambda (n) (interactive "p") (bergheim/m-hjkl 'left n))
+    "M-j" (lambda (n) (interactive "p") (bergheim/m-hjkl 'down n))
+    "M-k" (lambda (n) (interactive "p") (bergheim/m-hjkl 'up n))
+    "M-l" (lambda (n) (interactive "p") (bergheim/m-hjkl 'right n))
 
     "M-H" #'evil-window-move-far-left
     "M-J" #'evil-window-move-very-bottom
