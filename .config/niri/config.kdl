@@ -203,17 +203,8 @@ window-rule {
     open-floating true
 }
 window-rule {
-    match app-id="Emacs" title="emacs-everywhere"
-    open-floating true
-}
-window-rule {
     match app-id=r#"^gnome-calendar$"#
     open-floating true
-}
-window-rule {
-    match title="^emacs-float$"
-    open-floating true
-    default-column-width { fixed 800; }
 }
 window-rule {
     match title="^emacs-runner"
@@ -224,8 +215,10 @@ window-rule {
     open-floating true
 }
 window-rule {
-    match title="^floating"
+    match title="floating"
     open-floating true
+    default-column-width { proportion 1.0; }
+    default-window-height { proportion 0.9; }
 }
 window-rule {
     match title="Picture-in-Picture"

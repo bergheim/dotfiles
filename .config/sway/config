@@ -637,14 +637,9 @@ exec_always 'pkill -x kanshi; exec kanshi'
 for_window [app_id="qalculate-gtk"] floating enable
 for_window [title="Microsoft Teams Notification"] floating enable
 
-# Pattern matching works
-for_window [app_id="^floating"] floating enable, resize set 100ppt 90ppt, move center
-for_window [title="floating"] floating enable, resize set 100ppt 90ppt, move center
+for_window [title="floating"] floating enable, resize set 70ppt 60ppt, move center
 
-# Emacs rules
-for_window [app_id="Emacs" title="emacs-everywhere"] floating enable
 for_window [app_id="gnome-calendar"] floating enable
-for_window [title="emacs-float"] floating enable, resize set 800 600, move position center
 for_window [title="^emacs-runner"] floating enable, move position center, move scratchpad
 
 # firefox pop out videos should always show

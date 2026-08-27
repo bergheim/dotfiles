@@ -265,7 +265,7 @@ Lisp function does not specify a special indentation."
 (defun thanos/type ()
   "Launch a temporary frame with a clean buffer for typing."
   (interactive)
-  (let ((frame (make-frame '((name . "emacs-float")
+  (let ((frame (make-frame '((name . "floating")
                              (fullscreen . 0)
                              (undecorated . t)
                              (width . 70)
