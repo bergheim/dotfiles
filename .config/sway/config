@@ -594,7 +594,7 @@ client.background       $bg
 focus_on_window_activation smart
 # focus_follows_mouse no
 
-for_window [class=".*"] opacity 0.95
+for_window [class=".*"] opacity 0.97
 
 bindsym $alt+b border toggle
 
