@@ -141,6 +141,7 @@
 
 (defun bergheim/org-get-tasks-for-rofi ()
   "Get a list of org tasks for ROFI."
+  (org-mru-clock-to-history)
   (let ((tasks (org-mru-clock--collection)))
     (mapconcat (lambda (task)
                  (format "%s" (car task)))
