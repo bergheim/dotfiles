@@ -17,80 +17,87 @@ GTK4_SETTINGS="${XDG_CONFIG_HOME}/gtk-4.0/settings.ini"
 
 CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 
+emacs_theme() {
+	emacsclient -e "(bergheim/theme-$1)" &
+	# a hack that makes emacs light/dark work over mosh
+	ssh -o BatchMode=yes -o ConnectTimeout=2 berghome \
+		"emacsclient -e '(bergheim/theme-$1)'" >/dev/null 2>&1 &
+}
+
 pkill -USR1 -x foot
 
 if [ "$CURRENT_MODE" = "'prefer-dark'" ]; then
-    ln -sfn ~/Pictures/wallpapers/active/light ~/Pictures/wallpapers/active/current
-    if [[ -z "$WAYLAND_DISPLAY" ]]; then
-        feh --bg-fill ~/Pictures/wallpapers/active/light/primary.jpg --bg-fill ~/Pictures/wallpapers/active/light/secondary.jpg &
-    fi
-    emacsclient -e '(bergheim/theme-light)' &
-    gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
-    for GTK_SETTINGS in "$GTK3_SETTINGS" "$GTK4_SETTINGS"; do
-        [ -f "$GTK_SETTINGS" ] && sed -i 's/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=false/' "$GTK_SETTINGS"
-    done
-    # gsettings set org.freedesktop.appearance color-scheme "prefer-light"
+	ln -sfn ~/Pictures/wallpapers/active/light ~/Pictures/wallpapers/active/current
+	if [[ -z "$WAYLAND_DISPLAY" ]]; then
+		feh --bg-fill ~/Pictures/wallpapers/active/light/primary.jpg --bg-fill ~/Pictures/wallpapers/active/light/secondary.jpg &
+	fi
+	emacs_theme light
+	gsettings set org.gnome.desktop.interface color-scheme "prefer-light"
+	gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
+	for GTK_SETTINGS in "$GTK3_SETTINGS" "$GTK4_SETTINGS"; do
+		[ -f "$GTK_SETTINGS" ] && sed -i 's/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=false/' "$GTK_SETTINGS"
+	done
+	# gsettings set org.freedesktop.appearance color-scheme "prefer-light"
 
-    sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
-    sed -i "s/initial-color-theme=dark/initial-color-theme=light/" "$FOOT_CONF"
-    sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES"
-    if [ -f "$QT_THEME" ]; then
-        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
-        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/airy.conf" $QT6_THEME
-    fi
-    ln -sf /usr/share/color-schemes/BreezeLight.colors ~/.config/kdeglobals
+	sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita\"" "${XSETTINGS}"
+	sed -i "s/initial-color-theme=dark/initial-color-theme=light/" "$FOOT_CONF"
+	sed -i "s/${THEME_DARK}/${THEME_LIGHT}/" "$XRES"
+	if [ -f "$QT_THEME" ]; then
+		sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/airy.conf" $QT_THEME
+		sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/airy.conf" $QT6_THEME
+	fi
+	ln -sf /usr/share/color-schemes/BreezeLight.colors ~/.config/kdeglobals
 
-    ln -sf ~/.config/alacritty/colors/bergheim-light.toml ~/.config/alacritty/colors/bergheim-theme.toml
-    ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
-    ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
-    ln -sf ~/.config/mako/config-light ~/.config/mako/config
-    ln -sf ~/.config/avizo/config-light.ini ~/.config/avizo/config.ini
-    [ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
-    if pgrep -x "dunst" >/dev/null; then
-        dunstctl reload ~/.config/dunst/dunstrc &
-    fi
-    pgrep -x mako >/dev/null && makoctl reload &
+	ln -sf ~/.config/alacritty/colors/bergheim-light.toml ~/.config/alacritty/colors/bergheim-theme.toml
+	ln -sf ~/.config/fuzzel/bergheim-light.ini ~/.config/fuzzel/colors.ini
+	ln -sf ~/.config/sway/colors-light ~/.config/sway/colors
+	ln -sf ~/.config/mako/config-light ~/.config/mako/config
+	ln -sf ~/.config/avizo/config-light.ini ~/.config/avizo/config.ini
+	[ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
+	if pgrep -x "dunst" >/dev/null; then
+		dunstctl reload ~/.config/dunst/dunstrc &
+	fi
+	pgrep -x mako >/dev/null && makoctl reload &
 else
-    ln -sfn ~/Pictures/wallpapers/active/dark ~/Pictures/wallpapers/active/current
-    if [[ -z "$WAYLAND_DISPLAY" ]]; then
-        feh --bg-fill ~/Pictures/wallpapers/active/dark/primary.jpg --bg-fill ~/Pictures/wallpapers/active/dark/secondary.jpg &
-    fi
-    emacsclient -e '(bergheim/theme-dark)' &
-    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
-    for GTK_SETTINGS in "$GTK3_SETTINGS" "$GTK4_SETTINGS"; do
-        [ -f "$GTK_SETTINGS" ] && sed -i 's/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=true/' "$GTK_SETTINGS"
-    done
-    # gsettings set org.freedesktop.appearance color-scheme "prefer-dark"
+	ln -sfn ~/Pictures/wallpapers/active/dark ~/Pictures/wallpapers/active/current
+	if [[ -z "$WAYLAND_DISPLAY" ]]; then
+		feh --bg-fill ~/Pictures/wallpapers/active/dark/primary.jpg --bg-fill ~/Pictures/wallpapers/active/dark/secondary.jpg &
+	fi
+	emacs_theme dark
+	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+	gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+	for GTK_SETTINGS in "$GTK3_SETTINGS" "$GTK4_SETTINGS"; do
+		[ -f "$GTK_SETTINGS" ] && sed -i 's/^gtk-application-prefer-dark-theme=.*/gtk-application-prefer-dark-theme=true/' "$GTK_SETTINGS"
+	done
+	# gsettings set org.freedesktop.appearance color-scheme "prefer-dark"
 
-    sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
-    sed -i "s/initial-color-theme=light/initial-color-theme=dark/" "$FOOT_CONF"
-    sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$XRES"
-    if [ -f "$QT_THEME" ]; then
-        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
-        sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/darker.conf" $QT6_THEME
-    fi
-    ln -sf /usr/share/color-schemes/BreezeDark.colors ~/.config/kdeglobals
+	sed -i "/Net\/ThemeName/cNet\/ThemeName \"Adwaita-dark\"" "${XSETTINGS}"
+	sed -i "s/initial-color-theme=light/initial-color-theme=dark/" "$FOOT_CONF"
+	sed -i "s/${THEME_LIGHT}/${THEME_DARK}/" "$XRES"
+	if [ -f "$QT_THEME" ]; then
+		sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt5ct/colors/darker.conf" $QT_THEME
+		sed -i "/^color_scheme_path=/ccolor_scheme_path=/usr/share/qt6ct/colors/darker.conf" $QT6_THEME
+	fi
+	ln -sf /usr/share/color-schemes/BreezeDark.colors ~/.config/kdeglobals
 
-    ln -sf ~/.config/alacritty/colors/bergheim-dark.toml ~/.config/alacritty/colors/bergheim-theme.toml
-    ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
-    ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
-    ln -sf ~/.config/mako/config-dark ~/.config/mako/config
-    ln -sf ~/.config/avizo/config-dark.ini ~/.config/avizo/config.ini
-    [ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
-    if pgrep -x "dunst" >/dev/null; then
-        dunstctl reload ~/.config/dunst/dunstrc_dark &
-    fi
-    pgrep -x mako >/dev/null && makoctl reload &
+	ln -sf ~/.config/alacritty/colors/bergheim-dark.toml ~/.config/alacritty/colors/bergheim-theme.toml
+	ln -sf ~/.config/fuzzel/bergheim-dark.ini ~/.config/fuzzel/colors.ini
+	ln -sf ~/.config/sway/colors-dark ~/.config/sway/colors
+	ln -sf ~/.config/mako/config-dark ~/.config/mako/config
+	ln -sf ~/.config/avizo/config-dark.ini ~/.config/avizo/config.ini
+	[ -n "$WAYLAND_DISPLAY" ] && swaymsg reload >/dev/null 2>&1
+	if pgrep -x "dunst" >/dev/null; then
+		dunstctl reload ~/.config/dunst/dunstrc_dark &
+	fi
+	pgrep -x mako >/dev/null && makoctl reload &
 fi
 
 # update any running vim instances
 for SERVER_PIPE in $(
-    shopt -s nullglob
-    echo "$XDG_RUNTIME_DIR/nvim.*.0" "/tmp/nvim.$USER/*/nvim.*.0"
+	shopt -s nullglob
+	echo "$XDG_RUNTIME_DIR/nvim.*.0" "/tmp/nvim.$USER/*/nvim.*.0"
 ); do
-    nvim --server "$SERVER_PIPE" --remote-send ':lua dark_light_theme()<cr>' 2>/dev/null
+	nvim --server "$SERVER_PIPE" --remote-send ':lua dark_light_theme()<cr>' 2>/dev/null
 done
 
 xrdb -merge ~/.Xresources
