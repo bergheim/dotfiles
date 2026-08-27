@@ -86,6 +86,14 @@
                              :headline "Notes"
                              :template-file ,(expand-file-name "note.org" org-capture-custom-template-directory))
 
+                            ("Reminder"
+                             :icon ("nf-oct-bell" :set "octicon" :color "orange")
+                             :keys "r"
+                             :headline "Tasks"
+                             :clock-in nil
+                             :clock-resume nil
+                             :template-file ,(expand-file-name "reminder.org" org-capture-custom-template-directory))
+
                             ("Appointment"
                              :icon ("nf-fa-calendar" :set "faicon" :color "green")
                              :keys "a"
@@ -330,13 +338,20 @@
                              :immediate-finish t
                              :headline "Read Later")))))))
 
+(defvar bergheim/capture-heading nil
+  "One-line heading for `bergheim/capture' reminder templates.")
+
+(defun bergheim/capture--heading ()
+  (or bergheim/capture-heading ""))
+
 (defun bergheim//delete-frame-after-capture ()
   "Delete frame after capturing."
   (delete-frame)
   (remove-hook 'org-capture-after-finalize-hook 'bergheim//delete-frame-after-capture))
 
-(defun bergheim/capture ()
-  "Capture externally"
+(defun bergheim/capture (&optional initial keys)
+  "Capture externally. INITIAL fills `org-capture-initial' (%i).
+KEYS is an `org-capture' template key string (e.g. \"pn\"); nil shows the menu."
   (interactive)
   (delete-other-windows)
 
@@ -345,7 +360,9 @@
   ;; HACK to make the capture fullscreen
   (cl-letf (((symbol-function 'switch-to-buffer-other-window)
              (symbol-function 'switch-to-buffer)))
-    (org-capture))
+    (if (and initial (not (string-empty-p initial)))
+        (org-capture-string initial keys)
+      (org-capture nil keys)))
   (delete-other-windows))
 
 (defun bergheim/org-email-follow-up ()
