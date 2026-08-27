@@ -356,7 +356,7 @@
 (defun bergheim/capture--kill-capture-buffer ()
   "Abort an active capture in whatever buffer it lives in.
 `org-capture-kill' errors unless the capture buffer is current, so find it."
-  (when-let ((buf (cl-find-if (lambda (b) (buffer-local-value 'org-capture-mode b))
+  (when-let* ((buf (cl-find-if (lambda (b) (buffer-local-value 'org-capture-mode b))
                               (buffer-list))))
     (with-current-buffer buf (ignore-errors (org-capture-kill)))))
 
@@ -449,7 +449,12 @@ KEYS is an `org-capture' template key string (e.g. \"pn\"); nil shows the menu."
 ;; emacsclient call 2s. server.el's own FIXME says the sit-for shouldn't
 ;; exist; the message still lands in *Messages*.
 (advice-add 'server--message-sit-for :override
-            (lambda (_time &rest args) (apply #'message args)))
+            (lambda (_time &rest args)
+              ;; also drop the noise when a client died before its eval
+              ;; result could be delivered (killed capture frame)
+              (let ((msg (and args (apply #'format args))))
+                (unless (and msg (string-match-p "\\`Process server .* not running" msg))
+                  (apply #'message args)))))
 
 (defun bergheim/org-email-follow-up ()
   "Select a follow-up email category"
