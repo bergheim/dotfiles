@@ -1,6 +1,8 @@
 #!/bin/sh
 # Desktop-meaningful actions on a mako notification.
 # Drops Android "open the app on the phone" verbs. Everything else stays.
+# Remind is always offered (any notification). Default: org-capture frame.
+# Override with MAKO_REMIND_CMD (sees MAKO_APP MAKO_SUMMARY MAKO_BODY MAKO_REMIND_TEXT).
 id=$1
 json=$(makoctl list -j) || exit 0
 if [ -z "$id" ]; then
@@ -8,17 +10,53 @@ if [ -z "$id" ]; then
 fi
 [ -n "$id" ] || exit 0
 
-choices=$(printf '%s' "$json" | jq -r --arg id "$id" '
-	.[] | select((.id | tostring) == $id)
-	| (.actions // {})
+notif=$(printf '%s' "$json" | jq -c --arg id "$id" '.[] | select((.id | tostring) == $id)')
+[ -n "$notif" ] || exit 0
+
+choices=$(printf '%s' "$notif" | jq -r '
+	(.actions // {})
 	| to_entries[]
 	| select(.value | test("^(view|open|open app|show|vis|åpne)$"; "i") | not)
 	| "\(.key)\t\(.value)"
 ')
-[ -n "$choices" ] || exit 0
+choices=$(printf '%s%s\n' "${choices:+$choices
+}" 'mako-remind	Remind')
 
 label=$(printf '%s\n' "$choices" | cut -f2 | fuzzel -d -p 'Action:') || exit 0
 [ -n "$label" ] || exit 0
 key=$(printf '%s\n' "$choices" | awk -F'\t' -v l="$label" '$2==l { print $1; exit }')
 [ -n "$key" ] || exit 0
+
+if [ "$key" = mako-remind ]; then
+	app=$(printf '%s' "$notif" | jq -r '.app_name // empty')
+	summary=$(printf '%s' "$notif" | jq -r '.summary // empty')
+	body=$(printf '%s' "$notif" | jq -r '.body // empty')
+	# FDO bodies are often HTML (Dino, etc). Strip here, not in mako/kdeconnect.
+	# Title → heading, body → %i (same shape as email-follow-up.org).
+	keys=${MAKO_REMIND_KEYS:-pr}
+	sexp=$(python3 -c '
+import html, json, re, sys
+def plain(s):
+    s = html.unescape(s or "")
+    s = re.sub(r"(?i)<br\\s*/?>", "\n", s)
+    s = re.sub(r"(?i)</p>\\s*", "\n", s)
+    s = re.sub(r"<[^>]+>", "", s)
+    return re.sub(r"\n{3,}", "\n\n", s).strip()
+app, summary, body, keys = sys.argv[1:5]
+app, summary, body = plain(app), plain(summary), plain(body)
+title = f"{app}: {summary}" if app and summary else (app or summary)
+title = " ".join(title.split())
+print("(progn (setq bergheim/capture-heading %s) (bergheim/capture %s %s))" % (
+    json.dumps(title, ensure_ascii=False),
+    json.dumps(body, ensure_ascii=False),
+    json.dumps(keys)))
+' "$app" "$summary" "$body" "$keys")
+	if [ -n "$MAKO_REMIND_CMD" ]; then
+		MAKO_APP=$app MAKO_SUMMARY=$summary MAKO_BODY=$body \
+			exec sh -c "$MAKO_REMIND_CMD"
+	fi
+	# title contains "floating": sway/niri/hypr for_window.
+	exec emacsclient -c -F '((name . "floating"))' --eval "$sexp"
+fi
+
 exec makoctl invoke -n "$id" "$key"
