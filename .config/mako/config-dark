@@ -30,9 +30,7 @@ text-color=#ecf0f1
 border-color=#8b0000
 default-timeout=0
 
-# Android Phone app mirror — telephony plugin owns call actions.
+# Suppress Android's duplicate Phone-app mirror. Keep KDE Connect's
+# call-start telephony notification visible so caller ID is shown.
 [app-name="KDE Connect" summary="Phone"]
-invisible=1
-
-[app-icon=call-start]
 invisible=1
