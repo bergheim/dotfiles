@@ -346,7 +346,8 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   (with-selected-frame (or frame (selected-frame))
     (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
     (bergheim/setup-emoji-fonts)
-    (bergheim/apply-system-theme)))
+    (when (display-graphic-p)
+      (bergheim/apply-system-theme))))
 
 (if (daemonp)
     (progn
