@@ -59,17 +59,6 @@ export N_PREFIX="$HOME/local"
 export CANDLE_FLASH_ATTN_BUILD_DIR="$HOME/.cache/candle"
 export XDG_MENU_PREFIX=arch-
 
-export BERGHOME=berghome.ts.glvortex.net
-export BURIAL=burial.ts.glvortex.net
-export NTFY_SERVER="http://burial.ts.glvortex.net:9080"
-export LLAMA_HOST="http://$BERGHOME:11434"
-export OLLAMA_HOST="$LLAMA_HOST"
-export PERF_HOST="http://$BERGHOME:8888"
-export SHARE_BASE_URL="http://$BERGHOME:8080"
-export PYROSCOPE_HOST="http://$BERGHOME:4040"
-export LITELLM_HOST="http://$BERGHOME:8088"
-export CRAWL4AI_URL="http://$BURIAL:11235"
-
 if command -v podman >/dev/null 2>&1 && [ -n "${XDG_RUNTIME_DIR:-}" ]; then
     export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/podman/podman.sock"
 fi
@@ -78,3 +67,5 @@ export MOSH_ESCAPE_KEY=''
 
 # shellcheck source=/dev/null
 [ -r "$HOME/.zshenv-private" ] && . "$HOME/.zshenv-private"
+
+[ -r "$HOME/.profile.container" ] && . "$HOME/.profile.container"

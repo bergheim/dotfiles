@@ -1,0 +1,10 @@
+export BERGHOME=berghome.ts.glvortex.net
+export BURIAL=burial.ts.glvortex.net
+export NTFY_SERVER="https://ntfy.ts.glvortex.net"
+export LLAMA_HOST="https://llama.ts.glvortex.net"
+export OLLAMA_HOST="$LLAMA_HOST"
+export PERF_HOST="https://perf.ts.glvortex.net"
+export SHARE_BASE_URL="https://share.glvortex.net"
+export PYROSCOPE_HOST="https://pyroscope.ts.glvortex.net"
+export LITELLM_HOST="https://llm.ts.glvortex.net"
+export CRAWL4AI_URL="https://crawl.ts.glvortex.net"
