@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# record-sway — capture a screencast via wf-recorder, transcode to a
-# looping webp, then upload to MicroBin and copy the URL (mirrors the
-# flow in share-screenshot).  mkv + webp both land in ~/Videos/screencasts/.
+# record-sway — capture a screencast via wf-recorder, transcode to AV1
+# webm, scp to burial stash/share/screencasts (nginx /f/).
+# mkv + webm both land in ~/Videos/screencasts/.
 #
 # Usage:
 #   record-sway              # interactive region (slurp), upload + copy URL
@@ -15,8 +15,7 @@
 set -euo pipefail
 
 ARCHIVE_DIR="${RECORD_ARCHIVE_DIR:-$HOME/Videos/screencasts}"
-MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
-PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
+SHARE_PUBLIC="${SHARE_PUBLIC_URL:-https://share.glvortex.net/f}"
 
 SHARE=1
 MODE=region
@@ -29,10 +28,14 @@ for arg in "$@"; do
 done
 
 mkdir -p "$ARCHIVE_DIR"
-TS=$(date -u '+%Y%m%dT%H%M%S')
-STEM="${TS}--screencast-shared__"
-MKV="$ARCHIVE_DIR/${STEM}.mkv"
-WEBP="$ARCHIVE_DIR/${STEM}.webp"
+ID=$(date '+%Y%m%dT%H%M%S')
+MKV="$ARCHIVE_DIR/${ID}--screencast.mkv"
+
+slugify() {
+    printf '%s' "$1" | tr '[:upper:]' '[:lower:]' |
+        sed -e 's/[^a-z0-9 -]//g' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
+            -e 's/[[:space:]]\+/-/g' -e 's/-\+/-/g'
+}
 
 focused_rect_sway() {
     [ -n "${SWAYSOCK:-}" ] || return 0
@@ -45,7 +48,7 @@ focused_rect_sway() {
 if [ "$MODE" = window ]; then
     RECT=$(focused_rect_sway)
     if [ -z "$RECT" ]; then
-        notify-send "Wayland WebP Record" \
+        notify-send "Screen Record" \
             "No focused-window rect (niri or unknown compositor); region select."
         RECT=$(slurp)
     fi
@@ -53,7 +56,7 @@ else
     RECT=$(slurp)
 fi
 
-notify-send -t 1000 "Wayland WebP Record" "Recording"
+notify-send -t 1000 "Screen Record" "Recording"
 sleep 1
 
 # Restore mako on any exit (incl. SIGINT from the stop-bind).
@@ -62,41 +65,40 @@ makoctl set-mode do-not-disturb 2>/dev/null || true
 
 wf-recorder -g "$RECT" -f "$MKV"
 
-notify-send "Wayland WebP Record" "Converting to webp..."
-ffmpeg -y -i "$MKV" \
-    -vf "fps=10,scale=1280:-1:flags=lanczos" -loop 0 "$WEBP"
+if ! title=$(fuzzel -d --prompt-only 'Screencast title: '); then
+    notify-send "Share canceled" "kept $(basename "$MKV")"
+    exit 0
+fi
+title=${title:-screencast}
+slug=$(slugify "$title")
+slug=${slug:-screencast}
+
+if [ "$SHARE" -eq 1 ]; then
+    STEM="${ID}--${slug}__screencast_public"
+else
+    STEM="${ID}--${slug}__screencast"
+fi
+dest="$ARCHIVE_DIR/${STEM}.mkv"
+mv "$MKV" "$dest"
+MKV=$dest
+WEBM="$ARCHIVE_DIR/${STEM}.webm"
+
+notify-send "Screen Record" "Converting to webm..."
+ffmpeg -y -vaapi_device /dev/dri/renderD128 -i "$MKV" \
+    -vf "fps=30,scale=w='min(1280,iw)':h=-2:flags=lanczos,format=nv12,hwupload" \
+    -c:v av1_vaapi -an "$WEBM"
 
 if [ "$SHARE" -eq 0 ]; then
-    notify-send "Wayland WebP Record" "Done (local): $WEBP"
+    notify-send "Screen Record" "Done (local): $WEBM"
     exit 0
 fi
 
-notify-send "Screencast saved, uploading…" "$(basename "$WEBP")"
+chmod 644 "$WEBM"
+if ! scp "$WEBM" "burial:stash/share/screencasts/${STEM}.webm"; then
+    notify-send "Share failed" "scp to burial failed"
+    exit 1
+fi
 
-PW=$(pass show "$PASS_ENTRY")
-
-REDIRECT=$(curl --silent --show-error \
-    --output /dev/null \
-    --write-out '%{redirect_url}' \
-    --form-string "uploader_password=$PW" \
-    -F "file=@${WEBP};type=image/webp;filename=${STEM}.webp" \
-    "$MICROBIN_URL") || {
-        notify-send "Upload failed" "curl exit $?"
-        exit 1
-}
-
-case "$REDIRECT" in
-    */upload/*)
-        URL="${REDIRECT/\/upload\//\/file\/}"
-        printf '%s' "$URL" | wl-copy
-        notify-send "URL copied" "$URL"
-        ;;
-    */incorrect)
-        notify-send "Upload rejected" "Check $PASS_ENTRY"
-        exit 1
-        ;;
-    *)
-        notify-send "Upload failed" "Unexpected: ${REDIRECT:-empty}"
-        exit 1
-        ;;
-esac
+URL="$SHARE_PUBLIC/screencasts/${STEM}.webm"
+printf '%s' "$URL" | wl-copy
+notify-send "URL copied" "$URL"

@@ -423,12 +423,12 @@ binds {
     Print        { screenshot-window; }   // sway: grimshot save active
     Shift+Print  { screenshot; }          // sway: grimshot save anything (+ upload)
 
-    // -- Recording (-> looping .webp in ~/Videos/screencasts) --
-    // record-niri uses slurp + wf-recorder, then transcodes to webp.
+    // -- Recording (-> AV1 .webm in ~/Videos/screencasts) --
+    // record-niri uses slurp + wf-recorder, then transcodes to webm.
     //   R = pick a region, W = whole output. Stop with T.
     Mod+Shift+R  { spawn "record-niri"; }          // region (slurp)
     Mod+Shift+W  { spawn "record-niri" "full"; }   // whole focused output
-    Mod+Shift+T  { spawn-sh "pkill -INT wf-recorder && notify-send 'WebP Record' 'Recording stopped.'"; }
+    Mod+Shift+T  { spawn-sh "pkill -INT wf-recorder && notify-send 'Screen Record' 'Recording stopped.'"; }
 
     // -- System (sway lines 78, 309, 386, 390, 407) --
     Mod+F6            { spawn-sh "niri msg action load-config-file"; }   // sway: F6 reload
