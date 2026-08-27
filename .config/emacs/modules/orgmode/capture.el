@@ -344,26 +344,112 @@
 (defun bergheim/capture--heading ()
   (or bergheim/capture-heading ""))
 
+(defvar bergheim/capture--frame nil)
+
+(defun bergheim/capture--disarm ()
+  (setq bergheim/capture--frame nil)
+  (remove-hook 'delete-frame-functions #'bergheim/capture--on-delete-frame)
+  (remove-hook 'after-delete-frame-functions #'bergheim/capture--on-delete-frame)
+  (remove-hook 'org-capture-after-finalize-hook
+               #'bergheim//delete-frame-after-capture))
+
+(defun bergheim/capture--kill-capture-buffer ()
+  "Abort an active capture in whatever buffer it lives in.
+`org-capture-kill' errors unless the capture buffer is current, so find it."
+  (when-let ((buf (cl-find-if (lambda (b) (buffer-local-value 'org-capture-mode b))
+                              (buffer-list))))
+    (with-current-buffer buf (ignore-errors (org-capture-kill)))))
+
+(defun bergheim/capture--abort ()
+  "Abort a capture left behind after its frame died."
+  (bergheim/capture--disarm)
+  (bergheim/capture--kill-capture-buffer)
+  ;; break out of any blocked read: org-mks template selection sits in
+  ;; `read-char-exclusive' (minibuffer-depth 0), so quit unconditionally
+  (setq quit-flag t)
+  (when (> (minibuffer-depth) 0)
+    (setq unread-command-events (cons ?\C-g unread-command-events)))
+  ;; quit-flag is only checked when the event loop wakes; without this the
+  ;; blocked read sleeps until the next timer (auto-revert, 5s). Poke it.
+  (run-at-time 0 nil #'ignore))
+
 (defun bergheim//delete-frame-after-capture ()
-  "Delete frame after capturing."
-  (delete-frame)
-  (remove-hook 'org-capture-after-finalize-hook 'bergheim//delete-frame-after-capture))
+  "Delete frame after capturing.
+Only touch frames tagged `bergheim-capture' -- this hook is global, so a
+normal in-Emacs capture finalized while an external one is open must not
+delete the user's frame."
+  (when (frame-parameter nil 'bergheim-capture)
+    (bergheim/capture--disarm)
+    (when (frame-live-p (selected-frame))
+      (delete-frame))))
+
+(defun bergheim/capture--on-delete-frame (frame)
+  "Abort org-capture if the external capture frame was killed (Super+Backspace)."
+  (when (or (eq frame bergheim/capture--frame)
+            (frame-parameter frame 'bergheim-capture))
+    (bergheim/capture--abort)))
+
+(defvar bergheim/capture-frame-parameters
+  '((name . "floating")
+    (width . 80)
+    (height . 52)
+    (tab-bar-lines . 0)
+    (menu-bar-lines . 0)
+    (tool-bar-lines . 0)
+    (undecorated . t)
+    (fullscreen . 0)
+    (vertical-scroll-bars . nil)
+    (horizontal-scroll-bars . nil))
+  "Frame parameters for `bergheim/capture-frame'.")
+
+(defun bergheim/capture-frame (&optional initial keys)
+  "Like `bergheim/capture' in a dedicated floating frame."
+  (interactive)
+  (let ((frame (make-frame bergheim/capture-frame-parameters)))
+    (select-frame-set-input-focus frame)
+    (with-selected-frame frame
+      (switch-to-buffer (get-buffer-create " *org-capture*"))
+      (bergheim/capture initial keys))))
 
 (defun bergheim/capture (&optional initial keys)
   "Capture externally. INITIAL fills `org-capture-initial' (%i).
 KEYS is an `org-capture' template key string (e.g. \"pn\"); nil shows the menu."
   (interactive)
-  (delete-other-windows)
-
+  (set-frame-parameter nil 'bergheim-capture t)
+  (setq bergheim/capture--frame (selected-frame))
+  (add-hook 'delete-frame-functions #'bergheim/capture--on-delete-frame)
+  (add-hook 'after-delete-frame-functions #'bergheim/capture--on-delete-frame)
   (add-hook 'org-capture-after-finalize-hook #'bergheim//delete-frame-after-capture)
+  (delete-other-windows)
+  ;; Catch quit/error here: if they propagate into server.el,
+  ;; `server-return-error' does a hardcoded (sit-for 2) during which the
+  ;; daemon ignores all new server requests -- a 2s stall after every abort.
+  (condition-case err
+      (cl-letf (((symbol-function 'switch-to-buffer-other-window)
+                 (symbol-function 'switch-to-buffer)))
+        (if (and initial (not (string-empty-p initial)))
+            (org-capture-string initial keys)
+          (org-capture nil keys))
+        ;; success: keep hooks armed -- finalize deletes the frame,
+        ;; killing the frame aborts the capture
+        (when (and (frame-live-p (selected-frame))
+                   (> (count-windows) 1))
+          (delete-other-windows)))
+    ((quit error)
+     (bergheim/capture--disarm)
+     (bergheim/capture--kill-capture-buffer)
+     (when (and (frame-live-p (selected-frame))
+                (frame-parameter nil 'bergheim-capture))
+       (delete-frame))
+     (message "org-capture: %s" (error-message-string err))
+     nil)))
 
-  ;; HACK to make the capture fullscreen
-  (cl-letf (((symbol-function 'switch-to-buffer-other-window)
-             (symbol-function 'switch-to-buffer)))
-    (if (and initial (not (string-empty-p initial)))
-        (org-capture-string initial keys)
-      (org-capture nil keys)))
-  (delete-other-windows))
+;; `server-return-error' does (sit-for 2) while the daemon ignores all new
+;; client requests -- so any aborted/killed capture stalls the next
+;; emacsclient call 2s. server.el's own FIXME says the sit-for shouldn't
+;; exist; the message still lands in *Messages*.
+(advice-add 'server--message-sit-for :override
+            (lambda (_time &rest args) (apply #'message args)))
 
 (defun bergheim/org-email-follow-up ()
   "Select a follow-up email category"
