@@ -5,7 +5,6 @@ NAME=i3termscratchpad
 ghostty \
 	--class=net.glvortex.scratchpad \
 	--title=$NAME \
-	--font-size=16 \
 	--window-padding-x=10 \
 	--window-padding-y=10 \
 	-e tmuxa scratchpad
