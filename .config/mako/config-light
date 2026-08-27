@@ -37,7 +37,4 @@ default-timeout=0
 invisible=1
 
 [app-icon=call-start]
-border-size=3
-border-color=#c45c26
-default-timeout=0
-on-button-left=exec mako-actions "$id"
+invisible=1
