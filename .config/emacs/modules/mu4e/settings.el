@@ -175,4 +175,22 @@
   (setq mu4e-bookmarks
         (append mu4e-bookmarks bergheim/private-mu4e-bookmarks)))
 
+(defun bergheim/mu4e-headers-rerun-after-index ()
+  "Rerun headers after index when a view buffer made the built-in skip.
+`mu4e~headers-maybe-auto-update' no-ops whenever `mu4e-get-view-buffer' is live,
+which is the normal state with `mu4e-split-view'. Leave marks/minibuffer alone."
+  (when-let* ((hdrsbuf (mu4e-get-headers-buffer)))
+    (when (and mu4e-headers-auto-update
+               mu4e-index-update-status
+               (not (zerop (plist-get mu4e-index-update-status :updated)))
+               (mu4e-get-view-buffer)
+               (buffer-live-p hdrsbuf)
+               (window-live-p (get-buffer-window hdrsbuf t))
+               (zerop (or (with-current-buffer hdrsbuf (mu4e-mark-marks-num)) 0))
+               (not (active-minibuffer-window)))
+      (let ((mu4e--search-background t))
+        (mu4e-search-rerun)))))
+
+(add-hook 'mu4e-index-updated-hook #'bergheim/mu4e-headers-rerun-after-index)
+
 ;;; settings.el ends here
