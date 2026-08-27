@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # record-sway — capture a screencast via wf-recorder, transcode to a
 # looping webp, then upload to MicroBin and copy the URL (mirrors the
-# flow in share-screenshot).  Also drops a copy in ~/stash/screencasts/.
+# flow in share-screenshot).  mkv + webp both land in ~/Videos/screencasts/.
 #
 # Usage:
 #   record-sway              # interactive region (slurp), upload + copy URL
@@ -15,7 +15,6 @@
 set -euo pipefail
 
 ARCHIVE_DIR="${RECORD_ARCHIVE_DIR:-$HOME/Videos/screencasts}"
-STASH_DIR="${RECORD_STASH_DIR:-$HOME/stash/screencasts}"
 MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
 PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
 
@@ -29,11 +28,11 @@ for arg in "$@"; do
     esac
 done
 
-mkdir -p "$ARCHIVE_DIR" "$STASH_DIR"
+mkdir -p "$ARCHIVE_DIR"
 TS=$(date -u '+%Y%m%dT%H%M%S')
 STEM="${TS}--screencast-shared__"
 MKV="$ARCHIVE_DIR/${STEM}.mkv"
-WEBP="$STASH_DIR/${STEM}.webp"
+WEBP="$ARCHIVE_DIR/${STEM}.webp"
 
 focused_rect_sway() {
     [ -n "${SWAYSOCK:-}" ] || return 0
@@ -53,6 +52,9 @@ if [ "$MODE" = window ]; then
 else
     RECT=$(slurp)
 fi
+
+notify-send -t 1000 "Wayland WebP Record" "Recording"
+sleep 1
 
 # Restore mako on any exit (incl. SIGINT from the stop-bind).
 trap 'makoctl set-mode default 2>/dev/null || true' EXIT INT TERM
