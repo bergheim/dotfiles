@@ -15,8 +15,8 @@ set -eu
 # label \0 icon \037 name, per the dmenu icon protocol fuzzel speaks.
 entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
 
-# laptop-key drives the touchpad and panel through swaymsg, so those two
-# rows only exist in a sway session. The label reflects current state.
+# laptop-key drives the touchpad through swaymsg, so that row only exists
+# in a sway session. The label reflects current state.
 if [ -n "${SWAYSOCK:-}" ]; then
 	if swaymsg -t get_inputs -r \
 		| jq -e 'any(.[]; .type == "touchpad" and .libinput.send_events == "enabled")' \
@@ -58,7 +58,6 @@ menu() {
 	entry 'morning'          weather-clear
 	entry 'evening'          weather-clear-night
 	if [ -n "${SWAYSOCK:-}" ]; then
-		entry 'screen off'      osd-shutd-screen
 		entry "$touchpad_label" "$touchpad_icon"
 	fi
 	entry "$night_label"     weather-clear-night
@@ -80,7 +79,6 @@ case "$(menu | fuzzel --dmenu --prompt 'system ')" in
 	'brightness max')  lightctl-osd set 100 ;;
 	morning)           display-preset morning ;;
 	evening)           display-preset evening ;;
-	'screen off')      laptop-key display ;;
 	'touchpad off')    laptop-key touchpad-off ;;
 	'touchpad on')     laptop-key touchpad-on ;;
 	'night light off'|'night light on') ~/.config/waybar/scripts/gammastep.sh toggle ;;

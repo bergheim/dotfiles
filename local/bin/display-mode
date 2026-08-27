@@ -133,7 +133,7 @@ menu() {
 		90 | 270 | flipped-90 | flipped-270) width="--width 30" ;;
 		*) width="" ;;
 	esac
-	printf '%s\n' "Mirror" "Extend" "Internal only" "External only" "Auto (kanshi)" \
+	printf '%s\n' "Mirror" "Extend" "Internal only" "External only" "Auto (kanshi)" "Screen off" \
 		| fuzzel --dmenu --prompt "display ❯ " $width
 }
 
@@ -151,6 +151,7 @@ case "${1:-}" in
 			"Internal only") mode_internal ;;
 			"External only") mode_external ;;
 			"Auto (kanshi)") mode_auto ;;
+			"Screen off")    laptop-key display ;;
 		esac
 		;;
 	*) echo "usage: display-mode [mirror|extend|internal|external|auto|arrange]" >&2; exit 1 ;;
