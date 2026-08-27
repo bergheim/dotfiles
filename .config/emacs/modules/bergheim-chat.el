@@ -7,8 +7,10 @@
                      clatter-track-switch clatter-track-clear-all
                      clatter-track-list clatter-nicklist-toggle
                      clatter-toggle-fools clatter-chathistory-request)
-  :functions (cape-emoji clatter-dcc-setup clatter-setup)
-  :defines (clatter-fools clatter-networks)
+  :functions (cape-emoji clatter-dcc-setup clatter-setup
+                         clatter--get-input clatter--set-input)
+  :defines (clatter-fools clatter-networks
+                          clatter-input-ring clatter-input-ring-index)
   :hook
   (clatter-mode . (lambda ()
                     (setq-local orderless-matching-styles
@@ -69,6 +71,7 @@
          (evil-insert-state)))
   (:states 'insert
    :keymaps 'clatter-mode-map
+   "C-r" #'bergheim/clatter-search-input-history
    "C-k" #'clatter-set-prev-input
    "C-j" #'clatter-set-next-input
    "C-u" #'evil-change-whole-line
@@ -76,6 +79,19 @@
    "M-l" #'evil-window-right)
   :config
   (evil-set-initial-state 'clatter-mode 'normal)
+
+  (defun bergheim/clatter-search-input-history ()
+    "Replace the prompt with a matching input-history item."
+    (interactive)
+    (unless (and (ring-p clatter-input-ring)
+                 (not (ring-empty-p clatter-input-ring)))
+      (user-error "Input history is empty"))
+    (let* ((candidates (ring-elements clatter-input-ring))
+           (draft (or (clatter--get-input) ""))
+           (choice (completing-read "History: " candidates nil t draft)))
+      (clatter--set-input choice)
+      (setq clatter-input-ring-index
+            (or (seq-position candidates choice) 0))))
 
   (defun bergheim/clatter-connect ()
     "Connect Clatter to the configured Soju bouncer."
