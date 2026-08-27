@@ -1,0 +1,25 @@
+#!/bin/sh
+# Idempotent morning/evening display preset. sysmenu routes here.
+set -eu
+
+dark=
+[ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] && dark=1
+gamma=
+systemctl --user is-active --quiet gammastep && gamma=1
+
+case "${1:-}" in
+morning)
+	lightctl-osd set 100
+	[ -n "$dark" ] && toggle-darkmode
+	[ -n "$gamma" ] && ~/.config/waybar/scripts/gammastep.sh toggle
+	;;
+evening)
+	lightctl-osd set 1
+	[ -z "$dark" ] && toggle-darkmode
+	[ -z "$gamma" ] && ~/.config/waybar/scripts/gammastep.sh toggle
+	;;
+*)
+	echo "usage: display-preset morning|evening" >&2
+	exit 1
+	;;
+esac

@@ -55,6 +55,8 @@ menu() {
 	entry 'display'         preferences-desktop-display-randr
 	entry 'brightness min'  brightness-low
 	entry 'brightness max'  brightness-high
+	entry 'morning'          weather-clear
+	entry 'evening'          weather-clear-night
 	if [ -n "${SWAYSOCK:-}" ]; then
 		entry 'screen off'      osd-shutd-screen
 		entry "$touchpad_label" "$touchpad_icon"
@@ -76,6 +78,8 @@ case "$(menu | fuzzel --dmenu --prompt 'system ')" in
 	display)           display-mode ;;
 	'brightness min')  lightctl-osd set 1 ;;
 	'brightness max')  lightctl-osd set 100 ;;
+	morning)           display-preset morning ;;
+	evening)           display-preset evening ;;
 	'screen off')      laptop-key display ;;
 	'touchpad off')    laptop-key touchpad-off ;;
 	'touchpad on')     laptop-key touchpad-on ;;
