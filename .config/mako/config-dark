@@ -1,11 +1,11 @@
 # Mako — DARK theme (mirrors waybar/style-dark.css palette).
 # See config-light for the theme-switching pattern notes.
 output=DP-1
-default-timeout=8000
+default-timeout=15000
 max-visible=-1
 max-history=50
 width=500
-height=250
+height=400
 border-radius=6
 border-size=2
 padding=10
