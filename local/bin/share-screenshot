@@ -1,28 +1,40 @@
 #!/usr/bin/env bash
-# share-screenshot — capture, resize via vips, upload to MicroBin,
-# copy the URL.  Also drops a copy in ~/stash/screenshots/.
+# share-screenshot — capture, resize via vips, scp to burial stash/share/screenshots
+# (nginx /f/). Local PNG stays in Pictures/screenshots.
 # Uses grimshot on Wayland and scrot+xdotool on X11.
 #
-# Usage:   share-screenshot [mode] [edit]
+# Usage:   share-screenshot [mode] [edit] [--local]
 # Modes:   anything (default) | active | area | output | window
-# Edit:    pass `edit' as 2nd arg to crop/redact in satty before sharing;
-#          quitting satty without saving cancels the upload.
+# Edit:    pass `edit' to crop/redact in satty before sharing;
+#          quitting satty without saving cancels the share.
+# --local: no scp; filename is ID--title__screenshot (no public).
 
 set -euo pipefail
 
 ARCHIVE_DIR="${SHARE_ARCHIVE_DIR:-$HOME/Pictures/screenshots}"
-STASH_DIR="${SHARE_STASH_DIR:-$HOME/stash/screenshots}"
-MICROBIN_URL="${MICROBIN_URL:-https://share.glvortex.net/upload}"
-PASS_ENTRY="${MICROBIN_PASS_ENTRY:-homelab/microbin/uploader}"
-MODE="${1:-anything}"
-EDIT_MODE="${2:-}"
+SHARE=1
+MODE=anything
+EDIT_MODE=
+for arg in "$@"; do
+  case "$arg" in
+    --local|--no-share) SHARE=0 ;;
+    edit) EDIT_MODE=edit ;;
+    anything|active|area|output|window) MODE=$arg ;;
+    *) echo "Unknown arg: $arg" >&2; exit 1 ;;
+  esac
+done
 
-mkdir -p "$ARCHIVE_DIR" "$STASH_DIR"
+mkdir -p "$ARCHIVE_DIR"
 
-TS=$(date -u '+%Y%m%dT%H%M%S')
-STEM="${TS}--screenshot-shared__"
-PNG="$ARCHIVE_DIR/${STEM}.png"
-WEBP="$STASH_DIR/${STEM}.webp"
+ID=$(date '+%Y%m%dT%H%M%S')
+slug=screenshot
+PNG="$ARCHIVE_DIR/${ID}--${slug}.png"
+
+slugify() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' |
+    sed -e 's/[^a-z0-9 -]//g' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' \
+        -e 's/[[:space:]]\+/-/g' -e 's/-\+/-/g'
+}
 
 capture_x11() {
   local out="$1"
@@ -76,11 +88,11 @@ else
 fi
 
 # Optional interactive crop/redact in satty before sharing.  satty only
-# writes the --edited.png on a save action, so quitting without saving
-# leaves it absent → cancel the upload.  (The raw capture stays in the
-# local archive; only what you upload is gated.)
+# writes __edited.png on a save action, so quitting without saving
+# leaves it absent → cancel the share.  (The raw capture stays in the
+# local archive.)
 if [[ "$EDIT_MODE" == edit ]]; then
-  EDITED="${PNG%.png}--edited.png"
+  EDITED="${PNG%.png}__edited.png"
   # `--default-fill-shapes' makes the rectangle tool draw a SOLID opaque
   # box — the only safe way to redact secrets (blur/pixelate are
   # recoverable, e.g. via Depix).  Use rectangle for passwords; crop is
@@ -89,41 +101,51 @@ if [[ "$EDIT_MODE" == edit ]]; then
         --default-fill-shapes \
         --actions-on-enter save-to-file --actions-on-escape exit
   if [[ ! -f "$EDITED" ]]; then
-    notify-send "Edit discarded — not uploaded"
+    notify-send "Edit discarded — not shared"
     exit 0
   fi
   PNG="$EDITED"
 fi
 
-# Resize + strip metadata to the stash dir (so containers see it too).
+if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+  if ! title=$(fuzzel -d --prompt-only 'Screenshot title: '); then
+    notify-send "Share canceled" "kept $(basename "$PNG")"
+    exit 0
+  fi
+  title=${title:-screenshot}
+  slug=$(slugify "$title")
+  slug=${slug:-screenshot}
+fi
+
+STEM="${ID}--${slug}__screenshot"
+[[ $SHARE -eq 1 ]] && STEM="${STEM}_public"
+dest="$ARCHIVE_DIR/${STEM}.png"
+if [[ "$PNG" != "$dest" ]]; then
+  mv "$PNG" "$dest"
+  PNG=$dest
+fi
+
+if [[ $SHARE -eq 0 ]]; then
+  notify-send "Screenshot saved" "$(basename "$PNG")"
+  exit 0
+fi
+
+WEBP=$(mktemp --suffix=.webp)
+trap 'rm -f "$WEBP"' EXIT
+
 vips thumbnail "$PNG" "${WEBP}[Q=80,strip]" 1920 --height 1200 --size down
+chmod 644 "$WEBP"
 
-notify-send "Screenshot saved, uploading…" "$(basename "$WEBP")"
+if [[ -z ${SHARE_BASE_URL:-} ]]; then
+  notify-send "Share failed" "SHARE_BASE_URL unset"
+  exit 1
+fi
 
-PW=$(pass show "$PASS_ENTRY")
+if ! scp "$WEBP" "burial:stash/share/screenshots/${STEM}.webp"; then
+  notify-send "Share failed" "scp to burial failed"
+  exit 1
+fi
 
-REDIRECT=$(curl --silent --show-error \
-  --output /dev/null \
-  --write-out '%{redirect_url}' \
-  --form-string "uploader_password=$PW" \
-  -F "file=@${WEBP};type=image/webp;filename=${STEM}.webp" \
-  "$MICROBIN_URL") || {
-    notify-send "Upload failed" "curl exit $?"
-    exit 1
-}
-
-case "$REDIRECT" in
-  */upload/*)
-    URL="${REDIRECT/\/upload\//\/file\/}"
-    printf '%s' "$URL" | copy_url
-    notify-send "URL copied" "$URL"
-    ;;
-  */incorrect)
-    notify-send "Upload rejected" "Check $PASS_ENTRY"
-    exit 1
-    ;;
-  *)
-    notify-send "Upload failed" "Unexpected: ${REDIRECT:-empty}"
-    exit 1
-    ;;
-esac
+URL="$SHARE_BASE_URL/f/screenshots/${STEM}.webp"
+printf '%s' "$URL" | copy_url
+notify-send "URL copied" "$URL"
