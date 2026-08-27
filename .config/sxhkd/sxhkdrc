@@ -27,12 +27,8 @@ super + ctrl + Return
 #   dolphin
 
 # emacs: edit whatever
-super + z
+super + v
   emacsclient --eval "(emacs-everywhere)"
-
-# emacs: org-capture
-super + c
-  emacs-capture --eval '(bergheim/capture)'
 
 # emacs: clock in to task
 super + t

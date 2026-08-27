@@ -70,11 +70,23 @@
   ;; I always want this to open centered, not where my cursor might happen to be
   (setq emacs-everywhere-init-hooks
         (delq 'emacs-everywhere-set-frame-position emacs-everywhere-init-hooks))
+  (setq save-some-buffers-default-predicate
+        (lambda ()
+          (not (and buffer-file-name
+                    (string-match-p "/emacs-everywhere-" buffer-file-name)))))
   :custom
+  (emacs-everywhere-frame-name-format
+   "floating Emacs Everywhere :: %s — %s")
   (emacs-everywhere-frame-parameters
-   '((name . "floating emacs-everywhere")
+   '((name . "floating")
      (width . 80)
-     (height . 30))))
+     (height . 30)
+     (undecorated . t)
+     (tab-bar-lines . 0)
+     (menu-bar-lines . 0)
+     (tool-bar-lines . 0)
+     (vertical-scroll-bars . nil)
+     (horizontal-scroll-bars . nil))))
 
 (use-package iedit
   :demand t
@@ -242,57 +254,6 @@ Lisp function does not specify a special indentation."
 
 (use-package plz
   :commands (plz))
-
-(defun thanos/wtype-text (text)
-  "Process TEXT for wtype, handling newlines properly."
-  (let* ((has-final-newline (string-match-p "\n$" text))
-         (lines (split-string text "\n"))
-         (last-idx (1- (length lines))))
-    (string-join
-     (cl-loop for line in lines
-              for i from 0
-              collect (cond
-                       ;; Last line without final newline
-                       ((and (= i last-idx) (not has-final-newline))
-                        (format "wtype -s 350 \"%s\""
-                                (replace-regexp-in-string "\"" "\\\\\"" line)))
-                       ;; Any other line
-                       (t
-                        (format "wtype -s 350 \"%s\" && wtype -k Return"
-                                (replace-regexp-in-string "\"" "\\\\\"" line)))))
-     " && ")))
-
-(defun thanos/type ()
-  "Launch a temporary frame with a clean buffer for typing."
-  (interactive)
-  (let ((frame (make-frame '((name . "floating")
-                             (fullscreen . 0)
-                             (undecorated . t)
-                             (width . 70)
-                             (height . 20))))
-        (buf (get-buffer-create "emacs-float")))
-    (select-frame frame)
-    (switch-to-buffer buf)
-    (erase-buffer)
-    (org-mode)
-    (evil-insert 0)
-    (setq-local header-line-format
-                (format " %s to insert text or %s to cancel."
-                        (propertize "C-c C-c" 'face 'help-key-binding)
-			(propertize "C-c C-k" 'face 'help-key-binding)))
-    (let ((map (make-sparse-keymap)))
-      (set-keymap-parent map (current-local-map))
-      (define-key map (kbd "C-c C-k")
-        (lambda () (interactive)
-          (kill-new (buffer-string))
-          (delete-frame)))
-      (define-key map (kbd "C-c C-c")
-        (lambda () (interactive)
-          (start-process-shell-command
-           "wtype" nil
-           (thanos/wtype-text (buffer-string)))
-          (delete-frame)))
-      (use-local-map map))))
 
 (provide 'bergheim-utils)
 ;;; bergheim-utils.el ends here

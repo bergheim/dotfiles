@@ -16,13 +16,21 @@
 
 (keymap-set vertico-map "<escape>" #'abort-minibuffers)
 
-(load-theme (if (bergheim//system-dark-mode-enabled-p)
-                bergheim/theme-dark
-              bergheim/theme-light)
-            t)
+;; Runners only do completing-read. Corfu-auto in the same minibuffer is a
+;; second completion UI on Super+c.
+(setq corfu-auto nil)
+(when (fboundp 'global-corfu-mode)
+  (global-corfu-mode -1))
+
+(bergheim/apply-system-theme)
 
 (defvar bergheim/runner-frames nil
   "Alist of runner kind to frame.")
+
+(defvar bergheim/runner--busy nil
+  "Non-nil while a runner completing-read is on screen.")
+
+(defvar bergheim/cliphist--timer nil)
 
 (defvar bergheim/runner-frame-fraction 0.6
   "Runner frame size, as a fraction of its monitor's work area.")
@@ -96,30 +104,37 @@ rebuilds `fontaine-presets'."
 
 (defun bergheim/with-runner-frame (kind fn)
   "Show the KIND runner frame, call FN, then hide the frame."
-  (let ((frame (bergheim/runner-frame kind))
-        (title (format "^%s$" (bergheim/runner-frame-name kind))))
-    (unwind-protect
-        (with-selected-frame frame
-          (let ((buf (get-buffer-create " *runner*")))
-            (with-current-buffer buf
-              (setq-local mode-line-format nil)
-              (setq-local cursor-type nil))
-            (switch-to-buffer buf))
+  (unless bergheim/runner--busy
+    (let ((bergheim/runner--busy t)
+          (frame (bergheim/runner-frame kind))
+          (title (format "^%s$" (bergheim/runner-frame-name kind))))
+      (bergheim/apply-system-theme)
+      (unwind-protect
+          (with-selected-frame frame
+            (let ((buf (get-buffer-create " *runner*")))
+              (with-current-buffer buf
+                (setq-local mode-line-format nil)
+                (setq-local cursor-type nil))
+              (switch-to-buffer buf))
+            (if (bergheim/runner-on-sway-p)
+                (call-process "swaymsg" nil nil nil
+                              (format "[title=\"%s\"] scratchpad show, move position center" title))
+              (make-frame-visible frame))
+            (select-frame-set-input-focus frame)
+            (funcall fn))
+        (when (frame-live-p frame)
           (if (bergheim/runner-on-sway-p)
               (call-process "swaymsg" nil nil nil
-                            (format "[title=\"%s\"] scratchpad show, move position center" title))
-            (make-frame-visible frame))
-          (select-frame-set-input-focus frame)
-          (funcall fn))
-      (when (frame-live-p frame)
-        (if (bergheim/runner-on-sway-p)
-            (call-process "swaymsg" nil nil nil
-                          (format "[title=\"%s\"] move scratchpad" title))
-          (make-frame-invisible frame))))))
+                            (format "[title=\"%s\"] move scratchpad" title))
+            (make-frame-invisible frame)))))))
 
 (defun bergheim/cliphist-start ()
   "Schedule the clipboard picker outside the emacsclient request."
-  (run-at-time 0 nil #'bergheim/cliphist)
+  (unless bergheim/runner--busy
+    (when (timerp bergheim/cliphist--timer)
+      (cancel-timer bergheim/cliphist--timer))
+    (setq bergheim/cliphist--timer
+          (run-at-time 0 nil #'bergheim/cliphist)))
   nil)
 
 (defun bergheim/cliphist ()

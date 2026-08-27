@@ -289,13 +289,11 @@ binds {
     Mod+Ctrl+R             { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/apps-start)"; }
     Mod+P                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/pass-start)"; }
     Mod+Ctrl+P             { spawn "fuzzel-pass"; }
-    Mod+V                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/cliphist-start)"; }
-    Mod+Shift+V            { spawn "fuzzel-cliphist"; }
+    Mod+C                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/cliphist-start)"; }
+    Mod+Shift+C            { spawn "fuzzel-cliphist"; }
     Mod+Shift+E            { spawn-sh "BEMOJI_PICKER_CMD='fuzzel -d' bemoji"; }
-    Mod+Z                  { spawn "emacsclient" "--eval" "(emacs-everywhere)"; }
-    Mod+C                  { spawn "emacs-capture" "--eval" "(bergheim/capture)"; }
+    Mod+V                  { spawn "emacsclient" "--eval" "(emacs-everywhere)"; }
     Mod+T                  { spawn "emacs-clock-in"; }
-    Mod+O                  { spawn "emacsclient" "--eval" "(thanos/type)" "-F" "((name . \"floating\"))"; }
     Mod+Escape             { spawn "fancylocksway"; }
     // One popup for every system action. A script, not a submap, so sway
     // and niri share it -- niri has no modes.

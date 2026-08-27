@@ -19,6 +19,7 @@ CURRENT_MODE=$(gsettings get org.gnome.desktop.interface color-scheme)
 
 emacs_theme() {
 	emacsclient -e "(bergheim/theme-$1)" &
+	emacsclient --socket-name=runners -e "(bergheim/apply-system-theme)" >/dev/null 2>&1 &
 	# a hack that makes emacs light/dark work over mosh
 	ssh -o BatchMode=yes -o ConnectTimeout=2 berghome \
 		"emacsclient -e '(bergheim/theme-$1)'" >/dev/null 2>&1 &

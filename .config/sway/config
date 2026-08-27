@@ -299,8 +299,7 @@ bindsym $mod+ctrl+r exec emacsclient --no-wait --socket-name=runners --eval '(be
 bindsym --to-code $mod+slash exec sway-window-switcher
 
 # Emacs integrations
-bindsym $mod+z exec emacsclient --eval "(emacs-everywhere)"
-bindsym $mod+c exec emacs-capture --eval '(bergheim/capture)'
+bindsym $mod+v exec emacsclient --eval "(emacs-everywhere)"
 bindsym $mod+t exec emacs-clock-in
 
 # Kill application (replace xkill with sway equivalent)
@@ -420,8 +419,8 @@ bindsym $mod+ctrl+p exec fuzzel-pass
 bindsym $mod+shift+p exec display-mode
 
 # Clipboard history via Emacs; keep fuzzel available while test-driving it
-bindsym $mod+v exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/cliphist-start)'
-bindsym $mod+shift+v exec fuzzel-cliphist
+bindsym $mod+c exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/cliphist-start)'
+bindsym $mod+shift+c exec fuzzel-cliphist
 
 # Window switcher (replace rofi)
 bindsym $alt+Tab exec sway-window-switcher
@@ -431,9 +430,6 @@ bindsym $alt+Tab exec sway-window-switcher
 
 # Emoji picker
 bindsym $mod+shift+e exec BEMOJI_PICKER_CMD="fuzzel -d" bemoji
-
-# edit in emacs
-bindsym $mod+o exec emacsclient --eval '(thanos/type)' -F '((name . "floating"))'
 
 # Notifications (mako instead of dunst)
 bindsym --to-code $mod+ctrl+grave exec makoctl dismiss
