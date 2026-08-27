@@ -300,6 +300,7 @@ bindsym --to-code $mod+slash exec sway-window-switcher
 
 # Emacs integrations
 bindsym $mod+v exec emacsclient --eval "(emacs-everywhere)"
+bindsym $mod+z exec emacsclient -c -F '((name . "floating") (width . 80) (height . 52) (tab-bar-lines . 0) (menu-bar-lines . 0) (tool-bar-lines . 0) (undecorated . t) (fullscreen . 0))' --eval "(bergheim/capture)"
 bindsym $mod+t exec emacs-clock-in
 
 # Kill application (replace xkill with sway equivalent)
@@ -633,7 +634,8 @@ exec_always 'pkill -x kanshi; exec kanshi'
 for_window [app_id="qalculate-gtk"] floating enable
 for_window [title="Microsoft Teams Notification"] floating enable
 
-for_window [title="floating"] floating enable, resize set 70ppt 60ppt, move center
+for_window [title="floating"] floating enable, move center
+for_window [title="^floating$"] resize set 70ppt 82ppt
 
 for_window [app_id="gnome-calendar"] floating enable
 for_window [title="^emacs-runner"] floating enable, move position center, move scratchpad

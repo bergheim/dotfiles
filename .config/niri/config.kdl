@@ -293,6 +293,7 @@ binds {
     Mod+Shift+C            { spawn "fuzzel-cliphist"; }
     Mod+Shift+E            { spawn-sh "BEMOJI_PICKER_CMD='fuzzel -d' bemoji"; }
     Mod+V                  { spawn "emacsclient" "--eval" "(emacs-everywhere)"; }
+    Mod+Z                  { spawn "emacsclient" "-c" "-F" "((name . \"floating\") (width . 80) (height . 52) (tab-bar-lines . 0) (menu-bar-lines . 0) (tool-bar-lines . 0) (undecorated . t) (fullscreen . 0))" "--eval" "(bergheim/capture)"; }
     Mod+T                  { spawn "emacs-clock-in"; }
     Mod+Escape             { spawn "fancylocksway"; }
     // One popup for every system action. A script, not a submap, so sway

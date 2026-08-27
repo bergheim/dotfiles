@@ -30,6 +30,10 @@ super + ctrl + Return
 super + v
   emacsclient --eval "(emacs-everywhere)"
 
+# emacs: org-capture
+super + z
+  emacsclient -c -F '((name . "floating") (width . 80) (height . 52) (tab-bar-lines . 0) (menu-bar-lines . 0) (tool-bar-lines . 0) (undecorated . t) (fullscreen . 0))' --eval "(bergheim/capture)"
+
 # emacs: clock in to task
 super + t
   emacs-clock-in
