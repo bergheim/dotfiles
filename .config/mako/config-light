@@ -14,6 +14,7 @@ border-size=2
 padding=10
 margin=10
 font=JetBrains Mono 10
+on-button-right=exec mako-actions "$id"
 
 background-color=#ebebdbe6
 text-color=#2c3e50
