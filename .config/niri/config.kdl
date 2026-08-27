@@ -317,14 +317,13 @@ binds {
     Mod+Ctrl+Grave         { spawn "makoctl" "dismiss"; }
     Mod+Ctrl+1             { spawn "makoctl" "restore"; }
     Mod+Ctrl+3             { spawn "makoctl" "dismiss" "--all"; }
-    Mod+Shift+A            { spawn "mako-actions"; }
+    Mod+D                  { spawn "mako-actions"; }
 
     // -- Window management (sway lines 108, 142, 145, 162, 176, 286) --
     Mod+BackSpace          { close-window; }
     Mod+Shift+BackSpace    { spawn-sh "PID=$(niri msg --json focused-window 2>/dev/null | jq -r '.pid // empty'); [ -n \"$PID\" ] && kill -9 \"$PID\""; }
     Mod+F                  { fullscreen-window; }
     Mod+Alt+F              { toggle-window-floating; }
-    Mod+D                  { toggle-column-tabbed-display; }   // sway: layout tabbed
     Mod+Shift+Space        { switch-focus-between-floating-and-tiling; }   // sway: focus mode_toggle
 
     // niri-essential column manipulation (no sway equivalent — see header).
@@ -431,7 +430,6 @@ binds {
     Mod+Shift+T  { spawn-sh "pkill -INT wf-recorder && notify-send 'WebP Record' 'Recording stopped.'"; }
 
     // -- System (sway lines 78, 309, 386, 390, 407) --
-    Mod+Shift+C       { spawn-sh "niri msg action load-config-file"; }   // sway: reload
     Mod+F6            { spawn-sh "niri msg action load-config-file"; }   // sway: F6 reload
     Mod+Alt+Escape    { spawn-sh "niri msg action load-config-file"; }   // sway: $mod+$alt+Escape restart
     Mod+Shift+Q       { spawn-sh "ACT=$(printf 'lock\\nlogout\\nsuspend\\nreboot\\nshutdown\\nuefi' | fuzzel -d -p 'system: '); case \"$ACT\" in lock) fancylocksway;; logout) niri msg action quit;; suspend) systemctl suspend;; reboot) systemctl reboot;; shutdown) systemctl poweroff -i;; uefi) systemctl reboot --firmware-setup;; esac"; }
