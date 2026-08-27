@@ -340,7 +340,7 @@ bindsym $mod+Shift+F6 reload
 bindsym $mod+Shift+r exec "record-sway"
 # window
 bindsym $mod+Shift+w exec "record-sway window"
-bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Wayland WebP Record' 'Recording stopped.'"
+bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Screen Record' 'Recording stopped.'"
 
 # swayosd disabled 2026-08-18: test for the amdgpu/TTM LRU hardlock
 # (denote 20260601T112404) -- swayosd-server was the faulting task in
