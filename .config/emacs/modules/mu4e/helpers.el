@@ -18,6 +18,46 @@ layout instead of rebuilding the split around every open."
       (select-window win))
     (delete-other-windows)))
 
+(defun bergheim/mu4e--kill-stale-article-buffers ()
+  "Kill undisplayed `*mu4e-article*' buffers left after a closed notify frame.
+Otherwise the next view hits `No buffer named *mu4e-article*<2>'."
+  (dolist (buf (buffer-list))
+    (when (and (string-prefix-p "*mu4e-article*" (buffer-name buf))
+               (not (get-buffer-window buf t)))
+      (kill-buffer buf)))
+  (when (boundp 'gnus-article-buffer)
+    (let ((buf (cond ((bufferp gnus-article-buffer) gnus-article-buffer)
+                     ((stringp gnus-article-buffer) (get-buffer gnus-article-buffer)))))
+      (unless (buffer-live-p buf)
+        (setq gnus-article-buffer nil)))))
+
+(defun bergheim/mu4e-view-message-fullscreen (msgid)
+  "Open MSGID in this frame, then `bergheim/mu4e-toggle-fullscreen' after render."
+  (let ((mu4e-search-threads nil)
+        (mu4e-search-include-related nil)
+        (mu4e-search-skip-duplicates nil)
+        (frame (selected-frame))
+        hook)
+    (bergheim/mu4e--kill-stale-article-buffers)
+    (select-frame-set-input-focus frame)
+    (delete-other-windows)
+    (switch-to-buffer (mu4e-get-headers-buffer nil t))
+    (setq hook
+          (lambda ()
+            (remove-hook 'mu4e-view-rendered-hook hook)
+            (when (frame-live-p frame)
+              (with-selected-frame frame
+                (if (eq mu4e-split-view 'single-window)
+                    (delete-other-windows)
+                  (bergheim/mu4e-toggle-fullscreen))))))
+    (add-hook 'mu4e-view-rendered-hook hook)
+    (run-at-time 8 nil (lambda () (remove-hook 'mu4e-view-rendered-hook hook)))
+    (condition-case err
+        (mu4e-view-message-with-message-id msgid)
+      (error
+       (remove-hook 'mu4e-view-rendered-hook hook)
+       (signal (car err) (cdr err))))))
+
 (defun bergheim/mu4e--msg-get-account (msg)
   "Retrieve the top-level directory (account) from the :maildir field of MSG."
   (let* ((maildir (mu4e-message-field msg :maildir))

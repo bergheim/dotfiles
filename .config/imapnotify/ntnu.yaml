@@ -1,0 +1,9 @@
+host: imap.alumni.ntnu.no
+port: 993
+tls: true
+usernameCMD: pass show email/alumini/username
+passwordCMD: pass show email/alumini/pass
+boxes:
+  - INBOX
+onNewMail: sync-mail ntnu-inbox
+onNewMailPost: SKIP

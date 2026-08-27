@@ -1,0 +1,9 @@
+host: imap.mailbox.org
+port: 993
+tls: true
+usernameCMD: pass show email/mailbox/address
+passwordCMD: pass show email/mailbox/pass
+boxes:
+  - INBOX
+onNewMail: sync-mail mailbox-inbox
+onNewMailPost: SKIP

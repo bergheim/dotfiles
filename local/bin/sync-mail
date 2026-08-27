@@ -1,39 +1,199 @@
 #!/bin/bash
+set -e
 
-MAIL_DIR=~/.mail
-MAIL_SYNC_FILE="$MAIL_DIR/.lastsync"
+PATH="$HOME/local/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:$PATH"
+MAIL_DIR=${MAIL_DIR:-$HOME/.mail}
+LOCK=$MAIL_DIR/.sync-mail.lock
+SELF=$HOME/local/bin/sync-mail
 
-# todo < /dev/null this
-if [ -z "$1" ]; then
-    # xoauth2 generates these annoying debug outputs
-    parallel "mbsync {}" ::: "gmail-inbox" "anthropic-inbox" "ntnu" "mailbox" 2>&1 >/dev/null
-else
-    parallel "mbsync {}" ::: "gmail" "anthropic" "ntnu" "mailbox" 2>&1 >/dev/null
-fi
+elisp_quote() {
+    python3 -c 'import json,sys; sys.stdout.write(json.dumps(sys.argv[1]))' "$1"
+}
 
-# something like this would work if we could index mu behind the scenes. but if
-# we do that, we will still update mu4e which is a bit annoying..
-# LAST_SYNC=$(date -u -r ${MAIL_SYNC_FILE} +"%Y-%m-%dT%H:%M:%S%Z")
-# NEW_MAILS_COUNT=$(mu find "(maildir:/Inbox/ OR maildir:/Trash/ OR maildir:/Archive/ OR maildir:/Sent/) AND (date:${LAST_SYNC}..now)" 2>/dev/null | wc -l)
+header() {
+    local file=$1
+    perl -CS -ne '
+        BEGIN { $name = $ENV{HDR} }
+        if (/^\Q$name\E:\s*(.*)/i) {
+            $v = $1;
+            while (<>) { last unless /^[\t ]/; s/^\s+//; $v .= " " . $_ }
+            print $v;
+            exit;
+        }
+        exit if /^$/;
+    ' "$file"
+}
 
-NEW_MAILS=$(find ${MAIL_DIR}/*/{Inbox,Sent,Archive,Trash,Drafts}/new/ -type f -newer ${MAIL_SYNC_FILE})
-touch $MAIL_SYNC_FILE
-NEW_MAILS_COUNT=$(echo "$NEW_MAILS" | sed '/^\s*$/d' | wc -l)
+msgid_of() {
+    local id
+    id=$(HDR=Message-ID header "$1" | tr -d '[:space:]')
+    id=${id#<}
+    id=${id%>}
+    printf '%s' "$id"
+}
 
-echo "Num new mails ${NEW_MAILS_COUNT}"
+from_of() {
+    awk '/^From: / && ++n ==1,/^\<.*\>:/' "$1" | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' \
+        | awk '{ $1=""; if (NF>=3)$NF=""; print $0 }' \
+        | sed 's/^[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//'
+}
 
-if [ "$NEW_MAILS_COUNT" -gt "0" ]; then
-    /usr/bin/emacsclient -e "(when (and (fboundp 'mu4e-running-p) (mu4e-running-p)) (mu4e-update-index))"
-    if [ "$NEW_MAILS_COUNT" -gt "1" ]; then
-        notify-send --icon=emblem-documents --category email --app-name=mbsync "You've got mail" "You have $NEW_MAILS_COUNT new emails" &
-    fi
-    for file in $NEW_MAILS; do
-        # Extract subject and sender from mail.
-        from=$(awk '/^From: / && ++n ==1,/^\<.*\>:/' "$file" | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | awk '{ $1=""; if (NF>=3)$NF=""; print $0 }' | sed 's/^[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//')
-        subject=$(awk '/^Subject: / && ++n == 1,/^\<.*\>: / && ++i == 2' "$file" | head -n 1 | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' | sed 's/^Subject: //' | sed 's/^{[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//' | tr -d '\n')
-        notify-send --icon=mail-unread --category email --app-name=mbsync "$from" "$subject"
+subject_of() {
+    awk '/^Subject: / && ++n == 1,/^\<.*\>: / && ++i == 2' "$1" | head -n 1 \
+        | perl -CS -MEncode -ne 'print decode("MIME-Header", $_)' \
+        | sed 's/^Subject: //;s/^{[[:blank:]]*[\"'\''\<]*//;s/[\"'\''\>]*[[:blank:]]*$//' \
+        | tr -d '\n'
+}
+
+wait_indexed() {
+    # ponytail: 5s poll; mu4e-update-index is async
+    local id=$1 n=0
+    [ -n "$id" ] || return 1
+    while [ "$n" -lt 50 ]; do
+        mu find -n 1 -q "msgid:$id" >/dev/null 2>&1 && return 0
+        n=$((n + 1))
+        sleep 0.1
     done
+    return 1
+}
 
+index_mu() {
+    # index-updated-hook reruns headers; do not call maybe-auto-update here
+    # (async index has not finished, and the private fn skips when a view exists)
+    # Values, not (error): eval errors stall this daemon 2s.
+    local r
+    r=$(emacsclient -e '(condition-case _
+          (progn
+            (require '"'"'mu4e)
+            (cond
+              ((mu4e-running-p) (mu4e-update-index) '"'"'running)
+              (t (condition-case _
+                     (progn (mu4e t) (mu4e-update-index) '"'"'started)
+                   (error '"'"'locked)))))
+        (error '"'"'no-mu4e))' 2>/dev/null) || r=
+    case $r in
+        running|started|locked) ;;
+        *) mu index ;;
+    esac
+}
+
+mail_move() {
+    local file=$1 dest=$2
+    local rel acct
+    rel=${file#"$MAIL_DIR"/}
+    acct=${rel%%/*}
+    case $acct in gmail|anthropic|ntnu|mailbox) ;; *) return 1 ;; esac
+    mkdir -p "$MAIL_DIR/$acct/$dest/cur" || {
+        notify-send -u critical --app-name=mbsync "Mail $dest failed" "$file"
+        return 1
+    }
+    mv "$file" "$MAIL_DIR/$acct/$dest/cur/$(date +%s).$(hostname).$$.$RANDOM:2,S" || {
+        notify-send -u critical --app-name=mbsync "Mail $dest failed" "$file"
+        return 1
+    }
+    case $acct in
+        gmail|anthropic)
+            if [ "$dest" = Archive ]; then
+                mbsync "${acct}-inbox" "${acct}-archive" "${acct}-trash"
+            else
+                mbsync "${acct}-inbox" "${acct}-trash"
+            fi ;;
+        mailbox|ntnu)
+            # *-inbox already includes Trash
+            if [ "$dest" = Archive ]; then
+                mbsync "${acct}-inbox" "$acct"
+            else
+                mbsync "${acct}-inbox"
+            fi ;;
+        *) return 1 ;;
+    esac || {
+        notify-send -u critical --app-name=mbsync "Mail $dest sync failed" "$acct"
+        return 1
+    }
+}
+
+do_notify() {
+    local file=$1 from subject msgid action
+    from=$(from_of "$file")
+    subject=$(subject_of "$file")
+    msgid=$(msgid_of "$file")
+    wait_indexed "$msgid" || true
+    action=$(notify-send --wait -t 15000 \
+        --icon=mail-unread --category email --app-name=mbsync \
+        --action=default=Open --action=archive=Archive --action=delete=Delete \
+        -- "$from" "$subject") || true
+    case $action in
+        default|open)
+            [ -n "$msgid" ] || return 0
+            emacsclient -n -c -e "(progn (require 'mu4e) (bergheim/mu4e-view-message-fullscreen $(elisp_quote "$msgid")))" >/dev/null
+            ;;
+        archive) "$SELF" --move "$file" Archive ;;
+        delete)  "$SELF" --move "$file" Trash ;;
+    esac
+}
+
+do_move() {
+    exec 9>"$LOCK"
+    flock 9
+    mail_move "$1" "$2"
+    flock -u 9
+    index_mu
+}
+
+snapshot_inbox_new() {
+    find "$MAIL_DIR" -path '*/Inbox/new/*' -type f -print0 | sort -z
+}
+
+case ${1-} in
+    --notify)
+        do_notify "$2"
+        exit 0
+        ;;
+    --move)
+        do_move "$2" "$3"
+        exit 0
+        ;;
+    "" ) mode=inboxes ;;
+    all) mode=all ;;
+    gmail-inbox|anthropic-inbox|mailbox-inbox|ntnu-inbox) mode=$1 ;;
+    *)
+        echo "usage: sync-mail [all|gmail-inbox|anthropic-inbox|mailbox-inbox|ntnu-inbox]" >&2
+        exit 2
+        ;;
+esac
+
+before=$(mktemp)
+after=$(mktemp)
+newf=$(mktemp)
+trap 'rm -f "$before" "$after" "$newf"' EXIT
+
+exec 9>"$LOCK"
+flock 9
+snapshot_inbox_new >"$before"
+case $mode in
+    inboxes)
+        parallel "mbsync {}" ::: gmail-inbox anthropic-inbox ntnu mailbox >/dev/null || true
+        ;;
+    all)
+        parallel "mbsync {}" ::: gmail anthropic ntnu mailbox >/dev/null || true
+        ;;
+    *)
+        mbsync "$mode" >&2 || true
+        ;;
+esac
+snapshot_inbox_new >"$after"
+comm -z -13 "$before" "$after" >"$newf"
+flock -u 9
+
+mapfile -d '' new_files <"$newf"
+echo "Num new mails ${#new_files[@]}"
+
+if [ "${#new_files[@]}" -eq 0 ]; then
+    exit 0
 fi
 
-wait
+index_mu
+for file in "${new_files[@]}"; do
+    [ -n "$file" ] || continue
+    systemd-run --user --quiet --collect "$SELF" --notify "$file"
+done

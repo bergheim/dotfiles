@@ -1,0 +1,9 @@
+host: imap.gmail.com
+port: 993
+tls: true
+usernameCMD: pass show email/anthropic/address
+passwordCMD: pass show email/anthropic/password
+boxes:
+  - INBOX
+onNewMail: sync-mail anthropic-inbox
+onNewMailPost: SKIP

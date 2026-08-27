@@ -1,0 +1,9 @@
+host: imap.gmail.com
+port: 993
+tls: true
+usernameCMD: pass show email/gmail/address
+passwordCMD: pass show email/gmail/mbsync
+boxes:
+  - INBOX
+onNewMail: sync-mail gmail-inbox
+onNewMailPost: SKIP
