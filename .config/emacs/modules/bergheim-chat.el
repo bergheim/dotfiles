@@ -18,12 +18,18 @@
   (clatter-mode . (lambda ()
                     (setq-local orderless-matching-styles
                                 '(orderless-literal-prefix)
-                                confirm-kill-processes nil)
+                                confirm-kill-processes nil
+                                fringe-indicator-alist
+                                (cons '(continuation nil right-curly-arrow)
+                                      (assq-delete-all 'continuation
+                                                       (copy-tree fringe-indicator-alist))))
                     (when (featurep 'jinx)
                       (jinx-mode 1))
                     (add-hook 'completion-at-point-functions #'cape-emoji nil t)
                     (display-line-numbers-mode 0)))
   :custom
+  (clatter-notify-timeout 10000)
+  (clatter-notify-max-length 160)
   (clatter-quit-on-exit nil)
   (clatter-track-count-style 'none)
   (clatter-track-in-buffer-mode-line t)
@@ -39,14 +45,23 @@
   (clatter-display-on-welcome nil)
   (clatter-self-echo-mode 'optimistic)
   (clatter-message-order 'oldest-first)
-  (clatter-nick-column-width 14)
-  (clatter-timestamp-side 'left)
+  (clatter-fill-column nil)
+  (clatter-nick-column-width 11)
+  (clatter-timestamp-side 'inline)
+  (clatter-timestamp-divider-interval 1)
   (clatter-timestamp-only-if-changed t)
   (clatter-prompt-format "%n: ")
   (clatter-prompt-alignment 'right)
+  (clatter-typing-indicator-location 'input-separator)
   (clatter-header-line-preset 'context)
   (clatter-chathistory-limit 100)
-  (clatter-typing-indicator-location 'input-separator)
+  (clatter-feed-enabled t)
+  (clatter-feed-hide 'visible)
+  (clatter-feed-hide-visible t)
+  (clatter-feed-hide-channels '("#ai"))
+  ;; Bouncer replay joins dozens of channels; displaying each one
+  ;; tramples any window layout (the unified inbox is the home view).
+  (clatter-display-on-join nil)
   :general
   (bergheim/global-menu-keys
     "ac" '(:ignore t :which-key "Clatter")
