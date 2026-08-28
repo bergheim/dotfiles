@@ -20,7 +20,8 @@
   (bergheim/localleader-keys
     :states '(normal visual)
     :keymaps 'mu4e-headers-mode-map
-    "a" '(mu4e-headers-action :which-key "actions"))
+    "a" '(mu4e-headers-action :which-key "actions")
+    "h" '(bergheim/mu4e-toggle-header-columns :which-key "header columns"))
   (bergheim/localleader-keys
     :states '(normal visual)
     :keymaps 'mu4e-view-mode-map

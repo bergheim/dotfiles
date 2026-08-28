@@ -57,17 +57,6 @@
       mu4e-headers-date-format "%d/%m/%y %H:%M"
       mu4e-headers-time-format "%H:%M"
 
-      ;; and make room for the subject
-      mu4e-headers-fields '((:account      .  8)
-                            (:human-date   . 14)
-                            ;; (:flags        .  6)
-                            (:shortened-maildir     .  8)
-                            ;; TODO: find a way to toggle this - it is sometimes useful
-                            ;; (:mailing-list . 10)
-                            (:to           . 22)
-                            (:from         . 20)
-                            (:subject))
-
       ;; show overview to left, email to the right
       mu4e-split-view 'horizontal
       mu4e-headers-visible-columns 110
@@ -117,11 +106,11 @@
          :key ?N)
 
         (:name  "Inbox glvortex"
-         :query "maildir:/glvortex/Inbox"
+         :query "maildir:/mailbox/Inbox"
          :key ?g)
 
         (:name  "Inbox glvortex unread"
-         :query "flag:unread AND maildir:/glvortex/Inbox"
+         :query "flag:unread AND maildir:/mailbox/Inbox"
          :key ?G)
 
         (:name  "Inbox gmail"
@@ -146,7 +135,7 @@
          :key ?W)
 
         (:name "Recent personal messages"
-         :query "(maildir:/gmail/Inbox/ OR maildir:/glvortex/Inbox) AND (flag:unread OR date:1w..now)"
+         :query "(maildir:/gmail/Inbox/ OR maildir:/mailbox/Inbox) AND (flag:unread OR date:1w..now)"
          :key ?T)
 
         (:name "Messages with images"

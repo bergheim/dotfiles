@@ -117,6 +117,12 @@ Used to quickly match similar messages"
   (when (string-match "^/\\(\\w+\\)/" maildir)
     (match-string 1 maildir)))
 
+(defun bergheim/mu4e-maildir-folder (msg folder)
+  "Return /account/FOLDER for MSG, or nil if maildir has no account."
+  (when-let* ((account (bergheim/mu4e--get-account
+                        (or (mu4e-message-field msg :maildir) ""))))
+    (concat "/" account "/" folder)))
+
 (defun bergheim/mu4e--get-account-email (maildir)
   (let ((account (bergheim/mu4e--get-account maildir)))
     (pcase account

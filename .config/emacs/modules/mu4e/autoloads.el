@@ -42,7 +42,7 @@
   (interactive)
   (unless (featurep 'mu4e)
     (require 'mu4e))
-  (mu4e-search-bookmark "(maildir:/glvortex/Inbox/ OR maildir:/gmail/Inbox) AND (flag:unread OR date:1w..now)"))
+  (mu4e-search-bookmark "(maildir:/gmail/Inbox/ OR maildir:/mailbox/Inbox) AND (flag:unread OR date:1w..now)"))
 
 ;;;###autoload
 (defun bergheim/email-today-or-unread ()

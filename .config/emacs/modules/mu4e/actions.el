@@ -7,9 +7,10 @@
              '(spam
                :char       "X"
                :prompt     "spam"
-               :dyn-target (lambda (target msg)
-                             (with-mu4e-context-vars (mu4e-context-determine msg nil)
-                                 mu4e-spam-folder))
+               :dyn-target (lambda (_target msg)
+                             (or (bergheim/mu4e-maildir-folder msg "Spam")
+                                 (with-mu4e-context-vars (mu4e-context-determine msg nil)
+                                     mu4e-spam-folder)))
                :action      (lambda (docid msg target)
                               (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
 
@@ -18,8 +19,9 @@
 (setf (alist-get 'trash mu4e-marks)
       (list :char '("d" . "▼")
             :prompt "dtrash"
-            :dyn-target (lambda (target msg)
-                          (mu4e-get-trash-folder msg))
+            :dyn-target (lambda (_target msg)
+                          (or (bergheim/mu4e-maildir-folder msg "Trash")
+                              (mu4e-get-trash-folder msg)))
             :action (lambda (docid msg target)
                       ;; Here's the main difference to the regular trash mark,
                       ;; no +T before -N so the message is not marked as
