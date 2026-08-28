@@ -1,0 +1,123 @@
+# Herdr — https://herdr.dev/docs/config-reference/
+# Upstream defaults, fully commented:  herdr --default-config
+# Reload a running server:             herdr server reload-config
+
+onboarding = false
+
+[theme]
+# Follow Ghostty's ANSI palette rather than a baked-in theme, so
+# toggle-darkmode restyles Herdr exactly the way it restyles tmux.
+# (Alternative: name="catppuccin", auto_switch=true, light_name=
+#  "catppuccin-latte" — but that needs the terminal to report its
+#  appearance, which is the flaky path on already-running Ghostty.)
+name = "terminal"
+
+[theme.custom]
+# Gruvbox Light Hard maps ANSI cyan (6) to olive-green #689d6a.
+# No fill: DarkGray is taupe, cyan is unreadable green. Symbols still mark state.
+active_row_bg = "reset"
+surface1 = "reset"
+
+[server]
+# Virtual size used while no client is attached. The 120x40 default
+# makes agent TUIs reflow badly on reattach.
+headless_cols = 180
+headless_rows = 50
+
+[terminal]
+shell_mode = "auto"
+new_cwd    = "follow"
+
+[session]
+# Resume claude/codex/pi conversations by native session id after a
+# server restart. Panes without a session reference come back as shells.
+# Load-bearing on a mise install: `herdr update --handoff` is disabled
+# there, so every version bump stops the server, and this is the only
+# thing that carries agent conversations across it.
+resume_agents_on_restore = true
+
+[keys]
+# Same muscle memory as tmux. Do NOT run herdr inside tmux with this.
+prefix = "ctrl+space"
+
+# Mirror the tmux alt+arrow family — the one family already proven not
+# to collide with Emacs (M-h/M-j/M-k/M-l are deliberately unbound there).
+focus_pane_left  = ["prefix+h", "alt+left"]
+focus_pane_down  = ["prefix+j", "alt+down"]
+focus_pane_up    = ["prefix+k", "alt+up"]
+focus_pane_right = ["prefix+l", "alt+right"]
+
+resize_pane_left  = "alt+shift+left"
+resize_pane_down  = "alt+shift+down"
+resize_pane_up    = "alt+shift+up"
+resize_pane_right = "alt+shift+right"
+
+# Unbound by default, and the reason to run Herdr: jump straight to
+# whichever agent wants something, across every workspace.
+next_agent       = "prefix+a"
+previous_agent   = "prefix+shift+a"
+switch_tab       = ["prefix+1..9", "alt+1..9"]
+focus_agent      = "prefix+alt+1..9"
+switch_workspace = "prefix+shift+1..9"
+last_pane        = "prefix+backtick"
+rename_tab       = ["prefix+comma", "prefix+shift+t"]
+
+[ui]
+# Shape as well as colour, so state survives a light palette.
+status_indicators = "symbols"
+show_agent_labels_on_pane_borders = true
+prompt_new_tab_name = true
+window_title = "{hostname}: {workspace} · {tab}"
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "hostname" },
+  { type = "datetime", format = "%H:%M" },
+]
+tab_bar_right_separator = " · "
+
+[ui.toast]
+# "terminal" asks Ghostty for the notification, so it lands in mako and
+# still works when attached over SSH to burial/berghome.
+delivery      = "terminal"
+delay_seconds = 2
+
+[ui.sound]
+enabled = true
+
+[ui.sidebar.agents]
+# Agent token defaults to overlay0+DIM (unreadable on Gruvbox light).
+rows = [
+  ["state_icon", { token = "agent", bold = true, dim = false }, "state_text"],
+  ["workspace", "tab"],
+]
+
+[ui.sidebar.agents.rows_by_agent]
+# Claude Code has no lifecycle hooks (screen-manifest only), so its own
+# terminal title is the best "what is it doing" signal available.
+claude = [
+  ["state_icon", { token = "agent", bold = true, dim = false }, "state_text"],
+  ["terminal_title_stripped"],
+  ["workspace", "tab"],
+]
+
+[experimental]
+# Pane history persists raw pane output — tokens, prompts, secrets — to
+# session-history.json. Native session restore covers the agents already.
+pane_history  = false
+allow_nested  = false
+
+[[keys.command]]
+key         = "prefix+alt+g"
+type        = "popup"
+command     = "lazygit"
+description = "lazygit"
+width       = "90%"
+height      = "90%"
+
+[[keys.command]]
+key         = "prefix+t"
+type        = "popup"
+command     = "exec \"${SHELL:-sh}\""
+description = "scratch terminal"
+width       = "80%"
+height      = "80%"
