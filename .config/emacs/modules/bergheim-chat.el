@@ -65,22 +65,24 @@
   :general
   (bergheim/global-menu-keys
     "ac" '(:ignore t :which-key "Clatter")
-    "acc" '(bergheim/clatter-connect :which-key "Connect")
+    "acc" '(bergheim/clatter-launch :which-key "Connect + layout")
+    "acC" '(bergheim/clatter-connect :which-key "Connect only")
     "acq" '(clatter-disconnect :which-key "Disconnect")
     "acs" '(clatter-status :which-key "Status")
     "acb" '(bergheim/consult-clatter-buffer :which-key "Channels")
     "act" '(clatter-track-switch :which-key "Next tracked")
-    "acl" '(clatter-track-list :which-key "Tracked buffers"))
+    "acl" '(clatter-track-list :which-key "Tracked buffers")
+    "acu" '(bergheim/clatter-unified-layout :which-key "Unified layout"))
   (bergheim/localleader-keys
     :states '(normal visual)
     :keymaps 'clatter-mode-map
     "b" '(bergheim/consult-clatter-buffer :which-key "channels")
-    "f" '(clatter-toggle-fools :which-key "toggle fools")
-    "g" '(clatter-track-clear-all :which-key "clear tracking")
+    "f" '(clatter-toggle-fools :which-key "history")
     "h" '(clatter-chathistory-request :which-key "history")
     "n" '(clatter-nicklist-toggle :which-key "nicklist")
-    "u" '(clatter-track-switch :which-key "next tracked")
-    "t" '(clatter-track-list :which-key "tracked buffers"))
+    "u" '(clatter-feed :which-key "unified inbox")
+    "t" '(clatter-track-list :which-key "tracked buffers")
+    "T" '(clatter-track-switch :which-key "next tracked"))
   (:states 'normal
    :keymaps 'clatter-mode-map
    "A" (lambda ()
@@ -115,6 +117,53 @@
     "Connect Clatter to the configured Soju bouncer."
     (interactive)
     (clatter "soju"))
+
+  (defvar bergheim/clatter-home-channel "#systemcrafters"
+    "Channel docked beside the unified inbox by `bergheim/clatter-launch'.")
+
+  (defun bergheim/clatter--home-channel-buffer ()
+    "Return the live buffer for `bergheim/clatter-home-channel', or nil.
+Matched by target across all networks, so bouncer network naming
+does not matter."
+    (seq-find (lambda (buf)
+                (when-let* ((target (buffer-local-value 'clatter--target buf)))
+                  (string-equal-ignore-case target
+                                            bergheim/clatter-home-channel)))
+              (clatter-all-buffers)))
+
+  (defun bergheim/clatter--unified-layout-1 (chan)
+    "Show the unified inbox to the left of channel buffer CHAN."
+    (delete-other-windows)
+    (set-window-buffer (selected-window) chan)
+    (set-window-buffer (split-window (selected-window) nil 'left)
+                       (clatter-feed--buffer)))
+
+  (defun bergheim/clatter-unified-layout ()
+    "Two-window layout: the unified inbox left, a chosen channel right."
+    (interactive)
+    (bergheim/consult-clatter-buffer)
+    (bergheim/clatter--unified-layout-1 (current-buffer)))
+
+  (defun bergheim/clatter--launch-layout-once (_conn _nick channel &rest _)
+    "Apply the launch layout when CHANNEL is the home channel, then detach."
+    (when-let* (((string-equal-ignore-case channel
+                                           bergheim/clatter-home-channel))
+                (chan (bergheim/clatter--home-channel-buffer)))
+      (remove-hook 'clatter-join-hook #'bergheim/clatter--launch-layout-once)
+      (bergheim/clatter--unified-layout-1 chan)))
+
+  (defun bergheim/clatter-launch ()
+    "Connect if needed and set up the unified layout (DWIM).
+Already connected: just re-applies the layout.  Post-connect, the
+layout runs from `clatter-join-hook' when the home channel arrives,
+mirroring `bergheim/jabber-launch' (no timer hack)."
+    (interactive)
+    (if-let* ((chan (bergheim/clatter--home-channel-buffer)))
+        (bergheim/clatter--unified-layout-1 chan)
+      ;; Depth 90: run after clatter-ui--on-join has created the buffer.
+      (add-hook 'clatter-join-hook #'bergheim/clatter--launch-layout-once 90)
+      (unless (clatter-get-connection "soju")
+        (bergheim/clatter-connect))))
 
   (defun bergheim/consult-clatter-buffer ()
     "Select any live Clatter channel with Consult."
