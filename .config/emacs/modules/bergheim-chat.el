@@ -18,6 +18,7 @@
   (clatter-mode . (lambda ()
                     (setq-local orderless-matching-styles
                                 '(orderless-literal-prefix)
+                                orderless-style-dispatchers nil
                                 confirm-kill-processes nil
                                 fringe-indicator-alist
                                 (cons '(continuation nil right-curly-arrow)
@@ -249,6 +250,7 @@ mirroring `bergheim/jabber-launch' (no timer hack)."
   (erc-mode . erc-notifications-mode)
   (erc-mode . (lambda ()
                 (setq-local orderless-matching-styles '(orderless-literal-prefix)
+                            orderless-style-dispatchers nil
                             confirm-kill-processes nil
                             corfu-auto-prefix 3)
                 (if (featurep 'jinx)
