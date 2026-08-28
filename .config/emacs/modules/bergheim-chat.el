@@ -1,7 +1,10 @@
 ;;; bergheim-chat.el --- IRC (erc/clatter) and XMPP (jabber) -*- lexical-binding: t; -*-
 
 (use-package clatter
-  :ensure (:host github :repo "parenworks/clatter.el")
+  ;; :ensure (:host github :repo "parenworks/clatter.el")
+  :ensure (:host github :repo "bergheim/clatter.el" :branch "fix/inline-timestamp-wrap")
+  ;; :ensure nil
+  ;; :load-path "~/dev/clatter.el"
   :after consult
   :commands (clatter clatter-status clatter-disconnect
                      clatter-track-switch clatter-track-clear-all
