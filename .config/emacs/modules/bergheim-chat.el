@@ -12,7 +12,7 @@
                      clatter-toggle-fools clatter-chathistory-request)
   :functions (cape-emoji clatter-dcc-setup clatter-setup
                          clatter--get-input clatter--set-input)
-  :defines (clatter-fools clatter-networks
+  :defines (clatter-fools clatter-networks clatter-pals
                           clatter-input-ring clatter-input-ring-index)
   :hook
   (clatter-mode . (lambda ()
@@ -33,15 +33,18 @@
   (clatter-notify-max-length 160)
   (clatter-quit-on-exit nil)
   (clatter-track-count-style 'none)
-  (clatter-track-in-buffer-mode-line t)
+  (clatter-track-show-in-clatter-buffers t)
   (clatter-track-exclude-targets '("*server*"))
   (clatter-track-indicators
    '((mention . nil)
      (dm . "✉")
      (activity . nil)))
   (clatter-url-preview-enable t)
+  (clatter-image-enable t)
   (clatter-buffer-name-style 'channel)
   (clatter-compact-system-messages 'compact)
+  ;; Bouncer replay joins dozens of channels; displaying each one
+  ;; tramples any window layout (the unified inbox is the home view).
   (clatter-display-on-join nil)
   (clatter-display-on-welcome nil)
   (clatter-self-echo-mode 'optimistic)
@@ -49,7 +52,7 @@
   (clatter-fill-column nil)
   (clatter-nick-column-width 11)
   (clatter-timestamp-side 'inline)
-  (clatter-timestamp-divider-interval 1)
+  (clatter-timestamp-interval 1)
   (clatter-timestamp-only-if-changed t)
   (clatter-prompt-format "%n: ")
   (clatter-prompt-alignment 'right)
@@ -57,12 +60,8 @@
   (clatter-header-line-preset 'context)
   (clatter-chathistory-limit 100)
   (clatter-feed-enabled t)
-  (clatter-feed-hide 'visible)
   (clatter-feed-hide-visible t)
   (clatter-feed-hide-channels '("#ai"))
-  ;; Bouncer replay joins dozens of channels; displaying each one
-  ;; tramples any window layout (the unified inbox is the home view).
-  (clatter-display-on-join nil)
   :general
   (bergheim/global-menu-keys
     "ac" '(:ignore t :which-key "Clatter")
@@ -73,12 +72,12 @@
     "acb" '(bergheim/consult-clatter-buffer :which-key "Channels")
     "act" '(clatter-track-switch :which-key "Next tracked")
     "acl" '(clatter-track-list :which-key "Tracked buffers")
-    "acu" '(bergheim/clatter-unified-layout :which-key "Unified layout"))
+    "acu" '(bergheim/clatter-feed-layout :which-key "Unified layout"))
   (bergheim/localleader-keys
     :states '(normal visual)
     :keymaps 'clatter-mode-map
     "b" '(bergheim/consult-clatter-buffer :which-key "channels")
-    "f" '(clatter-toggle-fools :which-key "history")
+    "f" '(clatter-toggle-fools :which-key "fools")
     "h" '(clatter-chathistory-request :which-key "history")
     "n" '(clatter-nicklist-toggle :which-key "nicklist")
     "u" '(clatter-feed :which-key "unified inbox")
@@ -132,18 +131,18 @@ does not matter."
                                             bergheim/clatter-home-channel)))
               (clatter-all-buffers)))
 
-  (defun bergheim/clatter--unified-layout-1 (chan)
+  (defun bergheim/clatter--feed-layout-1 (chan)
     "Show the unified inbox to the left of channel buffer CHAN."
     (delete-other-windows)
     (set-window-buffer (selected-window) chan)
     (set-window-buffer (split-window (selected-window) nil 'left)
                        (clatter-feed--buffer)))
 
-  (defun bergheim/clatter-unified-layout ()
+  (defun bergheim/clatter-feed-layout ()
     "Two-window layout: the unified inbox left, a chosen channel right."
     (interactive)
     (bergheim/consult-clatter-buffer)
-    (bergheim/clatter--unified-layout-1 (current-buffer)))
+    (bergheim/clatter--feed-layout-1 (current-buffer)))
 
   (defun bergheim/clatter--launch-layout-once (_conn _nick channel &rest _)
     "Apply the launch layout when CHANNEL is the home channel, then detach."
@@ -151,7 +150,7 @@ does not matter."
                                            bergheim/clatter-home-channel))
                 (chan (bergheim/clatter--home-channel-buffer)))
       (remove-hook 'clatter-join-hook #'bergheim/clatter--launch-layout-once)
-      (bergheim/clatter--unified-layout-1 chan)))
+      (bergheim/clatter--feed-layout-1 chan)))
 
   (defun bergheim/clatter-launch ()
     "Connect if needed and set up the unified layout (DWIM).
@@ -160,7 +159,7 @@ layout runs from `clatter-join-hook' when the home channel arrives,
 mirroring `bergheim/jabber-launch' (no timer hack)."
     (interactive)
     (if-let* ((chan (bergheim/clatter--home-channel-buffer)))
-        (bergheim/clatter--unified-layout-1 chan)
+        (bergheim/clatter--feed-layout-1 chan)
       ;; Depth 90: run after clatter-ui--on-join has created the buffer.
       (add-hook 'clatter-join-hook #'bergheim/clatter--launch-layout-once 90)
       (unless (clatter-get-connection "soju")
@@ -197,7 +196,10 @@ mirroring `bergheim/jabber-launch' (no timer hack)."
              :username ,bergheim/irc-username
              :realname ,user-full-name
              :password ,(password-store-get "apps/soju")))
-          clatter-fools bergheim/irc-fools)
+          clatter-fools bergheim/irc-fools
+          clatter-pals bergheim/irc-pals
+          clatter-notify-keywords bergheim/irc-keywords
+          clatter-notify-muted-channels bergheim/irc-muted-channels)
 
   (require 'clatter-dcc)
   (clatter-dcc-setup)
