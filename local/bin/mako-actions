@@ -32,6 +32,10 @@ choices=$(printf '%s' "$notif" | jq -r --arg app "$app" '
 	| select($mail or ($kde | not) or (.value | test("^(view|open|open app|show|vis|åpne)$"; "i") | not))
 	| "\(.key)\t\(.value)"
 ')
+code=$(printf '%s' "$notif" | jq -r '"\(.summary // "")\n\(.body // "")"' | otpgrep) || code=
+[ -n "$code" ] && choices=$(printf 'otp-copy\tCopy code %s%s' "$code" "${choices:+
+$choices}")
+
 choices=$(printf '%s%s\n' "${choices:+$choices
 }" 'mako-remind	Remind')
 
@@ -39,6 +43,12 @@ label=$(printf '%s\n' "$choices" | cut -f2 | fuzzel --no-sort -d -p 'Action:') |
 [ -n "$label" ] || exit 0
 key=$(printf '%s\n' "$choices" | awk -F'\t' -v l="$label" '$2==l { print $1; exit }')
 [ -n "$key" ] || exit 0
+
+if [ "$key" = otp-copy ]; then
+	printf '%s' "$code" | wl-copy
+	makoctl dismiss -n "$id"
+	exit 0
+fi
 
 if [ "$key" = mako-remind ]; then
 	app=$(printf '%s' "$notif" | jq -r '.app_name // empty')
