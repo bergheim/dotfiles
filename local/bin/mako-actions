@@ -39,9 +39,38 @@ $choices}")
 choices=$(printf '%s%s\n' "${choices:+$choices
 }" 'mako-remind	Remind')
 
-label=$(printf '%s\n' "$choices" | cut -f2 | fuzzel --no-sort -d -p 'Action:') || exit 0
-[ -n "$label" ] || exit 0
-key=$(printf '%s\n' "$choices" | awk -F'\t' -v l="$label" '$2==l { print $1; exit }')
+# Nerd Font glyphs rather than Rofi's dmenu icon protocol: fuzzel already
+# renders JetBrains Mono Nerd Font, and a themed icon name (mail-archive)
+# is missing often enough to leave rows unevenly indented.
+# --index avoids matching the selection back by label text.
+icon_for() {
+	case $1 in
+	otp-copy)
+		printf '\uf0c5'
+		return
+		;;
+	mako-remind)
+		printf '\uf0f3'
+		return
+		;;
+	esac
+	case $(printf '%s' "$2" | tr '[:upper:]' '[:lower:]') in
+	open | view | show | vis | åpne) printf '\uf0e0' ;;
+	archive) printf '\uf187' ;;
+	delete) printf '\uf1f8' ;;
+	mute) printf '\uf026' ;;
+	call) printf '\uf095' ;;
+	message) printf '\uf075' ;;
+	*) printf '\uf05a' ;;
+	esac
+}
+
+tab=$(printf '\t')
+index=$(printf '%s\n' "$choices" | while IFS="$tab" read -r k v; do
+	printf '%s  %s\n' "$(icon_for "$k" "$v")" "$v"
+done | fuzzel --no-sort --index -d -p 'Action:') || exit 0
+[ -n "$index" ] || exit 0
+key=$(printf '%s\n' "$choices" | awk -F'\t' -v i="$index" 'NR == i + 1 { print $1; exit }')
 [ -n "$key" ] || exit 0
 
 if [ "$key" = otp-copy ]; then

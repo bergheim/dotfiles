@@ -132,7 +132,9 @@ do_notify() {
         --action=archive=Archive --action=delete=Delete \
         -- "$from" "$subject") || true
     case $action in
-        copy) printf '%s' "$code" | wl-copy ;;
+        # goimapnotify starts this via systemd-run, so a plain wl-copy dies
+        # with the transient unit's cgroup and the selection never survives.
+        copy) systemd-run --user --scope --quiet --collect wl-copy "$code" ;;
         default|open)
             [ -n "$msgid" ] || return 0
             emacsclient -n -c -e "(progn (require 'mu4e) (bergheim/mu4e-view-message-fullscreen $(elisp_quote "$msgid")))" >/dev/null
