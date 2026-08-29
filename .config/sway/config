@@ -650,5 +650,6 @@ output * bg ~/Pictures/wallpapers/active/current/primary.jpg fill
 output $monitor2 bg ~/Pictures/wallpapers/active/current/secondary.jpg fill
 
 seat seat0 xcursor_theme default 20
+seat seat0 hide_cursor 2000
 
 bindsym $mod+F12 exec journalctl --user -u sway -n 100 > /tmp/sway-debug.log && notify-send "Sway log dumped"

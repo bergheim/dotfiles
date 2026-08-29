@@ -61,6 +61,10 @@
 //   Alt+Tab               toggle-overview
 //   Super+Space           xkb grp:win_space_toggle (us<->no)
 
+cursor {
+    hide-after-inactive-ms 2000
+}
+
 input {
     keyboard {
         xkb {
