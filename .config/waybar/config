@@ -13,6 +13,7 @@
     "output": ["DP-1", "eDP-1"],
     "layer": "top", // Waybar at top layer
     "position": "top",
+    "fixed-center": false,
     "height": 30,
     "spacing": 4,
     // float the bar to match window gaps — CSS margin is ignored, these
@@ -204,10 +205,11 @@
     },
 
     "mpris": {
-      "format": "{player_icon} {dynamic}",
-      "format-paused": "{status_icon} <s>{dynamic}</s>",
-      "on-click-middle": "",
-      "on-click-right": "",
+      "format": "{player_icon} {title} — {artist}",
+      "format-paused": "{status_icon} <s>{title} — {artist}</s>",
+      "tooltip-format": "{title}\n{artist}\n{album}",
+      "title-len": 48,
+      "artist-len": 32,
       "player-icons": {
         "default": "▶",
         "mpv": "🎵"
@@ -215,18 +217,16 @@
       "status-icons": {
         "paused": "⏸"
       },
-      "max-length": 50,
+      "max-length": 86,
     },
 
     "pulseaudio": {
       // "scroll-step": 1, // %, can be a float
       // "format": "{icon} {volume}% {format_source}",
       "format": "{icon} {volume}%",
-      "format-bluetooth": "{volume}% {icon} {format_source}",
-      "format-bluetooth-muted": "󰂲 {icon} {format_source}",
-      "format-muted": "󰝟 {format_source}",
-      "format-source": " {volume}%",
-      "format-source-muted": "",
+      "format-bluetooth": "{volume}% {icon}",
+      "format-bluetooth-muted": "󰂲 {icon}",
+      "format-muted": "󰝟",
       "format-icons": {
         "headphone": " ",
         "hands-free": "󰂑 ",
