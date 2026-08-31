@@ -108,7 +108,10 @@ if [[ "$EDIT_MODE" == edit ]]; then
 fi
 
 if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
-  if ! title=$(fuzzel -d --prompt-only 'Screenshot title: '); then
+  # One green for both palettes: the dark theme's own 086608 vanishes against
+  # its 0a0f14 background, and the light theme's c0df6f washes out on fcf7ef.
+  if ! title=$(fuzzel -d --prompt-only 'Screenshot title: ' \
+                      --border-width=4 --border-color=8ab52aff); then
     notify-send "Share canceled" "kept $(basename "$PNG")"
     exit 0
   fi
