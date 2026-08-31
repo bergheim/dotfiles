@@ -625,6 +625,10 @@ exec avizo-service
 # kanshi never exits, so make sure we kill current
 exec_always 'pkill -x kanshi; exec kanshi'
 
+exec firefox
+exec discord
+exec signal-desktop
+
 # exec_always 'if [ "$XDG_VTNR" = "1" ]; then fancylocksway; fi'
 # }}}
 
