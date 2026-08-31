@@ -39,3 +39,7 @@ invisible=1
 
 [app-icon=call-start]
 invisible=1
+
+# Android HTML arrives escaped from KDE Connect; re-post it cleaned.
+[app-name="KDE Connect"]
+on-notify=exec mako-unhtml "$id"

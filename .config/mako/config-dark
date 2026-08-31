@@ -34,3 +34,7 @@ default-timeout=0
 # call-start telephony notification visible so caller ID is shown.
 [app-name="KDE Connect" summary="Phone"]
 invisible=1
+
+# Android HTML arrives escaped from KDE Connect; re-post it cleaned.
+[app-name="KDE Connect"]
+on-notify=exec mako-unhtml "$id"

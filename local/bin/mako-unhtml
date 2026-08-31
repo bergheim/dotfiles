@@ -1,0 +1,25 @@
+#!/bin/sh
+# KDE Connect ships Android's notification HTML through toHtmlEscaped(), so mako
+# renders the tags as literal text (KDE bug 420221). mako cannot rewrite a body,
+# so drop the original and re-post a cleaned copy.
+# ponytail: re-posting loses the notification's actions (inline-reply); patch
+# kdeconnect's notification.cpp instead if those matter.
+set -eu
+
+id=$1
+json=$(makoctl list -j | jq -c --argjson id "$id" '.[] | select(.id == $id)')
+[ -n "$json" ] || exit 0
+
+body=$(printf '%s' "$json" | jq -r '.body')
+case $body in *'&lt;'*) ;; *) exit 0 ;; esac
+
+# Unescape only the tags Pango knows; anything else stays escaped or is dropped,
+# and &amp; is left alone, so the result is always valid markup.
+clean=$(printf '%s' "$body" | sed -E \
+	-e 's@&lt;br */*&gt;@\n@g' \
+	-e 's@&lt;(/?(b|i|u|s|tt|big|small))&gt;@<\1>@g' \
+	-e 's@&lt;[^&]*&gt;@@g')
+
+makoctl dismiss -n "$id" --no-history
+notify-send -a kdeconnect-clean -i kdeconnect \
+	"$(printf '%s' "$json" | jq -r '.summary')" "$clean"
