@@ -93,6 +93,40 @@
   (let ((mu4e-org-link-query-in-headers-mode t))
     (call-interactively 'org-store-link)))
 
+(defun bergheim/mu4e-copy-to-work-inbox (msg)
+  "Copy MSG's raw file to ~/stash/work/inbox for agent triage."
+  (let* ((subject (or (mu4e-message-field msg :subject) "no-subject"))
+         (slug (string-limit
+                (string-trim (replace-regexp-in-string
+                              "[^[:alnum:]]+" "-" (downcase subject))
+                             "-" "-")
+                60))
+         (dest-dir (expand-file-name "~/stash/work/inbox/"))
+         (dest (expand-file-name
+                (format "%s--%s.eml"
+                        (format-time-string
+                         "%Y%m%dT%H%M%S" (mu4e-message-field msg :date))
+                        slug)
+                dest-dir)))
+    (make-directory dest-dir t)
+    (copy-file (mu4e-message-field msg :path) dest t)
+    (message "Copied to %s" dest)))
+
+(add-to-list 'mu4e-marks
+             '(work-inbox
+               :char ("w" . "→")
+               :prompt "work inbox"
+               :dyn-target (lambda (_target msg) (bergheim/mu4e-refile-mail msg))
+               :action (lambda (docid msg target)
+                         (bergheim/mu4e-copy-to-work-inbox msg)
+                         (mu4e--server-move docid (mu4e--mark-check-target target) "+S-u-N"))))
+
+(mu4e~headers-defun-mark-for work-inbox)
+
+(defun bergheim/mu4e-mark-for-work-inbox (_msg)
+  (mu4e--in-headers-context (mu4e-headers-mark-for-work-inbox)))
+
+
 ;; TODO in general, lower-case should match /Inbox/, upper-case should mean everything but /Trash/
 (setq mu4e-headers-actions (delete '("show this thread" . mu4e-action-show-thread) mu4e-headers-actions))
 (setq mu4e-headers-actions (delete '("capture message" . mu4e-action-capture-message) mu4e-headers-actions))
@@ -114,6 +148,7 @@
 (add-to-list 'mu4e-headers-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-headers-actions '("thread" . mu4e-action-show-thread) t)
 (add-to-list 'mu4e-headers-actions '("To" . bergheim/mu4e-search-to-address) t)
+(add-to-list 'mu4e-headers-actions '("work inbox copy" . bergheim/mu4e-mark-for-work-inbox) t)
 
 ;; (setq mu4e-view-actions (delete '("view in browser" . mu4e-action-view-in-browser) mu4e-view-actions))
 (setq mu4e-view-actions (delete '("xview in xwidget" . mu4e-action-view-in-xwidget) mu4e-view-actions))
@@ -136,5 +171,6 @@
 (add-to-list 'mu4e-view-actions '("subject" . bergheim/mu4e-search-this-subject) t)
 (add-to-list 'mu4e-view-actions '("thread" . mu4e-action-show-thread) t)
 (add-to-list 'mu4e-view-actions '("To" . bergheim/mu4e-search-to-address) t)
+(add-to-list 'mu4e-view-actions '("work inbox copy" . bergheim/mu4e-mark-for-work-inbox) t)
 
 ;;; actions.el ends here
