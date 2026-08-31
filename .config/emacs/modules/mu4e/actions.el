@@ -31,11 +31,25 @@
 (defun bergheim/mu4e-refile-as-spam (_msg)
   (mu4e--in-headers-context (mu4e-headers-mark-for-spam)))
 
+(defun bergheim/mu4e--sender-folder (msg)
+  "Return the folder name whose sender regexps in
+`bergheim/private-mu4e-sender-folders' match MSG's sender, or nil."
+  (when (boundp 'bergheim/private-mu4e-sender-folders)
+    (let ((from (format "%s" (mu4e-message-field msg :from))))
+      (car (seq-find (lambda (entry)
+                       (seq-some (lambda (re) (string-match-p re from))
+                                 (cdr entry)))
+                     bergheim/private-mu4e-sender-folders)))))
+
 (defun bergheim/mu4e-refile-mail (msg)
   (let* ((maildir (mu4e-message-field msg :maildir))
          (parts (split-string maildir "/"))
-         (account (nth 1 parts)))
+         (account (nth 1 parts))
+         (sender-folder (bergheim/mu4e--sender-folder msg)))
     (cond
+     ((and account sender-folder)
+      (concat "/" account "/" sender-folder))
+
      ;; sent by me → Sent folder
      ((mu4e-message-sent-by-me msg)
       mu4e-sent-folder)
