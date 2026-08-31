@@ -1,8 +1,8 @@
 # defaults
 # save syncstate in the Maildir directories itself
 SyncState *
-# only create local folders
-Create Near
+# create missing folders on both sides
+Create Both
 # by default (CopyArrivalDate no), if you copy an old email from inbox to
 # Archive (e.g.) it will get the date of the copy assigned, instead of just
 # keeping its original date of arrival! That doesn't sound like a very good
@@ -207,6 +207,11 @@ Channel anthropic-starred
     Near :anthropic-local:"Starred"
     Expunge Both
 
+Channel anthropic-jobs
+    Far :anthropic-remote:"Jobs"
+    Near :anthropic-local:"Jobs"
+    Expunge Both
+
 Channel anthropic-spam
     Far :anthropic-remote:"[Gmail]/Søppelpost"
     Near :anthropic-local:"Spam"
@@ -220,6 +225,7 @@ Group anthropic
     Channel anthropic-drafts
     Channel anthropic-starred
     Channel anthropic-spam
+    Channel anthropic-jobs
 
 Group anthropic-inbox
     Channel anthropic-inbox
