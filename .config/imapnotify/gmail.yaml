@@ -1,8 +1,8 @@
 host: imap.gmail.com
 port: 993
 tls: true
-usernameCMD: pass show email/gmail/address
-passwordCMD: pass show email/gmail/mbsync
+usernameCMD: "pass show email/gmail | sed -n 's/^user: //p'"
+passwordCMD: "pass show email/gmail | sed -n 1p"
 boxes:
   - INBOX
 onNewMail: sync-mail gmail-inbox

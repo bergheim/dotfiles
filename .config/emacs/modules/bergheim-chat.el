@@ -196,7 +196,7 @@ mirroring `bergheim/jabber-launch' (no timer hack)."
              :nick ,bergheim/irc-nick
              :username ,bergheim/irc-username
              :realname ,user-full-name
-             :password ,(password-store-get "apps/soju")))
+             :password ,(password-store-get "homelab/soju")))
           clatter-fools bergheim/irc-fools
           clatter-pals bergheim/irc-pals
           clatter-notify-keywords bergheim/irc-keywords
@@ -380,7 +380,7 @@ Usage: /LATEST [count] (defaults to 100)"
            :port 6667
            :nick bergheim/irc-nick
            :user bergheim/irc-username
-           :password (password-store-get "apps/soju")))
+           :password (password-store-get "homelab/soju")))
     ;; create or switch to erc frame
     (let* ((frame-name "erc")
            (target-frame
@@ -722,7 +722,7 @@ load does not trigger a GPG prompt."
       ;; A failed decrypt (broken pinentry, restarted gpg-agent) must not
       ;; get cached — the `unless' would pin the nil password until the
       ;; daemon restarts.
-      (when-let ((password (password-store-get "apps/ejabberd/tsb")))
+      (when-let ((password (password-store-get "homelab/ejabberd/tsb")))
         (setq jabber-account-list
               `(("tsb@xmpp.glvortex.net"
                  (:password . ,password)

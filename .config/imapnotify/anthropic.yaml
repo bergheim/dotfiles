@@ -1,8 +1,8 @@
 host: imap.gmail.com
 port: 993
 tls: true
-usernameCMD: pass show email/anthropic/address
-passwordCMD: pass show email/anthropic/password
+usernameCMD: "pass show email/anthropic | sed -n 's/^user: //p'"
+passwordCMD: "pass show email/anthropic | sed -n 1p"
 boxes:
   - INBOX
 onNewMail: sync-mail anthropic-inbox
