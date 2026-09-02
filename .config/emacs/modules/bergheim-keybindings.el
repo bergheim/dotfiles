@@ -72,6 +72,7 @@
     "C-M-u" 'universal-argument
     "C-u" 'evil-scroll-up
     "M-r" #'vertico-repeat-select
+    "M-i" 'jinx-correct-nearest
     ;; I sometimes want to use C-h for other things..
     "C-c h" 'help-command)
 
