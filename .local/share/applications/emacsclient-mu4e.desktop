@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Emacs Mail (mu4e, client)
+Exec=emacsclient -a "" -c --eval "(browse-url-mail (pop server-eval-args-left))" %u
+Icon=emacs
+Terminal=false
+NoDisplay=true
+MimeType=x-scheme-handler/mailto;
