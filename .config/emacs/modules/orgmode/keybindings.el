@@ -65,7 +65,7 @@
   "ocR" '(org-resolve-clocks :which-key "resolve")
 
   "op" '(:ignore t :which-key "people (contacts)")
-  "opg" '(bergheim/goto-contact :which-key "goto")
+  "opg" '(org-contactor-find-for-capture :which-key "goto")
   "opb" '(org-contactor-goto-backlink :which-key "backlinks")
   "opm" '(org-contactor-compose-mail :which-key "mail")
   "opl" '(org-contactor-insert-link :which-key "link")
