@@ -29,6 +29,7 @@
                     (add-hook 'completion-at-point-functions #'cape-emoji nil t)
                     (display-line-numbers-mode 0)))
   :custom
+  (clatter-flyspell-enable nil)
   (clatter-notify-timeout 10000)
   (clatter-notify-max-length 160)
   (clatter-quit-on-exit nil)
