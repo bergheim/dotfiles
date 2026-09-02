@@ -58,10 +58,11 @@ so the calling helper's already-completed org edit is not rolled back.
 1 = staged changes (commit), >1 = error (logged, no commit)."
   (when-let* ((root (bergheim/agent-notes--repo-root file)))
     (let* ((default-directory (file-name-as-directory root))
-           (add-rc (call-process "git" nil nil nil "add" "-A")))
+           (rel (file-relative-name (expand-file-name file) default-directory))
+           (add-rc (call-process "git" nil nil nil "add" "--" rel)))
       (cond
        ((not (zerop add-rc))
-        (message "agent-notes: git add -A failed (exit %d) in %s" add-rc root))
+        (message "agent-notes: git add failed (exit %d) in %s" add-rc root))
        (t
         (let ((diff-rc (call-process "git" nil nil nil "diff" "--cached" "--quiet")))
           (cond
