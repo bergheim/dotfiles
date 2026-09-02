@@ -1,9 +1,9 @@
 
 window#waybar {
-  background-color: @bg_primary;
+    background-color: alpha(@bg_primary, 0.8);
   color: @fg_primary;
   padding-right: 10px;
-  border-radius: 5px;   /* match SwayFX window corner_radius */
+  border-radius: 0;
   /* float/gap is set via margin-* in config (CSS margin is ignored here) */
 }
 
