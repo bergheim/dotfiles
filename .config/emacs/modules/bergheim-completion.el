@@ -427,9 +427,9 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     "Configure CAPFs for Org buffers."
     (when buffer-file-name
       (setq-local completion-at-point-functions
-                  (append (when (and (boundp 'bergheim/contactor-file)
-                                     (file-exists-p bergheim/contactor-file))
-                            (list (cape-capf-trigger #'bergheim/contactor-completion-at-point ?@)))
+                  (append (when (and (boundp 'org-contactor-file)
+                                     (file-exists-p org-contactor-file))
+                            (list (cape-capf-trigger #'org-contactor-completion-at-point ?@)))
                           (list #'tempel-complete
                                 #'cape-tex       ;; expands \
                                 #'org-block-capf ;; expands <

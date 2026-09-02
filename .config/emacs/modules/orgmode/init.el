@@ -21,7 +21,10 @@
   (bergheim/load-file "modules/orgmode/attachments.el")
   (bergheim/load-file "modules/orgmode/commands.el")
   (bergheim/load-file "modules/orgmode/style.el")
-  (bergheim/load-file "modules/orgmode/contactor.el")
+  (let ((dir (expand-file-name "~/dev/org-contactor")))
+    (when (file-directory-p dir)
+      (add-to-list 'load-path dir)
+      (require 'org-contactor)))
   (bergheim/load-file "modules/orgmode/hugo.el")
 
   :general

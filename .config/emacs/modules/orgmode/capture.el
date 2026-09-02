@@ -108,7 +108,7 @@
                              ;; :type entry
                              :prepend nil
                              :clock-keep t
-                             :function bergheim/contactor-find-for-capture
+                             :function org-contactor-find-for-capture
                              :template ("** TODO %?"
                                         "SCHEDULED: %^t"
                                         "")

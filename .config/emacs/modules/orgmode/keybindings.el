@@ -66,10 +66,10 @@
 
   "op" '(:ignore t :which-key "people (contacts)")
   "opg" '(bergheim/goto-contact :which-key "goto")
-  "opb" '(bergheim/contactor-goto-backlink :which-key "backlinks")
-  "opm" '(bergheim/contactor-compose-mail :which-key "mail")
-  "opl" '(bergheim/contactor-insert-link :which-key "link")
-  "opt" '(bergheim/contactor-capture-todo :which-key "todo")
+  "opb" '(org-contactor-goto-backlink :which-key "backlinks")
+  "opm" '(org-contactor-compose-mail :which-key "mail")
+  "opl" '(org-contactor-insert-link :which-key "link")
+  "opt" '(org-contactor-capture-todo :which-key "todo")
 
   "oq" '(:ignore t :which-key "org-ql")
   "oqv" #'org-ql-view
@@ -78,6 +78,18 @@
   "oqt" #'org-ql-sparse-tree
   "oqq" #'org-ql-view
   "oqb" #'org-ql-view-sidebar)
+
+(defun bergheim/org-contactor-keybindings ()
+  "Buffer-local bindings for the contacts file."
+  (when (and buffer-file-name
+             (boundp 'org-contactor-file)
+             (string= buffer-file-name org-contactor-file))
+    (general-define-key
+     :states '(normal)
+     :keymaps 'local
+     "g b" 'org-contactor-goto-backlink)))
+
+(add-hook 'org-mode-hook #'bergheim/org-contactor-keybindings)
 
 (provide 'keybindings)
 ;;; keybindings.el ends here
