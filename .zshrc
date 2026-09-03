@@ -684,3 +684,13 @@ share() {
         ssh laptop "xdg-open ~/share-inbox/$base"
     fi
 }
+
+# Repoint gpg-agent pinentry at the shell being typed in. ssh-agent-protocol
+# requests carry no env, so the agent falls back to its stored startup tty;
+# without this, prompts land on whatever display registered last (roulette).
+export GPG_TTY=$TTY
+_gpg_point_pinentry_here() {
+    gpg-connect-agent --no-autostart updatestartuptty /bye >/dev/null 2>&1
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook preexec _gpg_point_pinentry_here
