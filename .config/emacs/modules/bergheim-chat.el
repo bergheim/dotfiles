@@ -623,8 +623,10 @@ Searches from the bottom of the channel buffer backward for the exact text."
   (setopt erc-image-inline-rescale 'window)
   (erc-update-modules))
 
+;; Arch's `mbedtls' is 4.x, whose headers picomemo needs (aes.h/gcm.h) are gone;
+;; the 3.x compat package keeps them under a private pkgconfig dir.
 (elpaca-defscript jabber-build-omemo (:type system :dir source)
-  ("make" "module"))
+  ("env" "PKG_CONFIG_PATH=/usr/lib/mbedtls3/pkgconfig" "make" "module"))
 
 (use-package jabber
   :ensure (jabber
