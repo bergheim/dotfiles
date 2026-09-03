@@ -51,17 +51,42 @@
   (or (getenv "EMACS_CONTAINER")
       (not (display-graphic-p))))
 
+(defun bergheim/wl-clipboard-p ()
+  "Return non-nil when kills should go through wl-clipboard.
+PGTK's own selection handling wedges under Wayland: once another
+client takes the clipboard, every later set_selection is silently
+dropped while `gui-backend-selection-owner-p' still claims
+ownership, and reads come back nil. A subprocess gets a fresh
+Wayland connection and is unaffected."
+  (and (not (bergheim/terminal-clipboard-available-p))
+       (getenv "WAYLAND_DISPLAY")
+       (executable-find "wl-copy")))
+
 (defun bergheim/send-osc52-to-terminal (text)
   "Export TEXT to the host clipboard.
 On TTY/container frames, write an OSC 52 escape to the
 controlling terminal."
-  (if (bergheim/terminal-clipboard-available-p)
-      (let ((inhibit-message t))
-        (send-string-to-terminal
-         (format "\e]52;c;%s\a"
-                 (base64-encode-string (encode-coding-string text 'utf-8) t))))
-    (when (fboundp 'gui-select-text)
-      (gui-select-text text))))
+  (cond
+   ((bergheim/terminal-clipboard-available-p)
+    (let ((inhibit-message t))
+      (send-string-to-terminal
+       (format "\e]52;c;%s\a"
+               (base64-encode-string (encode-coding-string text 'utf-8) t)))))
+   ((bergheim/wl-clipboard-p)
+    (let ((coding-system-for-write 'utf-8))
+      (call-process-region text nil "wl-copy" nil nil)))
+   ((fboundp 'gui-select-text)
+    (gui-select-text text))))
+
+(defun bergheim/clipboard-paste ()
+  "Return the host clipboard contents, or nil when empty."
+  (if (bergheim/wl-clipboard-p)
+      (with-temp-buffer
+        (let ((coding-system-for-read 'utf-8))
+          (when (eq 0 (call-process "wl-paste" nil t nil "--no-newline"))
+            (let ((text (buffer-string)))
+              (unless (string-empty-p text) text)))))
+    (gui-selection-value)))
 
 (use-package emacs
   :ensure nil
@@ -113,7 +138,8 @@ controlling terminal."
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
 
-  (setq interprogram-cut-function #'bergheim/send-osc52-to-terminal)
+  (setq interprogram-cut-function #'bergheim/send-osc52-to-terminal
+        interprogram-paste-function #'bergheim/clipboard-paste)
 
 
   ;; Reload files that are changed outside of Emacs
