@@ -8,12 +8,12 @@
 #   record-niri --local …      # no scp; ID--title__screencast (no public)
 #
 # Stop the take with the bound key:  pkill -INT wf-recorder
-# Output goes to ~/Videos/screencasts/; shared copy scp'd to burial /f/screencasts/.
+# Output goes to ~/Videos/screencasts/; shared copy scp'd to burial /srv/www/share/screencasts/.
 
 set -u
 
 VIDDIR="$HOME/Videos/screencasts"
-SHARE_PUBLIC="${SHARE_PUBLIC_URL:-https://share.glvortex.net/f}"
+SHARE_PUBLIC="${SHARE_PUBLIC_URL:-https://share.glvortex.net/share}"
 SHARE=1
 MODE=region
 for arg in "$@"; do
@@ -125,7 +125,10 @@ if [ "$SHARE" -eq 0 ]; then
 fi
 
 chmod 644 "$OUTWEBM"
-if ! scp "$OUTWEBM" "burial:stash/share/screencasts/${STEM}.webm"; then
+mkdir -p "$HOME/stash/share/screencasts"
+cp "$OUTWEBM" "$HOME/stash/share/screencasts/${STEM}.webm"
+
+if ! scp "$OUTWEBM" "burial:/srv/www/share/screencasts/${STEM}.webm"; then
     note "scp to burial failed; kept $OUTWEBM"
     exit 1
 fi

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # record-sway — capture a screencast via wf-recorder, transcode to AV1
-# webm, scp to burial stash/share/screencasts (nginx /f/).
+# webm, scp to burial /srv/www/share/screencasts (nginx /share/).
 # mkv + webm both land in ~/Videos/screencasts/.
 #
 # Usage:
@@ -15,7 +15,7 @@
 set -euo pipefail
 
 ARCHIVE_DIR="${RECORD_ARCHIVE_DIR:-$HOME/Videos/screencasts}"
-SHARE_PUBLIC="${SHARE_PUBLIC_URL:-https://share.glvortex.net/f}"
+SHARE_PUBLIC="${SHARE_PUBLIC_URL:-https://share.glvortex.net/share}"
 
 SHARE=1
 MODE=region
@@ -94,7 +94,10 @@ if [ "$SHARE" -eq 0 ]; then
 fi
 
 chmod 644 "$WEBM"
-if ! scp "$WEBM" "burial:stash/share/screencasts/${STEM}.webm"; then
+mkdir -p "$HOME/stash/share/screencasts"
+cp "$WEBM" "$HOME/stash/share/screencasts/${STEM}.webm"
+
+if ! scp "$WEBM" "burial:/srv/www/share/screencasts/${STEM}.webm"; then
     notify-send "Share failed" "scp to burial failed"
     exit 1
 fi

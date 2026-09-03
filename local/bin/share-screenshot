@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# share-screenshot — capture, resize via vips, scp to burial stash/share/screenshots
-# (nginx /f/). Local PNG stays in Pictures/screenshots.
+# share-screenshot — capture, resize via vips, scp to burial /srv/www/share/screenshots
+# (nginx /share/). Local PNG stays in Pictures/screenshots, webp copy in stash/share.
 # Uses grimshot on Wayland and scrot+xdotool on X11.
 #
 # Usage:   share-screenshot [mode] [edit] [--local]
@@ -144,11 +144,14 @@ if [[ -z ${SHARE_BASE_URL:-} ]]; then
   exit 1
 fi
 
-if ! scp "$WEBP" "burial:stash/share/screenshots/${STEM}.webp"; then
+mkdir -p "$HOME/stash/share/screenshots"
+cp "$WEBP" "$HOME/stash/share/screenshots/${STEM}.webp"
+
+if ! scp "$WEBP" "burial:/srv/www/share/screenshots/${STEM}.webp"; then
   notify-send "Share failed" "scp to burial failed"
   exit 1
 fi
 
-URL="$SHARE_BASE_URL/f/screenshots/${STEM}.webp"
+URL="$SHARE_BASE_URL/share/screenshots/${STEM}.webp"
 printf '%s' "$URL" | copy_url
 notify-send "URL copied" "$URL"
