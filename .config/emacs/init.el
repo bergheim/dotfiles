@@ -19,6 +19,9 @@
       (call-interactively fn))))
 
 (defvar elpaca-installer-version 0.12)
+;; Master builds would otherwise be pinned to the last release's date.
+(defvar elpaca-core-date
+  (list (string-to-number (format-time-string "%Y%m%d" emacs-build-time))))
 (defvar elpaca-directory (expand-file-name "elpaca" bergheim/cache-dir))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-sources-directory (expand-file-name "sources/" elpaca-directory))
