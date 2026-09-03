@@ -1,17 +1,15 @@
 ;;; bergheim-containers.el --- Docker and devcontainers -*- lexical-binding: t; -*-
 
-(use-package docker
-  :config
-  (setq docker-show-messages nil)
-  (bergheim/global-menu-keys
-    "ad" '(:ignore t :which-key "Docker")
-    "add" '(docker :which-key "Docker")
-    "adc" '(docker-containers :which-key "Containers")
-    "adi" '(docker-images :which-key "Images")
-    "adn" '(docker-networks :which-key "Networks")
-    "adv" '(docker-volumes :which-key "Volumes")))
-
-(use-package docker-compose-mode)
+;; (use-package docker
+;;   :config
+;;   (setq docker-show-messages nil)
+;;   (bergheim/global-menu-keys
+;;     "ad" '(:ignore t :which-key "Docker")
+;;     "add" '(docker :which-key "Docker")
+;;     "adc" '(docker-containers :which-key "Containers")
+;;     "adi" '(docker-images :which-key "Images")
+;;     "adn" '(docker-networks :which-key "Networks")
+;;     "adv" '(docker-volumes :which-key "Volumes")))
 
 (defun bergheim/ghostel-command (command)
   "Run shell COMMAND in a new Ghostel terminal."
