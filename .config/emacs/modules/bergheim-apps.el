@@ -1,11 +1,52 @@
 ;;; bergheim-apps.el --- Misc applications (password-store, proced, share, smudge) -*- lexical-binding: t; -*-
 
+(defvar-local bergheim/pass--entry nil)
+
+(defvar bergheim/pass-skeleton "user: \nurl: \n"
+  "Fields prefilled for a new entry, below the generated password.")
+
+(defun bergheim/pass-edit (entry)
+  "Edit ENTRY in a buffer: password on line 1, `key: value' below.
+A new entry starts with a generated password and `bergheim/pass-skeleton'.
+C-c C-c writes it through pass, C-c C-k throws it away."
+  (interactive (progn (require 'password-store)
+                      (list (completing-read "Entry: " (password-store-list)))))
+  (let ((new (not (member entry (password-store-list)))))
+    (pop-to-buffer (get-buffer-create (format "*pass: %s*" entry)))
+    (erase-buffer)
+    (insert (if new
+                (concat (string-trim
+                         (shell-command-to-string "gpg --gen-random --armor 1 18"))
+                        "\n" bergheim/pass-skeleton)
+              (password-store--run-show entry)))
+    (setq bergheim/pass--entry entry)
+    (keymap-local-set "C-c C-c" #'bergheim/pass-save)
+    (keymap-local-set "C-c C-k" #'kill-current-buffer)
+    (goto-char (point-min))
+    (when new (forward-line 1) (end-of-line))
+    (message "C-c C-c to save, C-c C-k to abort")))
+
+(defun bergheim/pass-save ()
+  "Write the current pass edit buffer back to the store."
+  (interactive)
+  (unless bergheim/pass--entry (user-error "Not a pass buffer"))
+  (password-store-insert bergheim/pass--entry
+                         (string-trim-right (buffer-string) "\n+"))
+  (kill-buffer))
+
 (use-package password-store
+  :init
+  (auth-source-pass-enable)
+  (setq auth-sources '(password-store))
   :general
   (bergheim/global-menu-keys
     "yp" 'password-store-copy
+    "yf" '(password-store-copy-field :which-key "Copy pass field")
+    "yu" '(password-store-url :which-key "Open pass url")
     "ip" 'password-store-generate
-    "iP" 'password-store-generate-no-symbols))
+    "iP" 'password-store-generate-no-symbols
+    "in" '(bergheim/pass-edit :which-key "New/edit entry")
+    "io" '(password-store-otp-append :which-key "Add OTP uri")))
 
 (use-package pass
   :unless bergheim/container-mode-p)
