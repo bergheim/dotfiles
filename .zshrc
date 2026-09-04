@@ -199,8 +199,10 @@ alias diff='diff --color=auto'
 
 alias shakemacs="pkill -USR2 emacs"
 alias tmux='tmux -2'
-alias ht='mosh --ssh="ssh -p 1902" berghome -- ta me'
-alias h='mosh --ssh="ssh -p 1902" berghome'
+# alias ht='mosh --ssh="ssh -p 1902" berghome -- ta me'
+# alias h='mosh --ssh="ssh -p 1902" berghome'
+alias ht='ssh -t home ta me'
+alias h='ssh home'
 
 alias icat='kitten icat'
 
