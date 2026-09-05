@@ -414,10 +414,11 @@ bindsym --to-code $mod+comma exec sysmenu
 # Password manager (replace rofi-pass with wofi equivalent)
 bindsym $mod+p exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/pass-start)'
 bindsym $mod+ctrl+p exec fuzzel-pass
+# Grabs the focused browser's URL first, so a new entry name is pre-seeded.
+bindsym --to-code $mod+$alt+p exec pass-url
 
 # Display arrangement picker (mirror / extend / internal / external / auto).
-# $mod+p is taken by fuzzel-pass above.
-bindsym $mod+shift+p exec display-mode
+bindsym $mod+o exec display-mode
 
 # Clipboard history via Emacs; keep fuzzel available while test-driving it
 bindsym $mod+c exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/cliphist-start)'
