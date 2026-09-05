@@ -25,15 +25,23 @@ groups:
     members:
       - bge-m3
 
+  # Small VLM for karakeep image tagging. exclusive: false so it coexists with
+  # tink instead of evicting a 17GB chat brain for one screenshot.
+  vision:
+    swap: false
+    exclusive: false
+    members:
+      - qwen3.5-vision
+
 models:
   gemma4:
     cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-26B-A4B-it-GGUF:Q4_K_M --jinja -c 16384
     ttl: 300
     aliases:
       - "gemma4:26b"
-  gemma4-dense:
-    cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-31B-it-GGUF:Q4_K_M --jinja -c 16384 --chat-template-kwargs '{"enable_thinking":false}'
-    ttl: 300
+  # gemma4-dense:
+  #   cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-31B-it-GGUF:Q4_K_M --jinja -c 16384 --chat-template-kwargs '{"enable_thinking":false}'
+  #   ttl: 300
 
   gemma4-vision:
     cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-26B-A4B-it-GGUF:Q4_K_M --mmproj mmproj-BF16.gguf --jinja
@@ -44,12 +52,6 @@ models:
   gemma4-voice:
     cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-E4B-it-GGUF:Q4_K_M -c 8192 --jinja
     ttl: 120
-
-  muse-glimmer:
-    cmd: llama-server --port ${PORT}
-      -hf meta-models/Muse-Glimmer-30B-GGUF:kquant-17gb
-      --jinja --no-mmproj -c 16384 --cache-reuse 256
-      --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on
 
   qwen3.6-dense:
     cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.6-27B-GGUF:Q4_K_M --jinja
@@ -62,7 +64,8 @@ models:
     # frees ~7GB VRAM so the desktop's ~5GB graphics use no longer OOMs us.
     # 32k ctx costs only ~1.5GB at q8; --cache-reuse keeps KV valid when old IRC
     # lines scroll off the front of the prompt (avoids full reprocess per message)
-    cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive:IQ4_XS --jinja --no-mmproj -c 32768 --cache-reuse 256 --n-cpu-moe 8 --cache-type-k q8_0 --cache-type-v q8_0 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
+    # cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive:IQ4_XS --jinja --no-mmproj -c 32768 --cache-reuse 256 --n-cpu-moe 8 --cache-type-k q8_0 --cache-type-v q8_0 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
+    cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.8-27B-Uncensored-HauhauCS-Aggressive-MTP-GGUF:IQ4_XS --jinja --no-mmproj -c 32768 --cache-reuse 256 --cache-type-k q8_0 --cache-type-v q8_0 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     # cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive:Q4_K_P --jinja --no-mmproj -c 16384 -ngl 99 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     # cmd: llama-server --port ${PORT} -hf unsloth/gemma-4-31B-it-GGUF:Q4_K_M --jinja -c 16384 --chat-template-kwargs '{"enable_thinking":false}'
     # No ttl: tink's resident brain never idle-unloads — only a chat-group swap
@@ -84,9 +87,7 @@ models:
     ttl: 1800
 
   bot-thinking:
-    # Same VRAM diet as bot-fast (see above); 32k because thinking traces are long,
-    # and q8 KV matters most here.
-    cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.6-35B-A3B-GGUF:IQ4_XS --jinja -c 32768 --n-cpu-moe 8 --cache-type-k q8_0 --cache-type-v q8_0 --temp 1.0 --top-p 0.95 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on
+    cmd: llama-server --port ${PORT} -hf HauhauCS/Qwen3.8-27B-Uncensored-HauhauCS-Aggressive-MTP-GGUF:IQ4_XS --jinja --no-mmproj -c 32768 --cache-reuse 256 --cache-type-k q8_0 --cache-type-v q8_0 --reasoning-budget 0 --temp 0.7 --top-p 0.8 --top-k 20 --min-p 0.0 --presence-penalty 1.5 --flash-attn on --chat-template-kwargs '{"enable_thinking":false}'
     ttl: 1800
 
   qwen3.6-default:
@@ -103,6 +104,68 @@ models:
     aliases:
       - "qwen3-coder"
 
+  muse-glimmer:
+    # Meta Muse Glimmer 30B (Apache 2.0, 2026-08-10) — Meta's first open weights
+    # since Llama 4 and their first ever under Apache 2.0. Dense 30B, distilled
+    # from the proprietary Muse Spark. Deliberately UNGROUPED = dev tier: the
+    # hidden (default) group is exclusive:true, so loading this evicts tink and
+    # hands us the whole ~23GiB card. No VRAM diet needed here — only tink's
+    # group has to survive a desktop that might grow a browser or a game.
+    #
+    # Full 131k context is affordable because the attention is 3:1 SWA:global —
+    # only a quarter of layers hold full-context KV, the rest cap at window size.
+    # Raschka's headline 52 KiB/token is the full-attention-equivalent and
+    # overstates the real allocation; a public 4090 run fits 130k in ~19.3GB
+    # total. Budget here: 16.1GiB weights + ~2-3GiB KV at q8 + ~1GiB buffers.
+    #
+    # bartowski, not Meta's own repo, on purpose: meta-models/ ships THREE files
+    # matching a Q4_K_M tag (model, dflash drafter, mmproj), which is exactly the
+    # -hf tag-matching trap. Meta's purpose-built muse-glimmer-30B-kquant-17gb
+    # (16.76GB) is likely better per byte but needs an explicit filename.
+    #
+    # DFlash speculative decoding (block-diffusion drafter, 16 tokens/forward,
+    # ~75 t/s decode on a 4090) once this is stable: download dflash-kquant.gguf
+    # and add `-md /path/to/dflash-kquant.gguf --spec-type draft-dflash`.
+    # Skip it if serving concurrent slots — acceptance collapses past -np 4
+    # (llama.cpp #27117); --spec-draft-n-max 1 recovers it.
+    #
+    # Known rough edges (model is days old): Adaptive P sampling broken (#27066),
+    # reasoning_effort broken (#27023), Vulkan load crash (#27072, CUDA fine).
+    # Caveat on use: 82% hallucination rate on AA-Omniscience vs 49% for
+    # Qwen3.6-27B. Good agent executor, bad oracle — ground it with tools.
+    cmd: llama-server --port ${PORT} -hf bartowski/Muse-Glimmer-30B-GGUF:Q4_K_M --jinja --no-mmproj -c 131072 --cache-reuse 256 --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on
+    ttl: 1800
+    aliases:
+      - "glimmer"
+
+  # qwen3.8:
+  #   Qwen3.8-27B (Apache 2.0, 2026-08-14) — beats Muse Glimmer on every
+  #   head-to-head Qwen published, and is a real jump over Qwen3.6-27B
+  #   (Terminal Bench 63.4->73.0, SWE-bench Pro 53.5->61.7, OSWorld 63.9->84.3).
+  #   NOT enabled yet, and the blocker is one specific thing: its chat template
+  #   has five raise_exception assertions, and llama.cpp's autoparser builds a
+  #   tool-call parser by probing the template with synthetic message sequences.
+  #   The probes fail, so --jinja returns "Unable to generate parser for this
+  #   template" — an HTTP 400 before a single token. Claude Code and Codex both
+  #   fail out of the box (#27107, #27139).
+  #
+  #   Workaround is a local template file, which is why this is commented rather
+  #   than live: fetch Qwen3.6's chat_template.jinja (or the patched gist in
+  #   #27107) to a path on this box and add --chat-template-file <path>.
+  #   Treat that as provisional — running Qwen3.6's template against Qwen3.8 can
+  #   silently mismatch thinking/tool tokens. Re-test with the stock template
+  #   once the fix lands upstream, then drop the flag.
+  #
+  #   Also unresolved: whether hybrid Gated DeltaNet models ever restore a
+  #   context checkpoint (#22384, closed as "fix is incorrect", reporter's
+  #   counter-evidence unanswered). Measure turn-2 prefill before trusting this
+  #   for multi-turn agent work. Same failure mode --cache-reuse works around.
+  #   MTP + --split-mode tensor deadlocks CUDA (#27122); irrelevant single-GPU
+  #   (layer split is the default) but do not pair them.
+  #
+  #   cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.8-27B-GGUF:Q4_K_M --jinja --no-mmproj -c 65536 --cache-reuse 256 --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on --chat-template-file /path/to/qwen3.6-chat_template.jinja
+  #   ttl: 1800
+
   uncensored:
     # Same VRAM diet as bot-fast: IQ4_XS (17.4GB vs Q4_K_M's 19.7GB) + q8 KV +
     # 8 expert layers on CPU — Q4_K_M + the ~5.3GB desktop was over the card total.
@@ -113,6 +176,13 @@ models:
 
   uncensored-image:
     cmd: llama-server --port ${PORT} -hf mradermacher/Huihui-Qwen3-VL-30B-A3B-Instruct-abliterated-GGUF:Q4_K_M --jinja --no-mmproj
+    ttl: 300
+
+  qwen3.5-vision:
+    # PhotoPrism 2026-08-08 label benchmark: 88% subject coverage at 3.4GB, ahead
+    # of gemma4 (84% at 9.6GB), which systematically calls a cheetah a leopard.
+    # No --flash-attn: llama.cpp #21272 drops the f32 vision projector to CPU on CUDA.
+    cmd: llama-server --port ${PORT} -hf unsloth/Qwen3.5-4B-GGUF:Q4_K_M --jinja -c 8192 --reasoning-budget 0 --chat-template-kwargs '{"enable_thinking":false}'
     ttl: 300
 
   bge-m3:
