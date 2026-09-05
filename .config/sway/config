@@ -415,7 +415,7 @@ bindsym --to-code $mod+comma exec sysmenu
 bindsym $mod+p exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/pass-start)'
 bindsym $mod+ctrl+p exec fuzzel-pass
 # Grabs the focused browser's URL first, so a new entry name is pre-seeded.
-bindsym --to-code $mod+$alt+p exec pass-url
+bindsym $mod+shift+p exec pass-url
 
 # Display arrangement picker (mirror / extend / internal / external / auto).
 bindsym $mod+o exec display-mode
