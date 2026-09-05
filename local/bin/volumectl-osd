@@ -1,5 +1,35 @@
 #!/bin/sh
-# volumectl + avizo -d when the session is dark (light-colored icons).
-extra=
-[ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] && extra=-d
-exec volumectl $extra "$@"
+# Volume/mic keys through the shared osd script. volumectl used avizo's
+# built-in --image-resource icons, which fight the image-path every other
+# key sets via osd: avizo kept showing the stale image (e.g. skip-forward)
+# on volume changes. Setting image-path fresh on every call is deterministic.
+set -eu
+
+dev=@DEFAULT_AUDIO_SINK@
+base=audio-volume
+
+while [ $# -gt 1 ]; do
+	case "$1" in
+		-m) dev=@DEFAULT_AUDIO_SOURCE@; base=microphone-sensitivity ;;
+		-u) wpctl set-mute "$dev" 0 ;;
+		-d) ;; # dark handled inside osd via color-scheme
+	esac
+	shift
+done
+
+case "$1" in
+	up) wpctl set-volume -l 1.0 "$dev" 5%+ ;;
+	down) wpctl set-volume "$dev" 5%- ;;
+	toggle-mute) wpctl set-mute "$dev" toggle ;;
+esac
+
+out=$(wpctl get-volume "$dev") # "Volume: 0.55 [MUTED]"
+vol=${out#Volume: }
+vol=${vol%% *}
+
+case "$out" in
+	*MUTED*) level=muted ;;
+	*) level=$(awk -v v="$vol" 'BEGIN { print v == 0 ? "muted" : v < 0.34 ? "low" : v < 0.67 ? "medium" : "high" }') ;;
+esac
+
+exec osd "status/24/$base-$level" "$vol"
