@@ -1,5 +1,17 @@
 #!/bin/sh
-# lightctl + avizo -d when the session is dark (light-colored icons).
-extra=
-[ "$(gsettings get org.gnome.desktop.interface color-scheme)" = "'prefer-dark'" ] && extra=-d
-exec lightctl $extra "$@"
+# Brightness keys through the shared osd script, same reason as
+# volumectl-osd: avizo's --image-resource icons go stale next to the
+# image-path every other key sets.
+set -eu
+
+case "$1" in
+	up) brightnessctl -m set 5%+ >/dev/null ;;
+	down) brightnessctl -m set 5%- >/dev/null ;;
+esac
+
+pct=$(brightnessctl -m | cut -d, -f4)
+pct=${pct%\%}
+
+level=low
+[ "$pct" -ge 50 ] && level=high
+exec osd "actions/24/brightness-$level" "$(awk -v p="$pct" 'BEGIN { print p / 100 }')"
