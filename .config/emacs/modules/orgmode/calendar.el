@@ -18,7 +18,8 @@
 
   ;; TODO: remove once https://github.com/dengste/org-caldav/pull/349 lands
   ;; (issue #323: description lines starting with `*' become headings and
-  ;; corrupt the inbox)
+  ;; corrupt the inbox).  Escape with a zero width space on import; strip
+  ;; it from the exported ics so the server round-trips unchanged.
   (advice-add
    'org-caldav--insert-description :override
    (lambda (description)
@@ -31,9 +32,18 @@
            (save-excursion
              (goto-char beg)
              (while (re-search-forward "^\\*" end t)
-               (replace-match " *" t t)))))
+               (replace-match "\u200B*" t t)))))
        (when org-caldav-description-blank-line-after (newline))
        (newline))))
+  (advice-add
+   'org-caldav-generate-ics :filter-return
+   (lambda (buf)
+     (with-current-buffer buf
+       (save-excursion
+         (goto-char (point-min))
+         (while (search-forward "\u200B" nil t)
+           (replace-match "" t t))))
+     buf))
   ;; apparently these are experimental
   ;; give org-pushed events a 1h VALARM so phone/Nextcloud reminders fire
   (setq org-icalendar-alarm-time 60)
@@ -137,6 +147,7 @@
    "g" '(calfw-org-goto-date :which-key "goto date")
    "t" '(calfw-navi-goto-today-command :which-key "today")
    "a" '(calfw-org-open-agenda-day :which-key "agenda day")
+   "v" '(calfw-show-details-command :which-key "day details")
    "d" '(calfw-change-view-day :which-key "day view")
    "w" '(calfw-change-view-week :which-key "week view")
    "W" '(calfw-change-view-two-weeks :which-key "two weeks view")
