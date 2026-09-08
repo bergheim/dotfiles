@@ -34,6 +34,11 @@
   (bergheim/load-file "modules/mu4e/actions.el")
   (bergheim/load-file "modules/mu4e/search.el")
 
+  ;; Accept/Decline/Tentative buttons on calendar invites; replies go
+  ;; to the organizer via the current mu4e context.
+  (require 'mu4e-icalendar)
+  (mu4e-icalendar-setup)
+
   (defun bergheim//mu4e-ensure-signer ()
     "Populate `mml-secure-openpgp-signers' lazily on first compose so
 package load does not trigger a GPG prompt."
