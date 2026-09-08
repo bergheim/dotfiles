@@ -4,6 +4,18 @@
   :ensure t
   :defer t
   :config
+  ;; TODO: remove once https://github.com/dengste/org-caldav/pull/348 lands
+  ;; (Emacs 31 warns about the missing lexical-binding cookie in the sync
+  ;; state file on every sync)
+  (advice-add
+   'org-caldav-save-sync-state :after
+   (lambda (&rest _)
+     (let ((f (org-caldav-sync-state-filename org-caldav-calendar-id)))
+       (when (file-exists-p f)
+         (with-temp-file f
+           (insert ";; -*- lexical-binding: t -*-\n")
+           (insert-file-contents f))))))
+
   ;; TODO: remove once https://github.com/dengste/org-caldav/pull/349 lands
   ;; (issue #323: description lines starting with `*' become headings and
   ;; corrupt the inbox)
