@@ -35,6 +35,8 @@
        (when org-caldav-description-blank-line-after (newline))
        (newline))))
   ;; apparently these are experimental
+  ;; give org-pushed events a 1h VALARM so phone/Nextcloud reminders fire
+  (setq org-icalendar-alarm-time 60)
   (setq org-icalendar-include-todo 'all
         org-caldav-sync-todo t
         org-caldav-todo-percent-states
