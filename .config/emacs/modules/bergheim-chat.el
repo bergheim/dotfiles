@@ -65,15 +65,15 @@
   (clatter-feed-hide-channels '("#ai"))
   :general
   (bergheim/global-menu-keys
-    "ac" '(:ignore t :which-key "Clatter")
-    "acc" '(bergheim/clatter-launch :which-key "Connect + layout")
-    "acC" '(bergheim/clatter-connect :which-key "Connect only")
-    "acq" '(clatter-disconnect :which-key "Disconnect")
-    "acs" '(clatter-status :which-key "Status")
-    "acb" '(bergheim/consult-clatter-buffer :which-key "Channels")
-    "act" '(clatter-track-switch :which-key "Next tracked")
-    "acl" '(clatter-track-list :which-key "Tracked buffers")
-    "acu" '(bergheim/clatter-feed-layout :which-key "Unified layout"))
+    "ai" '(:ignore t :which-key "IRC (clatter)")
+    "aic" '(bergheim/clatter-launch :which-key "Connect + layout")
+    "aiC" '(bergheim/clatter-connect :which-key "Connect only")
+    "aiq" '(clatter-disconnect :which-key "Disconnect")
+    "ais" '(clatter-status :which-key "Status")
+    "aib" '(bergheim/consult-clatter-buffer :which-key "Channels")
+    "ait" '(clatter-track-switch :which-key "Next tracked")
+    "ail" '(clatter-track-list :which-key "Tracked buffers")
+    "aiu" '(bergheim/clatter-feed-layout :which-key "Unified layout"))
   (bergheim/localleader-keys
     :states '(normal visual)
     :keymaps 'clatter-mode-map
