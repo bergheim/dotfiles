@@ -417,6 +417,9 @@ bindsym $mod+ctrl+p exec fuzzel-pass
 # Grabs the focused browser's URL first, so a new entry name is pre-seeded.
 bindsym $mod+shift+p exec pass-url
 
+# stream!
+bindsym $mod+m exec mpv-url
+
 # Display arrangement picker (mirror / extend / internal / external / auto).
 bindsym $mod+o exec display-mode
 
@@ -640,8 +643,7 @@ exec signal-desktop
 for_window [app_id="qalculate-gtk"] floating enable
 for_window [title="Microsoft Teams Notification"] floating enable
 
-for_window [title="floating"] floating enable, move center
-for_window [title="^floating$"] resize set 70ppt 82ppt
+for_window [app_id="^floating$"] floating enable, sticky enable, move center, resize set 70ppt 82ppt
 
 for_window [app_id="gnome-calendar"] floating enable
 for_window [title="^emacs-runner"] floating enable, move position center, move scratchpad

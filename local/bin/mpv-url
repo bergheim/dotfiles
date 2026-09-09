@@ -1,0 +1,21 @@
+#!/bin/sh
+# Copy the focused browser's address bar, then play it in mpv.
+set -e
+
+wtype -M ctrl -k l -m ctrl
+wtype -M ctrl -k c -m ctrl
+wtype -k Escape
+sleep 0.2
+
+url=$(wl-paste)
+case "$url" in
+http*) ;;
+*)
+	notify-send -u critical "mpv-url" "clipboard is not a URL: $url"
+	exit 1
+	;;
+esac
+
+if ! out=$(mpv --force-window --wayland-app-id=floating "$url" 2>&1); then
+	notify-send -u critical "mpv-url" "mpv failed: $(printf '%s' "$out" | tail -n 2)"
+fi
