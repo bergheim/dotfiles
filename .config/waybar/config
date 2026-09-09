@@ -11,7 +11,7 @@
 
     "id" : "bar",
     "output": ["DP-1", "eDP-1"],
-    "layer": "top", // Waybar at top layer
+    "layer": "bottom", // Windows may cover the bar; exclusive zone still reserves tiling space
     "position": "top",
     "fixed-center": false,
     "height": 30,
@@ -421,7 +421,7 @@
 {
     "id": "bar-secondary",
     "output": "DP-2",
-    "layer": "top",
+    "layer": "bottom",
     "position": "top",
     "height": 30,
     "spacing": 4,

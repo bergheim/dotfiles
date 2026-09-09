@@ -160,6 +160,17 @@ bindsym $mod+f fullscreen toggle
 # toggle tiling / floating
 bindsym $mod+$alt+f floating toggle
 
+# Small sticky window placement on the current output.
+bindsym $mod+$alt+p mode "place floating"
+mode "place floating" {
+    bindsym Shift+h exec sway-place-corner left screen; mode "default"
+    bindsym Shift+l exec sway-place-corner right screen; mode "default"
+    bindsym h exec sway-place-corner left workspace; mode "default"
+    bindsym l exec sway-place-corner right workspace; mode "default"
+    bindsym Escape mode "default"
+    bindsym Return mode "default"
+}
+
 # make window small and persist across desktops
 bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; move position center; sticky enable
 

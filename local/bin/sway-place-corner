@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""Place a small window at workspace corners, optionally expanded to screen edges."""
+import json
+import subprocess
+import sys
+
+
+def walk(node):
+    yield node
+    for child in node.get("nodes", []) + node.get("floating_nodes", []):
+        yield from walk(child)
+
+
+def tree():
+    return json.loads(subprocess.check_output(["swaymsg", "-t", "get_tree", "-r"]))
+
+
+def command(text):
+    replies = json.loads(subprocess.check_output(["swaymsg", "-r", text]))
+    if not all(reply.get("success") for reply in replies):
+        raise RuntimeError(replies)
+
+
+def placement(output, workspace, window, side, expand):
+    bounds = output if expand else workspace
+    border = 0 if expand else 2
+    width = int(bounds["width"] * (0.35 if expand else 0.3))
+    height = round((width - border) * window["height"] / window["width"]) + border
+    x = bounds["x"] + (bounds["width"] - width if side == "right" else 0)
+    return x, bounds["y"], width, height
+
+
+if __name__ == "__main__":
+    if sys.argv[1:] == ["--check"]:
+        for ox, oy in [(0, 0), (-1920, -100), (1440, 200)]:
+            output = dict(x=ox, y=oy, width=1440, height=900)
+            workspace = dict(x=ox+15, y=oy+45, width=1410, height=840)
+            window = dict(width=960, height=540)
+            for side in ("left", "right"):
+                x, y, w, h = placement(output, workspace, window, side, False)
+                X, Y, W, H = placement(output, workspace, window, side, True)
+                assert Y == oy and y == oy + 45
+                assert W > w and H > h
+                assert abs(H - W * 9 / 16) <= 0.5
+                assert (X == ox) if side == "left" else (X+W == ox+1440)
+                assert placement(output, workspace, window, side, True) == (X, Y, W, H)
+        sys.exit(0)
+    if len(sys.argv) != 3 or sys.argv[1] not in ("left", "right") or sys.argv[2] not in ("workspace", "screen"):
+        sys.exit("Usage: sway-place-corner left|right workspace|screen")
+    root = tree()
+    output = next(node for node in walk(root) if node.get("type") == "output" and any(child.get("focused") for child in walk(node)))
+    workspace = next(node for node in walk(output) if node.get("type") == "workspace" and any(child.get("focused") for child in walk(node)))
+    focused = next(node for node in walk(workspace) if node.get("focused"))
+    target = f'[con_id={focused["id"]}]'
+    rect = workspace["rect"]
+    window = focused.get("geometry", {})
+    if window.get("width", 0) <= 0 or window.get("height", 0) <= 0:
+        sys.exit("Window has no usable aspect ratio")
+    expand = sys.argv[2] == "screen"
+    x, y, width, height = placement(output["rect"], rect, window, sys.argv[1], expand)
+    border = "none" if expand else "pixel 1"
+    command(f'{target} fullscreen disable, floating enable, sticky enable, border {border}, resize set {width} px {height} px, move absolute position {x} px {y} px')
