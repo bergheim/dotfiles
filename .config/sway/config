@@ -160,6 +160,12 @@ bindsym $mod+f fullscreen toggle
 # toggle tiling / floating
 bindsym $mod+$alt+f floating toggle
 
+# fullscreen the floating window (mpv etc) without focusing it first
+bindsym $mod+shift+f exec swaymsg '[app_id="floating"] focus, fullscreen toggle'
+
+# move the floating window (mpv etc) to the next corner
+bindsym $mod+shift+d exec sway-place-corner cycle screen
+
 # Small sticky window placement on the current output.
 bindsym $mod+$alt+p mode "place floating"
 mode "place floating" {
@@ -170,9 +176,6 @@ mode "place floating" {
     bindsym Escape mode "default"
     bindsym Return mode "default"
 }
-
-# make window small and persist across desktops
-bindsym $mod+shift+f fullscreen disable; floating toggle; resize set 1920 1080; move position center; sticky enable
 
 # stick windows between desktops etc
 # bindsym $mod+Shift+s sticky toggle
@@ -346,12 +349,10 @@ bindsym $mod+F5 exec alacritty --class floating -e impala
 # reload the configuration file (F6 alone collides with the TUXEDO profile key)
 bindsym $mod+Shift+F6 reload
 
-# Start screencast
-# region
-bindsym $mod+Shift+r exec "record-sway"
-# window
-bindsym $mod+Shift+w exec "record-sway window"
-bindsym $mod+Shift+t exec "pkill -INT wf-recorder && notify-send 'Screen Record' 'Recording stopped.'"
+# Screencasts: screenshot chords + Super; any chord again stops recording.
+bindsym --no-repeat $mod+Print exec record-sway
+bindsym --no-repeat $mod+Shift+Print exec record-sway window
+bindsym --no-repeat $mod+Ctrl+Print exec record-sway output
 
 # swayosd disabled 2026-08-18: test for the amdgpu/TTM LRU hardlock
 # (denote 20260601T112404) -- swayosd-server was the faulting task in

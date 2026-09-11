@@ -3,6 +3,7 @@
 import json
 import subprocess
 import sys
+import time
 
 
 def walk(node):
@@ -21,13 +22,23 @@ def command(text):
         raise RuntimeError(replies)
 
 
-def placement(output, workspace, window, side, expand):
+CORNERS = [("left", "top"), ("right", "top"), ("right", "bottom"), ("left", "bottom")]
+
+
+def placement(output, workspace, window, side, expand, vertical="top"):
     bounds = output if expand else workspace
     border = 0 if expand else 2
     width = int(bounds["width"] * (0.35 if expand else 0.3))
     height = round((width - border) * window["height"] / window["width"]) + border
     x = bounds["x"] + (bounds["width"] - width if side == "right" else 0)
-    return x, bounds["y"], width, height
+    y = bounds["y"] + (bounds["height"] - height if vertical == "bottom" else 0)
+    return x, y, width, height
+
+
+def next_corner(rect, bounds):
+    side = "right" if rect["x"] + rect["width"] / 2 > bounds["x"] + bounds["width"] / 2 else "left"
+    vertical = "bottom" if rect["y"] + rect["height"] / 2 > bounds["y"] + bounds["height"] / 2 else "top"
+    return CORNERS[(CORNERS.index((side, vertical)) + 1) % 4]
 
 
 if __name__ == "__main__":
@@ -44,19 +55,45 @@ if __name__ == "__main__":
                 assert abs(H - W * 9 / 16) <= 0.5
                 assert (X == ox) if side == "left" else (X+W == ox+1440)
                 assert placement(output, workspace, window, side, True) == (X, Y, W, H)
+                bx, by, bw, bh = placement(output, workspace, window, side, False, "bottom")
+                assert (bx, bw, bh) == (x, w, h) and by + bh == oy + 45 + 840
+            ws = dict(x=0, y=0, width=1000, height=1000)
+            assert next_corner(dict(x=0, y=0, width=100, height=100), ws) == ("right", "top")
+            assert next_corner(dict(x=900, y=0, width=100, height=100), ws) == ("right", "bottom")
+            assert next_corner(dict(x=900, y=900, width=100, height=100), ws) == ("left", "bottom")
+            assert next_corner(dict(x=0, y=900, width=100, height=100), ws) == ("left", "top")
         sys.exit(0)
-    if len(sys.argv) != 3 or sys.argv[1] not in ("left", "right") or sys.argv[2] not in ("workspace", "screen"):
-        sys.exit("Usage: sway-place-corner left|right workspace|screen")
-    root = tree()
-    output = next(node for node in walk(root) if node.get("type") == "output" and any(child.get("focused") for child in walk(node)))
-    workspace = next(node for node in walk(output) if node.get("type") == "workspace" and any(child.get("focused") for child in walk(node)))
-    focused = next(node for node in walk(workspace) if node.get("focused"))
+    if sys.argv[1:] == ["cycle"]:
+        sys.argv.append("workspace")
+    if len(sys.argv) not in (3, 4) or sys.argv[1] not in ("left", "right", "cycle") or sys.argv[2] not in ("workspace", "screen"):
+        sys.exit("Usage: sway-place-corner left|right|cycle workspace|screen [pid]")
+    pid = int(sys.argv[3]) if len(sys.argv) == 4 else None
+    # A newly launched Wayland client may not have mapped its window yet.
+    for attempt in range(30 if pid else 1):
+        root = tree()
+        match = (lambda node: node.get("app_id") == "floating") if sys.argv[1] == "cycle" else (
+            (lambda node: node.get("pid") == pid) if pid else (lambda node: node.get("focused")))
+        focused = next((node for node in walk(root) if
+                        match(node)
+                        and node.get("geometry", {}).get("width", 0) > 0
+                        and node.get("geometry", {}).get("height", 0) > 0), None)
+        if focused:
+            break
+        time.sleep(0.1)
+    if not focused:
+        sys.exit("No mapped window found for placement")
+    output = next(node for node in walk(root) if node.get("type") == "output" and any(child["id"] == focused["id"] for child in walk(node)))
+    workspace = next(node for node in walk(output) if node.get("type") == "workspace" and any(child["id"] == focused["id"] for child in walk(node)))
     target = f'[con_id={focused["id"]}]'
     rect = workspace["rect"]
     window = focused.get("geometry", {})
     if window.get("width", 0) <= 0 or window.get("height", 0) <= 0:
         sys.exit("Window has no usable aspect ratio")
     expand = sys.argv[2] == "screen"
-    x, y, width, height = placement(output["rect"], rect, window, sys.argv[1], expand)
+    if sys.argv[1] == "cycle":
+        side, vertical = next_corner(focused["rect"], output["rect"] if expand else rect)
+    else:
+        side, vertical = sys.argv[1], "top"
+    x, y, width, height = placement(output["rect"], rect, window, side, expand, vertical)
     border = "none" if expand else "pixel 1"
     command(f'{target} fullscreen disable, floating enable, sticky enable, border {border}, resize set {width} px {height} px, move absolute position {x} px {y} px')
