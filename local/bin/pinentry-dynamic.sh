@@ -5,6 +5,12 @@
 # nothing through — and the agent does NOT fall back to the env stored by
 # `updatestartuptty` for env-less clients (verified empirically 2026-07-19).
 # So probe for a live Wayland socket ourselves before giving up on a GUI.
+# PINENTRY_USER_DATA is the only per-client env gpg-agent forwards. SSH shells
+# set it to "curses" (~/.zshenv) so they never get a dialog on the virtual display.
+if [ "$PINENTRY_USER_DATA" = curses ]; then
+    exec pinentry-curses "$@"
+fi
+
 if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
     for s in "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"/wayland-*; do
         case "$s" in *.lock) continue ;; esac

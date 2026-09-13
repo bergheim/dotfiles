@@ -18,5 +18,9 @@ path=($path)
 # This belongs to the current terminal, unlike the shared agent socket.
 [[ -t 0 ]] && export GPG_TTY=$(tty)
 
+# Remote shells cannot see the virtual display; gpg-agent forwards this to
+# pinentry-dynamic.sh, which then picks pinentry-curses.
+[[ -n $SSH_CONNECTION ]] && export PINENTRY_USER_DATA=curses
+
 # Avoid the distro-wide completion initialization; Zim owns it.
 skip_global_compinit=1

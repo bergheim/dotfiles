@@ -2,6 +2,9 @@
 set -e
 
 PATH="$HOME/local/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:$PATH"
+# Never spawn a pinentry from a timer: cold agent cache -> pass fails fast
+# instead of holding the single pinentry lock for everyone else.
+export PASSWORD_STORE_GPG_OPTS="--pinentry-mode error"
 MAIL_DIR=${MAIL_DIR:-$HOME/.mail}
 LOCK=$MAIL_DIR/.sync-mail.lock
 SELF=$HOME/local/bin/sync-mail
