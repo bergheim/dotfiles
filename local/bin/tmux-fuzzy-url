@@ -1,17 +1,57 @@
 #!/bin/sh
 # prefix u opens a URL from this pane's scrollback; prefix U copies it (OSC52).
 # Pane id comes from run-shell (display-popup does not expand #{pane_id}).
+# capture-pane -e keeps OSC 8 hyperlinks, so links rendered as text keep their
+# label. Each record is "url<TAB>display"; fzf shows only the display column.
 
 extract() {
-    grep -oE 'https?://[^[:space:]<>"'\'')]+' \
-    | sed 's/[].,;:!?)]*$//' \
-    | tac \
-    | awk 'NF && !seen[$0]++'
+    awk '
+    BEGIN { n = 0 }   # unset n indexes arrays as "", not 0
+    function strip(s) {
+        gsub(/\033\][^\033]*\033\\/, "", s)     # OSC (incl. hyperlinks)
+        gsub(/\033\[[0-9;?]*[A-Za-z]/, "", s)   # CSI
+        return s
+    }
+    function add(url, name) {
+        gsub(/[].,;:!?)]+$/, "", url)
+        if (url == "") return
+        url_of[n] = url
+        rec[n] = url "\t" (name == "" ? url : name " \342\206\222 " url)
+        n++
+    }
+    {
+        line = $0
+        while (match(line, /\033\]8;;[^\033]*\033\\/)) {
+            open = substr(line, RSTART, RLENGTH)
+            url = substr(open, 6, RLENGTH - 7)
+            line = substr(line, RSTART + RLENGTH)
+            if (url == "") continue
+            if (match(line, /\033\]8;;[^\033]*\033\\/)) {
+                text = strip(substr(line, 1, RSTART - 1))
+                line = substr(line, RSTART + RLENGTH)
+            } else {
+                text = strip(line)
+                line = ""
+            }
+            add(url, text)
+        }
+        plain = strip($0)
+        while (match(plain, /https?:\/\/[^[:space:]<>"'\'')]+/)) {
+            add(substr(plain, RSTART, RLENGTH), "")
+            plain = substr(plain, RSTART + RLENGTH)
+        }
+    }
+    END {
+        for (i = n - 1; i >= 0; i--)
+            if (!seen[url_of[i]]++) print rec[i]
+    }
+    '
 }
 
 if [ "$1" = --self-test ]; then
-    got=$(printf 'x https://glvortex.net/a.\nhttps://glvortex.net/a\nhttps://b.example/c)\n' | extract)
-    want=$(printf '%s\n' 'https://b.example/c' 'https://glvortex.net/a')
+    got=$(printf 'x https://glvortex.net/a.\nhttps://glvortex.net/a\n\033]8;;https://b.example/c\033\\Click Here\033]8;;\033\\\n' | extract)
+    want=$(printf '%s\n' 'https://b.example/c	Click Here → https://b.example/c' \
+                         'https://glvortex.net/a	https://glvortex.net/a')
     [ "$got" = "$want" ] || { printf 'got:\n%s\n' "$got"; exit 1; }
     exit 0
 fi
@@ -22,10 +62,10 @@ copy=0
 pane=$1
 [ -n "$pane" ] || exit 1
 
-list=$(tmux capture-pane -p -S - -t "$pane" | extract)
+list=$(tmux capture-pane -p -e -S - -t "$pane" | extract)
 [ -n "$list" ] || { tmux display-message 'no urls'; exit 0; }
 
-url=$(printf '%s\n' "$list" | fzf --reverse --no-sort) || exit 0
+url=$(printf '%s\n' "$list" | fzf --reverse --no-sort --delimiter='\t' --with-nth=2 | cut -f1) || exit 0
 [ -n "$url" ] || exit 0
 if [ "$copy" -eq 1 ]; then
     tmux set-buffer -w "$url"
