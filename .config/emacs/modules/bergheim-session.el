@@ -16,21 +16,6 @@
   :config
   (beframe-mode 1))
 
-;; WIP. lol
-(defun bergheim/load ()
-  (interactive)
-  (tab-bar-mode -1)
-  (activities-tabs-mode -1)
-  (let ((frame (make-frame `((name . "email")))))
-    (select-frame-set-input-focus frame)
-    (bergheim/email-today))
-
-  (let ((frame (make-frame `((name . "org")))))
-    (select-frame-set-input-focus frame)
-    (activities-resume (activities-named "org"))
-    )
-  )
-
 ;; Route mu4e file opens and shr links through ssherpa, so attachments
 ;; and web links pop on the laptop when SSH'd in from the road.
 (use-package ssherpa
