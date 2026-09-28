@@ -588,21 +588,125 @@ Open `dired` in the resolved directory of the current command."
                                 (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult)
                                 (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
 
+(defun bergheim/ghostel-here ()
+  "Open a new Ghostel in another window, using the current local or remote directory."
+  (interactive)
+  (other-window-prefix)
+  (ghostel '(4)))
+
+(defun bergheim/ghostel-home ()
+  "Open a new Ghostel terminal in the local home directory."
+  (interactive)
+  (let ((default-directory (expand-file-name "~/" "/")))
+    (ghostel '(4))))
+
+(defun bergheim/ghostel-tmux-prefix ()
+  "Return to terminal input and forward the tmux prefix key."
+  (interactive)
+  (ghostel-semi-char-mode)
+  (goto-char (or (ghostel-cursor-point) (point-max)))
+  (evil-insert-state)
+  (ghostel--send-event))
+
+(defun bergheim/ghostel-tmux ()
+  "Pick or create a tmux session on the current host in another window."
+  (interactive)
+  (require 'ghostel)
+  (let* ((host (or (file-remote-p default-directory 'host) (system-name)))
+         ;; ((NAME ID) ...); a failed listing (no server yet) means no sessions
+         (sessions (with-temp-buffer
+                     (when (eq 0 (process-file "tmux" nil t nil "list-sessions"
+                                               "-F" "#{session_name}\t#{session_id}"))
+                       (mapcar (lambda (line) (split-string line "\t"))
+                               (split-string (buffer-string) "\n" t)))))
+         (choice (completing-read (format "Tmux session on %s (or new name): " host)
+                                  sessions))
+         ;; Attach by id: a name containing . or : cannot be used as a target
+         (target (cadr (assoc choice sessions))))
+    ;; tmux interprets ; and # even in separate argv elements
+    (when (and (not target) (string-match-p "\\`[[:space:]]*\\'\\|[.:;#[:cntrl:]]" choice))
+      (user-error "New session name must be non-blank, without . : ; # or control characters"))
+    (let ((buffer (generate-new-buffer (format "*tmux: %s@%s*" choice host))))
+      (with-current-buffer buffer
+        (ghostel-mode)
+        (setq-local ghostel-buffer-name-function nil))
+      (other-window-prefix)
+      (pop-to-buffer buffer)
+      (ghostel-exec buffer "tmux" (if target
+                                      (list "attach-session" "-t" target)
+                                    (list "new-session" "-A" "-s" choice))))))
+
 (use-package ghostel
   :ensure (:wait t)
   :commands (ghostel ghostel-project)
+  :custom
+  (ghostel-buffer-name-function #'ghostel-buffer-name-by-directory)
   :general
   (bergheim/global-menu-keys
-    "atg" '(ghostel :which-key "ghostel")
+    "atg" '(bergheim/ghostel-home :which-key "ghostel home")
     "atG" '(ghostel-project :which-key "ghostel project"))
   (:keymaps 'ghostel-semi-char-mode-map
    :states 'insert
-   "M-p" (lambda () (interactive) (ghostel-send-key "p" "ctrl"))
-   "M-n" (lambda () (interactive) (ghostel-send-key "n" "ctrl"))))
+   "M-p" #'ghostel--send-event
+   "M-n" #'ghostel--send-event))
 
 (use-package evil-ghostel
   :after (ghostel evil)
-  :hook (ghostel-mode . evil-ghostel-mode))
+  :custom
+  (evil-ghostel-escape 'evil)
+  :hook (ghostel-mode . evil-ghostel-mode)
+  :config
+  (evil-define-motion bergheim/ghostel-beginning-of-input ()
+    "Move after a recognized prompt, or to the beginning of an output line."
+    :type exclusive
+    (ghostel-beginning-of-input-or-line))
+  :general
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(normal insert)
+   "C-SPC" #'bergheim/ghostel-tmux-prefix
+   "C-@" #'bergheim/ghostel-tmux-prefix)
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(normal visual operator)
+   "0" #'bergheim/ghostel-beginning-of-input)
+  ;; Raw char mode's higher-priority escape map still owns M-RET.
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(normal visual insert emacs)
+   "M-RET" #'bergheim/ghostel-here
+   "M-<return>" #'bergheim/ghostel-here)
+  (bergheim/localleader-keys
+    :states '(normal visual)
+    :keymaps 'evil-ghostel-mode-map
+    "n" '(bergheim/ghostel-here :which-key "new here")
+    "h" '(bergheim/ghostel-home :which-key "new at home")
+    "p" '(ghostel-project :which-key "project terminal")
+    "b" '(ghostel-list-buffers :which-key "switch terminal")
+    "t" '(bergheim/ghostel-tmux :which-key "attach/create tmux session")
+    "[" '(ghostel-previous :which-key "previous terminal")
+    "]" '(ghostel-next :which-key "next terminal")
+    "r" '(rename-buffer :which-key "rename buffer")
+    "c" '(ghostel-copy-mode :which-key "copy mode (freeze output)")
+    "y" '(ghostel-copy-all :which-key "copy all scrollback")
+    "v" '(ghostel-yank-pop :which-key "paste from kill ring")
+    "f" '(ghostel-find-file-at-point :which-key "open file/link")
+    "j" '(:ignore t :which-key "jump")
+    "jn" '(ghostel-next-prompt :which-key "next prompt")
+    "jp" '(ghostel-previous-prompt :which-key "previous prompt")
+    "jl" '(ghostel-next-hyperlink :which-key "next link")
+    "jL" '(ghostel-previous-hyperlink :which-key "previous link")
+    "i" '(:ignore t :which-key "input mode")
+    "is" '(ghostel-semi-char-mode :which-key "semi-char (default)")
+    "il" '(ghostel-line-mode :which-key "line editing")
+    "ie" '(ghostel-emacs-mode :which-key "Emacs (live scrollback)")
+    "ic" '(ghostel-char-mode :which-key "raw char (M-RET exits)")
+    "iq" '(ghostel-readonly-exit :which-key "exit read-only")
+    "s" '(:ignore t :which-key "send")
+    "sk" '(ghostel-send-next-key :which-key "literal next key")
+    "sc" '(ghostel-send-C-c :which-key "interrupt (C-c)")
+    "sz" '(ghostel-send-C-z :which-key "suspend (C-z)")
+    "x" '(:ignore t :which-key "screen")
+    "xc" '(ghostel-clear :which-key "clear screen (keep history)")
+    "xC" '(ghostel-clear-scrollback :which-key "DELETE screen + scrollback")
+    "xr" '(ghostel-force-redraw :which-key "redraw")))
 
 (use-package ghostel-eshell
   :ensure nil
