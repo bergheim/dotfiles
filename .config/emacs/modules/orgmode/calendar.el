@@ -154,21 +154,21 @@
    "m" #'calfw-change-view-month)
 
   (bergheim/localleader-keys
-   :states '(normal motion)
-   :keymaps 'calfw-calendar-mode-map
-   "" '(:ignore t :which-key "calendar")
-   "c" '(calfw-org-capture :which-key "create event")
-   "r" '(calfw-refresh-calendar-buffer :which-key "refresh")
-   "s" '(bergheim/calfw-sync-and-refresh :which-key "sync caldav")
-   "g" '(calfw-org-goto-date :which-key "goto date")
-   "t" '(calfw-navi-goto-today-command :which-key "today")
-   "a" '(calfw-org-open-agenda-day :which-key "agenda day")
-   "v" '(calfw-show-details-command :which-key "day details")
-   "d" '(calfw-change-view-day :which-key "day view")
-   "w" '(calfw-change-view-week :which-key "week view")
-   "W" '(calfw-change-view-two-weeks :which-key "two weeks view")
-   "m" '(calfw-change-view-month :which-key "month view")
-   "q" '(calfw-org-clean-exit :which-key "quit"))
+    :states '(normal motion)
+    :keymaps 'calfw-calendar-mode-map
+    "" '(:ignore t :which-key "calendar")
+    "c" '(calfw-org-capture :which-key "create event")
+    "r" '(calfw-refresh-calendar-buffer :which-key "refresh")
+    "s" '(bergheim/calfw-sync-and-refresh :which-key "sync caldav")
+    "g" '(calfw-org-goto-date :which-key "goto date")
+    "t" '(calfw-navi-goto-today-command :which-key "today")
+    "a" '(calfw-org-open-agenda-day :which-key "agenda day")
+    "v" '(calfw-show-details-command :which-key "day details")
+    "d" '(calfw-change-view-day :which-key "day view")
+    "w" '(calfw-change-view-week :which-key "week view")
+    "W" '(calfw-change-view-two-weeks :which-key "two weeks view")
+    "m" '(calfw-change-view-month :which-key "month view")
+    "q" '(calfw-org-clean-exit :which-key "quit"))
 
   (general-define-key
    :states '(normal insert emacs motion visual)
