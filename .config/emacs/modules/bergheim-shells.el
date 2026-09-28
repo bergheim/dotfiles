@@ -112,8 +112,6 @@ No popup: agent-shell newline (M-RET sends), shell sends."
                   (evil-ret))))
   (:states 'insert
    :keymaps 'shell-mode-map
-   "RET" #'bergheim/comint-send-input-or-complete
-   "<return>" #'bergheim/comint-send-input-or-complete
    "TAB" #'bergheim/comint-tab
    "/" #'bergheim/comint-slash
    "C-r" #'bergheim/comint-history
@@ -166,7 +164,6 @@ No popup: agent-shell newline (M-RET sends), shell sends."
 
     ;; stop duplicate input from appearing
     (setq-local comint-process-echoes t)
-    (setq-local corfu-preselect 'prompt)
     (compilation-shell-minor-mode 1)
     (completion-preview-mode 1)
 

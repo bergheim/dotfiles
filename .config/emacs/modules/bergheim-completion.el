@@ -317,6 +317,8 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (text-mode-ispell-word-completion nil)
   (corfu-auto t) ;; enable auto completion
   (corfu-cycle t)
+  ;; nothing highlighted until TAB, so RET only takes a candidate you picked
+  (corfu-preselect 'prompt)
   ;; if we have applied the separator, never quit
   ;; (corfu-quit-no-match 'separator)
   ;; TODO add a timer here or increase max chars
