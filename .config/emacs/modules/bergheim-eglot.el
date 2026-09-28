@@ -98,8 +98,6 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   :hook
   (eglot-managed-mode . me/eglot-inlay-hints-maybe)
   (eglot-managed-mode . bergheim/eglot-capf)
-  (eglot-managed-mode . (lambda ()
-                          (evil-local-set-key 'normal (kbd "K") #'eldoc-print-current-symbol-info)))
   (python-ts-mode . eglot-ensure)
   (rust-ts-mode . eglot-ensure)
   (go-ts-mode . eglot-ensure)
@@ -129,6 +127,15 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
     (interactive)
     (eldoc-box-hover-mode (if eldoc-box-hover-mode -1 1)))
 
+  (defun bergheim/eldoc-box-help-toggle ()
+    "Show fresh docs for point in the eldoc-box popup, or hide it if showing.
+`eldoc-box-help-at-point' would redisplay the previous symbol's docs until
+eldoc's next idle run, so ask eldoc directly; hover mode draws the result."
+    (interactive)
+    (if (eldoc-box--frame-visible-p)
+        (eldoc-box-quit-frame)
+      (eldoc-print-current-symbol-info t)))
+
   :general
   (bergheim/global-menu-keys
     "t h" '(bergheim/eldoc-box-toggle :which-key "Eldoc box"))
@@ -138,7 +145,7 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (eglot-managed-mode . (lambda ()
                           (setq-local eldoc-idle-delay 3.0)
                           (eldoc-box-hover-mode 1)
-                          (evil-local-set-key 'normal (kbd "K") #'eldoc-print-current-symbol-info))))
+                          (evil-local-set-key 'normal (kbd "K") #'bergheim/eldoc-box-help-toggle))))
 
 (use-package consult-eglot
   :ensure t
