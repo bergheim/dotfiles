@@ -103,9 +103,8 @@
   (general-evil-setup)
   (general-auto-unbind-keys))
 
-;; this must be loaded early because of `desktop`
-(use-package git-auto-commit-mode
-  :demand t)
+;; enabled per directory, e.g. ~/org/.dir-locals.el; the mode is autoloaded
+(use-package git-auto-commit-mode)
 
 ;; general modifies use-package so make sure we get it before moving on
 (elpaca-wait)
