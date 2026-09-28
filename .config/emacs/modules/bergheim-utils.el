@@ -55,9 +55,6 @@
          (next-pos (mod (+ position arg) num-files))) ; Wrap around using `mod`
     (find-file (nth next-pos files))))
 
-;; .csv parser
-(use-package pcsv)
-
 (use-package transient)
 
 (use-package emacs-everywhere
