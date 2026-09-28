@@ -103,6 +103,23 @@ argument is given, otherwise navigate backward."
             (message "Opening URL: %s" url)
             (browse-url url)))))))
 
+(defun bergheim/browse-url-mpv (url &rest _)
+  "Stream URL in mpv on the Emacs host."
+  (start-process "mpv-stream" "*mpv-stream*" "mpv"
+                 "--force-window" "--wayland-app-id=floating" "--" url))
+
+;; Media links go to mpv from every `browse-url' caller (gl, Org links, ...).
+;; A media site that opens in the browser instead belongs in this list.
+(use-package browse-url
+  :ensure nil
+  :config
+  (add-to-list 'browse-url-handlers
+               (cons (rx (or (seq bos "http" (? "s") "://" (? (* (not "/")) ".")
+                                  (or "youtube.com/watch" "youtube.com/shorts" "youtube.com/live"
+                                      "youtu.be/" "vimeo.com/" "twitch.tv/"))
+                             (seq "." (or "mp4" "webm" "mkv" "mov" "mp3" "m3u8") eos)))
+                     #'bergheim/browse-url-mpv)))
+
 (use-package link-hint
   :demand
   :after (evil-collection evil-commentary)
