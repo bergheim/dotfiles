@@ -360,12 +360,11 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   ;; Swap M-/ and C-M-/
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand))
-  :custom
+  :config
+  ;; Skip hidden buffers and document viewers when expanding
   (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
-  ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
-  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
-  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
-  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
+  (dolist (mode '(doc-view-mode pdf-view-mode tags-table-mode))
+    (add-to-list 'dabbrev-ignored-buffer-modes mode)))
 
 ;; combine completion at point functions. if the name cape was not clear
 (use-package cape
