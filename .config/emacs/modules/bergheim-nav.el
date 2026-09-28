@@ -363,17 +363,20 @@ Otherwise, use current directory."
       (kill-buffer))))
 
 (use-package affe
+  :disabled
   :ensure t
   :config
   (setq affe-find-command "fd --color=never --hidden --follow --exclude .git --exclude node_modules --regex"))
 
 (use-package treemacs
+  :disabled
   :defer t
   :config
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t))
 
 (use-package treemacs-evil
+  :disabled
   :after (treemacs evil))
 
 ;;; bergheim-nav.el ends here

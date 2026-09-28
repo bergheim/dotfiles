@@ -140,6 +140,7 @@
 
 ;; this is pretty active
 (use-package enhanced-evil-paredit
+  :disabled
   :after paredit
   :config
   (general-define-key

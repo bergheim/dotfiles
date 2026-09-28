@@ -230,6 +230,7 @@ controlling terminal."
 
 ;; emacs startup profiler
 (use-package esup
+  :disabled
   :ensure t
   :defer t
   ;; To prevent any graphical interface to pop-up.
