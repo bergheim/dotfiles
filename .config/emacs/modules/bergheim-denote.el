@@ -97,9 +97,6 @@
 (use-package denote-journal-capture
   :after denote-journal)
 
-(use-package denote-menu
-  :after denote)
-
 (use-package consult-denote
   :after denote)
 
