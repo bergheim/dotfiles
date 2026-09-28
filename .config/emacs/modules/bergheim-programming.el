@@ -284,10 +284,6 @@
 ;;   :config
 ;;   (repeat-mode))
 
-(when (< emacs-major-version 30)
-  ;; needed for dape
-  (use-package jsonrpc))
-
 (use-package mise
   :disabled
   :config

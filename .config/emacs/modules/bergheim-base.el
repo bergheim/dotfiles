@@ -114,9 +114,8 @@ controlling terminal."
   (setq vc-follow-symlinks t
         large-file-warning-threshold nil
         confirm-kill-processes nil)
-  (setq use-short-answers t
-        ;; don't confirm to kill attached buffer processes
-        kill-buffer-query-functions (remq 'process-kill-buffer-query-function
+  ;; don't confirm to kill attached buffer processes
+  (setq kill-buffer-query-functions (remq 'process-kill-buffer-query-function
                                           kill-buffer-query-functions))
   ;; don't double escape - \< instead of \\< etc
   (setq reb-re-syntax 'string)

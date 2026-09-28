@@ -584,14 +584,12 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
   ;; (tab-bar-mode 1)
   (tab-bar-history-mode 1)
   (blink-cursor-mode -1)           ; Steady cursor
-  (show-paren-mode 1)              ;; Visualize matching parens
   (pixel-scroll-precision-mode 1)) ;; Enable smooth pixel scrolling
 
 ;; Nice line wrapping when working with text
 (add-hook 'text-mode-hook #'turn-on-visual-line-mode)
 ;; Indent wrapped lines so they line up
-(when (>= emacs-major-version 30)
-  (add-hook 'text-mode-hook 'visual-wrap-prefix-mode))
+(add-hook 'text-mode-hook 'visual-wrap-prefix-mode)
 
 ;; Modes to highlight the current line with
 (let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))

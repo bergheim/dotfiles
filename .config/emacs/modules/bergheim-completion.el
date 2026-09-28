@@ -355,22 +355,6 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
   (corfu-map
    "C-h" 'corfu-info-documentation))
 
-;; Make corfu popup come up in terminal overlay
-(use-package corfu-terminal
-  :if (< emacs-major-version 31)
-  :unless (featurep 'tty-child-frames)
-  :hook
-  (corfu-mode . bergheim/corfu-terminal-maybe-enable)
-  :config
-  (defun bergheim/corfu-terminal-maybe-enable ()
-    "Enable `corfu-terminal-mode' only on non-graphical frames."
-    (unless (display-graphic-p)
-      (corfu-terminal-mode 1))))
-
-;; (use-package corfu-doc-terminal
-;;   :after corfu-terminal
-;;   :ensure (:host "https://codeberg.org/akib/emacs-corfu-doc-terminal.git"))
-
 (use-package dabbrev
   :ensure nil
   ;; Swap M-/ and C-M-/
