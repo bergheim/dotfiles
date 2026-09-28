@@ -223,8 +223,6 @@
   :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
 
-(use-package sxhkdrc-mode)
-
 ;; see https://github.com/abicky/nodejs-repl.el for options
 (use-package nodejs-repl
   :ensure t

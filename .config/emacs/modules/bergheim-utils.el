@@ -55,11 +55,6 @@
          (next-pos (mod (+ position arg) num-files))) ; Wrap around using `mod`
     (find-file (nth next-pos files))))
 
-(use-package expand-region
-  :ensure t
-  :defer t
-  :bind ("M-e" . er/expand-region))
-
 ;; .csv parser
 (use-package pcsv)
 
