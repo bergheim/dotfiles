@@ -274,7 +274,8 @@ controlling terminal."
   (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
   (undo-fu-session-global-mode))
 
-(use-package dotenv-mode)
+;; .env, .env.local, .env.example, ...: KEY=value lines with # comments
+(add-to-list 'auto-mode-alist '("\\.env\\(?:\\..*\\)?\\'" . conf-unix-mode))
 
 (use-package ewm
   :config
