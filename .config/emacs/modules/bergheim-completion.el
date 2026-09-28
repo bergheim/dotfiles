@@ -141,7 +141,12 @@
   (:keymaps 'vertico-map
    "C-SPC" #'consult-toggle-preview))
 
-(use-package consult-todo :after consult)
+(use-package consult-todo
+  :after consult
+  :general
+  (bergheim/global-menu-keys
+    "sT" '(consult-todo :which-key "TODOs in buffer")
+    "sP" '(consult-todo-project :which-key "TODOs in project")))
 
 (use-package consult-recoll
   :after consult

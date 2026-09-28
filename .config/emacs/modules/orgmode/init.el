@@ -166,12 +166,13 @@ With universal arg ARG, search all .org files under `org-directory`."
    "?" 'org-ql-view-dispatch
    "q" 'kill-current-buffer))
 
-;; FIXME: remove that pesky line length sorting in vertico
 (use-package org-recent-headings
+  :disabled
   :after org
-  :defer t
-  :config
-  (org-recent-headings-mode))
+  :demand t
+  :config (org-recent-headings-mode)
+  :general (bergheim/global-menu-keys
+             "osr" '(org-recent-headings :which-key "recent headings")))
 
 (use-package org-sticky-header
   :ensure t

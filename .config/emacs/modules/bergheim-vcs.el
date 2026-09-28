@@ -49,6 +49,7 @@
   :after magit)
 
 (use-package magit-todos
+  :disabled
   :ensure t
   :after magit
   :custom
