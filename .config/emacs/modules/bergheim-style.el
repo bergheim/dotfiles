@@ -646,41 +646,58 @@ no frame yet — otherwise emojis show up as tofu in emacsclient."
 
 (use-package focus)
 
-(use-package writeroom-mode
-  :commands (bergheim/write-mode)
-  :config
-  (setq writeroom-width 80)
-  (setq writeroom-fullscreen-effect 'maximized)
-  (setq writeroom-major-modes '(text-mode markdown-mode org-mode))
-  (setq writeroom-global-effects '(writeroom-set-fullscreen))
-  (setq writeroom-bottom-divider-width 1)
+;; Buffer-local centering: works in splits and leaves the frame alone, which
+;; is all a tiling WM lets writeroom do anyway.
+(use-package olivetti
+  :hook (((Info-mode helpful-mode) . olivetti-mode)
+         ((eww-mode elfeed-show-mode mu4e-view-mode) . bergheim/olivetti-wide))
+  :custom
+  (olivetti-body-width 80)
+  (olivetti-minimum-body-padding 0.05)
+  (olivetti-style 'fancy)
+  :init
+  (defun bergheim/olivetti-wide ()
+    "Center at a width that fits `shr-max-width' pages."
+    (setq-local olivetti-body-width 100)
+    (olivetti-mode 1)))
 
-  (defun bergheim/write-mode (&optional disable)
-    "Toggle zoom in on the current buffer."
-    (interactive)
-    (if (or disable writeroom-mode)
+(defvar-local bergheim/write-mode--on nil)
+
+(defun bergheim/write-mode (&optional disable)
+  "Toggle distraction-free writing: one fullscreen window, centered text.
+With DISABLE, only turn it off.  Leaving restores the window layout and
+the frame's previous fullscreen state."
+  (interactive)
+  (let ((on (not (or disable bergheim/write-mode--on))))
+    (setq bergheim/write-mode--on on)
+    (olivetti-mode (if on 1 -1))
+    (focus-mode (if on 1 -1))
+    (display-line-numbers-mode (if on -1 1))
+    (if on
         (progn
-          (writeroom-mode -1)
-          (focus-mode -1)
-          (display-line-numbers-mode 1))
-      (writeroom-mode 1)
-      (focus-mode 1)
-      (display-line-numbers-mode -1))))
-
+          (set-frame-parameter nil 'bergheim/write-restore
+                               (cons (frame-parameter nil 'fullscreen)
+                                     (current-window-configuration)))
+          (delete-other-windows)
+          (setq-local mode-line-format nil)
+          (set-frame-parameter nil 'fullscreen 'fullboth))
+      (kill-local-variable 'mode-line-format)
+      (when-let* ((restore (frame-parameter nil 'bergheim/write-restore)))
+        (set-frame-parameter nil 'bergheim/write-restore nil)
+        (set-frame-parameter nil 'fullscreen (car restore))
+        (set-window-configuration (cdr restore))))))
 
 (defun bergheim/present-mode ()
-  "Toggle zoom in on the current buffer."
+  "Toggle centered big-font presentation of the current buffer."
   (interactive)
   (if (function-get 'bergheim/present-mode 'toggled)
       (progn
-        (writeroom-mode -1)
+        (olivetti-mode -1)
         (bergheim/toggle-big-font-mode 0)
         (function-put 'bergheim/present-mode 'toggled nil))
-    (writeroom-mode 1)
+    (olivetti-mode 1)
     (bergheim/toggle-big-font-mode)
     (function-put 'bergheim/present-mode 'toggled t)))
-
-(use-package olivetti)
 
 ;; golden ratio mode
 (use-package zoom
