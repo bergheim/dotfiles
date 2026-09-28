@@ -69,7 +69,7 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
                    :includeInlayVariableTypeHintsWhenTypeMatchesName t))))
 
   (add-to-list 'eglot-server-programs
-               '((html-mode css-mode web-mode) "tailwindcss-language-server" "--stdio"))
+               '((html-mode css-mode) "tailwindcss-language-server" "--stdio"))
 
   (add-to-list 'eglot-server-programs
                '((elixir-mode elixir-ts-mode heex-ts-mode) . ("expert" "--stdio")))
@@ -100,9 +100,9 @@ Also toggle `eglot-inlay-hints-mode' accordingly."
   (eglot-managed-mode . bergheim/eglot-capf)
   (eglot-managed-mode . (lambda ()
                           (evil-local-set-key 'normal (kbd "K") #'eldoc-print-current-symbol-info)))
-  (web-mode . eglot-ensure)
   (python-ts-mode . eglot-ensure)
   (rust-ts-mode . eglot-ensure)
+  (go-ts-mode . eglot-ensure)
   (elixir-ts-mode . eglot-ensure)
   (typescript-ts-base-mode . eglot-ensure)
 

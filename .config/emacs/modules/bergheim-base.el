@@ -194,6 +194,7 @@ controlling terminal."
   (setq save-place-limit 1000))
 
 (use-package which-key
+  :ensure nil
   :demand t
   :custom
   (which-key-idle-delay 0.3)

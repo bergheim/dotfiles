@@ -225,36 +225,14 @@
      "V" 'edebug-view-outside
      "E" 'edebug-eval-last-sexp)))
 
-(use-package elixir-ts-mode
-  :config
-  (defalias 'elixir-mode 'elixir-ts-mode))
-
-(use-package yaml-mode)
-
 (use-package markdown-mode
   :init
   ;; (setq markdown-command "pandoc -f markdown -t html")
   (setq markdown-command "markdown"))
 
-(use-package web-mode
-  ;; :mode (("\\.html\\'" . web-mode))
-  :custom
-  (web-mode-enable-autoclosing t)
-  (web-mode-code-indent-offset 4)
-  (web-mode-css-indent-offset 4)
-  (web-mode-markup-indent-offset 4)
-  (web-mode-enable-auto-quoting nil))
-
 (use-package typescript-ts-mode
   :ensure nil
   :custom (typescript-ts-mode-indent-offset 4))
-
-(use-package lua-mode)
-
-(use-package go-ts-mode
-  :ensure nil
-  :mode "\\.go\\'"
-  :hook (go-ts-mode . eglot-ensure))
 
 (use-package sxhkdrc-mode)
 
@@ -265,19 +243,6 @@
   :init
   (with-eval-after-load 'repl-toggle
     (cl-pushnew '(js-ts-mode . nodejs-repl) rtog/mode-repl-alist :test #'equal)))
-
-(defun bergheim/adjust-web-mode-comment-style ()
-  "Adjust comment style based on current context in `web-mode`."
-  (if (equal web-mode-content-type "jsx")
-      ;; For JSX content, use the appropriate comment style
-      (progn
-        (setq-local comment-start "// ")
-        (setq-local comment-end ""))
-    ;; (setq-local comment-start "{/* ")
-    ;; (setq-local comment-end " */}"))
-    ;; Otherwise, for TypeScript, use the regular style
-    (setq-local comment-start "// ")
-    (setq-local comment-end "")))
 
 ;; ;; Enable repeat mode for more ergonomic `dape' use
 ;; (use-package repeat
