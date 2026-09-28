@@ -131,25 +131,17 @@
   (defun bergheim/llama-swap-get-models ()
     "Fetch available models from llama-swap's OpenAI-compatible API."
     (condition-case err
-        (let* ((url (concat "http://" bergheim/llama-swap-endpoint "/v1/models"))
-               (response-buf (url-retrieve-synchronously url t))
-               (response (when response-buf
-                           (with-current-buffer response-buf
-                             (goto-char (point-min))
-                             (if (re-search-forward "^$" nil t)
-                                 (buffer-substring-no-properties (point) (point-max))
-                               "")))))
-          (when response-buf (kill-buffer response-buf))
-          (if (and response (not (string-empty-p (s-trim response))))
-              (let* ((json-object-type 'hash-table)
-                     (json-array-type 'list)
-                     (json-key-type 'string)
-                     (data (json-read-from-string response)))
-                (mapcar (lambda (model)
-                          (intern (gethash "id" model)))
-                        (gethash "data" data)))
-            (message "llama-swap returned empty response")
-            nil))
+        (if-let* ((buf (url-retrieve-synchronously
+                        (concat "http://" bergheim/llama-swap-endpoint "/v1/models") t))
+                  (data (with-current-buffer buf
+                          (unwind-protect
+                              (progn (goto-char url-http-end-of-headers)
+                                     (json-parse-buffer :array-type 'list))
+                            (kill-buffer)))))
+            (mapcar (lambda (model) (intern (gethash "id" model)))
+                    (gethash "data" data))
+          (message "llama-swap returned no response")
+          nil)
       (error
        (message "Failed to fetch llama-swap models: %s" (error-message-string err))
        nil)))
