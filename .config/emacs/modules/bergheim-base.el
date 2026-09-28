@@ -279,10 +279,6 @@ controlling terminal."
   (setq undo-fu-session-incompatible-files '("/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
   (undo-fu-session-global-mode))
 
-;; act across files
-(use-package wgrep
-  :ensure t)
-
 (use-package dotenv-mode)
 
 (use-package ewm
