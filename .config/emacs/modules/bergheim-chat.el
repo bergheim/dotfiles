@@ -1231,19 +1231,6 @@ but only on the active window."
   (add-hook 'jabber-alert-message-hooks #'bergheim/jabber-unified-capture-pm)
   (add-hook 'jabber-alert-muc-hooks #'bergheim/jabber-unified-capture-muc))
 
-;; Smartparens is globally on, but a jabber chat buffer is the whole
-;; scrollback -- there is no separate input field.  `"' has string syntax
-;; there, so an odd number of quotes anywhere above point makes syntax-ppss
-;; think we are inside a string, and `sp-escape-open-delimiter' helpfully
-;; turns the quote we type into \".  Pairing buys us nothing in a chat log,
-;; so keep smartparens out of these modes entirely.
-(with-eval-after-load 'smartparens
-  (dolist (mode '(jabber-chat-mode
-                  jabber-browse-mode
-                  jabber-compose-mode
-                  bergheim/jabber-unified-mode))
-    (add-to-list 'sp-ignore-modes-list mode)))
-
 ;; goto-addr only binds mouse-2 / C-c RET; without plain RET on the overlay,
 ;; evil-ret falls through to push-button which crashes on Emacs 31.
 (with-eval-after-load 'goto-addr
