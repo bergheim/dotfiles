@@ -48,12 +48,6 @@
   "oly" '(org-store-link :which-key "copy")
   "olY" '(bergheim/org-capture-copy-link :which-key "copy last capture")
 
-  "oj" '(:ignore t :which-key "journal")
-  "ojj" '(org-journal-new-entry :which-key "New entry")
-  "ojJ" '(org-journal-new-scheduled-entry :which-key "New scheduled entry")
-  "ojo" '(org-journal-open-current-journal-file :which-key "Open journal")
-  "ojs" '(org-journal-search-forever :which-key "Search journal")
-
   "oc" '(:ignore t :which-key "org-clock")
   "ocC" '(org-clock-cancel :which-key "cancel")
   "ocg" '(org-clock-goto :which-key "clock goto")

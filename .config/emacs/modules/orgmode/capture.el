@@ -20,6 +20,18 @@
         ""
       (concat "#+BEGIN_QUOTE\n" (s-trim selected-text) "\n#+END_QUOTE\n"))))
 
+(defvar bergheim/capture--when-children
+  '(("Plain" :keys "t"
+     :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
+     :extra "")
+    ("With deadline" :keys "d"
+     :icon ("nf-md-timer" :set "mdicon" :color "orange" :v-adjust -0.1)
+     :extra "\nDEADLINE: %^{Deadline:}t")
+    ("Scheduled" :keys "s"
+     :icon ("nf-oct-calendar" :set "octicon" :color "orange")
+     :extra "\nSCHEDULED: %^{Start time:}t"))
+  "doct children giving a template plain / deadline / scheduled variants.")
+
 (use-package org-capture
   :ensure nil
   :after org
@@ -43,17 +55,12 @@
         +org-capture-projects-file (expand-file-name "projects/projects.org" org-directory)
         +org-capture-mail-followup-file (expand-file-name "email/followup.org" org-directory)
         +org-capture-mail-later-file (expand-file-name "email/later.org" org-directory)
-        +org-capture-personal-file (concat org-directory "personal.org")
-        ;; TODO this is not used - check laptop
-        +org-capture-review-file (expand-file-name "review.org" org-directory)
+        +org-capture-personal-file (expand-file-name "personal.org" org-directory)
         +org-capture-protocol-file (expand-file-name "protocol.org" org-directory)
         +org-capture-quotes-file (expand-file-name "quotes.org" org-directory)
-        +org-capture-review-daily-file (expand-file-name "review/daily.org" org-directory)
-        +org-capture-review-weekly-file (expand-file-name "review/weekly.org" org-directory)
-        +org-capture-review-monthly-file (expand-file-name "review/monthly.org" org-directory)
-        +org-capture-review-yearly-file (expand-file-name "review/yearly.org" org-directory)
-        +org-capture-work-file (concat org-directory "work.org")
-        +org-capture-work-meeting (concat org-directory "meetings.org")
+        +org-capture-blog-file (expand-file-name "blog/blog.thomasbergheim.com.org" org-directory)
+        +org-capture-work-file (expand-file-name "work.org" org-directory)
+        +org-capture-work-meeting (expand-file-name "meetings.org" org-directory)
         org-capture-templates
         (doct `(("Personal"
                  :icon ("nf-cod-person" :set "codicon" :color "green")
@@ -70,21 +77,17 @@
                              :extra ""
                              :headline "Tasks"
                              :template-file ,(expand-file-name "task.org" org-capture-custom-template-directory)
-                             :children (("General Task" :keys "t"
-                                         :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
-                                         :extra "")
-                                        ("Task with deadline" :keys "d"
-                                         :icon ("nf-md-timer" :set "mdicon" :color "orange" :v-adjust -0.1)
-                                         :extra "\nDEADLINE: %^{Deadline:}t")
-                                        ("Scheduled Task" :keys "s"
-                                         :icon ("nf-oct-calendar" :set "octicon" :color "orange")
-                                         :extra "\nSCHEDULED: %^{Start time:}t")))
+                             :children ,bergheim/capture--when-children)
 
-                            ("Enter a note"
-                             :icon ("nf-fa-sticky_note_o" :set "faicon" :color "green")
-                             :keys "n"
-                             :headline "Notes"
-                             :template-file ,(expand-file-name "note.org" org-capture-custom-template-directory))
+                            ;; log: what happened, when. No TODO keyword; lives
+                            ;; on the timeline via <ts> + clock in a datetree
+                            ("Log"
+                             :icon ("nf-fa-pencil" :set "faicon" :color "green")
+                             :keys "l"
+                             :olp ("Log") :datetree t :time-prompt t
+                             :clock-keep t
+                             :jump-to-captured t
+                             :template-file ,(expand-file-name "log.org" org-capture-custom-template-directory))
 
                             ("Reminder"
                              :icon ("nf-oct-bell" :set "octicon" :color "orange")
@@ -102,22 +105,24 @@
                              :template-file ,(expand-file-name "appointment.org" org-capture-custom-template-directory)
                              :after-finalize org-caldav-sync)
 
-                            ("Contact TODO"
-                             :icon ("nf-oct-person" :set "octicon" :color "blue")
-                             :keys "c"
-                             ;; :type entry
-                             :prepend nil
-                             :clock-keep t
-                             :function org-contactor-find-for-capture
-                             :template ("** TODO %?"
-                                        "SCHEDULED: %^t"
-                                        "")
-                             :empty-lines-before 1)
+                            ;; a task *about* a person: lives with tasks,
+                            ;; contact linked in the heading. Facts about a
+                            ;; person go in the contact itself (SPC opg).
+                            ,@(when (fboundp 'org-contactor-read-link)
+                                `(("Contact TODO"
+                                   :icon ("nf-oct-person" :set "octicon" :color "blue")
+                                   :keys "c"
+                                   :headline "Tasks"
+                                   :clock-in nil
+                                   :clock-resume nil
+                                   :template-file ,(expand-file-name "contact-todo.org" org-capture-custom-template-directory))))
 
                             ("Meeting minutes"
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"
-                             :headline "Meetings"
+                             :olp ("Log") :datetree t :time-prompt t
+                             :clock-keep t
+                             :jump-to-captured t
                              :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
                 ("Work"
@@ -134,38 +139,28 @@
                              :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
                              :headline "Tasks"
                              :template-file ,(expand-file-name "task.org" org-capture-custom-template-directory)
-                             :children (("General Task" :keys "t"
-                                         :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
-                                         :extra "")
-                                        ("Task with deadline" :keys "d"
-                                         :icon ("nf-md-timer" :set "mdicon" :color "orange" :v-adjust -0.1)
-                                         :extra "\nDEADLINE: %^{Deadline:}t")
-                                        ("Scheduled Task" :keys "s"
-                                         :icon ("nf-oct-calendar" :set "octicon" :color "orange")
-                                         :extra "\nSCHEDULED: %^{Start time:}t")))
+                             :children ,bergheim/capture--when-children)
                             ("Bug"
                              :icon ("nf-oct-bug" :set "octicon" :color "green")
                              :keys "b"
                              :headline "Bugs"
                              :template-file ,(expand-file-name "bug.org" org-capture-custom-template-directory)
-                             :children (("General bug"
-                                         :icon ("nf-oct-inbox" :set "octicon" :color "yellow")
-                                         :keys "b"
-                                         :extra "")
-                                        ("Bug with deadline"
-                                         :icon ("nf-md-timer" :set "mdicon" :color "orange")
-                                         :keys "d"
-                                         :extra "\nDEADLINE: %^{Deadline:}t")
-                                        ("Scheduled bug"
-                                         :icon ("nf-oct-calendar" :set "octicon" :color "orange")
-                                         :keys "s"
-                                         :extra "\nSCHEDULED: %^{Start time:}t")))
+                             :children ,bergheim/capture--when-children)
+                            ("Log"
+                             :icon ("nf-fa-pencil" :set "faicon" :color "green")
+                             :keys "l"
+                             :file +org-capture-work-meeting
+                             :olp ("Log") :datetree t :time-prompt t
+                             :clock-keep t
+                             :jump-to-captured t
+                             :template-file ,(expand-file-name "log.org" org-capture-custom-template-directory))
                             ("Meeting minutes"
                              :icon ("nf-oct-repo" :set "octicon" :color "silver")
                              :keys "m"
-                             :jump-to-captured t
                              :file +org-capture-work-meeting
-                             :headline "Meetings"
+                             :olp ("Log") :datetree t :time-prompt t
+                             :clock-keep t
+                             :jump-to-captured t
                              :template-file ,(expand-file-name "meeting.org" org-capture-custom-template-directory))))
 
                 ("Project" :keys "P"
@@ -244,35 +239,22 @@
                  :type entry
                  :headline "People"
                  :file +org-capture-contacts-file
-                 :template ("* %(org-contacts-template-name)
-                 :PROPERTIES:
-                 :ADDRESS: %^{Address}
-                 :BIRTHDAY: %^{Birthday (yyyy-mm-dd)}
-                 :EMAIL: %(org-contacts-template-email)
-                 :NOTE: %^{NOTE}
-                 :END:"))
+                 :template ("* %(org-contacts-template-name)"
+                            ":PROPERTIES:"
+                            ":CREATED: %U"
+                            ":ADDRESS: %^{Address}"
+                            ":BIRTHDAY: %^{Birthday (yyyy-mm-dd)}"
+                            ":EMAIL: %(org-contacts-template-email)"
+                            ":NOTE: %^{NOTE}"
+                            ":END:"))
 
-                ;; TODO: add back once we have a working setup
-                ;; ("Active project" :keys "a"
-                ;;  :icon ("nf-oct-repo" :set "octicon" :color "green")
-                ;;  :prepend t
-                ;;  :type entry
-                ;;  :headline "Inbox"
-                ;;  :template-file ,(expand-file-name "active-project.org" org-capture-custom-template-directory)
-                ;;  :custom (:time-or-todo "")
-                ;;  :children (("Project-local todo" :keys "t"
-                ;;              :icon ("nf-oct-checklist" :set "octicon" :color "green")
-                ;;              :time-or-todo "TODO"
-                ;;              :file +org-capture-project-todo-file)
-                ;;             ("Project-local note" :keys "n"
-                ;;              :icon ("nf-fa-sticky_note" :set "faicon" :color "yellow")
-                ;;              :time-or-todo "%U"
-                ;;              :file +org-capture-project-notes-file)
-                ;;             ("Project-local changelog" :keys "c"
-                ;;              :icon ("nf-fa-list" :set "faicon" :color "blue")
-                ;;              :time-or-todo "%U"
-                ;;              :headline "Unreleased"
-                ;;              :file +org-capture-project-changelog-file)))
+                ("Blog post" :keys "B"
+                 :icon ("nf-fa-pencil_square_o" :set "faicon" :color "blue")
+                 :type entry
+                 :file +org-capture-blog-file
+                 :headline "Posts"
+                 :jump-to-captured t
+                 :template-file ,(expand-file-name "blog.org" org-capture-custom-template-directory))
 
                 ("Interesting"
                  :keys "I"
@@ -342,7 +324,11 @@
   "One-line heading for `bergheim/capture' reminder templates.")
 
 (defun bergheim/capture--heading ()
-  (or bergheim/capture-heading ""))
+  "Consume `bergheim/capture-heading', or prompt when nothing was preset.
+%() expands before %^{} in `org-capture-fill-template', so the returned
+prompt is picked up by the interactive pass."
+  (or (prog1 bergheim/capture-heading (setq bergheim/capture-heading nil))
+      "%^{Reminder}"))
 
 (defvar bergheim/capture--frame nil)
 
@@ -489,58 +475,5 @@ KEYS is an `org-capture' template key string (e.g. \"pn\"); nil shows the menu."
   (org-download-enable))
 ;; Adding links quickly
 (use-package org-cliplink)
-
-;; nicked from doom again!
-;;;###autoload
-(defvar +org-capture-frame-parameters
-  `((name . "org-capture")
-    (width . 70)
-    (height . 25)
-    (transient . t)
-    ,@(when IS-LINUX
-        `((window-system . ,(if (boundp 'pgtk-initialized) 'pgtk 'x))
-          (display . ,(or (getenv "WAYLAND_DISPLAY")
-                          (getenv "DISPLAY")
-                          ":0"))))
-    ,(if IS-MAC '(menu-bar-lines . 1)))
-  "TODO")
-
-;;;###autoload
-(defun +org-capture-frame-p (&rest _)
-  "Return t if the current frame is an org-capture frame opened by
-`+org-capture/open-frame'."
-  (and (equal (alist-get 'name +org-capture-frame-parameters)
-              (frame-parameter nil 'name))
-       (frame-parameter nil 'transient)))
-
-;;;###autoload
-(defun +org-capture/open-frame (&optional initial-input key)
-  "Opens the org-capture window in a floating frame that cleans itself up once
-you're done. This can be called from an external shell script."
-  (interactive)
-  (when (and initial-input (string-empty-p initial-input))
-    (setq initial-input nil))
-  (when (and key (string-empty-p key))
-    (setq key nil))
-  (let* ((frame-title-format "")
-         (frame (if (+org-capture-frame-p)
-                    (selected-frame)
-                  (make-frame +org-capture-frame-parameters))))
-    (select-frame-set-input-focus frame)  ; fix MacOS not focusing new frames
-    (with-selected-frame frame
-      (require 'org-capture)
-      (condition-case ex
-          (letf! ((#'pop-to-buffer #'switch-to-buffer))
-                 (switch-to-buffer (doom-fallback-buffer))
-                 (let ((org-capture-initial initial-input)
-                       org-capture-entry)
-                   (when (and key (not (string-empty-p key)))
-                     (setq org-capture-entry (org-capture-select-template key)))
-                   (funcall +org-capture-fn)))
-        ('error
-         (message "org-capture: %s" (error-message-string ex))
-         (delete-frame frame))))))
-
-
 
 ;;; capture.el ends here

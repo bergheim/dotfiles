@@ -24,7 +24,10 @@
   (let ((dir (expand-file-name "~/dev/org-contactor")))
     (when (file-directory-p dir)
       (add-to-list 'load-path dir)
-      (require 'org-contactor)))
+      (require 'org-contactor)
+      ;; contact ids must resolve during icalendar export (org-caldav sync);
+      ;; org-id-extra-files defaults to a symbol, so replace, not add-to-list
+      (setq org-id-extra-files (list org-contactor-file))))
   (bergheim/load-file "modules/orgmode/hugo.el")
 
   :general
@@ -180,59 +183,15 @@ With universal arg ARG, search all .org files under `org-directory`."
   :hook
   (org-mode . org-sticky-header-mode))
 
+;; FIXME: org-contacts autoloads a bare `(when org-contacts-capf-completing ...)' form,
+;; which runs before the defcustom exists.
+(defvar org-contacts-capf-completing nil)
+
 (use-package org-contacts
   :after org
   :commands (org-contacts-anniversaries)
   :config
   (setq org-contacts-files (list (expand-file-name "contacts.org" org-directory))))
-
-(use-package org-journal
-  :ensure t
-  :defer t
-  :custom
-  (org-journal-dir (expand-file-name "journal" org-directory))
-  (org-journal-file-format "%Y%m.org")
-  (org-journal-date-prefix "* ")
-  (org-journal-time-prefix "** ")
-  (org-journal-date-format "%B %d, %Y - %A")
-  (org-journal-file-type 'monthly)
-  (org-journal-find-file #'find-file)
-  (org-journal-enable-agenda-integration t)
-
-  :general
-  (general-define-key
-   :states 'normal
-   :keymaps 'org-journal-mode-map
-   "]f"  #'org-journal-next-entry
-   "[f"  #'org-journal-previous-entry
-   "C-n" #'org-journal-next-entry
-   "C-p" #'org-journal-previous-entry)
-
-  (general-define-key
-   :keymaps 'org-journal-search-mode-map
-   "C-n" #'org-journal-search-next
-   "C-p" #'org-journal-search-previous)
-
-  ;; TODO: need a working localleader mode
-  ;; (general-define-key
-  ;;  :prefix ","
-  ;;  :states 'normal
-  ;;  :keymaps 'org-journal-mode-map
-  ;;  "jc" #'org-journal-new-entry
-  ;;  "jd" #'org-journal-new-date-entry
-  ;;  "jn" #'org-journal-next-entry
-  ;;  "jp" #'org-journal-previous-entry
-  ;;  "ss" #'org-journal-search
-  ;;  "sf" #'org-journal-search-forever
-  ;;  "sF" #'org-journal-search-future
-  ;;  "sw" #'org-journal-search-calendar-week
-  ;;  "sm" #'org-journal-search-calendar-month
-  ;;  "sy" #'org-journal-search-calendar-year)
-
-  (general-define-key
-   :keymaps 'org-journal-search-mode-map
-   "n" #'org-journal-search-next
-   "p" #'org-journal-search-prev))
 
 (use-package org-modern
   :disabled
