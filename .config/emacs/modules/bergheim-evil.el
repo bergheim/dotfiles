@@ -244,14 +244,4 @@
     (define-key evil-motion-state-map (kbd "C-o") 'better-jumper-jump-backward)
     (define-key evil-motion-state-map (kbd "C-i") 'better-jumper-jump-forward)))
 
-;; display match info in the modeline
-(use-package evil-anzu
-  :after evil-collection
-  :general
-  (:states '(normal visual)
-   ;; unlike gR (iedit-mode) you have to confirm matches here
-   "gC" 'anzu-query-replace-at-cursor)
-  :config
-  (global-anzu-mode +1))
-
 ;;; bergheim-evil.el ends here
