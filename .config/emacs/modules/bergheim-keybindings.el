@@ -361,10 +361,7 @@
     "q" '(:ignore t :which-key "Quit")
     "qf" '(delete-frame :which-key "Close frame")
     "qq" '(save-buffers-kill-terminal :which-key "Quit")
-    "qr" '(bergheim/restart-emacs :which-key "Restart")
-    "qs" '(bergheim/save-desktop :which-key "Save session")
-    "qS" '((lambda () (interactive) (desktop-auto-save 1) :which-key "Autosave session"))
-    "ql" '(bergheim/load-desktop :which-key "Load session")
+    "qr" '(restart-emacs :which-key "Restart")
 
     "w" '(:ignore t :which-key "Workspace and windows")
     "w=" '(balance-windows :which-key "Balance")
@@ -373,11 +370,6 @@
     "wv" '(evil-window-vsplit :which-key "split vertically")
     "wd" '(evil-window-delete :which-key "delete window")
 
-    "wb" '(:ignore t :which-key "Burly")
-    "wbf" '(burly-bookmark-frames :which-key "Bookmark frames")
-    "wbw" '(burly-bookmark-windows :which-key "Bookmark windows and frames")
-    "wbo" '(burly-open-bookmark :which-key "Open a bookmark")
-    "wbl" '(burly-open-last-bookmark :which-key "Open last bookmark")
     "wu" '(winner-undo :which-key "Winner undo")
     "wU" '(winner-redo :which-key "Winner redo")
     "wr" '(evil-window-rotate-upwards :which-key "Rotate upwards")

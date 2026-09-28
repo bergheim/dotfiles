@@ -56,11 +56,6 @@
            (forward-line -1)
            (bufler-list-buffer-peek))))
 
-(use-package burly
-  :unless bergheim/container-mode-p
-  :config
-  (burly-tabs-mode 1))
-
 (use-package activities
   :demand
   :ensure
