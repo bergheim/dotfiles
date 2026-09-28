@@ -133,7 +133,7 @@ controlling terminal."
         backup-directory-alist `(("." . ,(concat bergheim/cache-dir "backups")))
         ;; TODO I am seeing `#FILE#' in folders - see if this removes them
         auto-save-file-name-transforms `((".*" ,(concat bergheim/cache-dir "auto-save-list/") t))
-        lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat bergheim/cache-dir "lock/" "\\1") t))
+        lock-file-name-transforms `(("\\`/.*/\\([^/]+\\)\\'" ,(concat (bergheim/get-and-ensure-data-dir "lock/") "\\1") t))
         ;; updated things like dired buffers as well (tnx summer)
         global-auto-revert-non-file-buffers t)
 

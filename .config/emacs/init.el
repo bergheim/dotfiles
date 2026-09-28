@@ -110,8 +110,6 @@
 (defconst IS-MAC      (eq system-type 'darwin))
 (defconst IS-LINUX    (memq system-type '(gnu gnu/linux gnu/kfreebsd berkeley-unix)))
 
-(setq lock-directory (bergheim/get-and-ensure-data-dir "lock/"))
-
 ;; Make right-click do something sensible
 (when (display-graphic-p)
   (context-menu-mode))
