@@ -109,8 +109,9 @@
       org-clock-idle-time 30
       ;; keep clocks - makes it easier to see a list of recent tasks
       org-clock-out-remove-zero-time-clocks nil
-      ;; keep clock and history between sessions
-      org-clock-persist t
+      ;; keep a running clock between sessions; persisting history makes the
+      ;; first org buffer open every file in it (org-mru-clock covers recents)
+      org-clock-persist 'clock
 
       ;; org-archive-location "archive/%s_archive::datetree/"
 
@@ -172,7 +173,9 @@
 
 (org-clock-persistence-insinuate)
 
-(add-to-list 'org-modules 'org-habit)
+;; The default list pulls in all of Gnus (ol-gnus), doc-view and bibtex on
+;; the first org buffer, ~1.7s. Mail links go through mu4e.
+(setq org-modules '(org-habit ol-info ol-eww ol-w3m))
 
 (advice-add 'org-archive-subtree :after #'org-save-all-org-buffers)
 (advice-add 'org-refile :after #'org-save-all-org-buffers)
