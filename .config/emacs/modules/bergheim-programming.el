@@ -26,15 +26,6 @@
   :config
   (setq treesit-font-lock-level 4))
 
-(use-package treesit-auto
-  :after treesit
-  :demand
-  :ensure
-  :config
-  (setq treesit-auto-install t)
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
 (use-package aggressive-indent
   :config
   (aggressive-indent-global-mode t))
@@ -45,6 +36,7 @@
   (electric-pair-mode t)
   :custom
   (treesit-enabled-modes t)
+  (treesit-auto-install-grammar 'always)
   (xref-search-program 'ripgrep)
   (grep-command "rg -nS --no-heading "
                 grep-use-null-device nil))
