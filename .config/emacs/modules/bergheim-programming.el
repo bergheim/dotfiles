@@ -26,10 +26,6 @@
   :config
   (setq treesit-font-lock-level 4))
 
-(use-package aggressive-indent
-  :config
-  (aggressive-indent-global-mode t))
-
 (use-package emacs
   :ensure nil
   :config
@@ -38,18 +34,18 @@
   (treesit-enabled-modes t)
   (treesit-auto-install-grammar 'always)
   (xref-search-program 'ripgrep)
-  (grep-command "rg -nS --no-heading "
-                grep-use-null-device nil))
+  (grep-command "rg -nS --no-heading ")
+  (grep-use-null-device nil))
 
 (use-package dumb-jump
   :ensure t
-  :after evil
-  :demand t
+  :init
+  ;; autoloaded; the package itself loads on the first xref lookup
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   :config
   ;; should use `consult-xref`?
   ;; (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
-  (setq dumb-jump-prefer-searcher 'rg)
-  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+  (setq dumb-jump-prefer-searcher 'rg))
 
 ;; used by vimish-fold
 (use-package hideshow
@@ -57,14 +53,13 @@
   :hook (prog-mode . hs-minor-mode))
 
 (use-package smartparens
+  :disabled
   :demand
-  ;; :disabled
   :config
+  ;; lisp pairs: no '' / `' pairing in elisp etc.
+  (require 'smartparens-config)
   (smartparens-global-mode t)
   (show-smartparens-global-mode t)
-  (smartparens-strict-mode t)
-  ;; (smartparens-global-mode t)
-  ;; (require 'smartparens-config)
   ;; (general-define-key
   ;;  :states 'normal
   ;;  :keymaps 'smartparens-mode-map
@@ -93,6 +88,7 @@
   )
 
 (use-package evil-smartparens
+  :disabled
   :after smartparens
   ;; :config
   ;; (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)
