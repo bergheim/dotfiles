@@ -321,4 +321,38 @@
 ;; TODO: verify this works (from https://github.com/unhammer/org-mru-clock/)
 ;; (add-hook 'minibuffer-setup-hook #'org-mru-clock-embark-minibuffer-hook)
 
+;; Desktop popups for timed agenda entries via the built-in appt, sent over
+;; D-Bus to the sway notification daemon.
+(use-package appt
+  :ensure nil
+  :unless bergheim/container-mode-p
+  :after org
+  :demand t
+  :config
+  (setq appt-message-warning-time 10
+        appt-display-interval 5
+        appt-display-mode-line nil
+        appt-display-diary nil
+        appt-display-format 'window
+        appt-disp-window-function #'bergheim/appt-notify
+        appt-delete-window-function #'ignore)
+
+  (defun bergheim/appt-notify (min-to-app _new-time msg)
+    "Send appointment MSG due in MIN-TO-APP minutes as a desktop notification.
+Both are lists when several appointments are due at once."
+    (require 'notifications)
+    (cl-mapc (lambda (mins text)
+               (notifications-notify :app-name "Emacs"
+                                     :title (format "In %s min" mins)
+                                     :body text))
+             (ensure-list min-to-app) (ensure-list msg)))
+
+  (defvar bergheim/appt-refresh-timer nil)
+  (when (timerp bergheim/appt-refresh-timer)
+    (cancel-timer bergheim/appt-refresh-timer))
+  ;; re-read today's timed agenda entries, so edits show up within 15 min
+  (setq bergheim/appt-refresh-timer
+        (run-at-time nil 900 #'org-agenda-to-appt t))
+  (appt-activate 1))
+
 ;;; agenda.el ends here

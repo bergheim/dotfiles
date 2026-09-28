@@ -105,15 +105,6 @@
   :demand t
   :ensure nil)
 
-;; see also https://github.com/akhramov/org-wild-notifier.el
-(use-package org-alert
-  :after org
-  :demand t
-  :config
-  (setq org-alert-interval 300
-        org-alert-notify-cutoff 10
-        org-alert-notify-after-event-cutoff 10))
-
 (bergheim/load-file "modules/orgmode/calendar.el")
 
 
