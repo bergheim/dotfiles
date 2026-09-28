@@ -1,0 +1,11 @@
+#!/bin/sh
+# Copy the focused browser's address bar, then open the Emacs pass runner,
+# which seeds a new-entry name from an http(s) URL on the clipboard.
+set -e
+
+wtype -M ctrl -k l -m ctrl
+wtype -M ctrl -k c -m ctrl
+wtype -k Escape
+sleep 0.2
+
+exec emacsclient --no-wait --socket-name=runners --eval '(bergheim/pass-start)'

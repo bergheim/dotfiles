@@ -4,6 +4,7 @@
 (require 'nerd-icons)
 (require 'vertico-buffer)
 (require 'savehist)
+(require 'url-parse)
 
 (setq vertico-buffer-display-action '(display-buffer-same-window)
       savehist-file (expand-file-name "runners-history" bergheim/cache-dir)
@@ -273,44 +274,32 @@ rebuilds `fontaine-presets'."
             (directory-files-recursively dir "\\.gpg\\'"))))
 
 (defun bergheim/pass-parse (text)
-  "Parse a `pass show' payload into :password :user :url."
-  (let* ((lines (split-string text "\n"))
-         (password (or (car lines) ""))
-         user url)
-    (let ((case-fold-search t))
-      (dolist (line (cdr lines))
-        (cond
-         ((string-match-p "\\`otpauth://" line) nil)
-         ((string-match "\\`\\(login\\|user\\|username\\):[[:space:]]*\\(.*\\)\\'" line)
-          (setq user (match-string 2 line)))
-         ((string-match "\\`url:[[:space:]]*\\(.*\\)\\'" line)
-          (setq url (match-string 1 line))))))
-    (list :password password :user user :url url)))
+  "Parse a `pass show' payload into (PASSWORD USER URL); empty fields are nil."
+  (let ((case-fold-search t) user url)
+    (dolist (line (cdr (split-string text "\n")))
+      (cond
+       ((string-match "\\`\\(?:login\\|user\\|username\\):[[:space:]]*\\([^[:space:]].*\\)" line)
+        (setq user (match-string 1 line)))
+       ((string-match "\\`url:[[:space:]]*\\([^[:space:]].*\\)" line)
+        (setq url (match-string 1 line)))))
+    (list (and (string-match "\\`.+" text) (match-string 0 text)) user url)))
 
 (defun bergheim/pass-copy (text)
   "Copy TEXT to the clipboard and clear it after 10 seconds."
   (when (timerp bergheim/pass-clear-timer)
     (cancel-timer bergheim/pass-clear-timer))
-  (with-temp-buffer
-    (insert text)
-    (call-process-region (point-min) (point-max) "wl-copy" nil nil))
+  (call-process-region text nil "wl-copy")
   (setq bergheim/pass-clear-timer
         (run-at-time 10 nil (lambda ()
                               (call-process "wl-copy" nil nil nil "--clear")))))
 
 (defun bergheim/pass-type (user password)
   "Type USER, Tab, PASSWORD into the focused window via wtype stdin."
-  (let ((wtype (executable-find "wtype")))
-    (unless wtype
-      (user-error "wtype not found"))
+  (let ((wtype (or (executable-find "wtype") (user-error "wtype not found"))))
     (sit-for 0.2)
-    (with-temp-buffer
-      (insert user)
-      (call-process-region (point-min) (point-max) wtype nil nil nil "-"))
+    (call-process-region user nil wtype nil nil nil "-")
     (call-process wtype nil nil nil "-k" "Tab")
-    (with-temp-buffer
-      (insert password)
-      (call-process-region (point-min) (point-max) wtype nil nil nil "-"))))
+    (call-process-region password nil wtype nil nil nil "-")))
 
 (defun bergheim/pass-show (entry)
   (with-temp-buffer
@@ -318,10 +307,45 @@ rebuilds `fontaine-presets'."
       (user-error "pass show failed"))
     (buffer-string)))
 
+(defun bergheim/pass-clipboard-url ()
+  "Return the origin (scheme://host[:port]) of an http(s) URL on the clipboard."
+  (with-temp-buffer
+    (when-let* (((zerop (call-process "wl-paste" nil t nil "-n")))
+                (text (string-trim (buffer-string)))
+                ((not (string-match-p "[[:space:]]" text)))
+                (url (url-generic-parse-url text))
+                ((member (url-type url) '("http" "https"))))
+      (concat (url-type url) "://" (url-host url)
+              (when-let* ((port (url-portspec url))) (format ":%d" port))))))
+
+(defun bergheim/pass-url-seed (url)
+  "Return a store entry like \"websites/example.com\" for URL."
+  (when url
+    (concat "websites/"
+            (string-remove-prefix "www." (url-host (url-generic-parse-url url))))))
+
+(defun bergheim/pass-generate (entry user url)
+  "Create ENTRY with a fresh password, plus USER and URL lines.
+Return the generated password."
+  (with-temp-buffer
+    (unless (zerop (call-process "pass" nil t nil "generate" entry "25"))
+      (user-error "pass generate failed: %s" (string-trim (buffer-string)))))
+  (let ((password (car (bergheim/pass-parse (bergheim/pass-show entry))))
+        (extra (concat (unless (string-empty-p user) (format "user: %s\n" user))
+                       (when url (format "url: %s\n" url)))))
+    (unless (or (string-empty-p extra)
+                (zerop (call-process-region (concat password "\n" extra) nil "pass"
+                                            nil nil nil "insert" "-m" "-f" entry)))
+      (user-error "pass insert failed"))
+    password))
+
 (defun bergheim/pass ()
-  "Pick a password-store entry, then copy or type a field."
+  "Pick a password-store entry, then copy or type a field.
+A name that matches nothing offers to generate a new entry, seeded from
+an http(s) URL on the clipboard."
   (interactive)
   (let* ((entries (bergheim/pass-entries))
+         (clip-url (bergheim/pass-clipboard-url))
          (prompt (concat " "
                          (nerd-icons-mdicon "nf-md-key_variant")
                          "  Pass: "))
@@ -329,33 +353,27 @@ rebuilds `fontaine-presets'."
     (bergheim/with-runner-frame
      'pass
      (lambda ()
-       (let* ((entry (completing-read prompt entries nil t nil
-                                      'bergheim/pass-history))
-              (parsed (bergheim/pass-parse (bergheim/pass-show entry)))
-              (password (plist-get parsed :password))
-              (user (plist-get parsed :user))
-              (url (plist-get parsed :url))
-              (actions
-               (delq nil
-                     (list (and (not (string-empty-p password))
-                                (cons "Password" (list 'copy password)))
-                           (and user (not (string-empty-p user))
-                                (cons (format "Username (%s)" user)
-                                      (list 'copy user)))
-                           (and url (not (string-empty-p url))
-                                (cons (format "URL (%s)" url)
-                                      (list 'copy url)))
-                           (and user password
-                                (not (string-empty-p user))
-                                (not (string-empty-p password))
-                                (cons "Type username and password"
-                                      (list 'type user password))))))
-              (choice (completing-read " Action: " actions nil t))
-              (spec (cdr (assoc-string choice actions))))
-         (pcase spec
-           (`(copy ,text) (bergheim/pass-copy text))
-           (`(type ,u ,p) (setq pending-type (list u p)))
-           (_ (user-error "Unknown action"))))))
+       (let ((entry (completing-read prompt entries nil nil
+                                     (bergheim/pass-url-seed clip-url)
+                                     'bergheim/pass-history)))
+         (if (member entry entries)
+             (seq-let (password user url) (bergheim/pass-parse (bergheim/pass-show entry))
+               (let* ((actions
+                       (delq nil
+                             (list (and password (list "Password" 'copy password))
+                                   (and user (list (format "Username (%s)" user) 'copy user))
+                                   (and url (list (format "URL (%s)" url) 'copy url))
+                                   (and user password
+                                        (list "Type username and password" 'type user password)))))
+                      (choice (completing-read " Action: " actions nil t)))
+                 (pcase (cdr (assoc-string choice actions))
+                   (`(copy ,text) (bergheim/pass-copy text))
+                   (`(type ,u ,p) (setq pending-type (list u p)))
+                   (_ (user-error "Unknown action")))))
+           (when (y-or-n-p (format "Generate new entry %s? " entry))
+             (bergheim/pass-copy
+              (bergheim/pass-generate entry (read-string "user: ") clip-url))
+             (message "Generated %s, password copied" entry))))))
     (when pending-type
       (apply #'bergheim/pass-type pending-type))))
 
