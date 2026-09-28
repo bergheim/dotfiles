@@ -6,6 +6,7 @@
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake))
 
 (use-package beframe
+  :demand t
   :general
   (bergheim/global-menu-keys
     "wn" 'make-frame-command

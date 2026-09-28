@@ -193,16 +193,16 @@ If called interactively with a prefix argument, prompt for DIR, otherwise use th
     (consult-fd dir)))
 
 (defun bergheim/switch-to-relevant-buffer ()
-  "Generate a buffer list that you can switch to based on the context."
-
+  "Switch buffer with the most specific scope that is active.
+Frame (beframe), then project, then activity, then everything."
   (interactive)
   (cond
-   ((fboundp 'beframe-switch-buffer)
-    (call-interactively 'beframe-switch-buffer))
+   ((bound-and-true-p beframe-mode)
+    (call-interactively #'beframe-switch-buffer))
    ((project-current)
     (consult-project-buffer))
-   ((and (fboundp 'activities-switch-buffer) (activities-current))
-    (call-interactively 'activities-switch-buffer))
+   ((and (fboundp 'activities-current) (activities-current))
+    (call-interactively #'activities-switch-buffer))
    (t
     (consult-buffer))))
 
