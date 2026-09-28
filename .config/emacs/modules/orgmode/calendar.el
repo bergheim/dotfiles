@@ -4,6 +4,22 @@
   :ensure t
   :defer t
   :config
+  ;; TODO: REMOVE once https://github.com/dengste/org-caldav/pull/351 is merged
+  (defun bergheim/caldav-name-local-deletion (update &rest args)
+    "Include the Org heading in local deletion prompts during UPDATE."
+    (let ((confirm (symbol-function 'y-or-n-p)))
+      (cl-letf (((symbol-function 'y-or-n-p)
+                 (lambda (prompt)
+                   (funcall confirm
+                            (if (equal prompt "Delete this entry locally? ")
+                                (format "Delete local Org entry %S? "
+                                        (substring-no-properties
+                                         (org-get-heading t t t t)))
+                              prompt)))))
+        (apply update args))))
+  (advice-add 'org-caldav-update-events-in-org :around
+              #'bergheim/caldav-name-local-deletion)
+
   ;; TODO: remove once https://github.com/dengste/org-caldav/pull/348 lands
   ;; (Emacs 31 warns about the missing lexical-binding cookie in the sync
   ;; state file on every sync)
