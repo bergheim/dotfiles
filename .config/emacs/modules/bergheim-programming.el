@@ -231,10 +231,7 @@
 ;; see https://github.com/abicky/nodejs-repl.el for options
 (use-package nodejs-repl
   :ensure t
-  :commands (nodejs-repl)
-  :init
-  (with-eval-after-load 'repl-toggle
-    (cl-pushnew '(js-ts-mode . nodejs-repl) rtog/mode-repl-alist :test #'equal)))
+  :commands (nodejs-repl))
 
 ;; ;; Enable repeat mode for more ergonomic `dape' use
 ;; (use-package repeat
