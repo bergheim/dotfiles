@@ -5,6 +5,8 @@
   :after evil
   :config
   (setq evil-collection-want-unimpaired-p nil)
+  ;; disable newline; corfu uses RET
+  (setq evil-collection-binding-overrides '((repl-newline :enabled nil)))
   (evil-collection-init))
 
 (use-package evil-escape
