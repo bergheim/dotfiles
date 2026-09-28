@@ -365,12 +365,44 @@ Otherwise, use current directory."
 (use-package affe
   :disabled
   :ensure t
+  :general
+  (bergheim/global-menu-keys
+    ;; "pF" '(affe-find :which-key "Async find file")
+    "sA" '(affe-grep :which-key "Async grep"))
   :config
-  (setq affe-find-command "fd --color=never --hidden --follow --exclude .git --exclude node_modules --regex"))
+  (setq affe-find-command "fd --color=never --hidden --follow --exclude .git --exclude node_modules --regex")
+
+  (defun eshell/find-file-with-affe ()
+    "Search for files using affe based on the current Eshell input and insert the selected file path into Eshell."
+    (interactive)
+    (let* ((input (bergheim/eshell-get-old-input))
+           ;; Extract the command and arguments from the input
+           (args (split-string input "[ \t\n]+" t))
+           (command (car args))
+           ;; Use the second argument as the directory to search from, default to current
+           (raw-dir (or (nth 1 args) "."))
+           (base-dir (expand-file-name raw-dir default-directory))
+           (valid-dir (if (file-directory-p base-dir) base-dir default-directory))
+           ;; Customize affe's action to insert path in Eshell
+           (affe-filter-func
+            (lambda (path)
+              (eshell-bol)
+              (kill-line)
+              (insert (concat command " " (shell-quote-argument path))))))
+      (if (not valid-dir)
+          (user-error "Invalid path (%s)" base-dir)
+        (affe-find valid-dir))))
+
+  (with-eval-after-load 'esh-mode
+    (keymap-set eshell-mode-map "C-c d" #'eshell/find-file-with-affe)))
 
 (use-package treemacs
   :disabled
   :defer t
+  :general
+  (bergheim/global-menu-keys
+    "aw" '(treemacs :which-key "Treemacs workspace")
+    "pw" '(treemacs :which-key "Treemacs workspace"))
   :config
   (treemacs-follow-mode t)
   (treemacs-filewatch-mode t))

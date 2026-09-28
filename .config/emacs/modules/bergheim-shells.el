@@ -291,8 +291,8 @@ No popup: agent-shell newline (M-RET sends), shell sends."
   (defun bergheim/eshell-get-old-input ()
     "Return the eshell input from start-of-input to point.
 Unlike the built-in `eshell-get-old-input', this only returns what
-has been typed up to point — used by the consult/affe helpers below
-that want to grab a partial command line."
+has been typed up to point — used by the consult helpers below (and
+the affe one in bergheim-nav.el) that want to grab a partial command line."
     (buffer-substring-no-properties
      (save-excursion (eshell-bol) (point))
      (point)))
@@ -322,27 +322,6 @@ that want to grab a partial command line."
            (selected (completing-read "Select file: " results nil t)))
       (when (and selected (not (string-empty-p selected)))
         (insert selected))))
-
-  (defun eshell/find-file-with-affe ()
-    "Search for files using affe based on the current Eshell input and insert the selected file path into Eshell."
-    (interactive)
-    (let* ((input (bergheim/eshell-get-old-input))
-           ;; Extract the command and arguments from the input
-           (args (split-string input "[ \t\n]+" t))
-           (command (car args))
-           ;; Use the second argument as the directory to search from, default to current
-           (raw-dir (or (nth 1 args) "."))
-           (base-dir (expand-file-name raw-dir default-directory))
-           (valid-dir (if (file-directory-p base-dir) base-dir default-directory))
-           ;; Customize affe's action to insert path in Eshell
-           (affe-filter-func
-            (lambda (path)
-              (eshell-bol)
-              (kill-line)
-              (insert (concat command " " (shell-quote-argument path))))))
-      (if (not valid-dir)
-          (user-error "Invalid path (%s)" base-dir)
-        (affe-find valid-dir))))
 
   (defun eshell/find-file-with-consult ()
     "Find files from your current dir args"
@@ -495,8 +474,7 @@ Open `dired` in the resolved directory of the current command."
                                 (eshell/alias "cat" "eshell/mycat $1")
 
                                 (define-key eshell-mode-map (kbd "C-c f") 'eshell/find-file-with-consult)
-                                (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult)
-                                (define-key eshell-mode-map (kbd "C-c d") 'eshell/affe-find))))
+                                (define-key eshell-mode-map (kbd "C-c t") 'eshell/find-file-with-consult))))
 
 (defun bergheim/ghostel-here ()
   "Open a new Ghostel in another window, using the current local or remote directory."

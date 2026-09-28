@@ -145,7 +145,6 @@
     "amp" '(smudge-playlist-search :which-key "Search playlists")
     "amt" '(smudge-track-search :which-key "Search track")
     "at" '(:ignore t :which-key "Terminals")
-    "aw" '(treemacs :which-key "Treemacs workspace")
 
     "b" '(:ignore t :which-key "Buffers")
     "ba" '(consult-buffer :which-key "All buffers")
@@ -300,13 +299,11 @@
     "pe" '(project-or-external-find-file :which-key "External Find file")
     "pf" '(project-find-file :which-key "Find file")
     "pF" '(bergheim/project-find-file-other-window :which-key "Find file other window")
-    ;; "pF" '(affe-find :which-key "Async find file")
     "ps" '(bergheim/consult-ripgrep-with-selection :which-key "Grep project")
     "pt" '(project-shell :which-key "Shell")
     "pT" '(project-eshell :which-key "Eshell")
     "pp" '(bergheim/open-or-switch-to-project-tab :which-key "Switch project")
     "pP" '((lambda () (interactive) (bergheim/open-or-switch-to-project-tab t)) :which-key "Switch project")
-    "pw" '(treemacs :which-key "Treemacs workspace")
 
     ;; TODO: add lots more consult stuff like kill-ring etc
     "s" '(:ignore t :which-key "Search")
@@ -315,7 +312,6 @@
     "sB" `(,(bergheim/call-with-universal-arg  #'consult-line-multi) :which-key "all buffers")
     "sd" '(bergheim/consult-ripgrep-with-selection-current-dir :which-key "Current directory")
     "sD" '(bergheim/consult-ripgrep-with-selection-other-dir :which-key "Other dir")
-    "sA" '(affe-grep :which-key "Async grep")
     "sf" '(consult-fd :which-key "Search files")
     "sF" '(bergheim/consult-fd-other-dir :which-key "Search files in dir")
     
