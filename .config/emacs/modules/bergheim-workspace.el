@@ -39,6 +39,7 @@
   (winner-mode 1))
 
 (use-package bufler
+  :disabled
   :unless bergheim/container-mode-p
   :config
   (bufler-mode)

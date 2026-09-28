@@ -10,6 +10,8 @@
                  (display-buffer-use-some-window buffer nil))
                (inhibit-same-window . t)))
 
+(use-package hydra)
+
 ;; save minibuffer history
 (use-package savehist
   :ensure nil
