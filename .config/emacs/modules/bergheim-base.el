@@ -194,8 +194,6 @@ controlling terminal."
   (setq save-place-forget-unreadable-files t)
   (setq save-place-limit 1000))
 
-(use-package el-patch)
-
 (use-package which-key
   :demand t
   :custom
