@@ -33,7 +33,10 @@
   (clatter-notify-timeout 10000)
   (clatter-notify-max-length 160)
   (clatter-quit-on-exit nil)
-  (clatter-track-count-style 'none)
+  (clatter-track-layout 'strip)
+  (clatter-track-max-width 1.0)
+  (clatter-track-count-style 'superscript)
+  (custom-set-faces '(clatter-track-count ((t (:height 0.8)))))
   (clatter-track-show-in-clatter-buffers t)
   (clatter-track-exclude-targets '("*server*"))
   (clatter-track-indicators
