@@ -502,7 +502,7 @@ marker, so we simply leave point wherever the switch landed."
             (with-current-buffer buf
                 (goto-char mark)
                 (when (featurep 'evil) (evil-normal-state)))
-            (when-let ((win (get-buffer-window buf)))
+            (when-let* ((win (get-buffer-window buf)))
                 (set-window-point win mark)
                 (with-selected-window win (recenter 1))))))
 

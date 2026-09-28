@@ -90,7 +90,7 @@ argument is given, otherwise navigate backward."
          (mapcar #'car candidates)
          :prompt "Lines with URLs: "
          :lookup (lambda (user-query cands narrow input)
-                   (when-let ((entry (assoc user-query candidates)))
+                   (when-let* ((entry (assoc user-query candidates)))
                      (goto-char (cdr (cdr entry)))
                      (cons user-query t)))
          :require-match t
@@ -99,7 +99,7 @@ argument is given, otherwise navigate backward."
                     (setq selected (car cand)))))
 
         (when selected
-          (when-let (url (car (cdr (assoc selected candidates))))
+          (when-let* ((url (car (cdr (assoc selected candidates)))))
             (message "Opening URL: %s" url)
             (browse-url url)))))))
 
@@ -167,8 +167,8 @@ argument is given, otherwise navigate backward."
     "Retrieve a list of all executable files in `exec-path'."
     (let (files-in-path)
       (dolist (dir exec-path files-in-path)
-        (when-let ((files (and dir (file-exists-p dir)
-                               (directory-files dir t))))
+        (when-let* ((files (and dir (file-exists-p dir)
+                                (directory-files dir t))))
           (dolist (file files)
             (when (and (file-executable-p file)
                        (not (file-directory-p file)))

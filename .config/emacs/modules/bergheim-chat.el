@@ -330,7 +330,7 @@ load does not trigger a GPG prompt."
       ;; A failed decrypt (broken pinentry, restarted gpg-agent) must not
       ;; get cached — the `unless' would pin the nil password until the
       ;; daemon restarts.
-      (when-let ((password (password-store-get "homelab/ejabberd/tsb")))
+      (when-let* ((password (password-store-get "homelab/ejabberd/tsb")))
         (setq jabber-account-list
               `(("tsb@xmpp.glvortex.net"
                  (:password . ,password)
@@ -396,7 +396,7 @@ not live."
         (let ((ewoc (bound-and-true-p jabber-chat-ewoc)))
           (copy-marker
            (or (and ewoc
-                    (when-let ((node (ewoc-nth ewoc -1)))
+                    (when-let* ((node (ewoc-nth ewoc -1)))
                       (ewoc-location node)))
                (and (markerp (bound-and-true-p jabber-point-insert))
                     (marker-position jabber-point-insert))
@@ -1021,9 +1021,9 @@ in a plain right-split window (~40% width).  Regular windows
     ;; raw JIDs.  Async, so it lands a beat after the window is shown.
     (bergheim/jabber--launch-seed-after-bookmarks)
     (when bergheim/jabber-startup-room
-      (when-let ((jc (car (bound-and-true-p jabber-connections))))
+      (when-let* ((jc (car (bound-and-true-p jabber-connections))))
         (jabber-muc-create-buffer jc bergheim/jabber-startup-room))
-      (when-let ((chan (jabber-muc-find-buffer bergheim/jabber-startup-room)))
+      (when-let* ((chan (jabber-muc-find-buffer bergheim/jabber-startup-room)))
         (let ((win (split-window-right
                     (- (round (* 0.4 (frame-width)))))))
           (set-window-buffer win chan)))))

@@ -124,7 +124,7 @@ If URL is provided, use that. Otherwise get link at point."
       (save-excursion
         (goto-char (point-min))
         (while (not (eobp))
-          (when-let ((url (get-text-property (point) 'shr-url)))
+          (when-let* ((url (get-text-property (point) 'shr-url)))
             (let ((text (buffer-substring-no-properties
                          (point)
                          (next-single-property-change (point) 'shr-url nil (point-max)))))

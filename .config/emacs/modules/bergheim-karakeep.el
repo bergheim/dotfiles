@@ -125,7 +125,7 @@ Returns the parsed JSON response or nil on error."
 (defun karakeep--parse-lists (api-response)
   "Parse the API response and return a list of (display-name . id) pairs.
 API-RESPONSE is the hash table returned from the API."
-  (when-let ((lists-array (gethash "lists" api-response)))
+  (when-let* ((lists-array (gethash "lists" api-response)))
     (mapcar (lambda (list-hash)
               (let ((name (gethash "name" list-hash))
                     (icon (gethash "icon" list-hash))

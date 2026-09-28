@@ -236,7 +236,7 @@ With universal arg ARG, search all .org files under `org-directory`."
         org-noter-highlight-selected-text t)
   (advice-add 'org-noter-insert-note :after
               (lambda (&rest _)
-                (when-let ((notes-win (org-noter--get-notes-window)))
+                (when-let* ((notes-win (org-noter--get-notes-window)))
                   (select-window notes-win)
                   (evil-insert))))
   :general
@@ -278,7 +278,7 @@ With universal arg ARG, search all .org files under `org-directory`."
            (org-pdftools-use-isearch-link t)
            (org-pdftools-use-freepointer-annot t))
        (org-noter-insert-note (org-noter--get-precise-info))
-       (when-let ((notes-win (org-noter--get-notes-window)))
+       (when-let* ((notes-win (org-noter--get-notes-window)))
          (select-window notes-win)))))
 
   ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf

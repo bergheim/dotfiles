@@ -219,10 +219,10 @@ No popup: agent-shell newline (M-RET sends), shell sends."
   (defun bergheim/switch-to-shell ()
     "Switch to an active shell buffer using completion with directory info."
     (interactive)
-    (if-let ((shell-buffers (seq-filter (lambda (buf)
-                                          (with-current-buffer buf
-                                            (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'ghostel-mode)))
-                                        (buffer-list))))
+    (if-let* ((shell-buffers (seq-filter (lambda (buf)
+                                           (with-current-buffer buf
+                                             (derived-mode-p 'shell-mode 'eshell-mode 'term-mode 'ghostel-mode)))
+                                         (buffer-list))))
         (let* ((candidates (mapcar (lambda (buf)
                                      (cons (format "%s (%s)"
                                                    (buffer-name buf)

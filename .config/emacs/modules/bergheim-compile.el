@@ -67,8 +67,8 @@
   (defun bergheim/open-project-compilation-buffer ()
     "Open the project compilation buffer if it exists."
     (interactive)
-    (if-let ((buffer-name (funcall project-compilation-buffer-name-function default-directory))
-             (buffer (get-buffer buffer-name)))
+    (if-let* ((buffer-name (funcall project-compilation-buffer-name-function default-directory))
+              (buffer (get-buffer buffer-name)))
         (pop-to-buffer buffer)
       (message "No compilation buffer exists for this project."))))
 

@@ -283,7 +283,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
     "Load the first 'prompt.md' found upwards in directory hierarchy or project root."
     (let* ((prompt-file "prompt.md")
            (prompt-dir (or (locate-dominating-file default-directory prompt-file)
-                           (when-let ((project (project-current)))
+                           (when-let* ((project (project-current)))
                              (project-root project))))
            (prompt-path (and prompt-dir (expand-file-name prompt-file prompt-dir))))
       (when (and prompt-path (file-exists-p prompt-path))
@@ -294,7 +294,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
 
   (defun bergheim/gptel--annotate-directives (s &optional metadata)
     "Annotate a given directive S with a description, using optional METADATA."
-    (when-let ((item (assoc (intern s) gptel-directives)))
+    (when-let* ((item (assoc (intern s) gptel-directives)))
       (let ((desc (s-truncate 200 (s-replace "\n" " " (cdr item)))))
         (concat (string-pad "" (- 20 (string-width s))) desc))))
 
@@ -318,7 +318,7 @@ Prompts for session name if none provided. Inserts selected region text into cha
                                 nil ;; no history specified
                                 "default")))))
 
-      (if-let ((directive (assoc directive-key gptel-directives)))
+      (if-let* ((directive (assoc directive-key gptel-directives)))
           (progn
             (setq-local gptel--system-message-name (car directive))
             (setq-local gptel--system-message (cdr directive))
