@@ -4,7 +4,6 @@
 
 
 (use-package org-roam
-  :ensure nil
   :disabled
   :defer t
   :after org
