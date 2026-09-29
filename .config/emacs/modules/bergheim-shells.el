@@ -548,6 +548,54 @@ Open `dired` in the resolved directory of the current command."
     "Move after a recognized prompt, or to the beginning of an output line."
     :type exclusive
     (ghostel-beginning-of-input-or-line))
+
+  ;; Motions, not plain commands, so line-visual doesn't revert the jump.
+  (evil-define-motion bergheim/ghostel-previous-prompt (count)
+    "Move to the COUNTth previous prompt, leaving insert state first.
+Visual state is kept, so the jump extends the selection."
+    :type line
+    :jump t
+    (when (evil-insert-state-p) (evil-normal-state))
+    (ghostel-previous-prompt (or count 1)))
+
+  (evil-define-motion bergheim/ghostel-next-prompt (count)
+    "Move to the COUNTth next prompt, leaving insert state first.
+Visual state is kept, so the jump extends the selection."
+    :type line
+    :jump t
+    (when (evil-insert-state-p) (evil-normal-state))
+    (ghostel-next-prompt (or count 1)))
+
+  (defun bergheim/ghostel-to-prompt ()
+    "Leave read-only mode and enter insert state at the live prompt.
+evil-ghostel's insert-state entry hook snaps point to the terminal cursor."
+    (when (memq ghostel--input-mode '(copy emacs))
+      (ghostel-readonly-exit))
+    (evil-insert-state))
+
+  (defun bergheim/ghostel-shell-key ()
+    "Go to the live prompt in insert state and send this key to the shell."
+    (interactive)
+    (bergheim/ghostel-to-prompt)
+    (ghostel--send-event))
+
+  (defun bergheim/ghostel-reuse-command ()
+    "Put the command of the old prompt at point on the live prompt.
+It is not run.  Off an old prompt, fall back to `evil-ret'."
+    (interactive)
+    (let* ((start (and (not (ghostel-point-on-cursor-row-p))
+                       (text-property-any (line-beginning-position)
+                                          (line-end-position)
+                                          'ghostel-input t)))
+           (cmd (and start
+                     (string-trim
+                      (buffer-substring-no-properties
+                       start (next-single-property-change
+                              start 'ghostel-input nil (point-max)))))))
+      (if (or (null cmd) (string-empty-p cmd))
+          (call-interactively #'evil-ret)
+        (bergheim/ghostel-to-prompt)
+        (ghostel-paste-string cmd))))
   :general
   (:keymaps 'evil-ghostel-mode-map
    :states '(normal insert)
@@ -556,6 +604,27 @@ Open `dired` in the resolved directory of the current command."
   (:keymaps 'evil-ghostel-mode-map
    :states '(normal visual operator)
    "0" #'bergheim/ghostel-beginning-of-input)
+  ;; [[ / ]] that also work from insert and visual state.
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(normal visual insert)
+   "C-M-k" #'bergheim/ghostel-previous-prompt
+   "C-M-j" #'bergheim/ghostel-next-prompt)
+  ;; Shell keys: from normal/visual, jump to the live prompt and hand the key
+  ;; to zsh.  In insert state they already go straight to the shell.
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(normal visual)
+   "C-r" #'bergheim/ghostel-shell-key
+   "C-p" #'bergheim/ghostel-shell-key
+   "C-n" #'bergheim/ghostel-shell-key
+   "C-a" #'bergheim/ghostel-shell-key
+   "C-e" #'bergheim/ghostel-shell-key
+   "C-l" #'bergheim/ghostel-shell-key
+   "TAB" #'bergheim/ghostel-shell-key
+   "<tab>" #'bergheim/ghostel-shell-key)
+  (:keymaps 'evil-ghostel-mode-map
+   :states 'normal
+   "RET" #'bergheim/ghostel-reuse-command
+   "<return>" #'bergheim/ghostel-reuse-command)
   ;; Raw char mode's higher-priority escape map still owns M-RET.
   (:keymaps 'evil-ghostel-mode-map
    :states '(normal visual insert emacs)
