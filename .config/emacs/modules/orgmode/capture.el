@@ -48,6 +48,8 @@
           (message "Copied %s" link)))))
 
   (add-hook 'org-capture-after-finalize-hook #'bergheim/org-capture-copy-link)
+  ;; org leaves the target buffer modified; persist captures immediately
+  (add-hook 'org-capture-after-finalize-hook #'org-save-all-org-buffers)
 
   (setq org-capture-custom-template-directory (expand-file-name "templates/capture/" user-emacs-directory)
         +org-capture-contacts-file (expand-file-name "contacts.org" org-directory)
