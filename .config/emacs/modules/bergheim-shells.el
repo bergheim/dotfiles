@@ -574,6 +574,8 @@ so `i'/`a' would otherwise land in a read-only buffer."
       (ghostel-readonly-exit)))
 
   ;; Runs before evil-ghostel's own entry hook, which snaps point to the cursor.
+  ;; Workaround for https://github.com/dakra/ghostel/issues/715 -- drop this
+  ;; and `bergheim/ghostel-leave-readonly' once evil-ghostel handles it.
   (add-hook 'evil-ghostel-mode-hook
             (lambda ()
               (add-hook 'evil-insert-state-entry-hook
