@@ -566,11 +566,21 @@ Visual state is kept, so the jump extends the selection."
     (when (evil-insert-state-p) (evil-normal-state))
     (ghostel-next-prompt (or count 1)))
 
-  (defun bergheim/ghostel-to-prompt ()
-    "Leave read-only mode and enter insert state at the live prompt.
-evil-ghostel's insert-state entry hook snaps point to the terminal cursor."
+  (defun bergheim/ghostel-leave-readonly ()
+    "Leave copy/Emacs mode when evil enters insert state.
+Prompt jumps put ghostel in copy mode, and evil keys shadow its fast exit,
+so `i'/`a' would otherwise land in a read-only buffer."
     (when (memq ghostel--input-mode '(copy emacs))
-      (ghostel-readonly-exit))
+      (ghostel-readonly-exit)))
+
+  ;; Runs before evil-ghostel's own entry hook, which snaps point to the cursor.
+  (add-hook 'evil-ghostel-mode-hook
+            (lambda ()
+              (add-hook 'evil-insert-state-entry-hook
+                        #'bergheim/ghostel-leave-readonly -50 t)))
+
+  (defun bergheim/ghostel-to-prompt ()
+    "Enter insert state at the live prompt."
     (evil-insert-state))
 
   (defun bergheim/ghostel-shell-key ()
