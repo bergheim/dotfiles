@@ -579,9 +579,15 @@ evil-ghostel's insert-state entry hook snaps point to the terminal cursor."
     (bergheim/ghostel-to-prompt)
     (ghostel--send-event))
 
-  (defun bergheim/ghostel-reuse-command ()
-    "Put the command of the old prompt at point on the live prompt.
-It is not run.  Off an old prompt, fall back to `evil-ret'."
+  (defun bergheim/ghostel-to-prompt-with (text)
+    "Put TEXT on the live prompt without running it, in insert state."
+    (bergheim/ghostel-to-prompt)
+    (ghostel-paste-string text))
+
+  (defun bergheim/ghostel-ret ()
+    "Context RET in normal state.
+On an old prompt, put its command on the live prompt (not run).  On a
+link or file:line, open it.  Otherwise `evil-ret'."
     (interactive)
     (let* ((start (and (not (ghostel-point-on-cursor-row-p))
                        (text-property-any (line-beginning-position)
@@ -592,10 +598,61 @@ It is not run.  Off an old prompt, fall back to `evil-ret'."
                       (buffer-substring-no-properties
                        start (next-single-property-change
                               start 'ghostel-input nil (point-max)))))))
-      (if (or (null cmd) (string-empty-p cmd))
-          (call-interactively #'evil-ret)
-        (bergheim/ghostel-to-prompt)
-        (ghostel-paste-string cmd))))
+      (cond
+       ((and cmd (not (string-empty-p cmd)))
+        (bergheim/ghostel-to-prompt-with cmd))
+       ((ghostel--link-uri-at-point)
+        (ghostel-find-file-at-point))
+       (t (call-interactively #'evil-ret)))))
+
+  (defun bergheim/ghostel-send-region (beg end)
+    "Put the visual selection on the live prompt without running it."
+    (interactive "r")
+    (let ((text (string-trim-right (buffer-substring-no-properties beg end))))
+      (evil-exit-visual-state)
+      (bergheim/ghostel-to-prompt-with text)))
+
+  (defun bergheim/ghostel--output-bounds ()
+    "Return (PROMPT OUTPUT-BEG OUTPUT-END) for the command at point.
+PROMPT is the start of its prompt line; the output runs up to the next
+prompt, without trailing blank lines.  Nil when there is no prompt."
+    (save-excursion
+      (end-of-line)
+      (when-let* ((m (text-property-search-backward
+                      'ghostel-prompt nil (lambda (_ v) v))))
+        (goto-char (prop-match-beginning m))
+        (let ((prompt (line-beginning-position))
+              ;; after the typed command, which can wrap onto more lines
+              (beg (progn
+                     (forward-line 1)
+                     (while (and (not (eobp))
+                                 (text-property-any (point) (line-end-position)
+                                                    'ghostel-input t)
+                                 (not (text-property-not-all
+                                       (point) (line-end-position)
+                                       'ghostel-prompt nil)))
+                       (forward-line 1))
+                     (point)))
+              (end (or (when-let* ((n (text-property-search-forward
+                                       'ghostel-prompt nil (lambda (_ v) v))))
+                         (goto-char (prop-match-beginning n))
+                         (line-beginning-position))
+                       (point-max))))
+          (goto-char end)
+          (skip-chars-backward " \t\n" beg)
+          (list prompt beg (if (> (point) beg) (min (1+ (line-end-position)) end) beg))))))
+
+  (evil-define-text-object bergheim/ghostel-inner-output (count &optional _beg _end _type)
+    "The output of the command at point."
+    (pcase (bergheim/ghostel--output-bounds)
+      (`(,_ ,beg ,end) (evil-range beg end 'line))
+      (_ (user-error "No command output here"))))
+
+  (evil-define-text-object bergheim/ghostel-outer-output (count &optional _beg _end _type)
+    "The command at point: its prompt line plus output."
+    (pcase (bergheim/ghostel--output-bounds)
+      (`(,prompt ,_ ,end) (evil-range prompt (max end (save-excursion (goto-char prompt) (1+ (line-end-position)))) 'line))
+      (_ (user-error "No command here"))))
   :general
   (:keymaps 'evil-ghostel-mode-map
    :states '(normal insert)
@@ -609,6 +666,20 @@ It is not run.  Off an old prompt, fall back to `evil-ret'."
    :states '(normal visual insert)
    "C-M-k" #'bergheim/ghostel-previous-prompt
    "C-M-j" #'bergheim/ghostel-next-prompt)
+  ;; evil-ghostel binds [[ / ]] in normal state only.
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(visual operator)
+   "[[" #'bergheim/ghostel-previous-prompt
+   "]]" #'bergheim/ghostel-next-prompt)
+  ;; yio / vio: a command's output; yao: with its prompt line.
+  (:keymaps 'evil-ghostel-mode-map
+   :states '(visual operator)
+   "io" #'bergheim/ghostel-inner-output
+   "ao" #'bergheim/ghostel-outer-output)
+  (:keymaps 'evil-ghostel-mode-map
+   :states 'visual
+   "RET" #'bergheim/ghostel-send-region
+   "<return>" #'bergheim/ghostel-send-region)
   ;; Shell keys: from normal/visual, jump to the live prompt and hand the key
   ;; to zsh.  In insert state they already go straight to the shell.
   (:keymaps 'evil-ghostel-mode-map
@@ -623,8 +694,8 @@ It is not run.  Off an old prompt, fall back to `evil-ret'."
    "<tab>" #'bergheim/ghostel-shell-key)
   (:keymaps 'evil-ghostel-mode-map
    :states 'normal
-   "RET" #'bergheim/ghostel-reuse-command
-   "<return>" #'bergheim/ghostel-reuse-command)
+   "RET" #'bergheim/ghostel-ret
+   "<return>" #'bergheim/ghostel-ret)
   ;; Raw char mode's higher-priority escape map still owns M-RET.
   (:keymaps 'evil-ghostel-mode-map
    :states '(normal visual insert emacs)
