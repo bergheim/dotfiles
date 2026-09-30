@@ -95,7 +95,6 @@
   ;; miniflux / fever
   (setq elfeed-protocol-fever-update-unread-only nil)
   (setq elfeed-protocol-fever-fetch-category-as-tag nil)
-  ;; :password as a form is eval'd at fetch time, so load triggers no GPG prompt
   (setq elfeed-feeds
         `((,(concat "fever+" bergheim/elfeed-fever-url)
            :api-url ,bergheim/elfeed-fever-api-url
