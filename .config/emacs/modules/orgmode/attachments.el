@@ -2,15 +2,28 @@
 ;;
 ;; Copyright (C) 2023 Thomas Bergheim
 
+(defvar bergheim/org-id-inhibit nil
+  "Non-nil while Org stores links internally: no new IDs, no kill-ring.")
+
+(defun bergheim/org-id-inhibit-around (fn &rest args)
+  (let ((bergheim/org-id-inhibit t)
+        (org-id-link-to-org-use-id nil))
+    (apply fn args)))
+
+;; ob-tangle calls org-store-link once per block for its link comments.
+;; Adding an ID there modifies the buffer, and org-babel-tangle-file then
+;; prompts on kill-buffer -- blocking the daemon for every emacsclient.
+(advice-add 'org-babel-tangle :around #'bergheim/org-id-inhibit-around)
+
 (defun bergheim/org-id-advice (&rest args)
   "Add unique and clear IDs to everything, except modes where it does not make sense"
 
   ;; FIXME: maybe skip update-id if some mode?
-  (message (format "%s" major-mode))
   ;; (unless (string-match "^\\(magit\\|mu4e\\)-.*" (format "%s" major-mode))
   ;; (message "Current ID %s" (org-entry-get (point) "ID" t))
 
-  (if (string-prefix-p "org-" (format "%s" major-mode))
+  (if (and (not bergheim/org-id-inhibit)
+           (string-prefix-p "org-" (format "%s" major-mode)))
       (bergheim/~id-get-or-generate)
     ;; this will keep things more up to date but will make capturing a lot slower
     ;; I've not noticed any downsides, though
