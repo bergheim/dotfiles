@@ -1,0 +1,64 @@
+#!/bin/sh
+# agent-bell: when an agent turns blocked or done, write BEL to the terminal of
+# every client attached to this Herdr session. Herdr itself only forwards bells
+# from the focused pane, and herdr-mirror drops them entirely; a BEL on the
+# client's tty reaches the outer terminal (through mosh/ssh too), which then
+# flags the window urgent. `jump` focuses the agent that needs you.
+set -eu
+
+herdr=${HERDR_BIN_PATH:-herdr}
+session=${HERDR_SESSION:-default}
+state=${HERDR_PLUGIN_STATE_DIR:?run me from herdr}
+min_gap=10 # seconds between rings for one pane, so a flickering agent cannot spam
+
+# Ttys of the clients attached to this session. A client is a host process whose
+# argv is exactly `herdr` (default session), `herdr --session S`, or
+# `herdr session attach S`. Servers, subcommands, and container processes
+# (podman shows them in the host pid namespace) are not clients.
+client_ttys() {
+    pat="(.*/)?herdr( --session $session| session attach $session)"
+    [ "$session" = default ] && pat="$pat?"
+    self_mnt=$(readlink /proc/self/ns/mnt)
+    for pid in $(pgrep -fx "$pat"); do
+        [ "$(readlink "/proc/$pid/ns/mnt" 2>/dev/null)" = "$self_mnt" ] || continue
+        tty=$(readlink "/proc/$pid/fd/0" 2>/dev/null) || continue
+        case $tty in /dev/pts/*) echo "$tty" ;; esac
+    done | sort -u
+}
+
+ring() {
+    for tty in $(client_ttys); do
+        # A wedged terminal must not hang the hook.
+        timeout 1 sh -c 'printf "\a" >"$1"' _ "$tty" || true
+    done
+}
+
+event() {
+    pane=$(printf '%s' "$HERDR_PLUGIN_EVENT_JSON" | jq -r '.data.pane_id')
+    status=$(printf '%s' "$HERDR_PLUGIN_EVENT_JSON" | jq -r '.data.agent_status')
+    case $status in blocked | done) ;; *) return 0 ;; esac
+
+    mkdir -p "$state/rung"
+    stamp="$state/rung/$pane"
+    now=$(date +%s)
+    last=$(cat "$stamp" 2>/dev/null || echo 0)
+    [ $((now - last)) -ge "$min_gap" ] || return 0
+    echo "$now" >"$stamp"
+    ring
+}
+
+# Blocked agents first, then done ones, in sidebar order.
+jump() {
+    target=$("$herdr" agent list | jq -r '
+        [.result.agents[] | select(.agent_status == "blocked")]
+        + [.result.agents[] | select(.agent_status == "done")]
+        | .[0].pane_id // empty')
+    [ -n "$target" ] || exit 0
+    exec "$herdr" agent focus "$target"
+}
+
+case ${1:-} in
+event) event ;;
+jump) jump ;;
+*) echo "usage: agent-bell event|jump" >&2; exit 2 ;;
+esac

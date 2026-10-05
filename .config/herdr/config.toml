@@ -52,9 +52,9 @@ resize_pane_down  = "alt+shift+down"
 resize_pane_up    = "alt+shift+up"
 resize_pane_right = "alt+shift+right"
 
-# Unbound by default, and the reason to run Herdr: jump straight to
-# whichever agent wants something, across every workspace.
-next_agent       = "prefix+a"
+# Unbound by default. Steps through every agent in sidebar order, idle
+# ones included; prefix+a (agent-bell, below) jumps to the one that needs you.
+next_agent       = "prefix+alt+a"
 previous_agent   = "prefix+shift+a"
 switch_tab       = ["prefix+1..9", "alt+1..9"]
 focus_agent      = "prefix+alt+1..9"
@@ -121,3 +121,13 @@ command     = "exec \"${SHELL:-sh}\""
 description = "scratch terminal"
 width       = "80%"
 height      = "80%"
+
+# agent-bell plugin (yadm: ~/.config/herdr/plugins/agent-bell; link once with
+# `herdr plugin link ~/.config/herdr/plugins/agent-bell`). It rings every
+# attached client's terminal when an agent turns blocked or done; this jumps
+# to the first blocked agent, else the first done one.
+[[keys.command]]
+key         = "prefix+a"
+type        = "plugin_action"
+command     = "tsb.agent-bell.jump"
+description = "jump to the agent that needs me"

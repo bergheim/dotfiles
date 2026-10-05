@@ -1,0 +1,18 @@
+id = "tsb.agent-bell"
+name = "agent bell"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Ring attached clients' terminals when an agent is blocked or done, and jump to it"
+platforms = ["linux"]
+
+# Fires for local agents and for herdr-mirror's container agents alike:
+# mirror reports their state onto the host pane with pane.report_agent.
+[[events]]
+on = "pane.agent_status_changed"
+command = ["./agent-bell", "event"]
+
+[[actions]]
+id = "jump"
+title = "Jump to the agent that needs me"
+contexts = ["workspace"]
+command = ["./agent-bell", "jump"]
