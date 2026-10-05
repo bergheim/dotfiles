@@ -47,12 +47,15 @@ event() {
     ring
 }
 
-# Blocked agents first, then done ones, in sidebar order.
+# The blocked/done agent that rang most recently: the bell you just heard.
+# Agents that never rang come after, blocked before done.
 jump() {
-    target=$("$herdr" agent list | jq -r '
-        [.result.agents[] | select(.agent_status == "blocked")]
-        + [.result.agents[] | select(.agent_status == "done")]
-        | .[0].pane_id // empty')
+    target=$("$herdr" agent list | jq -r '.result.agents[]
+        | select(.agent_status == "blocked" or .agent_status == "done")
+        | "\(if .agent_status == "blocked" then 0 else 1 end) \(.pane_id)"' |
+        while read -r rank pane; do
+            echo "$(cat "$state/rung/$pane" 2>/dev/null || echo 0) $rank $pane"
+        done | sort -k1,1nr -k2,2n | head -n 1 | cut -d' ' -f3)
     [ -n "$target" ] || exit 0
     exec "$herdr" agent focus "$target"
 }
