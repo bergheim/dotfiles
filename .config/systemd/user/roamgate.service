@@ -1,0 +1,17 @@
+[Unit]
+Description=Roamgate (browser client for Herdr)
+Documentation=https://github.com/powerfooI/roamgate
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/roamgate/roamgate.env
+# Worktree hooks run with this PATH; match the interactive toolchain.
+Environment=PATH=%h/.local/share/mise/shims:%h/.local/bin:%h/.cargo/bin:/usr/local/bin:/usr/bin
+# mise shim, not the install dir, so `mise up` does not orphan the unit.
+ExecStart=%h/.local/share/mise/shims/roamgate
+Restart=always
+RestartSec=2
+TimeoutStopSec=15
+
+[Install]
+WantedBy=default.target
