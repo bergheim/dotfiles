@@ -1,0 +1,40 @@
+# herdr-mirror: copy each jolo container's herdr workspaces into berghome's
+# herdr server, so roamgate (which talks to one server) shows them all.
+# Containers are reached through the `Host jolo-*` stdio-sshd aliases in
+# ~/.ssh/config. api_transport = "exec" runs the API relay over ssh exec
+# (socat, else python3, in the image). It works on every image; socket
+# forwarding only works from jolo c6f0c77 on, which allows it in herdr-sshd.
+# A container on an image older than jolo 52cc1b2 has no herdr-sshd; its
+# host just retries until the container is recreated.
+
+[hosts.napp]
+target = "jolo-napp"
+api_transport = "exec"
+
+[hosts.peupeuell]
+target = "jolo-peupeuell"
+api_transport = "exec"
+
+[hosts.clanker]
+target = "jolo-clanker"
+api_transport = "exec"
+
+[hosts.ycoai]
+target = "jolo-ycoai"
+api_transport = "exec"
+
+[hosts.notes]
+target = "jolo-notes"
+api_transport = "exec"
+
+[hosts."clatter.el"]
+target = "jolo-clatter.el"
+api_transport = "exec"
+
+[hosts.neomosh]
+target = "jolo-neomosh"
+api_transport = "exec"
+
+[hosts.jolo]
+target = "jolo-jolo"
+api_transport = "exec"
