@@ -17,6 +17,10 @@ name = "terminal"
 # No fill: DarkGray is taupe, cyan is unreadable green. Symbols still mark state.
 active_row_bg = "reset"
 surface1 = "reset"
+# The prefix+w navigate cursor falls back to active_row_bg when this is
+# unset, so with the reset above it was invisible. Taupe is fine for a
+# transient cursor.
+selection_bg = "darkgray"
 
 [server]
 # Virtual size used while no client is attached. The 120x40 default
@@ -40,17 +44,30 @@ resume_agents_on_restore = true
 # Same muscle memory as tmux. Do NOT run herdr inside tmux with this.
 prefix = "ctrl+space"
 
-# Mirror the tmux alt+arrow family — the one family already proven not
-# to collide with Emacs (M-h/M-j/M-k/M-l are deliberately unbound there).
-focus_pane_left  = ["prefix+h", "alt+left"]
-focus_pane_down  = ["prefix+j", "alt+down"]
-focus_pane_up    = ["prefix+k", "alt+up"]
-focus_pane_right = ["prefix+l", "alt+right"]
+# Vim hjkl. alt+hjkl takes M-h/j/k/l from terminal Emacs in a pane;
+# accepted, since local Emacs runs as GUI frames herdr never sees.
+# prefix+hjkl stays for terminals without the kitty keyboard protocol
+# (phone SSH), where Esc then h can arrive as alt+h.
+focus_pane_left  = ["prefix+h", "alt+h"]
+focus_pane_down  = ["prefix+j", "alt+j"]
+focus_pane_up    = ["prefix+k", "alt+k"]
+focus_pane_right = ["prefix+l", "alt+l"]
 
-resize_pane_left  = "alt+shift+left"
-resize_pane_down  = "alt+shift+down"
-resize_pane_up    = "alt+shift+up"
-resize_pane_right = "alt+shift+right"
+# Same chords as tmux M-H/J/K/L. prefix+r then hjkl also resizes.
+resize_pane_left  = "alt+shift+h"
+resize_pane_down  = "alt+shift+j"
+resize_pane_up    = "alt+shift+k"
+resize_pane_right = "alt+shift+l"
+
+# prefix+w navigate mode: j/k walk workspaces (across machines) instead of
+# the Up/Down default. Its pane moves take shift, since alt+hjkl already
+# moves panes everywhere.
+navigate_workspace_down = "j"
+navigate_workspace_up   = "k"
+navigate_pane_left      = "shift+h"
+navigate_pane_down      = "shift+j"
+navigate_pane_up        = "shift+k"
+navigate_pane_right     = "shift+l"
 
 # Unbound by default. Steps through every agent in sidebar order, idle
 # ones included; prefix+a (agent-bell, below) jumps to the one that needs you.
