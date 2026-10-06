@@ -4,7 +4,7 @@
   :ensure nil
   :load-path "/usr/share/emacs/site-lisp/mu4e"
   :commands (mu4e-compose-new mu4e-search
-             mu4e-update-mail-and-index mu4e-update-index mu4e-quit)
+                              mu4e-update-mail-and-index mu4e-update-index mu4e-quit)
   :init
   (bergheim/load-file "modules/mu4e/keybindings.el")
   :general
@@ -54,9 +54,12 @@ package load does not trigger a GPG prompt."
   ;; bind them. I give up - just add this to the end
   (add-hook 'mu4e-headers-mode-hook #'bergheim//mu4e-headers-setup)
   (add-hook 'mu4e-view-mode-hook #'bergheim//mu4e-view-setup)
+  ;; `bergheim/org-mode-setup-corfu' replaces the capf list in org-msg
+  ;; buffers, dropping mu4e's header completion; put it back
   (add-hook 'mu4e-compose-mode-hook
             (lambda ()
-              (add-hook 'completion-at-point-functions #'mu4e-complete-contact nil t))
+              (add-hook 'completion-at-point-functions
+                        #'mu4e--compose-complete-contact-field nil t))
             90)
   )
 

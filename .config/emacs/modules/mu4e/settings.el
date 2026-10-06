@@ -29,8 +29,6 @@
             'delete
           'sent))
 
-      ;; the servers handle this
-      mu4e-compose-dont-reply-to-self t
       ;; display is nicer with these. in theory. in practice, alignme
       ;; nt is ;; messed up
       mu4e-use-fancy-chars t
@@ -71,7 +69,7 @@
       message-sendmail-extra-arguments '("--read-envelope-from")
       message-sendmail-f-is-evil t
       message-alternative-emails #'bergheim/mu4e-catchall-address-p
-      message-dont-reply-to-names #'bergheim/mu4e-catchall-address-p
+      message-dont-reply-to-names #'mu4e-personal-or-alternative-address-or-empty-p
 
       ;; figure out the account to reply from based on addresses
       mu4e-context-policy 'pick-first

@@ -64,6 +64,13 @@ Wayland connection and is unaffected."
        (getenv "WAYLAND_DISPLAY")
        (executable-find "wl-copy")))
 
+(defvar bergheim--wl-last-copy nil
+  "Text last sent to wl-copy.
+`bergheim/clipboard-paste' skips it, like `gui-selection-value'
+does for its own selection, so a kill read back from the clipboard
+does not shadow the original and drop its yank-handler (evil's
+linewise paste).")
+
 (defun bergheim/send-osc52-to-terminal (text)
   "Export TEXT to the host clipboard.
 On TTY/container frames, write an OSC 52 escape to the
@@ -75,6 +82,7 @@ controlling terminal."
        (format "\e]52;c;%s\a"
                (base64-encode-string (encode-coding-string text 'utf-8) t)))))
    ((bergheim/wl-clipboard-p)
+    (setq bergheim--wl-last-copy text)
     (let ((coding-system-for-write 'utf-8))
       (call-process-region text nil "wl-copy" nil nil)))
    ((fboundp 'gui-select-text)
@@ -87,7 +95,9 @@ controlling terminal."
         (let ((coding-system-for-read 'utf-8))
           (when (eq 0 (call-process "wl-paste" nil t nil "--no-newline"))
             (let ((text (buffer-string)))
-              (unless (string-empty-p text) text)))))
+              (unless (or (string-empty-p text)
+                          (equal text bergheim--wl-last-copy))
+                text)))))
     (gui-selection-value)))
 
 (use-package emacs
