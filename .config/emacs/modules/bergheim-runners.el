@@ -103,6 +103,28 @@ rebuilds `fontaine-presets'."
           :line-spacing (0.2 . 0.2)))
   (fontaine-set-preset 'runner))
 
+(defun bergheim/runner-sway-ok (cmd)
+  "Return non-nil when swaymsg CMD matches a window."
+  (string-match-p
+   "\"success\":[[:space:]]*true"
+   (with-output-to-string
+     (call-process "swaymsg" nil standard-output nil cmd))))
+
+(defun bergheim/runner-sway-show (title)
+  "Show scratchpad window TITLE once Sway has mapped it.
+`scratchpad show` before the frame exists matches nothing, so the picker
+used to block on a scratchpad window nobody could see. Super+C then
+no-ops on `bergheim/runner--busy'."
+  (let ((hide (format "[title=\"%s\"] move scratchpad" title))
+        (show (format "[title=\"%s\"] scratchpad show, move position center" title)))
+    ;; ponytail: 1s poll. A Sway IPC subscribe is the upgrade if map stays racy.
+    (catch 'shown
+      (dotimes (_ 50)
+        (when (and (bergheim/runner-sway-ok hide)
+                   (bergheim/runner-sway-ok show))
+          (throw 'shown t))
+        (sleep-for 0.02)))))
+
 (defun bergheim/with-runner-frame (kind fn)
   "Show the KIND runner frame, call FN, then hide the frame."
   (unless bergheim/runner--busy
@@ -117,12 +139,14 @@ rebuilds `fontaine-presets'."
                 (setq-local mode-line-format nil)
                 (setq-local cursor-type nil))
               (switch-to-buffer buf))
-            (if (bergheim/runner-on-sway-p)
-                (call-process "swaymsg" nil nil nil
-                              (format "[title=\"%s\"] scratchpad show, move position center" title))
-              (make-frame-visible frame))
-            (select-frame-set-input-focus frame)
-            (funcall fn))
+            (let ((shown (if (bergheim/runner-on-sway-p)
+                             (bergheim/runner-sway-show title)
+                           (progn (make-frame-visible frame) t))))
+              (if shown
+                  (progn
+                    (select-frame-set-input-focus frame)
+                    (funcall fn))
+                (message "Runner %s never appeared in Sway" title))))
         (when (frame-live-p frame)
           (if (bergheim/runner-on-sway-p)
               (call-process "swaymsg" nil nil nil
