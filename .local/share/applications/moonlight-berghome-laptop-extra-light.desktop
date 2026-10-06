@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Moonlight — Laptop extra light (900p30)
+Comment=Set berghome capture and stream to 1440x900 at 30 fps, 5 Mbps; integer scaling not guaranteed
+Exec=/home/tsb/local/bin/moonlight-berghome-profile laptop-extra-light
+Icon=moonlight
+Terminal=false
+Categories=Game;

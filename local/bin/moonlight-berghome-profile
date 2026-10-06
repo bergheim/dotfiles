@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# A play choice replaces any running stream. Cancel leaves it alone.
+set -euo pipefail
+
+fps=60 bitrate=20000
+case "${1:-}" in
+    tv) resolution=1920x1080 ;;
+    laptop) resolution=2880x1800 ;;
+    laptop-light) resolution=1440x900 ;;
+    laptop-extra-light) resolution=1440x900 fps=30 bitrate=5000 ;;
+    *) printf 'Usage: %s {tv|laptop|laptop-light|laptop-extra-light}\n' "$0" >&2; exit 2 ;;
+esac
+
+remote() {
+    ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10 \
+        -o ServerAliveInterval=5 -o ServerAliveCountMax=3 berghome "$@"
+}
+
+error() {
+    printf '%s\n' "$1" >&2
+    notify-send --urgency=critical 'Moonlight — berghome' "$1" || true
+}
+
+# Same dmenu icon protocol as sysmenu; inherit the normal Fuzzel configuration.
+entry() { printf '%s\0icon\037%s\n' "$1" "$2"; }
+
+# A new launch is a restart (different resolution, or the last client wedged).
+# SIGKILL so the old EXIT trap cannot pop the resume-AI prompt. ponytail: no
+# graceful takeover protocol; add one if a killed SSH leaves berghome half-set.
+replace_existing() {
+    local pid
+    for pid in $(pgrep -f '[m]oonlight-berghome-profile' || true); do
+        [[ "$pid" == "$$" ]] && continue
+        pkill -KILL -P "$pid" 2>/dev/null || true
+        kill -KILL "$pid" 2>/dev/null || true
+    done
+    pkill -KILL -f '[m]oonlight stream ' 2>/dev/null || true
+}
+
+take_over() {
+    local lock="${XDG_RUNTIME_DIR:?}/moonlight-berghome-profile.lock"
+    replace_existing
+    exec 9>"$lock"
+    flock -w 3 9 || {
+        error 'Could not replace the running Moonlight launcher.'
+        exit 1
+    }
+}
+
+choice=$({
+    entry 'pause AI and play' media-playback-pause
+    entry 'play without pausing' media-playback-start
+    entry 'cancel' dialog-cancel
+} | fuzzel --dmenu --prompt 'moonlight ') || exit 0
+case "$choice" in
+    'pause AI and play'|'play without pausing') ;;
+    *) exit 0 ;;
+esac
+
+# Cancel above leaves the current stream alone. A play choice replaces it.
+take_over
+
+pause_requested=0
+moonlight_pid=
+# shellcheck disable=SC2329 # Invoked by the EXIT trap.
+finish() {
+    local status=$? resume_choice
+    trap - EXIT INT TERM
+    if (( pause_requested )); then
+        resume_choice=$({
+            entry 'leave AI paused' media-playback-pause
+            entry 'resume AI' media-playback-start
+        } | fuzzel --dmenu --prompt 'game may still be running: ') || resume_choice=
+        if [[ "$resume_choice" == 'resume AI' ]]; then
+            if ! remote 'systemctl --user start llama-swap.service'; then
+                error 'Could not resume AI. Check berghome; retry with: ssh berghome systemctl --user start llama-swap.service'
+                if (( status == 0 )); then status=1; fi
+            fi
+        fi
+    fi
+    exit "$status"
+}
+
+# shellcheck disable=SC2329 # Invoked by the INT/TERM traps.
+interrupted() {
+    if [[ -n "$moonlight_pid" ]]; then
+        kill -TERM "$moonlight_pid" 2>/dev/null || true
+        wait "$moonlight_pid" 2>/dev/null || true
+    fi
+    exit "$1"
+}
+trap finish EXIT
+trap 'interrupted 130' INT
+trap 'interrupted 143' TERM
+
+if [[ "$choice" == 'pause AI and play' ]]; then
+    if ! state=$(remote 'systemctl --user show llama-swap.service --property=ActiveState --value'); then
+        error 'Could not check AI service state. Streaming was not started.'
+        exit 1
+    fi
+    case "$state" in
+        active)
+            # Record intent first: an SSH failure can leave the stop outcome unknown.
+            pause_requested=1
+            if ! remote 'systemctl --user stop llama-swap.service'; then
+                error 'AI stop failed or its result is unknown. Streaming was not started; you will be asked whether to resume AI.'
+                exit 1
+            fi
+            ;;
+        inactive|failed) ;; # Do not start a service that was already stopped.
+        *) error "AI service is in state '$state'. Try again once it settles."; exit 1 ;;
+    esac
+fi
+
+# Run on every connection: Sunshine application prep hooks do not run on resume.
+if ! remote "SWAY_HEADLESS_MODE=${resolution}@${fps}Hz ~/.local/bin/sway-headless on"; then
+    error 'Could not set the host resolution. Streaming was not started.'
+    exit 1
+fi
+
+env FORCE_VAAPI=1 moonlight stream \
+    --resolution "$resolution" --fps "$fps" --bitrate "$bitrate" \
+    --video-codec AV1 --no-frame-pacing --display-mode fullscreen \
+    --no-quit-after berghome 'Steam Big Picture' &
+moonlight_pid=$!
+status=0
+wait "$moonlight_pid" || status=$?
+moonlight_pid=
+if (( status != 0 )); then error "Moonlight exited with status $status."; fi
+exit "$status"
