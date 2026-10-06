@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # A newly launched Wayland client may not have mapped its window yet.
     for attempt in range(30 if pid else 1):
         root = tree()
-        match = (lambda node: node.get("app_id") == "floating") if sys.argv[1] == "cycle" else (
+        match = (lambda node: node.get("app_id") == "mpv-float") if sys.argv[1] == "cycle" else (
             (lambda node: node.get("pid") == pid) if pid else (lambda node: node.get("focused")))
         focused = next((node for node in walk(root) if
                         match(node)

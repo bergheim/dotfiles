@@ -16,6 +16,9 @@ http*) ;;
 	;;
 esac
 
-if ! out=$(mpv --force-window --wayland-app-id=floating "$url" 2>&1); then
+# Replace what the running mpv plays (via mpv-mpris) instead of opening another.
+playerctl -p mpv open "$url" 2>/dev/null && exit 0
+
+if ! out=$(mpv --force-window --wayland-app-id=mpv-float "$url" 2>&1); then
 	notify-send -u critical "mpv-url" "mpv failed: $(printf '%s' "$out" | tail -n 2)"
 fi
