@@ -193,6 +193,8 @@ alias pacs='pacman -Ss'
 alias pacwhat='pacman -Si'
 alias pacfiles='pacman -Ql'
 alias pacwho='pkgfile'
+# drop built packages + downloaded sources from yay clones; keeps .git so update diffs still work
+alias yayclean='for d in ~/.cache/yay/*/; do git -C "$d" clean -fx; done'
 
 # auto, not always: --color=always corrupts redirected output (diff a b > patch)
 alias diff='diff --color=auto'
