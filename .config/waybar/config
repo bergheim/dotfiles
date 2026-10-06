@@ -28,14 +28,13 @@
       // dual sway+niri support. sway/scratchpad omitted (no niri equiv).
       "niri/workspaces",
       "sway/workspaces",
-      "sway/mode"
-      // mpris is also listed in modules-right below; leaving it here rendered
-      // two identical widgets on this bar.
+      "sway/mode",
+      "niri/window",
+      "sway/window"
     ],
 
     "modules-center": [
-      "niri/window",
-      "sway/window"
+      "mpris"
     ],
 
     "modules-right": [
@@ -44,7 +43,7 @@
       // "cpu",
       // "memory",
       // "temperature",
-      "mpris",
+      "custom/recording",
       "custom/weather",
       // "backlight",
       // "sway/language",
@@ -195,6 +194,14 @@
     },
 
     /* Modules-Right */
+
+    "custom/recording": {
+        "exec": "pgrep -u $(id -u) -x wf-recorder >/dev/null && printf '● REC' || true",
+        "interval": 1,
+        "format": "<span color='#ff5555'>{}</span>",
+        "tooltip-format": "Recording — Super+Print to stop",
+        "hide-empty-text": true
+    },
 
     "custom/weather": {
         "format": "{}",
@@ -434,6 +441,7 @@
     "modules-center": [
       ],
     "modules-right": [
+      "custom/recording",
       "custom/gpu",
       "custom/cpu",
       "clock",
@@ -442,6 +450,14 @@
 
     // GPU/CPU sit on this bar (not the primary) so the gaming display on
     // DP-1 stays clean. temp° + load%, with details in the tooltip.
+    "custom/recording": {
+        "exec": "pgrep -u $(id -u) -x wf-recorder >/dev/null && printf '● REC' || true",
+        "interval": 1,
+        "format": "<span color='#ff5555'>{}</span>",
+        "tooltip-format": "Recording — Super+Print to stop",
+        "hide-empty-text": true
+    },
+
     "custom/gpu": {
       "exec": "waybar-gpu",
       "return-type": "json",

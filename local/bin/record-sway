@@ -7,10 +7,11 @@
 #   record-sway              # interactive region (slurp), upload + copy URL
 #   record-sway window       # focused window rect (sway only;
 #                            # niri/unknown falls back to slurp)
+#   record-sway output       # focused monitor (sway)
 #   record-sway --local      # skip upload — local file only
 #   record-sway --local window
 #
-# Stop the take with the bound key (pkill -INT wf-recorder).
+# Invoke any mode again to stop the take; title/upload continue in the first process.
 
 set -euo pipefail
 
@@ -22,10 +23,19 @@ MODE=region
 for arg in "$@"; do
     case "$arg" in
         --local|--no-share) SHARE=0 ;;
-        window)             MODE=window ;;
+        window|output)      MODE=$arg ;;
         *) echo "Unknown arg: $arg" >&2; exit 1 ;;
     esac
 done
+
+# Match the existing recording menu: any running take ends before another starts.
+if pkill -INT -u "$UID" -x wf-recorder; then
+    exit 0
+fi
+
+# Ignore repeated starts while selecting or during the one-second countdown.
+exec 9>"${XDG_RUNTIME_DIR:?}/record-sway.lock"
+flock -n 9 || exit 0
 
 mkdir -p "$ARCHIVE_DIR"
 ID=$(date '+%Y%m%dT%H%M%S')
@@ -52,6 +62,10 @@ if [ "$MODE" = window ]; then
             "No focused-window rect (niri or unknown compositor); region select."
         RECT=$(slurp)
     fi
+elif [ "$MODE" = output ]; then
+    RECT=$(swaymsg -t get_outputs -r | jq -er '
+        .[] | select(.focused and .active) | .rect
+        | "\(.x),\(.y) \(.width)x\(.height)"')
 else
     RECT=$(slurp)
 fi
@@ -64,6 +78,10 @@ trap 'makoctl set-mode default 2>/dev/null || true' EXIT INT TERM
 makoctl set-mode do-not-disturb 2>/dev/null || true
 
 wf-recorder -g "$RECT" -f "$MKV"
+makoctl set-mode default 2>/dev/null || true
+trap - EXIT INT TERM
+flock -u 9
+exec 9>&-
 
 if ! title=$(fuzzel -d --prompt-only 'Screencast title: '); then
     notify-send "Share canceled" "kept $(basename "$MKV")"
