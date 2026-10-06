@@ -1,3 +1,9 @@
 [tools]
 "github:powerfooI/roamgate" = "latest"
 herdr = "latest"
+gitleaks = "latest"
+node = "latest"
+ruff = "latest"
+
+[settings]
+experimental = true

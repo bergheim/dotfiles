@@ -293,6 +293,8 @@ binds {
     Mod+Ctrl+R             { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/apps-start)"; }
     Mod+P                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/pass-start)"; }
     Mod+Ctrl+P             { spawn "fuzzel-pass"; }
+    // Grabs the focused browser's URL first, so a new entry name is pre-seeded.
+    Mod+Alt+P              { spawn "pass-url"; }
     Mod+C                  { spawn "emacsclient" "--no-wait" "--socket-name=runners" "--eval" "(bergheim/cliphist-start)"; }
     Mod+Shift+C            { spawn "fuzzel-cliphist"; }
     Mod+Shift+E            { spawn-sh "BEMOJI_PICKER_CMD='fuzzel -d' bemoji"; }

@@ -577,6 +577,7 @@ bindkey -M viins '^W' backward-kill-word
 bindkey -M viins '^U' backward-kill-line   # bash's unix-line-discard
 bindkey -M viins '^K' kill-line
 bindkey -M viins '^Y' yank
+bindkey -M viins '^_' undo                # Ghostel/Evil u sends readline undo
 
 bindkey -M viins '^[[H' beginning-of-line
 bindkey -M viins '^[[F' end-of-line
