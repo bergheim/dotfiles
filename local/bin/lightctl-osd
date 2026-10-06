@@ -7,6 +7,7 @@ set -eu
 case "$1" in
 	up) brightnessctl -m set 5%+ >/dev/null ;;
 	down) brightnessctl -m set 5%- >/dev/null ;;
+	set) brightnessctl -m set "$2%" >/dev/null ;;
 esac
 
 pct=$(brightnessctl -m | cut -d, -f4)

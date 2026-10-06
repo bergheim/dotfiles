@@ -14,7 +14,6 @@ morning)
 	[ -n "$gamma" ] && ~/.config/waybar/scripts/gammastep.sh toggle
 	;;
 evening)
-	lightctl-osd set 1
 	[ -z "$dark" ] && toggle-darkmode
 	[ -z "$gamma" ] && ~/.config/waybar/scripts/gammastep.sh toggle
 	;;
